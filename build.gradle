@@ -44,7 +44,3 @@ dependencies {
 
     implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
 }
-
-generateScenarioSource {
-    classDiagramSVG = true
-}
