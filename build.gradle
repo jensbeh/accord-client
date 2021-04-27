@@ -1,15 +1,16 @@
 plugins {
+    id 'application'
     id 'java'
     // https://plugins.gradle.org/plugin/org.fulib.fulibGradle
     id 'org.fulib.fulibGradle' version '0.5.0'
     id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
-group = 'de.uniks.stp.model'
-version = '0.1.0'
+group = 'de.uniks.stp'
+version = '1.0.0'
 
 repositories {
-    mavenLocal()
+    jcenter()
     mavenCentral()
 }
 
@@ -33,6 +34,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation group: 'junit', name: 'junit', version: '4.13'
+
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
+
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.1'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
     testImplementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
