@@ -1,4 +1,4 @@
-package de.uniks.pmws2021.model;
+package de.uniks.stp.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

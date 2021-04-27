@@ -1,4 +1,4 @@
-package de.uniks.pmws2021.model;
+package de.uniks.stp.model;
 import java.util.Objects;
 import java.beans.PropertyChangeSupport;
 
