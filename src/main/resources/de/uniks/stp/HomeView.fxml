@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <Label text="Accord" textFill="WHITE" BorderPane.alignment="TOP_LEFT">
+         <font>
+            <Font name="Segoe UI Bold" size="12.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets left="5.0" top="2.0" />
+         </padding>
+      </Label>
+   </top>
+   <left>
+      <ScrollPane id="scrollPaneServerBox" hbarPolicy="NEVER" pannable="true" prefHeight="381.0" prefWidth="89.0" style="-fx-background-color: #23272a; -fx-background: #23272a;" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+         <content>
+            <VBox id="serverBox" spacing="8.0" style="-fx-background-color: #23272a;">
+               <children>
+                  <StackPane prefHeight="91.0" prefWidth="87.0" style="-fx-background-color: transparent;">
+                     <children>
+                        <Circle fill="#7289da" radius="34.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Label prefHeight="35.0" prefWidth="60.0" text="Add Server" wrapText="true" />
+                     </children>
+                  </StackPane>
+               </children>
+            </VBox>
+         </content>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </ScrollPane>
+   </left>
+   <right>
+      <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" pannable="true" prefHeight="583.0" prefWidth="181.0" style="-fx-background-color: #23272a; -fx-background: #23272a;" vbarPolicy="NEVER" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <content>
+            <VBox id="userBox" alignment="CENTER" prefHeight="30.0" prefWidth="175.0" spacing="8.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="30.0" prefWidth="310.0">
+                     <children>
+                        <Label alignment="CENTER" prefHeight="30.0" prefWidth="179.0" text="Online" textFill="WHITE">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </right>
+   <center>
+      <HBox style="-fx-background-color: #2c2f33;">
+         <children>
+            <VBox id="privateChatBox" maxWidth="220.0" spacing="10.0" HBox.hgrow="ALWAYS" />
+            <VBox id="chatBox" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </center>
+</BorderPane>
