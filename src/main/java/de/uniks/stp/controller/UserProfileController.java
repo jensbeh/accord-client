@@ -28,20 +28,23 @@ public class UserProfileController {
         onlineStatus = (Circle) view.lookup("#onlineStatus");
     }
 
-
-    public void setUser(String name) {
-        this.renderComponent(name);
+    public void setUserName(String name) {
+        Platform.runLater(() -> {
+            userName.setText(name);
+        });
     }
 
     public void setOnline() {
         Platform.runLater(() -> {
-            onlineStatus.setFill(Color.GREEN);
+            Color color = Color.web("#13d86b");
+            onlineStatus.setFill(color);
         });
     }
 
-    private void renderComponent(String name) {
+    public void setOffline() {
         Platform.runLater(() -> {
-            userName.setText(name);
+            Color color = Color.web("#e34646");
+            onlineStatus.setFill(color);
         });
     }
 

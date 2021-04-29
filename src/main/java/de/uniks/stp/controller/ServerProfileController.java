@@ -2,10 +2,10 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 public class ServerProfileController {
 
@@ -25,11 +25,8 @@ public class ServerProfileController {
     }
 
     public void setServerName(String name) {
-        this.renderComponent(name);
-    }
-
-    private void renderComponent(String name) {
         Platform.runLater(() -> {
+            serverName.setTextFill(Color.WHITE);
             serverName.setText(name);
         });
     }

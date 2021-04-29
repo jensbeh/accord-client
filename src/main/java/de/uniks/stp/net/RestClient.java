@@ -15,24 +15,16 @@ public class RestClient {
         jsonBody.put("name", name);
         jsonBody.put("password", password);
         HttpResponse<JsonNode> response = Unirest.post("https://ac.uniks.de/api/users/login").body(jsonBody).asJson();
-        JSONArray responseArray = response.getBody().getArray();
-        String userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
-        return userKey;
+        return response.getBody().getObject().getJSONObject("data").getString("userKey");
     }
 
     public static JSONArray getServers(String userKey) {
-        JSONObject jsonBody = new JSONObject();
         HttpResponse<JsonNode> response = Unirest.get("https://ac.uniks.de/api/servers").header("userKey", userKey).asJson();
-        JSONArray responseArray = response.getBody().getObject().getJSONArray("data");
-
-        return responseArray;
+        return response.getBody().getObject().getJSONArray("data");
     }
 
     public static JSONArray getUsers(String userKey) {
-        JSONObject jsonBody = new JSONObject();
         HttpResponse<JsonNode> response = Unirest.get("https://ac.uniks.de/api/users").header("userKey", userKey).asJson();
-        JSONArray responseArray = response.getBody().getObject().getJSONArray("data");
-
-        return responseArray;
+        return response.getBody().getObject().getJSONArray("data");
     }
 }

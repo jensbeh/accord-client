@@ -37,15 +37,9 @@ public class StageManager extends Application {
         try {
             Parent root  = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
             Scene scene = new Scene(root);
-
             HomeViewController homeViewController = new HomeViewController(root, builder);
-
             homeViewController.init();
-
-            homeViewController.setBuilder(builder);
-            homeViewController.login();
-            homeViewController.showUser();
-            homeViewController.showServers();
+            homeViewController.showHome();
             this.stage.setScene(scene);
             this.stage.show();
         } catch (IOException e) {
