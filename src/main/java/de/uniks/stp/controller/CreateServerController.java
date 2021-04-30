@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import kong.unirest.*;
 import org.json.JSONArray;
 
@@ -24,6 +25,7 @@ public class CreateServerController {
         private TextField serverName;
         private Button createServer;
         private User personalUser;
+        private Stage stage;
 
         public CreateServerController(Parent view, ModelBuilder builder) {
                 this.builder = builder;
@@ -36,27 +38,28 @@ public class CreateServerController {
                 serverName = (TextField) view.lookup("#serverName");
                 createServer = (Button) view.lookup(("#createServer"));
                 createServer.setOnAction(this::onCreateServerClicked);
+                this.login();
         }
 
         private void login() {
                 try {
                         String userKey = RestClient.login("Peter Lustig", "1234");
                         builder.buildPersonalUser("Peter Lustig", userKey);
+                        System.out.println("Hallo ich bin eingelogt");
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
         }
 
         public void showCreateServerView() {
-                login();
+                setStage(stage);
         }
 
         public void onCreateServerClicked(ActionEvent event){
                 this.personalUser = builder.getPersonalUser();
                 String name = this.serverName.getText();
-
                 if(name != null && !name.isEmpty()) {
-                        RestClient.postServer(name, personalUser.getUserKey(), response -> {
+                        RestClient.postServer(personalUser.getUserKey(), name, response -> {
                                 JsonNode body = response.getBody();
                                 String status = body.getObject().getString("status");
                                 if (status.equals("success")) {
@@ -74,6 +77,10 @@ public class CreateServerController {
                                 }
                         });
                 }
+                stage.close();
         }
 
+        public void setStage(Stage stage) {
+                this.stage = stage;
+        }
 }

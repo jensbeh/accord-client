@@ -22,7 +22,9 @@ public class RestClient {
     }
 
     public static void postServer(String userKey, String serverName, Callback<JsonNode> callback) {
-        HttpRequest<?> postRequest = Unirest.post("https://ac.uniks.de/api/servers").body(serverName).header("userKey",userKey);
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("name", serverName);
+        HttpRequest<?> postRequest = Unirest.post("https://ac.uniks.de/api/servers").body(jsonBody).header("userKey",userKey);
         sendRequest(postRequest, callback);
     }
 
