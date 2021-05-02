@@ -25,7 +25,8 @@ public class CreateServerController {
         private TextField serverName;
         private Button createServer;
         private User personalUser;
-        private Stage stage;
+        private Runnable change;
+
 
         public CreateServerController(Parent view, ModelBuilder builder) {
                 this.builder = builder;
@@ -38,21 +39,10 @@ public class CreateServerController {
                 serverName = (TextField) view.lookup("#serverName");
                 createServer = (Button) view.lookup(("#createServer"));
                 createServer.setOnAction(this::onCreateServerClicked);
-                this.login();
         }
 
-        private void login() {
-                try {
-                        String userKey = RestClient.login("Peter Lustig", "1234");
-                        builder.buildPersonalUser("Peter Lustig", userKey);
-                        System.out.println("Hallo ich bin eingelogt");
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-        }
-
-        public void showCreateServerView() {
-                setStage(stage);
+        public void showCreateServerView(Runnable change) {
+                this.change = change;
         }
 
         public void onCreateServerClicked(ActionEvent event){
@@ -77,10 +67,6 @@ public class CreateServerController {
                                 }
                         });
                 }
-                stage.close();
-        }
-
-        public void setStage(Stage stage) {
-                this.stage = stage;
+                change.run();
         }
 }

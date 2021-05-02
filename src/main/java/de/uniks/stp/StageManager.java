@@ -50,19 +50,6 @@ public class StageManager extends Application {
         }
     }
 
-    private void showTMPScreen() {
-        try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"));
-            Scene scene = new Scene(root);
-            CreateServerController createServerController = new CreateServerController(root, builder);
-            createServerController.init();
-            createServerController.showCreateServerView();
-            this.stage.setScene(scene);
-            this.stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private static void cleanup() {
         // call cascading stop

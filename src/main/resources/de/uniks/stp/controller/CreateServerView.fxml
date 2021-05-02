@@ -7,16 +7,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox fx:id="createServerBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="89.0" prefWidth="600.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="createServerBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="89.0" prefWidth="600.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label text="Create Server" textFill="#fcfcfc">
          <font>
             <Font size="17.0" />
          </font>
       </Label>
-      <TextField fx:id="serverName" promptText="Server Name" />
-      <Button fx:id="createServer" mnemonicParsing="false" text="Create">
+      <TextField id="serverName" promptText="Server Name" />
+      <Button id="createServer" mnemonicParsing="false" text="Create">
          <VBox.margin>
             <Insets top="10.0" />
          </VBox.margin>
