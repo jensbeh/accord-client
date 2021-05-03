@@ -2,136 +2,150 @@ package de.uniks.stp.controller;
 
 import com.sun.javafx.scene.control.LabeledText;
 import de.uniks.stp.AlternateChannelListCellFactory;
-import de.uniks.stp.ServerEditor;
+import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import org.json.JSONArray;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.io.IOException;
+import java.security.cert.PolicyNode;
 
 public class HomeViewController {
-
-    private ServerEditor editor;
-    private User currentUser;
+    private BorderPane root;
+    private ScrollPane scrollPaneUserBox;
+    private ScrollPane scrollPaneServerBox;
+    private ScrollPane privateChatScrollpane;
+    private VBox userBox;
+    private VBox currentUserBox;
+    private VBox serverBox;
+    private ModelBuilder builder;
     private Parent view;
-    private VBox userProfile;
-    private ScrollPane userPane, chatpane;
-    private List<User> dummylist = new ArrayList<>();
-    private ListView<Channel> chatlist;
-    private ObservableList<Channel> channels;
+    private ListView<Channel> privateChatList;
+    private ObservableList<Channel> privateChats;
     private Channel selectedChat;
     private VBox messages;
-    private ScrollPane chatscrollpane;
+    private ListView<User> onlineUsersList;
+    private ObservableList<User> onlineUsers;
 
-
-    public HomeViewController(Parent view, ServerEditor serverEditor) {
-        this.currentUser = new User().setName("Helmut").setStatus(true).setUserKey("wildesWiesel");
+    public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
-        this.editor = serverEditor;
+        this.builder = modelBuilder;
     }
 
     public void init() {
         // Load all view references
-        dummylist.add(new User().setName("Maurice").setStatus(true));
-        dummylist.add(new User().setName("Pascal").setStatus(true));
-        dummylist.add(new User().setName("Simon").setStatus(true));
-        dummylist.add(new User().setName("Alexander").setStatus(true));
-        dummylist.add(new User().setName("Albert").setStatus(true));
-        dummylist.add(new User().setName("Clemens").setStatus(true));
-        dummylist.add(new User().setName("Sebastian").setStatus(true));
-        dummylist.add(new User().setName("Julian").setStatus(true));
-        dummylist.add(new User().setName("Paul").setStatus(true));
-        dummylist.add(new User().setName("Daniel").setStatus(true));
-        dummylist.add(new User().setName("Stefan").setStatus(true));
-        dummylist.add(new User().setName("Markus").setStatus(true));
-        dummylist.add(new User().setName("Angelo").setStatus(true));
-        dummylist.add(new User().setName("GabeN").setStatus(true));
-        dummylist.add(new User().setName("Jens").setStatus(true));
-        dummylist.add(new User().setName("Arnold").setStatus(true));
-        dummylist.add(new User().setName("Christian").setStatus(true));
-        dummylist.add(new User().setName("Mehmet").setStatus(true));
-        userPane = (ScrollPane) view.lookup("#userscrollpane");
-        chatpane = (ScrollPane) view.lookup("#chatpane");
-        userProfile = (VBox) userPane.getContent().lookup("#singleuser");
-        UserProfileViews();
-        chatscrollpane = (ScrollPane) view.lookup("#chatscrollpane");
-        messages = (VBox) chatscrollpane.getContent().lookup("#messages");
+        root = (BorderPane) view.lookup("#root");
 
-        chatlist = (ListView<Channel>) chatpane.getContent().lookup("#list");
-        chatlist.setCellFactory(new AlternateChannelListCellFactory());
-        this.chatlist.setOnMouseReleased(this::onChatlistClicked);
+        scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
+        scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        privateChatScrollpane = (ScrollPane) view.lookup("#privateChatScrollpane");
 
+        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
+        serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
+        messages = (VBox) view.lookup("#messages");
 
-        channels = FXCollections.observableArrayList();
-        this.chatlist.setItems(channels);
-        channels.add(new Channel().setName("Simon").withMessage(new Message().setMessage("Hallo").setFrom("Simon"),new Message().setMessage("Moin").setFrom("Pascal")));
+        privateChatList = (ListView<Channel>) privateChatScrollpane.getContent().lookup("#privateChatList");
+        privateChatList.setCellFactory(new AlternateChannelListCellFactory());
+        this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
 
-        this.userProfile.setOnMouseReleased(this::onUserProfileClicked);
+        privateChats = FXCollections.observableArrayList();
+        this.privateChatList.setItems(privateChats);
+
+        onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
+        onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
+
+        onlineUsers = FXCollections.observableArrayList();
+        this.onlineUsersList.setItems(onlineUsers);
+
+        login();
+        showServers();
+        showCurrentUser();
+        showUser();
     }
 
-    public void stop() {
-        this.userProfile.setOnMouseReleased(null);
+
+    private void login() {
+        try {
+            String userKey = RestClient.login("Peter Lustig", "1234");
+            builder.buildPersonalUser("Peter Lustig", userKey);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void UserProfileViews() {
-        this.userProfile.getChildren().clear();
-        for (User user : this.dummylist) {
-            try {
-                Parent view = FXMLLoader.load(StageManager.class.getResource("controller/UserProfileView.fxml"));
-                UserProfileController userProfileController = new UserProfileController(user, view, editor);
-                userProfileController.init();
+    private void showServers() {
+        try {
+            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                Parent root = FXMLLoader.load(StageManager.class.getResource("ServerProfileView.fxml"));
+                ServerProfileController serverProfileController = new ServerProfileController(root, builder);
+                serverProfileController.init();
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                builder.buildServer(serverName, serverId);
+                serverProfileController.setServerName(serverName);
+                this.serverBox.getChildren().add(root);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-                this.userProfile.getChildren().add(view);
+    private void showCurrentUser() {
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
+            UserProfileController userProfileController = new UserProfileController(root, builder);
+            userProfileController.init();
+            User currentUser = builder.getPersonalUser();
+            userProfileController.setUserName(currentUser.getName());
+            userProfileController.setOnline();
+            this.currentUserBox.getChildren().add(root);
 
-            } catch (Exception e) {
-                e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showUser() {
+        onlineUsers.clear();
+        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
+        for (int i = 0; i < jsonResponse.length(); i++) {
+            String userName = jsonResponse.getJSONObject(i).get("name").toString();
+            if (!userName.equals(builder.getPersonalUser().getName())) {
+                builder.buildUser(userName);
+                onlineUsers.add(new User().setName(userName).setStatus(true));
             }
         }
     }
 
-    private void onUserProfileClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2) {
-            boolean flag = true;
-            String name;
-            EventTarget tmp = mouseEvent.getTarget();
-            Label test;
-            if (tmp.getClass().equals(Circle.class)) {
-                tmp = ((Circle) tmp).getParent();
-            }
-            if (!tmp.getClass().equals(Label.class) & !tmp.getClass().equals(HBox.class)) {
-                tmp = ((LabeledText) tmp).getParent();
-            }
-            test = (Label) ((Parent) tmp).lookup("#username");
-            name = test.getText();
-            for (Channel channel : channels) {
-                if (channel.getName().equals(name)) {
-                    flag = false;
-                    break;
-                }
-            }
-            if (flag) {
-                channels.add(new Channel().setName(test.getText()));
-            }
-        }
+    public void setBuilder(ModelBuilder builder) {
+        this.builder = builder;
     }
 
-    private void onChatlistClicked(MouseEvent mouseEvent) {
+    private void onprivateChatListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
-            selectedChat = this.chatlist.getSelectionModel().getSelectedItem();
+            selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
             MessageViews();
         }
     }
@@ -141,13 +155,29 @@ public class HomeViewController {
         for (Message msg : this.selectedChat.getMessage()) {
             try {
                 Parent view = FXMLLoader.load(StageManager.class.getResource("controller/Message.fxml"));
-                MessageController messageController = new MessageController(msg, view, editor);
+                MessageController messageController = new MessageController(msg, view, builder);
                 messageController.init();
 
                 this.messages.getChildren().add(view);
 
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void ononlineUsersListClicked(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+            boolean flag = true;
+            String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
+            for (Channel channel : privateChats) {
+                if (channel.getName().equals(selectedUserName)) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                privateChats.add(new Channel().setName(selectedUserName));
             }
         }
     }

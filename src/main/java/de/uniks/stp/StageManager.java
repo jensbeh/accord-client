@@ -1,24 +1,30 @@
 package de.uniks.stp;
 
+
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class StageManager extends Application {
+import java.io.IOException;
 
-    private static Stage stage;
-    private static ServerEditor serverEditor;
-    private static HomeViewController homeViewController;
+public class StageManager extends Application {
+    private ModelBuilder builder;
+    private Stage stage;
+    private Scene scene;
 
     @Override
     public void start(Stage primaryStage) {
-        // start application
         stage = primaryStage;
-        showHomeScreen();
-        primaryStage.show();
+        stage.setTitle("Accord");
+        builder = new ModelBuilder();
+        scene = new Scene(new VBox(), 900, 600);
+        this.showHome();
     }
 
     @Override
@@ -27,29 +33,18 @@ public class StageManager extends Application {
         cleanup();
     }
 
-    public static void showHomeScreen() {
-        cleanup();
-        serverEditor = new ServerEditor();
-        // show HomeScreen
-        // load view
+    public void showHome() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/HomeView.fxml"));
+            Parent root  = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
             Scene scene = new Scene(root);
-
-            // init controller
-            homeViewController = new HomeViewController(root,serverEditor);
+            HomeViewController homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
-            // display
-            stage.setTitle("Accord - Home");
-            stage.setScene(scene);
-            stage.centerOnScreen();
-
-        } catch (Exception e) {
-            System.err.println("Error in showHomeScreen");
+            this.stage.setScene(scene);
+            this.stage.show();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     private static void cleanup() {
         // call cascading stop
