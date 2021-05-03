@@ -1,2 +1,4 @@
-package de.uniks.stp;public class ServerEditor {
+package de.uniks.stp;
+
+public class ServerEditor {
 }
