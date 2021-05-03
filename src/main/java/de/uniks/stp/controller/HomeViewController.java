@@ -45,6 +45,7 @@ public class HomeViewController {
     private VBox messages;
     private ListView<User> onlineUsersList;
     private ObservableList<User> onlineUsers;
+    private HBox messageBar;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -63,6 +64,8 @@ public class HomeViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         messages = (VBox) view.lookup("#messages");
+        messageBar = (HBox) view.lookup("#messagebar");
+        messageBar.setOpacity(0);
 
         privateChatList = (ListView<Channel>) privateChatScrollpane.getContent().lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
@@ -139,10 +142,6 @@ public class HomeViewController {
         }
     }
 
-    public void setBuilder(ModelBuilder builder) {
-        this.builder = builder;
-    }
-
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
@@ -152,6 +151,7 @@ public class HomeViewController {
 
     private void MessageViews() {
         this.messages.getChildren().clear();
+        messageBar.setOpacity(1);
         for (Message msg : this.selectedChat.getMessage()) {
             try {
                 Parent view = FXMLLoader.load(StageManager.class.getResource("controller/Message.fxml"));
@@ -176,9 +176,11 @@ public class HomeViewController {
                     break;
                 }
             }
+            selectedChat = new Channel().setName(selectedUserName);
             if (flag) {
-                privateChats.add(new Channel().setName(selectedUserName));
+                privateChats.add(selectedChat);
             }
+            MessageViews();
         }
     }
 }
