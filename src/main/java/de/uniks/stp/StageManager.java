@@ -47,6 +47,7 @@ public class StageManager extends Application {
             settingsController = new SettingsController(root);
             settingsController.init();
 
+            stage.setResizable(false);
             stage.setScene(scene);
             stage.centerOnScreen();
         }
