@@ -58,19 +58,9 @@ public class HomeViewController {
         onlineUsers = FXCollections.observableArrayList();
         this.onlineUsersList.setItems(onlineUsers);
 
-        login();
         showServers();
         showCurrentUser();
         showUser();
-    }
-
-    private void login() {
-        try {
-            String userKey = RestClient.login("Peter Lustig", "1234");
-            builder.buildPersonalUser("Peter Lustig", userKey);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void showServers() {

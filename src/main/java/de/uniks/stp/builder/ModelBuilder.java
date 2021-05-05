@@ -6,7 +6,7 @@ import de.uniks.stp.model.User;
 import java.util.ArrayList;
 
 public class ModelBuilder {
-    private ArrayList<User> users = new ArrayList();
+    private ArrayList<User> onlineUsers = new ArrayList();
     private ArrayList<Server> servers = new ArrayList();
     private User personalUser;
 
@@ -15,7 +15,12 @@ public class ModelBuilder {
     }
 
     public void buildUser(String name) {
-        users.add(new User().setName(name));
+        User user = new User().setName(name);
+        onlineUsers.add(user);
+    }
+
+    public void buildTempUser(String name) {
+        personalUser = new User().setName(name).setUserKey("");
     }
 
     public void buildServer(String name, String id) {
@@ -25,5 +30,4 @@ public class ModelBuilder {
     public User getPersonalUser() {
         return personalUser;
     }
-
 }
