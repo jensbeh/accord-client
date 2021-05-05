@@ -59,6 +59,7 @@ public class SettingsController {
         Button button = new Button();
         button.setPrefWidth(198);
         button.setPrefHeight(32);
+        button.setId("button_" + buttonName);
 
         this.itemList.add(button);
         this.settingsItems.getChildren().add(button);
