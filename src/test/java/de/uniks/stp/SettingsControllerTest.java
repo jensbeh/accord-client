@@ -23,6 +23,8 @@ public class SettingsControllerTest extends ApplicationTest {
 
     @Test
     public void changeLanguage() {
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
         Button languageButton = lookup("#button_Language").query();
         clickOn(languageButton);
         Label label_langSelect = lookup("#label_langSelect").query();
