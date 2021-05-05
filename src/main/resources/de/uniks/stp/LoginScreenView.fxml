@@ -31,7 +31,7 @@
                <children>
                   <VBox prefHeight="195.0" prefWidth="50.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="48.0" prefWidth="48.0" style="-fx-background-radius: 5em; -fx-background-color: #ea89c4;">
+                        <Button fx:id="settingsButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="48.0" style="-fx-background-radius: 5em; -fx-background-color: #ea89c4;">
                            <graphic>
                               <ImageView fitHeight="39.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

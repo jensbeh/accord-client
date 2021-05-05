@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
-import de.uniks.stp.model.RootDataModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,11 +10,14 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
+import java.util.Objects;
+
 public class StageManager extends Application {
 
 
     private Stage stage;
     private LoginScreenController loginCtrl;
+    private ModelBuilder builder;
 
     @Override
     public void start(Stage stage) {
@@ -31,7 +34,8 @@ public class StageManager extends Application {
         try{
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"));
             Scene scene = new Scene(root);
-            this.loginCtrl = new LoginScreenController(root);
+            builder = new ModelBuilder();
+            this.loginCtrl = new LoginScreenController(root, builder);
             this.loginCtrl.init();
             this.stage.setTitle("Accord - Login");
             this.stage.setResizable(false);
@@ -44,16 +48,19 @@ public class StageManager extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         try {
             super.stop();
 
-            //for Test
-            String userKey = RootDataModel.getKey();
-            if (userKey != null && !userKey.isEmpty()) {
-                JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
-                System.out.println(body.getObject().getString("message"));
+            //automatic logout if application is closed
+            if (!Objects.isNull(builder.getPersonalUser())) {
+                String userKey = builder.getPersonalUser().getUserKey();
+                if (userKey != null && !userKey.isEmpty()) {
+                    JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
+                    System.out.println("Logged out");
+                }
             }
+
 
             Unirest.shutDown();
         } catch (Exception e) {
@@ -63,7 +70,11 @@ public class StageManager extends Application {
         cleanup();
     }
 
-    private static void cleanup() {
+    private void cleanup() {
         // call cascading stop
+        if (loginCtrl != null) {
+            loginCtrl.stop();
+            loginCtrl = null;
+        }
     }
 }

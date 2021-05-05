@@ -1,7 +1,6 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.model.RootDataModel;
-import de.uniks.stp.model.User;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,16 +18,17 @@ public class LoginScreenController {
     private CheckBox tempUserCheckBox;
     private Button loginButton;
     private Button signInButton;
-    private Label errorlabel;
+    private Button settingsButton;
+    private Label errorLabel;
     private String message;
     private final RestClient restClient;
-    private User user;
-    private Boolean netConnection = false;
     private Label connectionLabel;
+    private ModelBuilder builder;
 
-    public LoginScreenController(Parent root) {
+    public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
         this.root = root;
+        this.builder = builder;
     }
 
     public void init() {
@@ -38,7 +38,8 @@ public class LoginScreenController {
         this.tempUserCheckBox = (CheckBox) root.lookup("#loginAsTempUser");
         this.loginButton = (Button) root.lookup("#loginButton");
         this.signInButton = (Button) root.lookup("#signinButton");
-        this.errorlabel = (Label) root.lookup("#errorLabel");
+        this.settingsButton = (Button) root.lookup("#settingsButton");
+        this.errorLabel = (Label) root.lookup("#errorLabel");
         this.connectionLabel = (Label) root.lookup("#connectionLabel");
         this.connectionLabel.setWrapText(true);
 
@@ -62,83 +63,54 @@ public class LoginScreenController {
             System.err.println("Error while reading!");
             e.printStackTrace();
         }
-
         //Buttons
         this.loginButton.setOnAction(this::loginButtonOnClick);
         this.signInButton.setOnAction(this::signInButtonOnClick);
+        this.settingsButton.setOnAction(this::settingsButtonOnClick);
+    }
+
+    private void settingsButtonOnClick(ActionEvent actionEvent) {
     }
 
     private void signInButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-
         //check if username or password is missing
-        if (username.isEmpty() || password.isEmpty()) {
-            errorlabel.setText("Field is empty!");
-        } else {
-
-            //if remember me selected then username and password is saved in a list
-            if (rememberCheckBox.isSelected()) {
-                saveRememberMe(username, password);
+        if (!tempUserCheckBox.isSelected()) {
+            if (username.isEmpty() || password.isEmpty()) {
+                errorLabel.setText("Field is empty!");
             } else {
-                saveRememberMe("", "");
+                //if remember me selected then username and password is saved in a list
+                if (rememberCheckBox.isSelected()) {
+                    saveRememberMe(username, password);
+                } else {
+                    saveRememberMe("", "");
+                }
+                //signIn Post
+                restClient.signIn(username, password, response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        //show message on screen
+                        this.message = body.getObject().getString("message");
+                        Platform.runLater(() -> errorLabel.setText(message));
+                    } else if (status.equals("failure")) {
+                        //show message on screen
+                        this.message = body.getObject().getString("message");
+                        Platform.runLater(() -> errorLabel.setText(message));
+                    }
+                });
             }
-            //signIn Post
-            restClient.signIn(username, password, response -> {
-                netConnection = true;
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-
-                    //create new User
-                    user = new User();
-                    user.setName(username);
-                    user.setStatus(true);
-
-                    //show message on screen
-                    this.message = body.getObject().getString("message");
-                    Platform.runLater(() -> errorlabel.setText(message));
-
-                } else if (status.equals("failure")) {
-
-                    //show message on screen
-                    this.message = body.getObject().getString("message");
-                    Platform.runLater(() -> errorlabel.setText(message));
-                }
-            });
-            //login Post
-            restClient.login(username, password, response -> {
-                netConnection = true;
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                    RootDataModel.setKey(userkey); //for test
-                    user.setUserKey(userkey);
-
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorlabel.setText(message));
-                } else if (status.equals("failure")) {
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorlabel.setText(message));
-                }
-            });
-        }
-        if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
         }
     }
 
     private void loginButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-
         if (!tempUserCheckBox.isSelected()) {
             //if remember me selected then username and password is saved in a listi
             if (username.isEmpty() || password.isEmpty()) {
-                errorlabel.setText("Field is empty!");
+                errorLabel.setText("Field is empty!");
             } else {
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
@@ -147,47 +119,38 @@ public class LoginScreenController {
                 }
                 //login Post
                 restClient.login(username, password, response -> {
-                    netConnection = true;
-
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
-
                     if (status.equals("success")) {
+                        //build user with key
                         String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        RootDataModel.setKey(userkey); //for test
-
+                        builder.buildPersonalUser(username, userkey);
                         //show message on screen
                         this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> errorlabel.setText(message));
-                        Platform.runLater(() -> connectionLabel.setText(""));
+                        Platform.runLater(() -> errorLabel.setText(message));
                     } else if (status.equals("failure")) {
-
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorlabel.setText(message));
+                        Platform.runLater(() -> errorLabel.setText(message));
                     }
                 });
             }
         } else if (tempUserCheckBox.isSelected()){
+            saveRememberMe("", "");
             restClient.loginTemp(response -> {
-                netConnection = true;
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-
+                    builder.buildTempUser(username);
                     //show message on screen
                     this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorlabel.setText(message));
+                    Platform.runLater(() -> errorLabel.setText(message));
                 } else if (status.equals("failure")) {
-
                     //show message on screen
                     this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorlabel.setText(message));
+                    Platform.runLater(() -> errorLabel.setText(message));
                 }
             });
-        }
-        if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
         }
     }
 
