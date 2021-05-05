@@ -42,5 +42,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
     testImplementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
 
+    testImplementation group: 'org.mockito' , name: 'mockito-core', version: '3.5.13'
+    testImplementation 'org.testfx:testfx-junit:4.0.16-alpha'
+
     implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
 }
