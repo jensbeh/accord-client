@@ -21,7 +21,7 @@ public class StageManager extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        stage.setTitle("Accord");
+        stage.setTitle("Accord - Main");
         builder = new ModelBuilder();
         scene = new Scene(new VBox(), 900, 600);
         this.showHome();
