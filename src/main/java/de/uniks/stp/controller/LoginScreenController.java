@@ -50,12 +50,12 @@ public class LoginScreenController {
             if(f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
                 int i = 0;
-                while (scanner.hasNext()) {
+                while (scanner.hasNextLine()) {
                     if (i == 0) {
-                        usernameTextField.setText(scanner.next());
+                        usernameTextField.setText(scanner.nextLine());
                     }
                     if (i == 1) {
-                        passwordTextField.setText(scanner.next());
+                        passwordTextField.setText(scanner.nextLine());
                     }
                     i++;
                 }
@@ -129,7 +129,7 @@ public class LoginScreenController {
                         //show message on screen
                         this.message = body.getObject().getString("status");
                         Platform.runLater(() -> errorLabel.setText(message));
-                        StageManager.showHome();
+                        Platform.runLater(StageManager::showHome);
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
@@ -147,7 +147,7 @@ public class LoginScreenController {
                     //show message on screen
                     this.message = body.getObject().getString("status");
                     Platform.runLater(() -> errorLabel.setText(message));
-                    StageManager.showHome();
+                    Platform.runLater(StageManager::showHome);
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");

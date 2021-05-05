@@ -65,13 +65,15 @@ public class HomeViewController {
 
     private void showServers() {
         onlineServers.clear();
-        JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-        for (int i = 0; i < jsonResponse.length(); i++) {
-            String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-            String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-            if (!serverName.equals(builder.getPersonalUser().getName())) {
-                builder.buildServer(serverName, serverId);
-                onlineServers.add(new Server().setName(serverName).setId(serverId));
+        if (!builder.getPersonalUser().getUserKey().equals("")) {
+            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                if (!serverName.equals(builder.getPersonalUser().getName())) {
+                    builder.buildServer(serverName, serverId);
+                    onlineServers.add(new Server().setName(serverName).setId(serverId));
+                }
             }
         }
     }
@@ -101,6 +103,10 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop() {
+
     }
 
     public void setBuilder(ModelBuilder builder) {

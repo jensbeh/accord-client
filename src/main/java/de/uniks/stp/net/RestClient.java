@@ -26,6 +26,7 @@ public class RestClient {
     }
 
     public static JSONArray getServers(String userKey) {
+
         HttpResponse<JsonNode> response = Unirest.get("https://ac.uniks.de/api/servers").header("userKey", userKey).asJson();
         return response.getBody().getObject().getJSONArray("data");
     }
