@@ -9,6 +9,7 @@ import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventTarget;
@@ -89,57 +90,65 @@ public class HomeViewController {
 
 
     private void login() {
-        try {
-            String userKey = RestClient.login("Peter Lustig", "1234");
-            builder.buildPersonalUser("Peter Lustig", userKey);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Platform.runLater(() -> {
+            try {
+                String userKey = RestClient.login("Peter Lustig", "1234");
+                builder.buildPersonalUser("Peter Lustig", userKey);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void showServers() {
-        try {
-            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                Parent root = FXMLLoader.load(StageManager.class.getResource("ServerProfileView.fxml"));
-                ServerProfileController serverProfileController = new ServerProfileController(root, builder);
-                serverProfileController.init();
-                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                builder.buildServer(serverName, serverId);
-                serverProfileController.setServerName(serverName);
-                this.serverBox.getChildren().add(root);
+        Platform.runLater(() -> {
+            try {
+                JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
+                for (int i = 0; i < jsonResponse.length(); i++) {
+                    Parent root = FXMLLoader.load(StageManager.class.getResource("ServerProfileView.fxml"));
+                    ServerProfileController serverProfileController = new ServerProfileController(root, builder);
+                    serverProfileController.init();
+                    String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                    String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                    builder.buildServer(serverName, serverId);
+                    serverProfileController.setServerName(serverName);
+                    this.serverBox.getChildren().add(root);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     private void showCurrentUser() {
-        try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
-            UserProfileController userProfileController = new UserProfileController(root, builder);
-            userProfileController.init();
-            User currentUser = builder.getPersonalUser();
-            userProfileController.setUserName(currentUser.getName());
-            userProfileController.setOnline();
-            this.currentUserBox.getChildren().add(root);
+        Platform.runLater(() ->{
+            try {
+                Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
+                UserProfileController userProfileController = new UserProfileController(root, builder);
+                userProfileController.init();
+                User currentUser = builder.getPersonalUser();
+                userProfileController.setUserName(currentUser.getName());
+                userProfileController.setOnline();
+                this.currentUserBox.getChildren().add(root);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void showUser() {
         onlineUsers.clear();
-        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
-        for (int i = 0; i < jsonResponse.length(); i++) {
-            String userName = jsonResponse.getJSONObject(i).get("name").toString();
-            if (!userName.equals(builder.getPersonalUser().getName())) {
-                builder.buildUser(userName);
-                onlineUsers.add(new User().setName(userName).setStatus(true));
+        Platform.runLater(() -> {
+            JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String userName = jsonResponse.getJSONObject(i).get("name").toString();
+                if (!userName.equals(builder.getPersonalUser().getName())) {
+                    builder.buildUser(userName);
+                    onlineUsers.add(new User().setName(userName).setStatus(true));
+                }
             }
-        }
+        });
     }
 
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
