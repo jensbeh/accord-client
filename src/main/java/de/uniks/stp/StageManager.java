@@ -39,7 +39,6 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
             HomeViewController homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
-            homeViewController.showHome();
             this.stage.setScene(scene);
             this.stage.show();
         } catch (IOException e) {
