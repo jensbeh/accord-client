@@ -39,6 +39,7 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
                 circle.setFill(Paint.valueOf("#13d86b"));
                 name.setText("   " + item.getName());
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
+                name.setStyle("-fx-font-size: 18");
                 cell.setStyle("-fx-background-color: #23272a;");
                 cell.getChildren().addAll(circle, name);
             }

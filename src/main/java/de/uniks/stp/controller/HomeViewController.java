@@ -48,6 +48,7 @@ public class HomeViewController {
     private ObservableList<User> onlineUsers;
     private HBox messageBar;
 
+
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
@@ -62,6 +63,7 @@ public class HomeViewController {
         privateChatScrollpane = (ScrollPane) view.lookup("#privateChatScrollpane");
 
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         messages = (VBox) view.lookup("#messages");
@@ -101,6 +103,16 @@ public class HomeViewController {
     }
 
     private void showServers() {
+        onlineServers.clear();
+        if (!builder.getPersonalUser().getUserKey().equals("")) {
+            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                if (!serverName.equals(builder.getPersonalUser().getName())) {
+                    builder.buildServer(serverName, serverId);
+                    onlineServers.add(new Server().setName(serverName).setId(serverId));
+                }
         Platform.runLater(() -> {
             try {
                 JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
@@ -117,7 +129,20 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
         });
+    }
+
+    private void showUser() {
+        onlineUsers.clear();
+        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
+        for (int i = 0; i < jsonResponse.length(); i++) {
+            String userName = jsonResponse.getJSONObject(i).get("name").toString();
+            if (!userName.equals(builder.getPersonalUser().getName())) {
+                builder.buildUser(userName);
+                onlineUsers.add(new User().setName(userName).setStatus(true));
+            }
+        }
     }
 
     private void showCurrentUser() {

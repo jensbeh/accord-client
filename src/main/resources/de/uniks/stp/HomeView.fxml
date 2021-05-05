@@ -55,16 +55,16 @@
                   <Insets bottom="15.0" />
                </padding>
             </VBox>
-            <VBox alignment="CENTER">
-               <children>
-                  <ScrollPane id="scrollPaneServerBox" hbarPolicy="NEVER" minHeight="265.0" pannable="true" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
-                     <content>
-                        <VBox id="serverBox" prefWidth="100.0" spacing="8.0" style="-fx-background-color: #23272a;" />
-                     </content>
-                  </ScrollPane>
-               </children>
-            </VBox>
-            <VBox alignment="CENTER" maxHeight="200.0" minHeight="200.0" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
+            <ScrollPane id="scrollPaneServerBox" hbarPolicy="NEVER" style="-fx-background-color: #23272a; -fx-background: #23272a;" vbarPolicy="NEVER">
+               <content>
+                  <VBox id="serverBox" alignment="CENTER" spacing="8.0" style="-fx-background-color: #23272a;">
+                     <children>
+                        <ListView id="serverList" prefHeight="661.0" prefWidth="102.0" style="-fx-background-color: #23272a;" stylesheets="@styles/ListViewStyle.css" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <VBox alignment="CENTER" prefWidth="100.0" spacing="15.0">
                <children>
                   <StackPane style="-fx-background-color: transparent;">
                      <children>
