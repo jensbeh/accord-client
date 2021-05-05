@@ -47,7 +47,7 @@
             <VBox prefHeight="195.0" prefWidth="77.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <VBox prefHeight="278.0" prefWidth="299.0">
+      <VBox alignment="TOP_CENTER" prefHeight="278.0" prefWidth="299.0">
          <children>
             <HBox alignment="CENTER" prefHeight="59.0" prefWidth="395.0">
                <children>
@@ -93,6 +93,7 @@
                   </HBox>
                </children>
             </HBox>
+            <Label fx:id="connectionLabel" prefHeight="44.0" prefWidth="243.0" textFill="RED" />
             <HBox alignment="CENTER" prefHeight="76.0" prefWidth="395.0" spacing="40.0">
                <children>
                   <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="Log in" textFill="WHITE">

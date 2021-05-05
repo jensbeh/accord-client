@@ -1,11 +1,13 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.LoginScreenController;
+import de.uniks.stp.model.RootDataModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
 public class StageManager extends Application {
@@ -45,12 +47,19 @@ public class StageManager extends Application {
     public void stop() throws Exception {
         try {
             super.stop();
+
+            //for Test
+            String userKey = RootDataModel.getKey();
+            if (userKey != null && !userKey.isEmpty()) {
+                JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
+                System.out.println(body.getObject().getString("message"));
+            }
+
             Unirest.shutDown();
         } catch (Exception e) {
             System.err.println("Error while shutdown");
             e.printStackTrace();
         }
-
         cleanup();
     }
 
