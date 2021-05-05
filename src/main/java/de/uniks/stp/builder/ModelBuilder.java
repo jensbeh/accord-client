@@ -20,6 +20,17 @@ public class ModelBuilder {
         users.add(new User().setName(name));
     }
 
+    public User buildUser(String name, String id, String online) {
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setId(id);
+        if (online.equals("true")) {
+            newUser.setStatus(true);
+        }
+        users.add(newUser);
+        return newUser;
+    }
+
     public void buildServer(String name, String id) {
         servers.add(new Server().setName(name).setId(id));
     }

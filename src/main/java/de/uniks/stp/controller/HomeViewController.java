@@ -62,6 +62,7 @@ public class HomeViewController {
             createServerController.init();
             stage = new Stage();
             createServerController.showCreateServerView(this::onServerCreated);
+            stage.setTitle("Create a new Server");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -73,16 +74,19 @@ public class HomeViewController {
         stage.close();
         List<Server> serverList = this.builder.getServer();
         Server newServer = serverList.get(serverList.size()-1);
-        Platform.runLater(() -> {showServerView(newServer);});
+        showServerView(newServer);
+
     }
 
     public void showServerView(Server server) {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
             ServerViewController serverController = new ServerViewController(root, builder, server);
-
-            serverController.init();
-            this.root.setCenter(serverController.showServer());
+            serverController.init();serverController.showServerChat();
+            this.root.setCenter(serverController.getRoot());
+            // show online users and set it in root (BorderPain)
+            userBox.getChildren().clear();
+            serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
         } catch (IOException e) {
             e.printStackTrace();
         }

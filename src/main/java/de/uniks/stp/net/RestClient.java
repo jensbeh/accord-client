@@ -21,11 +21,24 @@ public class RestClient {
         return response.getBody().getObject().getJSONArray("data");
     }
 
-    public static void postServer(String userKey, String serverName, Callback<JsonNode> callback) {
+//    public static void postServer(String userKey, String serverName, Callback<JsonNode> callback) {
+//        JSONObject jsonBody = new JSONObject();
+//        jsonBody.put("name", serverName);
+//        HttpRequest<?> postRequest = Unirest.post("https://ac.uniks.de/api/servers").body(jsonBody).header("userKey",userKey);
+//        sendRequest(postRequest, callback);
+//    }
+
+    public static void getServerUsers(String serverId, String userKey, Callback<JsonNode> callback){
+        String url = "https://ac.uniks.de/api/servers/" + serverId;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey",userKey);
+        sendRequest(postRequest, callback);
+    }
+
+    public static JsonNode postServer(String userKey, String serverName) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", serverName);
-        HttpRequest<?> postRequest = Unirest.post("https://ac.uniks.de/api/servers").body(jsonBody).header("userKey",userKey);
-        sendRequest(postRequest, callback);
+        HttpResponse<JsonNode> response = Unirest.post("https://ac.uniks.de/api/servers").body(jsonBody).header("userKey",userKey).asJson();
+        return response.getBody();
     }
 
     public static JSONArray getUsers(String userKey) {

@@ -65,9 +65,10 @@
                <children>
                   <StackPane style="-fx-background-color: transparent;">
                      <children>
-                        <Circle id="addServer" accessibleRole="BUTTON" fill="#a4a4a4" radius="34.0" stroke="#fffdfd" strokeType="INSIDE" strokeWidth="0.0" />
+                        <Circle accessibleRole="BUTTON" fill="#a4a4a4" radius="34.0" stroke="#fffdfd" strokeType="INSIDE" strokeWidth="0.0" />
                         <Line endX="20.0" stroke="#94d37e" strokeWidth="4.0" />
                         <Line startY="20.0" stroke="#94d37e" strokeWidth="4.0" />
+                        <Circle id="addServer" fill="#a4a4a4" opacity="0.0" radius="34.0" stroke="#fffdfd" strokeType="INSIDE" strokeWidth="0.0" />
                      </children>
                   </StackPane>
                   <Button mnemonicParsing="false" prefHeight="36.0" prefWidth="33.0" style="-fx-background-color: #e89595; -fx-background-radius: 100;" text="⚙" textFill="WHITE" textOverrun="CLIP" wrapText="true">

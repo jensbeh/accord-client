@@ -2,16 +2,20 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import kong.unirest.JsonNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class ServerViewController {
 
@@ -45,15 +49,33 @@ public class ServerViewController {
 
     }
 
-    public HBox showServer() {
-        showOnlineUsers();
+    public void showServerChat() {
         showText();
         showChannels();
-        return root;
     }
 
-    public void showOnlineUsers() {
-        System.out.println("Test");
+    public HBox getRoot() {
+        return root;
+    }
+    // change to ListView after merge
+    public void showOnlineUsers( String userKey) {
+        ArrayList<User> users = null;
+        RestClient.getServerUsers(server.getId(), userKey, response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray members = body.getObject().getJSONArray("members");
+                for(int i = 0; i < members.length(); i++) {
+                    JSONObject member = members.getJSONObject(i);
+                    String id = member.getString("id");
+                    String name = member.getString("name");
+                    String online = member.getString("online");
+                    builder.buildUser(name, id, online);
+                }
+            } else if (status.equals("failure")) {
+                System.out.println(body.getObject().getString("message"));
+            }
+        });
     }
 
     public void showText() {

@@ -7,21 +7,21 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="createServerBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="89.0" prefWidth="600.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="createServerBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="121.0" prefWidth="417.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label text="Create Server" textFill="#fcfcfc">
+      <Label id="errorLabel" prefHeight="22.0" prefWidth="377.0" textFill="#fc0000" VBox.vgrow="ALWAYS">
          <font>
-            <Font size="17.0" />
+            <Font size="14.0" />
          </font>
       </Label>
-      <TextField id="serverName" promptText="Server Name" />
-      <Button id="createServer" mnemonicParsing="false" text="Create">
+      <TextField id="serverName" promptText="Server Name">
          <VBox.margin>
-            <Insets top="10.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" />
+         </VBox.margin></TextField>
+      <Button id="createServer" mnemonicParsing="false" text="OK">
+         <VBox.margin>
+            <Insets bottom="10.0" />
          </VBox.margin>
       </Button>
    </children>
-   <padding>
-      <Insets bottom="10.0" left="8.0" right="8.0" />
-   </padding>
 </VBox>
