@@ -105,4 +105,8 @@ public class StageManager extends Application {
             homeViewController = null;
         }
     }
+
+    public ModelBuilder getBuilder() {
+        return builder;
+    }
 }
