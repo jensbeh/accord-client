@@ -124,7 +124,7 @@
                <children>
                   <VBox id="messages" prefHeight="540.0" prefWidth="451.0">
                      <children>
-                        <fx:include source="controller/Message.fxml" />
+                        <fx:include source="Message.fxml" />
                      </children>
                   </VBox>
                   <HBox id="messagebar" alignment="TOP_RIGHT" opacity="0.0" prefHeight="25.0" prefWidth="378.0" spacing="10.0">

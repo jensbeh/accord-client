@@ -83,66 +83,9 @@ public class HomeViewController {
 
         onlineUsers = FXCollections.observableArrayList();
         this.onlineUsersList.setItems(onlineUsers);
-
-        login();
-        showServers();
+        
         showCurrentUser();
         showUser();
-    }
-
-
-    private void login() {
-        Platform.runLater(() -> {
-            try {
-                String userKey = RestClient.login("Peter Lustig", "1234");
-                builder.buildPersonalUser("Peter Lustig", userKey);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private void showServers() {
-        onlineServers.clear();
-        if (!builder.getPersonalUser().getUserKey().equals("")) {
-            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (!serverName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildServer(serverName, serverId);
-                    onlineServers.add(new Server().setName(serverName).setId(serverId));
-                }
-        Platform.runLater(() -> {
-            try {
-                JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-                for (int i = 0; i < jsonResponse.length(); i++) {
-                    Parent root = FXMLLoader.load(StageManager.class.getResource("ServerProfileView.fxml"));
-                    ServerProfileController serverProfileController = new ServerProfileController(root, builder);
-                    serverProfileController.init();
-                    String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                    String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                    builder.buildServer(serverName, serverId);
-                    serverProfileController.setServerName(serverName);
-                    this.serverBox.getChildren().add(root);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        });
-    }
-
-    private void showUser() {
-        onlineUsers.clear();
-        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
-        for (int i = 0; i < jsonResponse.length(); i++) {
-            String userName = jsonResponse.getJSONObject(i).get("name").toString();
-            if (!userName.equals(builder.getPersonalUser().getName())) {
-                builder.buildUser(userName);
-                onlineUsers.add(new User().setName(userName).setStatus(true));
-            }
-        }
     }
 
     private void showCurrentUser() {
@@ -188,7 +131,7 @@ public class HomeViewController {
         messageBar.setOpacity(1);
         for (Message msg : this.selectedChat.getMessage()) {
             try {
-                Parent view = FXMLLoader.load(StageManager.class.getResource("controller/Message.fxml"));
+                Parent view = FXMLLoader.load(StageManager.class.getResource("Message.fxml"));
                 MessageController messageController = new MessageController(msg, view, builder);
                 messageController.init();
 
@@ -201,7 +144,7 @@ public class HomeViewController {
     }
 
     private void ononlineUsersListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2) {
+        if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size()!=0) {
             boolean flag = true;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             for (Channel channel : privateChats) {
@@ -216,5 +159,8 @@ public class HomeViewController {
             }
             MessageViews();
         }
+    }
+
+    public void stop() {
     }
 }
