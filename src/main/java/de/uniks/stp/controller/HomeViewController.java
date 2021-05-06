@@ -56,9 +56,9 @@ public class HomeViewController {
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         privateChatScrollpane = (ScrollPane) view.lookup("#privateChatScrollpane");
+        scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
 
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-        scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         messages = (VBox) view.lookup("#messages");
@@ -68,14 +68,12 @@ public class HomeViewController {
         privateChatList = (ListView<Channel>) privateChatScrollpane.getContent().lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
-
         privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
 
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
-
         onlineUsers = FXCollections.observableArrayList();
         this.onlineUsersList.setItems(onlineUsers);
         
@@ -157,5 +155,7 @@ public class HomeViewController {
     }
 
     public void stop() {
+        this.onlineUsersList.setOnMouseReleased(null);
+        this.privateChatList.setOnMouseReleased(null);
     }
 }
