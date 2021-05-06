@@ -81,21 +81,21 @@ public class HomeViewController {
         showUser();
     }
 
-    private void showCurrentUser() {
-        Platform.runLater(() ->{
-            try {
-                Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
-                UserProfileController userProfileController = new UserProfileController(root, builder);
-                userProfileController.init();
-                User currentUser = builder.getPersonalUser();
-                userProfileController.setUserName(currentUser.getName());
-                userProfileController.setOnline();
-                this.currentUserBox.getChildren().add(root);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    private void showServers() {
+        onlineServers.clear();
+        if (!builder.getPersonalUser().getUserKey().equals("")) {
+            restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
+                JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+                for (int i = 0; i < jsonResponse.length(); i++) {
+                    String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                    String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                    if (!serverName.equals(builder.getPersonalUser().getName())) {
+                        builder.buildServer(serverName, serverId);
+                        onlineServers.add(new Server().setName(serverName).setId(serverId));
+                    }
+                }
+            });
+        }
     }
 
     private void showUser() {
