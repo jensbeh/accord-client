@@ -1,11 +1,13 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateChannelListCellFactory;
+import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -41,6 +43,8 @@ public class HomeViewController {
     private ListView<User> onlineUsersList;
     private ObservableList<User> onlineUsers;
     private HBox messageBar;
+    private ListView<Server> serverList;
+    private ObservableList<Server> onlineServers;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -76,7 +80,13 @@ public class HomeViewController {
         this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
         onlineUsers = FXCollections.observableArrayList();
         this.onlineUsersList.setItems(onlineUsers);
-        
+
+        serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
+        serverList.setCellFactory(new AlternateServerListCellFactory());
+        onlineServers = FXCollections.observableArrayList();
+        this.serverList.setItems(onlineServers);
+
+        showServers();
         showCurrentUser();
         showUser();
     }
@@ -112,6 +122,21 @@ public class HomeViewController {
         });
     }
 
+    private void showCurrentUser() {
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
+            UserProfileController userProfileController = new UserProfileController(root, builder);
+            userProfileController.init();
+            User currentUser = builder.getPersonalUser();
+            userProfileController.setUserName(currentUser.getName());
+            userProfileController.setOnline();
+            this.currentUserBox.getChildren().add(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
@@ -137,7 +162,7 @@ public class HomeViewController {
     }
 
     private void ononlineUsersListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size()!=0) {
+        if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size() != 0) {
             boolean flag = true;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             for (Channel channel : privateChats) {
@@ -157,5 +182,9 @@ public class HomeViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
+    }
+
+    public void setBuilder(ModelBuilder builder) {
+        this.builder = builder;
     }
 }
