@@ -35,6 +35,7 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
+                cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
                 circle.setFill(Paint.valueOf("#13d86b"));
                 name.setText("   " + item.getName());

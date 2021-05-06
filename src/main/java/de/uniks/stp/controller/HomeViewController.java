@@ -1,6 +1,5 @@
 package de.uniks.stp.controller;
 
-import com.sun.javafx.scene.control.LabeledText;
 import de.uniks.stp.AlternateChannelListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
@@ -12,25 +11,20 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import org.json.JSONArray;
 
-
 import java.io.IOException;
-import java.security.cert.PolicyNode;
 
 public class HomeViewController {
+    private final RestClient restClient;
     private BorderPane root;
     private ScrollPane scrollPaneUserBox;
     private ScrollPane scrollPaneServerBox;
@@ -52,6 +46,7 @@ public class HomeViewController {
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
+        this.restClient = new RestClient();
     }
 
     public void init() {
@@ -107,8 +102,8 @@ public class HomeViewController {
 
     private void showUser() {
         onlineUsers.clear();
-        Platform.runLater(() -> {
-            JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
+        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {

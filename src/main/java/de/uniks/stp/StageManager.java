@@ -31,11 +31,11 @@ public class StageManager extends Application {
         primaryStage.show();
     }
 
-    public void showLoginScreen() {
+    public static void showLoginScreen() {
         cleanup();
 
         //show login screen
-        try{
+        try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"));
             Scene scene = new Scene(root);
             builder = new ModelBuilder();
@@ -45,7 +45,7 @@ public class StageManager extends Application {
             stage.setResizable(false);
             stage.setScene(scene);
             stage.centerOnScreen();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Error on showing LoginScreen");
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ public class StageManager extends Application {
     public static void showHome() {
         cleanup();
         try {
-            Parent root  = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
             Scene scene = new Scene(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
@@ -93,7 +93,6 @@ public class StageManager extends Application {
     }
 
 
-
     private static void cleanup() {
         // call cascading stop
         if (loginCtrl != null) {
@@ -108,5 +107,9 @@ public class StageManager extends Application {
 
     public ModelBuilder getBuilder() {
         return builder;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
     }
 }
