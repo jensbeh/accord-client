@@ -1,9 +1,7 @@
 package de.uniks.stp.net;
 
-import kong.unirest.Callback;
-import kong.unirest.HttpRequest;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class RestClient {
@@ -25,6 +23,17 @@ public class RestClient {
     public void loginTemp(Callback<JsonNode> callback) {
         HttpRequest<?> request = Unirest.post("https://ac.uniks.de/api/users/temp");
         sendRequest(request, callback);
+    }
+
+    public static JSONArray getServers(String userKey) {
+
+        HttpResponse<JsonNode> response = Unirest.get("https://ac.uniks.de/api/servers").header("userKey", userKey).asJson();
+        return response.getBody().getObject().getJSONArray("data");
+    }
+
+    public static JSONArray getUsers(String userKey) {
+        HttpResponse<JsonNode> response = Unirest.get("https://ac.uniks.de/api/users").header("userKey", userKey).asJson();
+        return response.getBody().getObject().getJSONArray("data");
     }
 
     private void sendRequest (HttpRequest<?> req, Callback<JsonNode> callback) {

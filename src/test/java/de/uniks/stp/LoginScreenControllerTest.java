@@ -18,6 +18,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
 import java.util.Scanner;
@@ -64,7 +65,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#loginButton");
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        WaitForAsyncUtils.waitForFxEvents();
 
         restMock.login("bla", "fasel", response -> {});
         when(res.getBody()).thenReturn(new JsonNode("{}"));

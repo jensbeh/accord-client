@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -49,12 +50,12 @@ public class LoginScreenController {
             if(f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
                 int i = 0;
-                while (scanner.hasNext()) {
+                while (scanner.hasNextLine()) {
                     if (i == 0) {
-                        usernameTextField.setText(scanner.next());
+                        usernameTextField.setText(scanner.nextLine());
                     }
                     if (i == 1) {
-                        passwordTextField.setText(scanner.next());
+                        passwordTextField.setText(scanner.nextLine());
                     }
                     i++;
                 }
@@ -70,6 +71,7 @@ public class LoginScreenController {
     }
 
     private void settingsButtonOnClick(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 
     private void signInButtonOnClick(ActionEvent actionEvent) {
@@ -128,6 +130,7 @@ public class LoginScreenController {
                         //show message on screen
                         this.message = body.getObject().getString("status");
                         Platform.runLater(() -> errorLabel.setText(message));
+                        Platform.runLater(StageManager::showHome);
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
@@ -145,6 +148,7 @@ public class LoginScreenController {
                     //show message on screen
                     this.message = body.getObject().getString("status");
                     Platform.runLater(() -> errorLabel.setText(message));
+                    Platform.runLater(StageManager::showHome);
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");
@@ -157,6 +161,7 @@ public class LoginScreenController {
     public void stop() {
         this.signInButton.setOnAction(null);
         this.loginButton.setOnAction(null);
+        this.settingsButton.setOnAction(null);
     }
 
     public void saveRememberMe(String username, String password) {
