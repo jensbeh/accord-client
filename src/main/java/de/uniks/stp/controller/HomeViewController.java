@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import java.io.IOException;
 
 public class HomeViewController {
+    private final RestClient restClient;
     private BorderPane root;
     private ScrollPane scrollPaneUserBox;
     private ScrollPane scrollPaneServerBox;
@@ -42,6 +43,7 @@ public class HomeViewController {
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
+        this.restClient = new RestClient();
     }
 
     public void init() {
@@ -73,28 +75,32 @@ public class HomeViewController {
     private void showServers() {
         onlineServers.clear();
         if (!builder.getPersonalUser().getUserKey().equals("")) {
-            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (!serverName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildServer(serverName, serverId);
-                    onlineServers.add(new Server().setName(serverName).setId(serverId));
+            restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
+                JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+                for (int i = 0; i < jsonResponse.length(); i++) {
+                    String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                    String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                    if (!serverName.equals(builder.getPersonalUser().getName())) {
+                        builder.buildServer(serverName, serverId);
+                        onlineServers.add(new Server().setName(serverName).setId(serverId));
+                    }
                 }
-            }
+            });
         }
     }
 
     private void showUser() {
         onlineUsers.clear();
-        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
-        for (int i = 0; i < jsonResponse.length(); i++) {
-            String userName = jsonResponse.getJSONObject(i).get("name").toString();
-            if (!userName.equals(builder.getPersonalUser().getName())) {
-                builder.buildUser(userName);
-                onlineUsers.add(new User().setName(userName).setStatus(true));
+        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String userName = jsonResponse.getJSONObject(i).get("name").toString();
+                if (!userName.equals(builder.getPersonalUser().getName())) {
+                    builder.buildUser(userName);
+                    onlineUsers.add(new User().setName(userName).setStatus(true));
+                }
             }
-        }
+        });
     }
 
     private void showCurrentUser() {
