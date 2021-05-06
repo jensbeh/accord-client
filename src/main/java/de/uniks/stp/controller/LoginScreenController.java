@@ -71,6 +71,7 @@ public class LoginScreenController {
     }
 
     private void settingsButtonOnClick(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 
     private void signInButtonOnClick(ActionEvent actionEvent) {
@@ -160,6 +161,7 @@ public class LoginScreenController {
     public void stop() {
         this.signInButton.setOnAction(null);
         this.loginButton.setOnAction(null);
+        this.settingsButton.setOnAction(null);
     }
 
     public void saveRememberMe(String username, String password) {

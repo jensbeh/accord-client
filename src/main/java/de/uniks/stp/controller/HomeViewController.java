@@ -9,8 +9,10 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -34,6 +36,7 @@ public class HomeViewController {
     private VBox serverBox;
     private ModelBuilder builder;
     private Parent view;
+    private Button settingsButton;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -47,6 +50,8 @@ public class HomeViewController {
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
+        settingsButton = (Button) view.lookup("#settingsButton");
+
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverList.setCellFactory(new AlternateServerListCellFactory());
@@ -57,6 +62,8 @@ public class HomeViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         onlineUsers = FXCollections.observableArrayList();
         this.onlineUsersList.setItems(onlineUsers);
+
+        this.settingsButton.setOnAction(this::settingsButtonOnClicked);
 
         showServers();
         showCurrentUser();
@@ -106,10 +113,14 @@ public class HomeViewController {
     }
 
     public void stop() {
-
+        this.settingsButton.setOnAction(null);
     }
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
+    }
+
+    private void settingsButtonOnClicked(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 }
