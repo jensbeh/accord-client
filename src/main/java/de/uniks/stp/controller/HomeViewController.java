@@ -13,8 +13,10 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -45,6 +47,7 @@ public class HomeViewController {
     private HBox messageBar;
     private ListView<Server> serverList;
     private ObservableList<Server> onlineServers;
+    private Button settingsButton;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -65,6 +68,7 @@ public class HomeViewController {
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
+        settingsButton = (Button) view.lookup("#settingsButton");
         messages = (VBox) view.lookup("#messages");
         messageBar = (HBox) view.lookup("#messagebar");
         messageBar.setOpacity(0);
@@ -85,6 +89,8 @@ public class HomeViewController {
         serverList.setCellFactory(new AlternateServerListCellFactory());
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
+
+        this.settingsButton.setOnAction(this::settingsButtonOnClicked);
 
         showServers();
         showCurrentUser();
@@ -182,9 +188,14 @@ public class HomeViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
+        this.settingsButton.setOnAction(null);
     }
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
+    }
+
+    private void settingsButtonOnClicked(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 }

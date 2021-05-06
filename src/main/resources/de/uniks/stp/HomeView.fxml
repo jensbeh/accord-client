@@ -73,7 +73,7 @@
                         <Line startY="20.0" stroke="#94d37e" strokeWidth="4.0" />
                      </children>
                   </StackPane>
-                  <Button mnemonicParsing="false" prefHeight="36.0" prefWidth="33.0" style="-fx-background-color: #e89595; -fx-background-radius: 100;" text="⚙" textFill="WHITE" textOverrun="CLIP" wrapText="true">
+                  <Button id="settingsButton" mnemonicParsing="false" prefHeight="36.0" prefWidth="33.0" style="-fx-background-color: #e89595; -fx-background-radius: 100;" text="⚙" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                      <font>
                         <Font name="System Bold" size="19.0" />
                      </font></Button>
