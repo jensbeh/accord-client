@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ModelBuilder {
-    private ArrayList<User> users = new ArrayList();
+    private ArrayList<User> onlineUsers = new ArrayList();
     private ArrayList<Server> servers = new ArrayList();
     private User personalUser;
 
@@ -17,7 +17,12 @@ public class ModelBuilder {
     }
 
     public void buildUser(String name) {
-        users.add(new User().setName(name));
+        User user = new User().setName(name);
+        onlineUsers.add(user);
+    }
+
+    public void buildTempUser(String name) {
+        personalUser = new User().setName(name).setUserKey("");
     }
 
     public User buildUser(String name, String id, String online) {
@@ -27,7 +32,7 @@ public class ModelBuilder {
         if (online.equals("true")) {
             newUser.setStatus(true);
         }
-        users.add(newUser);
+        onlineUsers.add(newUser);
         return newUser;
     }
 
@@ -48,5 +53,4 @@ public class ModelBuilder {
     public User getPersonalUser() {
         return personalUser;
     }
-
 }

@@ -1,13 +1,19 @@
 package de.uniks.stp.controller;
 
+import de.uniks.stp.AlternateServerListCellFactory;
+import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -19,6 +25,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -28,6 +35,11 @@ public class HomeViewController {
     private BorderPane root;
     private ScrollPane scrollPaneUserBox;
     private ScrollPane scrollPaneServerBox;
+    private ListView<User> onlineUsersList;
+    private ObservableList<User> onlineUsers;
+    private ListView<Server> serverList;
+    private ObservableList<Server> onlineServers;
+
     private VBox userBox;
     private VBox currentUserBox;
     private VBox serverBox;
@@ -36,6 +48,8 @@ public class HomeViewController {
     private Circle addServer;
     private Stage stage;
     private HBox viewBox;
+    private Button settingsButton;
+
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -49,9 +63,27 @@ public class HomeViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
+        settingsButton = (Button) view.lookup("#settingsButton");
+
+
+        serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
+        serverList.setCellFactory(new AlternateServerListCellFactory());
+        onlineServers = FXCollections.observableArrayList();
+        this.serverList.setItems(onlineServers);
+
+        onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
+        onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        onlineUsers = FXCollections.observableArrayList();
+        this.onlineUsersList.setItems(onlineUsers);
         viewBox = (HBox) view.lookup("#viewBox");
         addServer = (Circle) view.lookup("#addServer");
         addServer.setOnMouseClicked(this::onshowCreateServer);
+
+        this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+
+        showServers();
+        showCurrentUser();
+        showUser();
     }
 
     private void onshowCreateServer(MouseEvent mouseEvent) {
@@ -92,37 +124,30 @@ public class HomeViewController {
         }
     }
 
-    public void showHome() {
-        login();
-        showServers();
-        showCurrentUser();
-        showUser();
-    }
-
-    private void login() {
-        try {
-            String userKey = RestClient.login("Peter Lustig", "1234");
-            builder.buildPersonalUser("Peter Lustig", userKey);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void showServers() {
+        onlineServers.clear();
+        if (!builder.getPersonalUser().getUserKey().equals("")) {
+            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                if (!serverName.equals(builder.getPersonalUser().getName())) {
+                    builder.buildServer(serverName, serverId);
+                    onlineServers.add(new Server().setName(serverName).setId(serverId));
+                }
+            }
         }
     }
 
-    private void showServers() {
-        try {
-            JSONArray jsonResponse = RestClient.getServers(builder.getPersonalUser().getUserKey());
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                Parent root = FXMLLoader.load(StageManager.class.getResource("ServerProfileView.fxml"));
-                ServerProfileController serverProfileController = new ServerProfileController(root, builder);
-                serverProfileController.init();
-                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                builder.buildServer(serverName, serverId);
-                serverProfileController.setServerName(serverName);
-                this.serverBox.getChildren().add(root);
+    private void showUser() {
+        onlineUsers.clear();
+        JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
+        for (int i = 0; i < jsonResponse.length(); i++) {
+            String userName = jsonResponse.getJSONObject(i).get("name").toString();
+            if (!userName.equals(builder.getPersonalUser().getName())) {
+                builder.buildUser(userName);
+                onlineUsers.add(new User().setName(userName).setStatus(true));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -141,27 +166,15 @@ public class HomeViewController {
         }
     }
 
-    private void showUser() {
-        try {
-            JSONArray jsonResponse = RestClient.getUsers(builder.getPersonalUser().getUserKey());
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                String userName = jsonResponse.getJSONObject(i).get("name").toString();
-                if (!userName.equals(builder.getPersonalUser().getName())) {
-                    Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
-                    UserProfileController userProfileController = new UserProfileController(root, builder);
-                    userProfileController.init();
-                    builder.buildUser(userName);
-                    userProfileController.setUserName(userName);
-                    userProfileController.setOnline();
-                    this.userBox.getChildren().add(root);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void stop() {
+        this.settingsButton.setOnAction(null);
     }
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
+    }
+
+    private void settingsButtonOnClicked(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 }
