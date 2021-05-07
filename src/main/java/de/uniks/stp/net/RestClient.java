@@ -34,6 +34,19 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void getServerUsers(String serverId, String userKey, Callback<JsonNode> callback){
+        String url = "https://ac.uniks.de/api/servers/" + serverId;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey",userKey);
+        sendRequest(postRequest, callback);
+    }
+
+    public JsonNode postServer(String userKey, String serverName) {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("name", serverName);
+        HttpResponse<JsonNode> response = Unirest.post("https://ac.uniks.de/api/servers").body(jsonBody).header("userKey",userKey).asJson();
+        return response.getBody();
+    }
+
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
         req.asJsonAsync(callback);
     }
