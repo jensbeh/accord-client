@@ -61,7 +61,10 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(1000);
+        Assert.assertEquals("Accord - Main", stage.getTitle());
         clickOn("#logoutButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("Accord - Login", stage.getTitle());
 
         restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {});
         when(res.getBody()).thenReturn(new JsonNode("{}"));
