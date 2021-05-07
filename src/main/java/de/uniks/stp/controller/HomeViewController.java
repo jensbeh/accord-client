@@ -10,7 +10,6 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,7 +31,6 @@ public class HomeViewController {
     private BorderPane root;
     private ScrollPane scrollPaneUserBox;
     private ScrollPane scrollPaneServerBox;
-    private ScrollPane privateChatScrollpane;
     private VBox userBox;
     private VBox currentUserBox;
     private VBox serverBox;
@@ -62,7 +60,6 @@ public class HomeViewController {
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        privateChatScrollpane = (ScrollPane) view.lookup("#privateChatScrollpane");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
 
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
@@ -73,7 +70,7 @@ public class HomeViewController {
         messageBar = (HBox) view.lookup("#messagebar");
         messageBar.setOpacity(0);
 
-        privateChatList = (ListView<Channel>) privateChatScrollpane.getContent().lookup("#privateChatList");
+        privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
