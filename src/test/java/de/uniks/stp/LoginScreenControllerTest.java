@@ -220,7 +220,6 @@ public class LoginScreenControllerTest extends ApplicationTest {
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#loginButton");
-        Label errorLabel = lookup("#errorLabel").query();
         Thread.sleep(500);
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
