@@ -261,9 +261,11 @@ public class HomeViewController {
     }
 
     public void stop() {
+        this.addServer.setOnMouseClicked(null);
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
+        this.builder.stop();
     }
 
     public void setBuilder(ModelBuilder builder) {

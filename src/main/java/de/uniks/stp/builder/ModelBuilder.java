@@ -113,5 +113,12 @@ public class ModelBuilder {
         return true;
     }
 
+    public void stop() {
+        for (PropertyChangeListener listener : listeners.getPropertyChangeListeners()) {
+            this.listeners.removePropertyChangeListener(listener);
+        }
+        this.listeners = null;
+    }
+
 
 }
