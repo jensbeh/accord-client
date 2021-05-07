@@ -113,7 +113,7 @@ public class LoginScreenController {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
         if (!tempUserCheckBox.isSelected()) {
-            //if remember me selected then username and password is saved in a listi
+            //if remember me selected then username and password is saved in a user.txt
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
@@ -122,7 +122,6 @@ public class LoginScreenController {
                 } else {
                     saveRememberMe("", "");
                 }
-                temp = false;
                 //login Post
                 restClient.login(username, password, response -> {
                     JsonNode body = response.getBody();
@@ -130,7 +129,7 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //build user with key
                         String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        builder.buildPersonalUser(username, userkey);
+                        builder.buildPersonalUser(username, userkey, false);
                         //show message on screen
                         this.message = body.getObject().getString("status");
                         Platform.runLater(() -> errorLabel.setText("Login was a " + message));
@@ -150,7 +149,7 @@ public class LoginScreenController {
                 if (status.equals("success")) {
                     //get name and password from server and build tempUser
                     String name = body.getObject().getJSONObject("data").getString("name");
-                    builder.buildTempUser(name);
+                    //builder.buildTempUser(name);
                     String passw = body.getObject().getJSONObject("data").getString("password");
                     //show message on screen
                     this.message = body.getObject().getString("status");
@@ -160,17 +159,37 @@ public class LoginScreenController {
                         usernameTextField.setText(name);
                         passwordTextField.setText(passw);
                         tempUserCheckBox.setSelected(false);
-                        loginButtonOnClick(actionEvent);
+                        loginTempUser(name, passw);
                     });
-                    //name and password are not remembered even if remember me is selected
-                    temp = true;
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");
                     Platform.runLater(() -> errorLabel.setText(message));
                 }
             });
+
         }
+    }
+
+    private void loginTempUser(String username, String password) {
+        //login Post
+        restClient.login(username, password, response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                //build tempUser with key
+                String userkey = body.getObject().getJSONObject("data").getString("userKey");
+                builder.buildPersonalUser(username, userkey, true);
+                //show message on screen
+                this.message = body.getObject().getString("status");
+                Platform.runLater(() -> errorLabel.setText("Login was a " + message));
+                Platform.runLater(StageManager::showHome);
+            } else if (status.equals("failure")) {
+                //show message on screen
+                this.message = body.getObject().getString("message");
+                Platform.runLater(() -> errorLabel.setText(message));
+            }
+        });
     }
 
     public void stop() {
@@ -180,7 +199,6 @@ public class LoginScreenController {
     }
 
     public void saveRememberMe(String username, String password) {
-        File f = new File("saves/user.txt");
         try {
             //save username and password in text file
             BufferedWriter out = new BufferedWriter(

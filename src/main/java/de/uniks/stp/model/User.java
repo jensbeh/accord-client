@@ -18,9 +18,11 @@ public class User
    private String id;
    private String userKey;
    private boolean status;
+   private boolean tempUser;
    private List<Server> server;
    protected PropertyChangeSupport listeners;
    private List<Channel> privateChat;
+
 
    public String getName()
    {
@@ -259,5 +261,13 @@ public class User
    {
       this.withoutServer(new ArrayList<>(this.getServer()));
       this.withoutPrivateChat(new ArrayList<>(this.getPrivateChat()));
+   }
+
+   public boolean isTempUser() {
+      return tempUser;
+   }
+
+   public void setTempUser(boolean tempUser) {
+      this.tempUser = tempUser;
    }
 }
