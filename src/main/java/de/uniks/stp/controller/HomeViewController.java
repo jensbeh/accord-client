@@ -25,6 +25,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
@@ -59,6 +61,8 @@ public class HomeViewController {
     private Stage stage;
     private HBox viewBox;
     private Button settingsButton;
+    private Circle homeButton;
+    private Circle homeCircle;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -74,6 +78,9 @@ public class HomeViewController {
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
+
+        homeCircle = (Circle) view.lookup("#homeCircle");
+        homeButton = (Circle) view.lookup("#homeButton");
 
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
@@ -104,6 +111,8 @@ public class HomeViewController {
         this.serverList.setItems(onlineServers);
 
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+
+        this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
         setupBuilder();
         showServers();
@@ -140,6 +149,7 @@ public class HomeViewController {
             stage.setTitle("Create a new Server");
             stage.setScene(scene);
             stage.show();
+            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -262,6 +272,8 @@ public class HomeViewController {
 
     public void stop() {
         this.addServer.setOnMouseClicked(null);
+        this.homeButton.setOnMouseClicked(null);
+        this.homeCircle.setOnMouseClicked(null);
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
@@ -274,5 +286,10 @@ public class HomeViewController {
 
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
         StageManager.showSettingsScreen();
+    }
+
+    private void homeButtonClicked(MouseEvent mouseEvent) {
+        StageManager.showHome();
+        homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
 }
