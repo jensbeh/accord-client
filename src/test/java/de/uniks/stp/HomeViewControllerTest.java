@@ -139,4 +139,28 @@ public class HomeViewControllerTest extends ApplicationTest {
         ListView<Channel> privateChatlist = lookup("#privateChatList").query();
         Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
     }
+
+    @Test()
+    public void logout() throws InterruptedException {
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("peter");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("123");
+        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
+        rememberBox.setSelected(true);
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(1000);
+        Assert.assertEquals("Accord - Main", stage.getTitle());
+        clickOn("#logoutButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("Accord - Login", stage.getTitle());
+
+        restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {});
+        when(res.getBody()).thenReturn(new JsonNode("{}"));
+        verify(restMock).logout(anyString(), callbackCaptor.capture());
+        Callback<JsonNode> callback = callbackCaptor.getValue();
+        callback.completed(res);
+        Assert.assertEquals("{}", res.getBody().toString());
+    }
 }

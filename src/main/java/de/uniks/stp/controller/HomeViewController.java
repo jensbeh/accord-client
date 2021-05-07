@@ -30,6 +30,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 import java.beans.PropertyChangeEvent;
@@ -63,6 +64,7 @@ public class HomeViewController {
     private Button settingsButton;
     private Circle homeButton;
     private Circle homeCircle;
+    private Button logoutButton;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -89,6 +91,7 @@ public class HomeViewController {
         messages = (VBox) view.lookup("#messages");
         messageBar = (HBox) view.lookup("#messagebar");
         messageBar.setOpacity(0);
+        logoutButton = (Button) view.lookup("#logoutButton");
 
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
@@ -111,6 +114,7 @@ public class HomeViewController {
         this.serverList.setItems(onlineServers);
 
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+        this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
@@ -278,6 +282,7 @@ public class HomeViewController {
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
         this.builder.stop();
+        this.logoutButton.setOnAction(null);
     }
 
     public void setBuilder(ModelBuilder builder) {
@@ -291,5 +296,16 @@ public class HomeViewController {
     private void homeButtonClicked(MouseEvent mouseEvent) {
         StageManager.showHome();
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+    }
+
+    private void logoutButtonOnClicked(ActionEvent actionEvent) {
+        RestClient restclient = new RestClient();
+        restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
+            JSONObject result = response.getBody().getObject();
+            if(result.get("status").equals("success")) {
+                System.out.println(result.get("message"));
+                Platform.runLater(StageManager::showLoginScreen);
+            }
+        });
     }
 }

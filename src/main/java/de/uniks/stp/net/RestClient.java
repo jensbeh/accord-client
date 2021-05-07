@@ -24,6 +24,11 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void logout(String userKey, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
     public void getServers(String userKey, Callback<JsonNode> callback) {
         HttpRequest<?> request = Unirest.get("https://ac.uniks.de/api/servers").header("userKey", userKey);
         sendRequest(request, callback);
