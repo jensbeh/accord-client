@@ -3,14 +3,21 @@ package de.uniks.stp.builder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ModelBuilder {
+    private PropertyChangeSupport listeners = null;
     private ArrayList<User> onlineUsers = new ArrayList();
-    private ArrayList<Server> servers = new ArrayList();
+    private ArrayList<Server> onlineServers = new ArrayList();
     private User personalUser;
+
+    /////////////////////////////////////////
+    //  Setter
+    /////////////////////////////////////////
 
     public void buildPersonalUser(String name, String userKey) {
         personalUser = new User().setName(name).setUserKey(userKey);
@@ -25,32 +32,89 @@ public class ModelBuilder {
         personalUser = new User().setName(name).setUserKey("");
     }
 
-    public User buildUser(String name, String id, String online) {
+    public User buildUser(String name, String id, boolean online) {
         User newUser = new User();
         newUser.setName(name);
         newUser.setId(id);
-        if (online.equals("true")) {
-            newUser.setStatus(true);
-        }
+        newUser.setStatus(online);
+
         onlineUsers.add(newUser);
+        this.firePropertyChange("onlineUsers", null, onlineUsers);
         return newUser;
     }
 
     public void buildServer(String name, String id) {
-        servers.add(new Server().setName(name).setId(id));
+        onlineServers.add(new Server().setName(name).setId(id));
     }
 
-    public ModelBuilder withServer(Server newServer) {
-        servers.add(newServer);
+    public ModelBuilder buildServer(Server newServer) {
+        onlineServers.add(newServer);
+        this.firePropertyChange("onlineServers", null, onlineServers);
         return this;
     }
 
+    /////////////////////////////////////////
+    //  remove
+    /////////////////////////////////////////
+
+    public void removeUser(User user) {
+        if (onlineUsers.contains(user)) {
+            ArrayList<User> oldSetupPlayer = onlineUsers;
+            onlineUsers.remove(user);
+            user.removeYou();
+            // fire property change
+            this.firePropertyChange("onlineUsers", null, user);
+        }
+    }
+
+    public void clearUsers() {
+        for (User user : onlineUsers) {
+            user.removeYou();
+        }
+        onlineUsers.clear();
+
+        // fire property change
+        this.firePropertyChange("onlineUsers", null, onlineUsers);
+
+    }
+
+    /////////////////////////////////////////
+    //  Getter
+    /////////////////////////////////////////
+
+
+
     public List<Server> getServer()
     {
-        return this.servers != null ? Collections.unmodifiableList(this.servers) : Collections.emptyList();
+        return this.onlineServers != null ? Collections.unmodifiableList(this.onlineServers) : Collections.emptyList();
     }
 
     public User getPersonalUser() {
         return personalUser;
     }
+
+    public ArrayList<User> getUsers() {
+        return onlineUsers;
+    }
+
+    /////////////////////////////////////////
+    // PropertyChange
+    /////////////////////////////////////////
+
+    private boolean firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (listeners != null) {
+            listeners.firePropertyChange(propertyName, oldValue, newValue);
+            return true;
+        }
+        return false;
+    }
+    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        if (listeners == null) {
+            listeners = new PropertyChangeSupport(this);
+        }
+        listeners.addPropertyChangeListener(propertyName, listener);
+        return true;
+    }
+
+
 }

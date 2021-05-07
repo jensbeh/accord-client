@@ -141,5 +141,10 @@ public class StageManager extends Application {
             System.err.println("Error on showing Setting Screen");
             e.printStackTrace();
         }
+
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
     }
 }

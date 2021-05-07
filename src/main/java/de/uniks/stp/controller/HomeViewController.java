@@ -7,6 +7,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,6 +27,7 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -65,7 +67,6 @@ public class HomeViewController {
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         settingsButton = (Button) view.lookup("#settingsButton");
 
-
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverList.setCellFactory(new AlternateServerListCellFactory());
         onlineServers = FXCollections.observableArrayList();
@@ -81,10 +82,29 @@ public class HomeViewController {
 
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
 
+        setupBuilder();
         showServers();
         showCurrentUser();
         showUser();
     }
+
+    private void setupBuilder() {
+        this.builder.addPropertyChangeListener("onlineUsers",this::handleUserListChange);
+        this.builder.addPropertyChangeListener("onlineServers",this::handleServerListChange);
+    }
+
+    private void handleUserListChange(PropertyChangeEvent event){
+        onlineUsers.clear();
+        onlineUsers.addAll(builder.getUsers());
+    }
+
+    private void handleServerListChange(PropertyChangeEvent event){
+        onlineServers.clear();
+        onlineServers.addAll(builder.getServer());
+    }
+    ///////////////////////////
+    // Server
+    ///////////////////////////
 
     private void onshowCreateServer(MouseEvent mouseEvent) {
         try {
@@ -102,12 +122,13 @@ public class HomeViewController {
         }
     }
 
-    private void onServerCreated(){
-        stage.close();
-        List<Server> serverList = this.builder.getServer();
-        Server newServer = serverList.get(serverList.size()-1);
-        showServerView(newServer);
-
+    public void onServerCreated(){
+        Platform.runLater(() ->{
+            stage.close();
+            List<Server> serverList = this.builder.getServer();
+            Server newServer = serverList.get(serverList.size()-1);
+            showServerView(newServer);
+        });
     }
 
     public void showServerView(Server server) {
@@ -116,9 +137,10 @@ public class HomeViewController {
             ServerViewController serverController = new ServerViewController(root, builder, server);
             serverController.init();serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
+            builder.clearUsers();
             // show online users and set it in root (BorderPain)
-            userBox.getChildren().clear();
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,6 +160,9 @@ public class HomeViewController {
             }
         }
     }
+    ///////////////////////////
+    // Users
+    ///////////////////////////
 
     private void showUser() {
         onlineUsers.clear();
