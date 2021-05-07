@@ -36,7 +36,7 @@ public class StageManager extends Application {
         SettingsController.setup();
     }
 
-    public void showLoginScreen() {
+    public static void showLoginScreen() {
         cleanup();
 
         //show login screen

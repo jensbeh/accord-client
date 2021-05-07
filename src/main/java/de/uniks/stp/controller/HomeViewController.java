@@ -7,6 +7,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +19,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 import java.io.IOException;
@@ -37,6 +39,7 @@ public class HomeViewController {
     private ModelBuilder builder;
     private Parent view;
     private Button settingsButton;
+    private Button logoutButton;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -51,6 +54,7 @@ public class HomeViewController {
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         settingsButton = (Button) view.lookup("#settingsButton");
+        logoutButton = (Button) view.lookup("#logoutButton");
 
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
@@ -64,6 +68,7 @@ public class HomeViewController {
         this.onlineUsersList.setItems(onlineUsers);
 
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+        this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         showServers();
         showCurrentUser();
@@ -114,6 +119,7 @@ public class HomeViewController {
 
     public void stop() {
         this.settingsButton.setOnAction(null);
+        this.logoutButton.setOnAction(null);
     }
 
     public void setBuilder(ModelBuilder builder) {
@@ -122,5 +128,16 @@ public class HomeViewController {
 
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
         StageManager.showSettingsScreen();
+    }
+
+    private void logoutButtonOnClicked(ActionEvent actionEvent) {
+        RestClient restclient = new RestClient();
+        restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
+            JSONObject result = response.getBody().getObject();
+            if(result.get("status").equals("success")) {
+                System.out.println(result.get("message"));
+                Platform.runLater(StageManager::showLoginScreen);
+            }
+        });
     }
 }
