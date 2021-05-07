@@ -19,17 +19,14 @@ public class ModelBuilder {
     //  Setter
     /////////////////////////////////////////
 
-    public void buildPersonalUser(String name, String userKey) {
+    public void buildPersonalUser(String name, String userKey, Boolean tempUser) {
         personalUser = new User().setName(name).setUserKey(userKey);
+        personalUser.setTempUser(tempUser);
     }
 
     public void buildUser(String name) {
         User user = new User().setName(name);
         onlineUsers.add(user);
-    }
-
-    public void buildTempUser(String name) {
-        personalUser = new User().setName(name).setUserKey("");
     }
 
     public User buildUser(String name, String id, boolean online) {
