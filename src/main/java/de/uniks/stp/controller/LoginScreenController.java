@@ -25,6 +25,7 @@ public class LoginScreenController {
     private final RestClient restClient;
     private Label connectionLabel;
     private ModelBuilder builder;
+    private Boolean temp = false;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -95,7 +96,7 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        Platform.runLater(() -> errorLabel.setText("Sign in was a " + message));
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
@@ -103,6 +104,8 @@ public class LoginScreenController {
                     }
                 });
             }
+        } else if (tempUserCheckBox.isSelected()) {
+            errorLabel.setText("Click on Login");
         }
     }
 
@@ -114,11 +117,12 @@ public class LoginScreenController {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
-                if (rememberCheckBox.isSelected()) {
+                if (rememberCheckBox.isSelected() && !temp) {
                     saveRememberMe(username, password);
                 } else {
                     saveRememberMe("", "");
                 }
+                temp = false;
                 //login Post
                 restClient.login(username, password, response -> {
                     JsonNode body = response.getBody();
@@ -129,7 +133,7 @@ public class LoginScreenController {
                         builder.buildPersonalUser(username, userkey);
                         //show message on screen
                         this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        Platform.runLater(() -> errorLabel.setText("Login was a " + message));
                         Platform.runLater(StageManager::showHome);
                     } else if (status.equals("failure")) {
                         //show message on screen
@@ -144,11 +148,22 @@ public class LoginScreenController {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    builder.buildTempUser(username);
+                    //get name and password from server and build tempUser
+                    String name = body.getObject().getJSONObject("data").getString("name");
+                    builder.buildTempUser(name);
+                    String passw = body.getObject().getJSONObject("data").getString("password");
                     //show message on screen
                     this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorLabel.setText(message));
-                    Platform.runLater(StageManager::showHome);
+                    //fill in username and password and login of tempUser
+                    Platform.runLater(()-> {
+                        errorLabel.setText("Login was a " + message);
+                        usernameTextField.setText(name);
+                        passwordTextField.setText(passw);
+                        tempUserCheckBox.setSelected(false);
+                        loginButtonOnClick(actionEvent);
+                    });
+                    //name and password are not remembered even if remember me is selected
+                    temp = true;
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");
