@@ -83,7 +83,7 @@ public class LoginScreenController {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
-                //if remember me selected then username and password is saved in a list
+                //if remember me selected then username and password is saved in a user.txt
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
                 } else {
@@ -147,9 +147,8 @@ public class LoginScreenController {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    //get name and password from server and build tempUser
+                    //get name and password from server
                     String name = body.getObject().getJSONObject("data").getString("name");
-                    //builder.buildTempUser(name);
                     String passw = body.getObject().getJSONObject("data").getString("password");
                     //show message on screen
                     this.message = body.getObject().getString("status");
