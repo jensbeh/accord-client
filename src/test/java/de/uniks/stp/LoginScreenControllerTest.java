@@ -76,6 +76,41 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
+    @Test()
+    public void logInFailTest () throws InterruptedException {
+        //wrong password
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("peter");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("223");
+        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
+        rememberBox.setSelected(true);
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Label errorLabel = lookup("#errorLabel").query();
+        Assert.assertEquals("Invalid credentials", errorLabel.getText());
+        //wrong username
+        usernameTextField.setText("peeter");
+        passwordField.setText("123");
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("Invalid credentials", errorLabel.getText());
+        //both wrong
+        usernameTextField.setText("peeter");
+        passwordField.setText("1234");
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("Invalid credentials", errorLabel.getText());
+
+
+        restMock.login("bla", "fasel", response -> {});
+        when(res.getBody()).thenReturn(new JsonNode("{}"));
+        verify(restMock).login(anyString(), anyString(), callbackCaptor.capture());
+        Callback<JsonNode> callback = callbackCaptor.getValue();
+        callback.completed(res);
+        Assert.assertEquals("{}", res.getBody().toString());
+    }
+
     @Test
     public void signInTest () throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
