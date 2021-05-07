@@ -25,6 +25,7 @@ public class LoginScreenController {
     private final RestClient restClient;
     private Label connectionLabel;
     private ModelBuilder builder;
+    private Boolean temp = false;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -71,6 +72,7 @@ public class LoginScreenController {
     }
 
     private void settingsButtonOnClick(ActionEvent actionEvent) {
+        StageManager.showSettingsScreen();
     }
 
     private void signInButtonOnClick(ActionEvent actionEvent) {
@@ -81,7 +83,7 @@ public class LoginScreenController {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
-                //if remember me selected then username and password is saved in a list
+                //if remember me selected then username and password is saved in a user.txt
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
                 } else {
@@ -94,7 +96,7 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        Platform.runLater(() -> errorLabel.setText("Sign in was a " + message));
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
@@ -102,6 +104,8 @@ public class LoginScreenController {
                     }
                 });
             }
+        } else if (tempUserCheckBox.isSelected()) {
+            errorLabel.setText("Click on Login");
         }
     }
 
@@ -109,11 +113,11 @@ public class LoginScreenController {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
         if (!tempUserCheckBox.isSelected()) {
-            //if remember me selected then username and password is saved in a listi
+            //if remember me selected then username and password is saved in a user.txt
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
-                if (rememberCheckBox.isSelected()) {
+                if (rememberCheckBox.isSelected() && !temp) {
                     saveRememberMe(username, password);
                 } else {
                     saveRememberMe("", "");
@@ -125,10 +129,10 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //build user with key
                         String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        builder.buildPersonalUser(username, userkey);
+                        builder.buildPersonalUser(username, userkey, false);
                         //show message on screen
                         this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        Platform.runLater(() -> errorLabel.setText("Login was a " + message));
                         Platform.runLater(StageManager::showHome);
                     } else if (status.equals("failure")) {
                         //show message on screen
@@ -143,27 +147,57 @@ public class LoginScreenController {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    builder.buildTempUser(username);
+                    //get name and password from server
+                    String name = body.getObject().getJSONObject("data").getString("name");
+                    String passw = body.getObject().getJSONObject("data").getString("password");
                     //show message on screen
                     this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorLabel.setText(message));
-                    Platform.runLater(StageManager::showHome);
+                    //fill in username and password and login of tempUser
+                    Platform.runLater(()-> {
+                        errorLabel.setText("Login was a " + message);
+                        usernameTextField.setText(name);
+                        passwordTextField.setText(passw);
+                        tempUserCheckBox.setSelected(false);
+                        loginTempUser(name, passw);
+                    });
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");
                     Platform.runLater(() -> errorLabel.setText(message));
                 }
             });
+
         }
+    }
+
+    private void loginTempUser(String username, String password) {
+        //login Post
+        restClient.login(username, password, response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                //build tempUser with key
+                String userkey = body.getObject().getJSONObject("data").getString("userKey");
+                builder.buildPersonalUser(username, userkey, true);
+                //show message on screen
+                this.message = body.getObject().getString("status");
+                Platform.runLater(() -> errorLabel.setText("Login was a " + message));
+                Platform.runLater(StageManager::showHome);
+            } else if (status.equals("failure")) {
+                //show message on screen
+                this.message = body.getObject().getString("message");
+                Platform.runLater(() -> errorLabel.setText(message));
+            }
+        });
     }
 
     public void stop() {
         this.signInButton.setOnAction(null);
         this.loginButton.setOnAction(null);
+        this.settingsButton.setOnAction(null);
     }
 
     public void saveRememberMe(String username, String password) {
-        File f = new File("saves/user.txt");
         try {
             //save username and password in text file
             BufferedWriter out = new BufferedWriter(

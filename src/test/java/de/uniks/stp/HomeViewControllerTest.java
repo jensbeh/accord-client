@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
@@ -26,6 +27,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private RestClient restClient;
 
     @Override
     public void start (Stage stage) {
@@ -122,5 +124,19 @@ public class HomeViewControllerTest extends ApplicationTest {
         Callback<JsonNode> callback = callbackCaptor.getValue();
         callback.completed(res);
         Assert.assertEquals("{}", res.getBody().toString());
+    }
+
+    @Test
+    public void privateChatTest() throws InterruptedException {
+        RestClient restClient = new RestClient();
+        restClient.login("Peter Lustig 2", "1234", response -> {});
+        login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        clickOn(userList.lookup("#user"));
+        clickOn(userList.lookup("#user"));
+        ListView<Channel> privateChatlist = lookup("#privateChatList").query();
+        Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
     }
 }
