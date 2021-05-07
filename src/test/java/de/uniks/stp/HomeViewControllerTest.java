@@ -136,7 +136,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         clickOn(userList.lookup("#user"));
         clickOn(userList.lookup("#user"));
-        ListView<Channel> privateChatlist = lookup("#privateChatScrollpane").lookup("#privateChatList").query();
+        ListView<Channel> privateChatlist = lookup("#privateChatList").query();
         Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
     }
 }
