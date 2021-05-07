@@ -10,17 +10,14 @@ public class ModelBuilder {
     private ArrayList<Server> servers = new ArrayList();
     private User personalUser;
 
-    public void buildPersonalUser(String name, String userKey) {
+    public void buildPersonalUser(String name, String userKey, Boolean tempUser) {
         personalUser = new User().setName(name).setUserKey(userKey);
+        personalUser.setTempUser(tempUser);
     }
 
     public void buildUser(String name) {
         User user = new User().setName(name);
         onlineUsers.add(user);
-    }
-
-    public void buildTempUser(String name) {
-        personalUser = new User().setName(name).setUserKey("");
     }
 
     public void buildServer(String name, String id) {
