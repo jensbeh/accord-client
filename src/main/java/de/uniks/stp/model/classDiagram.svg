@@ -1,7 +1,7 @@
 <svg width="248px" height="338px"
  viewBox="0.00 0.00 247.50 338.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1.0 1.0) rotate(0) translate(4 334)">
-<title>de.uniks.pmws2021.model</title>
+<title>de.uniks.stp.model</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-334 243.5,-334 243.5,4 -4,4"/>
 <!-- Categories -->
 <g id="node1" class="node">
@@ -52,8 +52,8 @@
 <text text-anchor="start" x="31.51" y="-301.9" font-family="Times,serif" font-size="14.00">Message</text>
 <polygon fill="none" stroke="black" points="8.5,-239.5 8.5,-295.5 103.5,-295.5 103.5,-239.5 8.5,-239.5"/>
 <text text-anchor="start" x="11.5" y="-279.9" font-family="Times,serif" font-size="14.00">from :String</text>
-<text text-anchor="start" x="11.5" y="-263.1" font-family="Times,serif" font-size="14.00">message :String</text>
-<text text-anchor="start" x="11.5" y="-246.3" font-family="Times,serif" font-size="14.00">timestamp :int</text>
+<text text-anchor="start" x="11.5" y="-263.1" font-family="Times,serif" font-size="14.00">timestap :int</text>
+<text text-anchor="start" x="11.5" y="-246.3" font-family="Times,serif" font-size="14.00">message :String</text>
 </g>
 <!-- Channel&#45;&gt;Message -->
 <g id="edge3" class="edge">

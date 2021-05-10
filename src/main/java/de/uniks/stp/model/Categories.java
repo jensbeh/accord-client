@@ -15,8 +15,8 @@ public class Categories
    private String name;
    private String id;
    private Server server;
-   private List<Channel> channel;
    protected PropertyChangeSupport listeners;
+   private List<Channel> channel;
 
    public String getName()
    {
