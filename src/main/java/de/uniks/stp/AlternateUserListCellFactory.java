@@ -1,6 +1,5 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.User;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
