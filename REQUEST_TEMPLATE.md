@@ -18,15 +18,15 @@ Mention Yes or No. If Yes, provide the appropriate explanation.
 
 ## Did you test this feature ?
 Yes tested for:
-- [] success
-- [] failure
+- [ ] success
+- [ ] failure
 
-## Is this change api changing
-- [] yes
-- [] no
+## Is this change a severe change
+- [ ] yes
+- [ ] no
 
 ## Did you encounter any Bugs
-- [] yes
+- [ ] yes
   ## - Bug description
   Describe what problem occurred
 
@@ -34,9 +34,9 @@ Yes tested for:
   Briefly describe the root cause and analysis of the problem.
 
   ## - Solution description
-  Descibe your code changes in detail for reviewers. Explain the technical solution you have provided
+  Describe your code changes in detail for reviewers. Explain the technical solution you have provided
   and how it fixes the issue case.
-- [] no
+- [ ] no
 
 
 
