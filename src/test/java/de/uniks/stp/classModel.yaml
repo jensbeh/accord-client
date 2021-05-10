@@ -1,0 +1,24 @@
+- c: 	org.fulib.classmodel.ClassModel
+  classes: 	scenarioTest
+  defaultCollectionType: 	c1
+  defaultPropertyStyle: 	Bean
+  defaultRoleType: 	"java.util.ArrayList<%s>"
+  mainJavaDir: 	"src/test/java"
+  packageName: 	de.uniks.stp
+  packageSrcFolder: 	"src/test/java/de/uniks/stp"
+
+- scenarioTest: 	org.fulib.classmodel.Clazz
+  importList: 	org.junit.Test
+  imports: 	org.junit.Test
+  model: 	c
+  modified: 	false
+  name: 	ScenarioTest
+  propertyStyle: 	Bean
+
+- c1: 	org.fulib.classmodel.CollectionType
+  implClass: 	class java.util.ArrayList
+  implTemplate: 	"java.util.ArrayList<%s>"
+  itf: 	org.fulib.classmodel.CollectionInterface.List
+  qualifiedImplName: 	java.util.ArrayList
+  simpleImplName: 	ArrayList
+

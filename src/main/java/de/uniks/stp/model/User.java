@@ -23,7 +23,6 @@ public class User
    protected PropertyChangeSupport listeners;
    private List<Channel> privateChat;
 
-
    public String getName()
    {
       return this.name;
@@ -162,11 +161,6 @@ public class User
       return this;
    }
 
-   public List<Channel> getPrivateChat()
-   {
-      return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
-   }
-
    public User withPrivateChat(Channel value)
    {
       if (this.privateChat == null)
@@ -226,6 +220,11 @@ public class User
          this.withoutPrivateChat(item);
       }
       return this;
+   }
+
+   public List<Channel> getPrivateChat()
+   {
+      return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
    }
 
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
