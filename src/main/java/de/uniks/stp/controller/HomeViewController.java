@@ -233,7 +233,7 @@ public class HomeViewController {
     }
 
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2) {
+        if (mouseEvent.getClickCount() == 2 && this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
             MessageViews();
         }
