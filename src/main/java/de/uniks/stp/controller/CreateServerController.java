@@ -1,6 +1,7 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
@@ -25,7 +26,7 @@ public class CreateServerController {
         private VBox createServerBox;
         private TextField serverName;
         private Button createServer;
-        private User personalUser;
+        private CurrentUser personalUser;
         private Runnable change;
         private Label errorLabel;
 
@@ -62,7 +63,7 @@ public class CreateServerController {
                                 Server newServer = new Server();
                                 newServer.setId(serverId);
                                 newServer.setName(serverName);
-                                newServer.setOwner(personalUser.getId());
+                                newServer.setOwner(personalUser.getName());
                                 personalUser.withServer(newServer);
                                 builder.buildServer(newServer);
                                 change.run();
