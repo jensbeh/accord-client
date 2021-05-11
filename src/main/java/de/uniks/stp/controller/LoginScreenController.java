@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -129,7 +130,7 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //build user with key
                         String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        builder.buildPersonalUser(username, userkey, false);
+                        builder.buildPersonalUser(username, userkey, true);
                         //show message on screen
                         this.message = body.getObject().getString("status");
                         Platform.runLater(() -> errorLabel.setText("Login was a " + message));
@@ -158,7 +159,7 @@ public class LoginScreenController {
                         usernameTextField.setText(name);
                         passwordTextField.setText(passw);
                         tempUserCheckBox.setSelected(false);
-                        loginTempUser(name, passw);
+                        loginButtonOnClick(actionEvent);
                     });
                 } else if (status.equals("failure")) {
                     //show message on screen
@@ -168,27 +169,6 @@ public class LoginScreenController {
             });
 
         }
-    }
-
-    private void loginTempUser(String username, String password) {
-        //login Post
-        restClient.login(username, password, response -> {
-            JsonNode body = response.getBody();
-            String status = body.getObject().getString("status");
-            if (status.equals("success")) {
-                //build tempUser with key
-                String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                builder.buildPersonalUser(username, userkey, true);
-                //show message on screen
-                this.message = body.getObject().getString("status");
-                Platform.runLater(() -> errorLabel.setText("Login was a " + message));
-                Platform.runLater(StageManager::showHome);
-            } else if (status.equals("failure")) {
-                //show message on screen
-                this.message = body.getObject().getString("message");
-                Platform.runLater(() -> errorLabel.setText(message));
-            }
-        });
     }
 
     public void stop() {
