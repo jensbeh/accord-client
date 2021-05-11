@@ -1,5 +1,6 @@
 package de.uniks.stp.builder;
 
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 
@@ -13,15 +14,14 @@ public class ModelBuilder {
     private PropertyChangeSupport listeners = null;
     private ArrayList<User> onlineUsers = new ArrayList();
     private ArrayList<Server> onlineServers = new ArrayList();
-    private User personalUser;
+    private CurrentUser personalUser;
 
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
 
     public void buildPersonalUser(String name, String userKey, Boolean tempUser) {
-        personalUser = new User().setName(name).setUserKey(userKey);
-        personalUser.setTempUser(tempUser);
+        personalUser = new CurrentUser().setName(name).setUserKey(userKey);
     }
 
     public void buildUser(String name) {
@@ -86,7 +86,7 @@ public class ModelBuilder {
         return this.onlineServers != null ? Collections.unmodifiableList(this.onlineServers) : Collections.emptyList();
     }
 
-    public User getPersonalUser() {
+    public CurrentUser getPersonalUser() {
         return personalUser;
     }
 

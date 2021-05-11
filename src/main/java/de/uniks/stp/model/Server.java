@@ -13,12 +13,14 @@ public class Server
    public static final String PROPERTY_OWNER = "owner";
    public static final String PROPERTY_CATEGORIES = "categories";
    public static final String PROPERTY_USER = "user";
+   public static final String PROPERTY_CURRENT_USER = "currentUser";
    private String name;
    private String id;
    private String owner;
    private List<Categories> categories;
    private List<User> user;
    protected PropertyChangeSupport listeners;
+   private CurrentUser currentUser;
 
    public String getName()
    {
@@ -206,6 +208,33 @@ public class Server
       return this;
    }
 
+   public CurrentUser getCurrentUser()
+   {
+      return this.currentUser;
+   }
+
+   public Server setCurrentUser(CurrentUser value)
+   {
+      if (this.currentUser == value)
+      {
+         return this;
+      }
+
+      final CurrentUser oldValue = this.currentUser;
+      if (this.currentUser != null)
+      {
+         this.currentUser = null;
+         oldValue.withoutServer(this);
+      }
+      this.currentUser = value;
+      if (value != null)
+      {
+         value.withServer(this);
+      }
+      this.firePropertyChange(PROPERTY_CURRENT_USER, oldValue, value);
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -239,5 +268,6 @@ public class Server
    {
       this.withoutCategories(new ArrayList<>(this.getCategories()));
       this.withoutUser(new ArrayList<>(this.getUser()));
+      this.setCurrentUser(null);
    }
 }

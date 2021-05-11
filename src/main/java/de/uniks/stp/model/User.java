@@ -10,18 +10,16 @@ public class User
 {
    public static final String PROPERTY_NAME = "name";
    public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_USER_KEY = "userKey";
    public static final String PROPERTY_STATUS = "status";
    public static final String PROPERTY_SERVER = "server";
-   public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+   public static final String PROPERTY_CURRENT_USER = "currentUser";
    private String name;
    private String id;
-   private String userKey;
    private boolean status;
    private boolean tempUser;
    private List<Server> server;
    protected PropertyChangeSupport listeners;
-   private List<Channel> privateChat;
+   private CurrentUser currentUser;
 
    public String getName()
    {
@@ -56,24 +54,6 @@ public class User
       final String oldValue = this.id;
       this.id = value;
       this.firePropertyChange(PROPERTY_ID, oldValue, value);
-      return this;
-   }
-
-   public String getUserKey()
-   {
-      return this.userKey;
-   }
-
-   public User setUserKey(String value)
-   {
-      if (Objects.equals(value, this.userKey))
-      {
-         return this;
-      }
-
-      final String oldValue = this.userKey;
-      this.userKey = value;
-      this.firePropertyChange(PROPERTY_USER_KEY, oldValue, value);
       return this;
    }
 
@@ -161,70 +141,31 @@ public class User
       return this;
    }
 
-   public User withPrivateChat(Channel value)
+   public CurrentUser getCurrentUser()
    {
-      if (this.privateChat == null)
-      {
-         this.privateChat = new ArrayList<>();
-      }
-      if (!this.privateChat.contains(value))
-      {
-         this.privateChat.add(value);
-         value.setUser(this);
-         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, null, value);
-      }
-      return this;
+      return this.currentUser;
    }
 
-   public User withPrivateChat(Channel... value)
+   public User setCurrentUser(CurrentUser value)
    {
-      for (final Channel item : value)
+      if (this.currentUser == value)
       {
-         this.withPrivateChat(item);
+         return this;
       }
-      return this;
-   }
 
-   public User withPrivateChat(Collection<? extends Channel> value)
-   {
-      for (final Channel item : value)
+      final CurrentUser oldValue = this.currentUser;
+      if (this.currentUser != null)
       {
-         this.withPrivateChat(item);
+         this.currentUser = null;
+         oldValue.withoutUser(this);
       }
-      return this;
-   }
-
-   public User withoutPrivateChat(Channel value)
-   {
-      if (this.privateChat != null && this.privateChat.remove(value))
+      this.currentUser = value;
+      if (value != null)
       {
-         value.setUser(null);
-         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, value, null);
+         value.withUser(this);
       }
+      this.firePropertyChange(PROPERTY_CURRENT_USER, oldValue, value);
       return this;
-   }
-
-   public User withoutPrivateChat(Channel... value)
-   {
-      for (final Channel item : value)
-      {
-         this.withoutPrivateChat(item);
-      }
-      return this;
-   }
-
-   public User withoutPrivateChat(Collection<? extends Channel> value)
-   {
-      for (final Channel item : value)
-      {
-         this.withoutPrivateChat(item);
-      }
-      return this;
-   }
-
-   public List<Channel> getPrivateChat()
-   {
-      return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
    }
 
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
@@ -252,21 +193,12 @@ public class User
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getName());
       result.append(' ').append(this.getId());
-      result.append(' ').append(this.getUserKey());
       return result.substring(1);
    }
 
    public void removeYou()
    {
       this.withoutServer(new ArrayList<>(this.getServer()));
-      this.withoutPrivateChat(new ArrayList<>(this.getPrivateChat()));
-   }
-
-   public boolean isTempUser() {
-      return tempUser;
-   }
-
-   public void setTempUser(boolean tempUser) {
-      this.tempUser = tempUser;
+      this.setCurrentUser(null);
    }
 }
