@@ -49,8 +49,7 @@ public class StageManager extends Application {
             stage.setTitle("Accord - Login");
             stage.setResizable(false);
             stage.setScene(scene);
-            stage.setHeight(526);
-            stage.setWidth(395);
+            stage.sizeToScene();
             stage.centerOnScreen();
         } catch (Exception e) {
             System.err.println("Error on showing LoginScreen");
@@ -68,7 +67,8 @@ public class StageManager extends Application {
             stage.setTitle("Accord - Main");
             stage.setScene(scene);
             stage.setResizable(true);
-            stage.setMinHeight(630);
+            stage.sizeToScene();
+            stage.setMinHeight(650);
             stage.setMinWidth(900);
             stage.show();
 

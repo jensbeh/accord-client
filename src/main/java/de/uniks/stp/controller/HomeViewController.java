@@ -47,24 +47,24 @@ public class HomeViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private VBox serverBox;
-    private ModelBuilder builder;
+    private VBox messages;
+    private HBox messageBar;
+    private HBox viewBox;
+    private ObservableList<Channel> privateChats;
+    private ObservableList<User> onlineUsers;
+    private ObservableList<Server> onlineServers;
     private Parent view;
     private ListView<Channel> privateChatList;
-    private ObservableList<Channel> privateChats;
-    private Channel selectedChat;
-    private VBox messages;
-    private ListView<User> onlineUsersList;
-    private ObservableList<User> onlineUsers;
-    private HBox messageBar;
     private ListView<Server> serverList;
-    private ObservableList<Server> onlineServers;
+    private ListView<User> onlineUsersList;
     private Circle addServer;
-    private Stage stage;
-    private HBox viewBox;
-    private Button settingsButton;
     private Circle homeButton;
     private Circle homeCircle;
+    private Button settingsButton;
     private Button logoutButton;
+    private Channel selectedChat;
+    private Stage stage;
+    private ModelBuilder builder;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -125,16 +125,16 @@ public class HomeViewController {
     }
 
     private void setupBuilder() {
-        this.builder.addPropertyChangeListener("onlineUsers",this::handleUserListChange);
-        this.builder.addPropertyChangeListener("onlineServers",this::handleServerListChange);
+        this.builder.addPropertyChangeListener("onlineUsers", this::handleUserListChange);
+        this.builder.addPropertyChangeListener("onlineServers", this::handleServerListChange);
     }
 
-    private void handleUserListChange(PropertyChangeEvent event){
+    private void handleUserListChange(PropertyChangeEvent event) {
         onlineUsers.clear();
         onlineUsers.addAll(builder.getUsers());
     }
 
-    private void handleServerListChange(PropertyChangeEvent event){
+    private void handleServerListChange(PropertyChangeEvent event) {
         onlineServers.clear();
         onlineServers.addAll(builder.getServer());
     }
@@ -159,11 +159,11 @@ public class HomeViewController {
         }
     }
 
-    public void onServerCreated(){
-        Platform.runLater(() ->{
+    public void onServerCreated() {
+        Platform.runLater(() -> {
             stage.close();
             List<Server> serverList = this.builder.getServer();
-            Server newServer = serverList.get(serverList.size()-1);
+            Server newServer = serverList.get(serverList.size() - 1);
             showServerView(newServer);
         });
     }
@@ -172,7 +172,8 @@ public class HomeViewController {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
             ServerViewController serverController = new ServerViewController(root, builder, server);
-            serverController.init();serverController.showServerChat();
+            serverController.init();
+            serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
             builder.clearUsers();
             // show online users and set it in root (BorderPain)
@@ -211,7 +212,8 @@ public class HomeViewController {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
                     builder.buildUser(userName);
-                    onlineUsers.add(new User().setName(userName).setStatus(true));
+                    //runLater() is needed because it is called from outside the GUI thread and only the GUI thread can change the GUI
+                    Platform.runLater(() -> onlineUsers.add(new User().setName(userName).setStatus(true)));
                 }
             }
         });
@@ -294,7 +296,8 @@ public class HomeViewController {
     }
 
     private void homeButtonClicked(MouseEvent mouseEvent) {
-        StageManager.showHome();
+        root.setCenter(viewBox);
+        showUser();
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
 
@@ -302,7 +305,7 @@ public class HomeViewController {
         RestClient restclient = new RestClient();
         restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
             JSONObject result = response.getBody().getObject();
-            if(result.get("status").equals("success")) {
+            if (result.get("status").equals("success")) {
                 System.out.println(result.get("message"));
                 Platform.runLater(StageManager::showLoginScreen);
             }
