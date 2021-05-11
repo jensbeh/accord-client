@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -62,7 +65,7 @@ public class HomeViewController {
     private Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
-
+    private ScheduledExecutorService usersUpdateScheduler;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -118,7 +121,7 @@ public class HomeViewController {
         setupBuilder();
         showServers();
         showCurrentUser();
-        showUser();
+        showUserUpdate();
     }
 
     private void setupBuilder() {
@@ -202,19 +205,35 @@ public class HomeViewController {
     ///////////////////////////
 
     private void showUser() {
-        onlineUsers.clear();
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            //List to track the online users in order to remove old users that are now offline
+            ArrayList<User> onlineUser = new ArrayList<>();
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName, userId);
-                    //runLater() is needed because it is called from outside the GUI thread and only the GUI thread can change the GUI
-                    Platform.runLater(() -> onlineUsers.add(new User().setName(userName).setStatus(true)));
+                    User user = builder.buildUser(userName, userId);
+                    onlineUser.add(user);
                 }
             }
+            for (User user : builder.getPersonalUser().getUser()) {
+                if (!onlineUser.contains(user)) {
+                    builder.getPersonalUser().withoutUser(user);
+                }
+            }
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
         });
+    }
+
+    private void showUserUpdate() {
+        usersUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
+        usersUpdateScheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        Platform.runLater(() -> showUser());
+                    }
+                }, 0, 5, TimeUnit.SECONDS);
     }
 
     private void showCurrentUser() {
@@ -283,6 +302,7 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         this.builder.stop();
         this.logoutButton.setOnAction(null);
+        this.usersUpdateScheduler.shutdown();
     }
 
     public void setBuilder(ModelBuilder builder) {
