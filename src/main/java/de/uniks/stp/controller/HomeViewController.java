@@ -66,6 +66,7 @@ public class HomeViewController {
     private Stage stage;
     private ModelBuilder builder;
     private ScheduledExecutorService usersUpdateScheduler;
+    private ScheduledExecutorService serversUpdateScheduler;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -122,6 +123,7 @@ public class HomeViewController {
         showServers();
         showCurrentUser();
         showUserUpdate();
+        showServersUpdate();
     }
 
     private void setupBuilder() {
@@ -189,14 +191,20 @@ public class HomeViewController {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+                //List to track the online users in order to remove old users that are now offline
+                ArrayList<Server> onlineServers = new ArrayList<>();
                 for (int i = 0; i < jsonResponse.length(); i++) {
                     String serverName = jsonResponse.getJSONObject(i).get("name").toString();
                     String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                    if (!serverName.equals(builder.getPersonalUser().getName())) {
-                        builder.buildServer(serverName, serverId);
-                        onlineServers.add(new Server().setName(serverName).setId(serverId));
+                    Server server = builder.buildServer(serverName, serverId);
+                    onlineServers.add(server);
+                }
+                for (Server server : builder.getPersonalUser().getServer()) {
+                    if (!onlineServers.contains(server)) {
+                        builder.getPersonalUser().withoutServer(server);
                     }
                 }
+                Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
             });
         }
     }
@@ -235,6 +243,17 @@ public class HomeViewController {
                     }
                 }, 0, 5, TimeUnit.SECONDS);
     }
+
+    private void showServersUpdate() {
+        serversUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
+        serversUpdateScheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        Platform.runLater(() -> showServers());
+                    }
+                }, 0, 5, TimeUnit.SECONDS);
+    }
+
 
     private void showCurrentUser() {
         try {
@@ -303,6 +322,7 @@ public class HomeViewController {
         this.builder.stop();
         this.logoutButton.setOnAction(null);
         this.usersUpdateScheduler.shutdown();
+        this.serversUpdateScheduler.shutdown();
     }
 
     public void setBuilder(ModelBuilder builder) {
