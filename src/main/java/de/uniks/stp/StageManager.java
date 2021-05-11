@@ -6,7 +6,6 @@ import de.uniks.stp.controller.LoginScreenController;
 
 import de.uniks.stp.controller.SettingsController;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,6 +24,7 @@ public class StageManager extends Application {
     private static HomeViewController homeViewController;
     private static LoginScreenController loginCtrl;
     private static SettingsController settingsController;
+    private static Scene scene;
 
     @Override
     public void start(Stage primaryStage) {
@@ -42,13 +42,15 @@ public class StageManager extends Application {
         //show login screen
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"));
-            Scene scene = new Scene(root);
+            scene = new Scene(root);
             builder = new ModelBuilder();
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
             stage.setTitle("Accord - Login");
             stage.setResizable(false);
             stage.setScene(scene);
+            stage.setHeight(526);
+            stage.setWidth(395);
             stage.centerOnScreen();
         } catch (Exception e) {
             System.err.println("Error on showing LoginScreen");
@@ -60,13 +62,14 @@ public class StageManager extends Application {
         cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
-            Scene scene = new Scene(root);
+            scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
             stage.setTitle("Accord - Main");
             stage.setScene(scene);
             stage.setResizable(true);
-            stage.centerOnScreen();
+            stage.setMinHeight(630);
+            stage.setMinWidth(900);
             stage.show();
 
         } catch (Exception e) {
@@ -128,14 +131,13 @@ public class StageManager extends Application {
             subStage.initOwner(stage);
             subStage.initModality(Modality.WINDOW_MODAL);
             subStage.setOnCloseRequest(event -> {
-                if(settingsController != null) {
+                if (settingsController != null) {
                     settingsController.stop();
                     settingsController = null;
                 }
             });
             subStage.show();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Error on showing Setting Screen");
             e.printStackTrace();
         }
