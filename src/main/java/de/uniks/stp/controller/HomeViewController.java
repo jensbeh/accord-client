@@ -13,28 +13,22 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -115,31 +109,18 @@ public class HomeViewController {
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
-        setupBuilder();
         showServers();
         showCurrentUser();
         showUser();
     }
 
-    private void setupBuilder() {
-        this.builder.addPropertyChangeListener("onlineUsers", this::handleUserListChange);
-        this.builder.addPropertyChangeListener("onlineServers", this::handleServerListChange);
-    }
 
-    private void handleUserListChange(PropertyChangeEvent event) {
-        onlineUsers.clear();
-        onlineUsers.addAll(builder.getUsers());
-    }
-
-    private void handleServerListChange(PropertyChangeEvent event) {
-        onlineServers.clear();
-        onlineServers.addAll(builder.getServer());
-    }
     ///////////////////////////
     // Server
     ///////////////////////////
 
     private void onshowCreateServer(MouseEvent mouseEvent) {
+
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"));
             Scene scene = new Scene(root);
@@ -159,9 +140,7 @@ public class HomeViewController {
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
-            List<Server> serverList = this.builder.getServer();
-            Server newServer = serverList.get(serverList.size() - 1);
-            showServerView(newServer);
+            showServerView(this.builder.getCurrentServer());
         });
     }
 
@@ -172,10 +151,12 @@ public class HomeViewController {
             serverController.init();
             serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
-            builder.clearUsers();
             // show online users and set it in root (BorderPain)
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
-
+            Platform.runLater(() -> {
+                showServers();
+                showServerUsers();
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,20 +167,33 @@ public class HomeViewController {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+                //List to track the online users in order to remove old users that are now offline
+                ArrayList<Server> onlineServers = new ArrayList<>();
                 for (int i = 0; i < jsonResponse.length(); i++) {
                     String serverName = jsonResponse.getJSONObject(i).get("name").toString();
                     String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                    if (!serverName.equals(builder.getPersonalUser().getName())) {
-                        builder.buildServer(serverName, serverId);
-                        onlineServers.add(new Server().setName(serverName).setId(serverId));
+                    Server server = builder.buildServer(serverName, serverId);
+                    onlineServers.add(server);
+                }
+                for (Server server : builder.getPersonalUser().getServer()) {
+                    if (!onlineServers.contains(server)) {
+                        builder.getPersonalUser().withoutServer(server);
                     }
                 }
+                Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
             });
         }
     }
     ///////////////////////////
     // Users
     ///////////////////////////
+
+    private void showServerUsers() {
+        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
+
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
+        });
+    }
 
     private void showUser() {
         onlineUsers.clear();

@@ -1,14 +1,15 @@
 package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Mockito.*;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -25,13 +25,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class CreateServerControllerTest extends ApplicationTest{
+public class CreateServerControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
 
     @Override
-    public void start (Stage stage) {
+    public void start(Stage stage) {
         //start application
         this.stage = stage;
         app = new StageManager();
@@ -49,22 +49,22 @@ public class CreateServerControllerTest extends ApplicationTest{
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Before
-    public void setup () {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
     public void loginInit() {
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("Peter Lustig");
+        usernameTextField.setText("TestUser Team Bit Shift");
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("1234");
+        passwordField.setText("test123");
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#loginButton");
     }
 
     @Test
-    public void createServerTest() throws InterruptedException{
+    public void createServerTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -80,7 +80,7 @@ public class CreateServerControllerTest extends ApplicationTest{
 
         restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
         JSONObject data = new JSONObject().accumulate("id", "5e2ffbd8770dd077d03df505").accumulate("name", "TestServer");
-        JSONObject jsonObj = new JSONObject().accumulate("status","success").accumulate("message", "password").append("data", data);
+        JSONObject jsonObj = new JSONObject().accumulate("status", "success").accumulate("message", "password").append("data", data);
         when(res.getBody()).thenReturn(new JsonNode(jsonObj.toString()));
         verify(restMock).postServer(anyString(), anyString());
 
@@ -88,13 +88,14 @@ public class CreateServerControllerTest extends ApplicationTest{
     }
 
     @Test
-    public void showServerTest() throws InterruptedException{
+    public void showServerTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 
+        app.getBuilder().setCurrentServer(app.getBuilder().getServers().get(app.getBuilder().getServers().size() - 1));
         app.getHomeViewController().onServerCreated();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
