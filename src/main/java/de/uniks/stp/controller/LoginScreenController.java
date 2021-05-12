@@ -13,6 +13,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Scanner;
 
 public class LoginScreenController {
@@ -59,7 +62,7 @@ public class LoginScreenController {
                         usernameTextField.setText(scanner.nextLine());
                     }
                     if (i == 1) {
-                        passwordTextField.setText(scanner.nextLine());
+                        passwordTextField.setText(decode(scanner.nextLine()));
                     }
                     i++;
                 }
@@ -187,11 +190,23 @@ public class LoginScreenController {
                             new FileOutputStream("saves/user.txt")));
             out.write(username);
             out.newLine();
-            out.write(password);
+            String encodedPassword = encode(password);
+            out.write(encodedPassword);
             out.close();
         } catch (Exception e) {
             System.out.println("Error while saving userdata.");
             e.printStackTrace();
         }
+    }
+
+    public String encode(String password) {
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(password.getBytes());
+    }
+
+    public static String decode(String str){
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(str);
+        return new String(bytes);
     }
 }
