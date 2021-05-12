@@ -276,7 +276,7 @@ public class HomeViewController {
     }
 
     private void ononlineUsersListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size() != 0) {
+        if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean flag = true;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             for (Channel channel : privateChats) {
