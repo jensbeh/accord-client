@@ -20,13 +20,19 @@ public class ModelBuilder {
     //  Setter
     /////////////////////////////////////////
 
-    public void buildPersonalUser(String name, String userKey, Boolean tempUser) {
+    public void buildPersonalUser(String name, String userKey) {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey);
     }
 
-    public void buildUser(String name) {
-        User user = new User().setName(name);
-        onlineUsers.add(user);
+    public User buildUser(String name, String id) {
+        for (User user : personalUser.getUser()) {
+            if (user.getId().equals(id)) {
+                return user;
+            }
+        }
+        User newUser = new User().setName(name).setId(id);
+        personalUser.withUser(newUser);
+        return newUser;
     }
 
     public User buildUser(String name, String id, boolean online) {
@@ -40,8 +46,15 @@ public class ModelBuilder {
         return newUser;
     }
 
-    public void buildServer(String name, String id) {
-        onlineServers.add(new Server().setName(name).setId(id));
+    public Server buildServer(String name, String id) {
+        for (Server server : personalUser.getServer()) {
+            if (server.getId().equals(id)) {
+                return server;
+            }
+        }
+        Server newServer = new Server().setName(name).setId(id);
+        personalUser.withServer(newServer);
+        return newServer;
     }
 
     public ModelBuilder buildServer(Server newServer) {

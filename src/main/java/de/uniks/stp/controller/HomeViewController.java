@@ -207,8 +207,9 @@ public class HomeViewController {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
+                String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName);
+                    builder.buildUser(userName, userId);
                     //runLater() is needed because it is called from outside the GUI thread and only the GUI thread can change the GUI
                     Platform.runLater(() -> onlineUsers.add(new User().setName(userName).setStatus(true)));
                 }
