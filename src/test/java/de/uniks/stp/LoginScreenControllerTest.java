@@ -65,6 +65,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#loginButton");
+        Thread.sleep(500);
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
         WaitForAsyncUtils.waitForFxEvents();
 
