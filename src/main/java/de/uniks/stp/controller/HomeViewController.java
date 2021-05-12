@@ -7,6 +7,8 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.WSCallback;
+import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,8 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
+import javax.json.JsonStructure;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -66,6 +71,7 @@ public class HomeViewController {
     private Stage stage;
     private ModelBuilder builder;
     private ScheduledExecutorService usersUpdateScheduler;
+    private WebSocketClient USER_CLIENT;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -117,6 +123,21 @@ public class HomeViewController {
         this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+
+        try {
+            USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
+
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    System.out.println("msg: " + msg);
+                    //JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    //String currentChannel = jsonMsg.getString(COM_CHANNEL);
+
+                }
+            });
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         setupBuilder();
         showServers();
@@ -234,6 +255,10 @@ public class HomeViewController {
                         Platform.runLater(() -> showUser());
                     }
                 }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private void initWebsocket() throws URISyntaxException {
+
     }
 
     private void showCurrentUser() {
