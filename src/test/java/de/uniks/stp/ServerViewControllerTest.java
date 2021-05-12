@@ -66,35 +66,6 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Test
     public void showServerUsersTest() throws InterruptedException{
-        //Can be used if modified or deleted if not needed. Up to you
-//        loginInit();
-//        WaitForAsyncUtils.waitForFxEvents();
-//        Thread.sleep(2000);
-//
-//        Circle addServer = lookup("#addServer").query();
-//        clickOn(addServer);
-//        TextField serverName = (TextField) lookup("#serverName").query();
-//        serverName.setText("TestServer");
-//        clickOn("#createServer");
-//
-//        restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
-//        JSONObject data = new JSONObject().accumulate("id", "5e2ffbd8770dd077d03df505").accumulate("name", "TestServer");
-//        JSONObject jsonObj = new JSONObject().accumulate("status","success").accumulate("message", "password").append("data", data);
-//        when(res.getBody()).thenReturn(new JsonNode(jsonObj.toString()));
-//        verify(restMock).postServer(anyString(), anyString());
-//
-//        restMock.getServerUsers("5e2ffbd8770dd077d03df505", "c653b568-d987-4331-8d62-26ae617847bf", response -> {});
-//
-//        JSONArray categories = new JSONArray().put("5e2ffbdabg75dd078d03df600");
-//        JSONObject member = new JSONObject().accumulate("id", "5e2ffbdabg75dd077d03df505").accumulate("name", "Spock").accumulate("online", true);
-//        JSONArray members = new JSONArray().put(member);
-//        JSONObject data2 = new JSONObject().accumulate("id", "5e2ffbd8770dd077d03df505").accumulate("name", "TestServer").accumulate("categories", categories).accumulate("members", members);
-//        JSONObject jsonObj2 = new JSONObject().accumulate("status","success").accumulate("message", "password").accumulate("data", data2);
-//        when(res.getBody()).thenReturn(new JsonNode(jsonObj2.toString()));
-//        verify(restMock).getServerUsers(anyString(), anyString(), callbackCaptor.capture());
-//        Callback<JsonNode> callback = callbackCaptor.getValue();
-//        callback.completed(res);
-//
-//        Assert.assertEquals(jsonObj2.toString(), res.getBody().toString());
+
     }
 }
