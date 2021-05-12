@@ -76,35 +76,5 @@ public class ModelBuilder {
         return currentServer;
     }
 
-    /////////////////////////////////////////
-    // PropertyChange
-    /////////////////////////////////////////
-
-    private boolean firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (listeners != null) {
-            listeners.firePropertyChange(propertyName, oldValue, newValue);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        if (listeners == null) {
-            listeners = new PropertyChangeSupport(this);
-        }
-        listeners.addPropertyChangeListener(propertyName, listener);
-        return true;
-    }
-
-    public void stop() {
-        if (listeners.getPropertyChangeListeners() != null) {
-            for (PropertyChangeListener listener : listeners.getPropertyChangeListeners()) {
-                this.listeners.removePropertyChangeListener(listener);
-            }
-            this.listeners = null;
-        }
-
-    }
-
 
 }

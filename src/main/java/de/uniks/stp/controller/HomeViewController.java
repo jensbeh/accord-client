@@ -275,7 +275,6 @@ public class HomeViewController {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
-        this.builder.stop();
         this.logoutButton.setOnAction(null);
     }
 
