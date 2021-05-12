@@ -4,14 +4,11 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,6 +30,7 @@ public class ServerViewController {
     private TextField sendTextField;
     private Button sendMessageButton;
     private JSONArray members;
+    private ListView<User> onlineUsersList;
 
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
@@ -63,22 +61,24 @@ public class ServerViewController {
     }
 
 
-    public void showOnlineUsers( String userKey) {
-        ArrayList<User> users = null;
+    public void showOnlineUsers(String userKey) {
         restClient.getServerUsers(server.getId(), userKey, response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                this.members = body.getObject().getJSONObject("data").getJSONArray("members");
-                Platform.runLater(() -> {
-                    for(int i = 0; i < members.length(); i++) {
-                        JSONObject member = members.getJSONObject(i);
-                        String id = member.getString("id");
-                        String name = member.getString("name");
-                        boolean online = member.getBoolean("online");
-                        builder.buildUser(name, id, online);
-                    }
-                });
+                members = body.getObject().getJSONObject("data").getJSONArray("members");
+                for (User user : builder.getCurrentServer().getUser()) {
+                    builder.getCurrentServer().withoutUser(user);
+                }
+                for (int i = 0; i < members.length(); i++) {
+                    JSONObject member = members.getJSONObject(i);
+                    String id = member.getString("id");
+                    String name = member.getString("name");
+                    boolean online = member.getBoolean("online");
+                    User user = new User().setCurrentUser(builder.getPersonalUser()).setId(id).setName(name).setStatus(online);
+                    builder.getCurrentServer().withUser(user);
+                }
+
 
             } else if (status.equals("failure")) {
                 System.out.println(body.getObject().getString("message"));
