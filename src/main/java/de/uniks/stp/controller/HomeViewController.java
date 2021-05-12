@@ -15,34 +15,33 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.JsonUtil;
 
-
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -130,9 +129,25 @@ public class HomeViewController {
                 @Override
                 public void handleMessage(JsonStructure msg) {
                     System.out.println("msg: " + msg);
-                    //JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    //String currentChannel = jsonMsg.getString(COM_CHANNEL);
+                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    String userAction = jsonMsg.getString("action");
+                    JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    String userName = jsonData.getString("name");
+                    String userId = jsonData.getString("id");
 
+                    if (userAction.equals("userJoined")) {
+                        User newUser = new User().setId(userId).setName(userName);
+                        builder.getPersonalUser().withUser(newUser);
+                    } else {
+                        for (User user : builder.getPersonalUser().getUser()) {
+                            if (user.getId().equals(userId)) {
+                                builder.getPersonalUser().withoutUser(user);
+                            }
+                        }
+                    }
+
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+                    //showUsers();
                 }
             });
         } catch (URISyntaxException e) {
@@ -142,7 +157,7 @@ public class HomeViewController {
         setupBuilder();
         showServers();
         showCurrentUser();
-        showUserUpdate();
+        showUsers();
     }
 
     private void setupBuilder() {
@@ -225,7 +240,7 @@ public class HomeViewController {
     // Users
     ///////////////////////////
 
-    private void showUser() {
+    private void showUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             //List to track the online users in order to remove old users that are now offline
@@ -245,20 +260,6 @@ public class HomeViewController {
             }
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
         });
-    }
-
-    private void showUserUpdate() {
-        usersUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
-        usersUpdateScheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        Platform.runLater(() -> showUser());
-                    }
-                }, 0, 5, TimeUnit.SECONDS);
-    }
-
-    private void initWebsocket() throws URISyntaxException {
-
     }
 
     private void showCurrentUser() {
@@ -327,7 +328,6 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         this.builder.stop();
         this.logoutButton.setOnAction(null);
-        this.usersUpdateScheduler.shutdown();
     }
 
     public void setBuilder(ModelBuilder builder) {
@@ -340,7 +340,7 @@ public class HomeViewController {
 
     private void homeButtonClicked(MouseEvent mouseEvent) {
         root.setCenter(viewBox);
-        showUser();
+        showUsers();
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
 
