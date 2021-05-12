@@ -62,12 +62,14 @@ public class ServerViewController {
 
 
     public void showOnlineUsers(String userKey) {
-        ArrayList<User> users = null;
         restClient.getServerUsers(server.getId(), userKey, response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 members = body.getObject().getJSONObject("data").getJSONArray("members");
+                for (User user : builder.getCurrentServer().getUser()) {
+                    builder.getCurrentServer().withoutUser(user);
+                }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");

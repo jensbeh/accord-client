@@ -101,6 +101,7 @@ public class HomeViewController {
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverList.setCellFactory(new AlternateServerListCellFactory());
+        this.serverList.setOnMouseReleased(this::onServerClicked);
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
 
@@ -140,14 +141,14 @@ public class HomeViewController {
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
-            showServerView(this.builder.getCurrentServer());
+            showServerView();
         });
     }
 
-    public void showServerView(Server server) {
+    public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
-            ServerViewController serverController = new ServerViewController(root, builder, server);
+            ServerViewController serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
@@ -159,6 +160,16 @@ public class HomeViewController {
             });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void onServerClicked(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
+            if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
+                Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
+                this.builder.setCurrentServer(selectedServer);
+                showServerView();
+            }
         }
     }
 
@@ -190,7 +201,6 @@ public class HomeViewController {
 
     private void showServerUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
-
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
         });
     }
