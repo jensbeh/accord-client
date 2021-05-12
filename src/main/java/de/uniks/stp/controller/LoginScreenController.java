@@ -8,7 +8,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import kong.unirest.JsonNode;
-import java.io.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Scanner;
 
 public class LoginScreenController {
@@ -25,7 +29,6 @@ public class LoginScreenController {
     private final RestClient restClient;
     private Label connectionLabel;
     private ModelBuilder builder;
-    private Boolean temp = false;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -48,7 +51,7 @@ public class LoginScreenController {
         //Save last username and password that wanted to be remembered in file
         File f = new File("saves/user.txt");
         try {
-            if(f.exists() && !f.isDirectory()) {
+            if (f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
                 int i = 0;
                 while (scanner.hasNextLine()) {
@@ -117,7 +120,7 @@ public class LoginScreenController {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
             } else {
-                if (rememberCheckBox.isSelected() && !temp) {
+                if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
                 } else {
                     saveRememberMe("", "");
@@ -141,7 +144,7 @@ public class LoginScreenController {
                     }
                 });
             }
-        } else if (tempUserCheckBox.isSelected()){
+        } else if (tempUserCheckBox.isSelected()) {
             saveRememberMe("", "");
             restClient.loginTemp(response -> {
                 JsonNode body = response.getBody();
@@ -153,7 +156,7 @@ public class LoginScreenController {
                     //show message on screen
                     this.message = body.getObject().getString("status");
                     //fill in username and password and login of tempUser
-                    Platform.runLater(()-> {
+                    Platform.runLater(() -> {
                         errorLabel.setText("Login was a " + message);
                         usernameTextField.setText(name);
                         passwordTextField.setText(passw);
@@ -181,7 +184,7 @@ public class LoginScreenController {
             //save username and password in text file
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream( "saves/user.txt" )));
+                            new FileOutputStream("saves/user.txt")));
             out.write(username);
             out.newLine();
             out.write(password);

@@ -34,7 +34,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     private StageManager app;
 
     @Override
-    public void start (Stage stage) {
+    public void start(Stage stage) {
         //start application
         this.stage = stage;
         app = new StageManager();
@@ -52,12 +52,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Before
-    public void setup () {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test()
-    public void logInTest () throws InterruptedException {
+    public void logInTest() throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("peter");
         PasswordField passwordField = lookup("#passwordTextField").query();
@@ -69,7 +69,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
         WaitForAsyncUtils.waitForFxEvents();
 
-        restMock.login("bla", "fasel", response -> {});
+        restMock.login("bla", "fasel", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).login(anyString(), anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -78,7 +79,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     }
 
     @Test()
-    public void logInFailTest () throws InterruptedException {
+    public void logInFailTest() throws InterruptedException {
         //wrong password
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("peter");
@@ -104,7 +105,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("Invalid credentials", errorLabel.getText());
 
 
-        restMock.login("bla", "fasel", response -> {});
+        restMock.login("bla", "fasel", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).login(anyString(), anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -113,7 +115,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void signInTest () throws InterruptedException {
+    public void signInTest() throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("peter");
         PasswordField passwordField = lookup("#passwordTextField").query();
@@ -125,7 +127,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Thread.sleep(500);
         Assert.assertEquals("Name already taken", errorLabel.getText());
 
-        restMock.signIn("bla", "fasel", response -> {});
+        restMock.signIn("bla", "fasel", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).signIn(anyString(), anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -134,12 +137,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void emptyFieldTest () {
+    public void emptyFieldTest() {
         //usernameField and passwordField are both empty
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        Platform.runLater(()->passwordField.setText(""));
-        Platform.runLater(()->usernameTextField.setText(""));
+        Platform.runLater(() -> passwordField.setText(""));
+        Platform.runLater(() -> usernameTextField.setText(""));
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#signinButton");
@@ -157,7 +160,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
         //only passwordField is empty
-        Platform.runLater(()->passwordField.setText(""));
+        Platform.runLater(() -> passwordField.setText(""));
         usernameTextField.setText("peter");
         rememberBox.setSelected(true);
         clickOn("#signinButton");
@@ -170,8 +173,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public void tempLoginTest() throws InterruptedException {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        Platform.runLater(()->passwordField.setText(""));
-        Platform.runLater(()->usernameTextField.setText(""));
+        Platform.runLater(() -> passwordField.setText(""));
+        Platform.runLater(() -> usernameTextField.setText(""));
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         CheckBox tempBox = lookup("#loginAsTempUser").query();
@@ -180,7 +183,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Thread.sleep(500);
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        restMock.loginTemp(response -> {});
+        restMock.loginTemp(response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).loginTemp(callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -192,8 +196,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public void tempSignInTest() throws InterruptedException {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        Platform.runLater(()->passwordField.setText(""));
-        Platform.runLater(()->usernameTextField.setText(""));
+        Platform.runLater(() -> passwordField.setText(""));
+        Platform.runLater(() -> usernameTextField.setText(""));
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(false);
         CheckBox tempBox = lookup("#loginAsTempUser").query();
@@ -203,7 +207,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Label errorLabel = lookup("#errorLabel").query();
         Assert.assertEquals("Click on Login", errorLabel.getText());
 
-        restMock.loginTemp(response -> {});
+        restMock.loginTemp(response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).loginTemp(callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -215,8 +220,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public void rememberMeNotTest() throws InterruptedException {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        Platform.runLater(()->passwordField.setText("123"));
-        Platform.runLater(()->usernameTextField.setText("peter"));
+        Platform.runLater(() -> passwordField.setText("123"));
+        Platform.runLater(() -> usernameTextField.setText("peter"));
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(false);
         clickOn("#loginButton");
@@ -226,12 +231,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
         //Check if file with username and password is empty
         File f = new File("saves/user.txt");
         try {
-            if(f.exists() && !f.isDirectory()) {
+            if (f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
                 int i = 0;
                 while (scanner.hasNext()) {
                     if (i == 0) {
-                        String  firstLine = scanner.next();
+                        String firstLine = scanner.next();
                         Assert.assertEquals("", firstLine);
                     }
                     if (i == 1) {
@@ -251,8 +256,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public void rememberMeTest() throws InterruptedException {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        Platform.runLater(()->passwordField.setText("123"));
-        Platform.runLater(()->usernameTextField.setText("peter"));
+        Platform.runLater(() -> passwordField.setText("123"));
+        Platform.runLater(() -> usernameTextField.setText("peter"));
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
         clickOn("#loginButton");
@@ -262,12 +267,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
         //Check if file with username and password were saved
         File f = new File("saves/user.txt");
         try {
-            if(f.exists() && !f.isDirectory()) {
+            if (f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
                 int i = 0;
                 while (scanner.hasNext()) {
                     if (i == 0) {
-                        String  firstLine = scanner.next();
+                        String firstLine = scanner.next();
                         Assert.assertEquals("peter", firstLine);
                     }
                     if (i == 1) {
