@@ -4,13 +4,10 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.List;
 
 public class ModelBuilder {
-    private PropertyChangeSupport listeners = null;
     private Server currentServer;
     private CurrentUser personalUser;
 
@@ -29,17 +26,6 @@ public class ModelBuilder {
             }
         }
         User newUser = new User().setName(name).setId(id);
-        personalUser.withUser(newUser);
-        return newUser;
-    }
-
-    public User buildUser(String name, String id, boolean online) {
-        for (User user : personalUser.getUser()) {
-            if (user.getId().equals(id)) {
-                return user;
-            }
-        }
-        User newUser = new User().setName(name).setId(id).setStatus(online);
         personalUser.withUser(newUser);
         return newUser;
     }
