@@ -11,14 +11,14 @@ public class Channel
    public static final String PROPERTY_NAME = "name";
    public static final String PROPERTY_ID = "id";
    public static final String PROPERTY_CATEGORIES = "categories";
-   public static final String PROPERTY_USER = "user";
    public static final String PROPERTY_MESSAGE = "message";
+   public static final String PROPERTY_CURRENT_USER = "currentUser";
    private String name;
    private String id;
    private Categories categories;
    protected PropertyChangeSupport listeners;
-   private User user;
    private List<Message> message;
+   private CurrentUser currentUser;
 
    public String getName()
    {
@@ -80,33 +80,6 @@ public class Channel
          value.withChannel(this);
       }
       this.firePropertyChange(PROPERTY_CATEGORIES, oldValue, value);
-      return this;
-   }
-
-   public User getUser()
-   {
-      return this.user;
-   }
-
-   public Channel setUser(User value)
-   {
-      if (this.user == value)
-      {
-         return this;
-      }
-
-      final User oldValue = this.user;
-      if (this.user != null)
-      {
-         this.user = null;
-         oldValue.withoutPrivateChat(this);
-      }
-      this.user = value;
-      if (value != null)
-      {
-         value.withPrivateChat(this);
-      }
-      this.firePropertyChange(PROPERTY_USER, oldValue, value);
       return this;
    }
 
@@ -176,6 +149,33 @@ public class Channel
       return this;
    }
 
+   public CurrentUser getCurrentUser()
+   {
+      return this.currentUser;
+   }
+
+   public Channel setCurrentUser(CurrentUser value)
+   {
+      if (this.currentUser == value)
+      {
+         return this;
+      }
+
+      final CurrentUser oldValue = this.currentUser;
+      if (this.currentUser != null)
+      {
+         this.currentUser = null;
+         oldValue.withoutPrivateChat(this);
+      }
+      this.currentUser = value;
+      if (value != null)
+      {
+         value.withPrivateChat(this);
+      }
+      this.firePropertyChange(PROPERTY_CURRENT_USER, oldValue, value);
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -207,7 +207,7 @@ public class Channel
    public void removeYou()
    {
       this.setCategories(null);
-      this.setUser(null);
+      this.setCurrentUser(null);
       this.withoutMessage(new ArrayList<>(this.getMessage()));
    }
 }

@@ -1,5 +1,5 @@
 - c: 	org.fulib.classmodel.ClassModel
-  classes: 	server 	categories 	channel 	user 	message
+  classes: 	server 	categories 	channel 	user 	currentUser 	message
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
   defaultRoleType: 	"java.util.ArrayList<%s>"
@@ -13,7 +13,7 @@
   modified: 	false
   name: 	Server
   propertyStyle: 	Bean
-  roles: 	server_categories 	server_user
+  roles: 	server_categories 	server_user 	server_currentUser
 
 - categories: 	org.fulib.classmodel.Clazz
   attributes: 	categories_name 	categories_id
@@ -29,15 +29,23 @@
   modified: 	false
   name: 	Channel
   propertyStyle: 	Bean
-  roles: 	channel_categories 	channel_user 	channel_message
+  roles: 	channel_categories 	channel_currentUser 	channel_message
 
 - user: 	org.fulib.classmodel.Clazz
-  attributes: 	user_name 	user_id 	user_userKey 	user_status
+  attributes: 	user_name 	user_id 	user_status
   model: 	c
   modified: 	false
   name: 	User
   propertyStyle: 	Bean
-  roles: 	user_server 	user_privateChat
+  roles: 	user_server 	user_currentUser
+
+- currentUser: 	org.fulib.classmodel.Clazz
+  attributes: 	currentUser_name 	currentUser_userKey
+  model: 	c
+  modified: 	false
+  name: 	CurrentUser
+  propertyStyle: 	Bean
+  roles: 	currentUser_user 	currentUser_server 	currentUser_privateChat
 
 - message: 	org.fulib.classmodel.Clazz
   attributes: 	message_from 	message_timestap 	message_message
@@ -104,6 +112,16 @@
   other: 	user_server
   propertyStyle: 	Bean
   roleType: 	"java.util.ArrayList<%s>"
+
+- server_currentUser: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	1
+  clazz: 	server
+  id: 	Server_currentUser
+  modified: 	false
+  name: 	currentUser
+  other: 	currentUser_server
+  propertyStyle: 	Bean
 
 - categories_name: 	org.fulib.classmodel.Attribute
   clazz: 	categories
@@ -173,14 +191,14 @@
   other: 	categories_channel
   propertyStyle: 	Bean
 
-- channel_user: 	org.fulib.classmodel.AssocRole
+- channel_currentUser: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	1
   clazz: 	channel
-  id: 	Channel_user
+  id: 	Channel_currentUser
   modified: 	false
-  name: 	user
-  other: 	user_privateChat
+  name: 	currentUser
+  other: 	currentUser_privateChat
   propertyStyle: 	Bean
 
 - channel_message: 	org.fulib.classmodel.AssocRole
@@ -213,15 +231,6 @@
   type: 	String
   typeSignature: 	String
 
-- user_userKey: 	org.fulib.classmodel.Attribute
-  clazz: 	user
-  id: 	User_userKey
-  modified: 	false
-  name: 	userKey
-  propertyStyle: 	Bean
-  type: 	String
-  typeSignature: 	String
-
 - user_status: 	org.fulib.classmodel.Attribute
   clazz: 	user
   id: 	User_status
@@ -243,15 +252,67 @@
   propertyStyle: 	Bean
   roleType: 	"java.util.ArrayList<%s>"
 
-- user_privateChat: 	org.fulib.classmodel.AssocRole
+- user_currentUser: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	1
+  clazz: 	user
+  id: 	User_currentUser
+  modified: 	false
+  name: 	currentUser
+  other: 	currentUser_user
+  propertyStyle: 	Bean
+
+- currentUser_name: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_name
+  modified: 	false
+  name: 	name
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_userKey: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_userKey
+  modified: 	false
+  name: 	userKey
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_user: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	3
-  clazz: 	user
+  clazz: 	currentUser
   collectionType: 	c1
-  id: 	User_privateChat
+  id: 	CurrentUser_user
+  modified: 	false
+  name: 	user
+  other: 	user_currentUser
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
+
+- currentUser_server: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	3
+  clazz: 	currentUser
+  collectionType: 	c1
+  id: 	CurrentUser_server
+  modified: 	false
+  name: 	server
+  other: 	server_currentUser
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
+
+- currentUser_privateChat: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	3
+  clazz: 	currentUser
+  collectionType: 	c1
+  id: 	CurrentUser_privateChat
   modified: 	false
   name: 	privateChat
-  other: 	channel_user
+  other: 	channel_currentUser
   propertyStyle: 	Bean
   roleType: 	"java.util.ArrayList<%s>"
 
