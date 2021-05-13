@@ -120,11 +120,6 @@ public class HomeViewController {
     // Server
     ///////////////////////////
 
-    /**
-     * Creates a createServer view in a new Stage.
-     *
-     * @param mouseEvent is called when clicked on the + Button.
-     */
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
@@ -143,10 +138,6 @@ public class HomeViewController {
         }
     }
 
-    /**
-     * Closes the createServerStage and calls showServerView. Is
-     * called after the ok button in createServer is clicked
-     */
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
@@ -154,10 +145,6 @@ public class HomeViewController {
         });
     }
 
-    /**
-     * Changes the currently shown view to the Server view of the currentServer.
-     * Also changes the online user list to an online and offline list of users in that server.
-     */
     public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
@@ -176,21 +163,11 @@ public class HomeViewController {
         }
     }
 
-    /**
-     * Sets the clicked Server as currentServer and calls showServerView.
-     *
-     * @param mouseEvent is called when clicked on a Server
-     */
     private void onServerClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
                 this.builder.setCurrentServer(selectedServer);
-//                resetPaint();
-//                homeCircle.setFill(Paint.valueOf("#a4a4a4"));
-//                public void resetPaint() {
-//                    homeCircle.setFill(Paint.valueOf("#a4a4a4"));
-//                }
                 showServerView();
             }
         }
@@ -322,6 +299,7 @@ public class HomeViewController {
     private void homeButtonClicked(MouseEvent mouseEvent) {
         root.setCenter(viewBox);
         showUser();
+        this.builder.setCurrentServer(null);
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
 
