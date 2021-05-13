@@ -36,8 +36,8 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
 
     /**
-     *  "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
-     *  It also creates a new restClient"
+     * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
+     * It also creates a new restClient"
      */
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
@@ -45,6 +45,7 @@ public class ServerViewController {
         this.server = server;
         restClient = new RestClient();
     }
+
     /**
      * Initialise all view parameters
      */
@@ -67,8 +68,10 @@ public class ServerViewController {
         showText();
         showChannels();
     }
+
     /**
      * Return the root object.
+     *
      * @return root Hbox where the ServerView is displayed
      */
     public HBox getRoot() {
@@ -77,6 +80,7 @@ public class ServerViewController {
 
     /**
      * Update the builder and get the ServerUser. Also sets their online and offline Status.
+     *
      * @param userKey the userKey off the personalUser
      */
     public void showOnlineUsers(String userKey) {

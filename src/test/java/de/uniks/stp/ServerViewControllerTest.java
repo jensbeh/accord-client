@@ -1,10 +1,11 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -19,17 +20,13 @@ import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
 
     @Override
-    public void start (Stage stage) {
+    public void start(Stage stage) {
         //start application
         this.stage = stage;
         app = new StageManager();
@@ -47,7 +44,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Before
-    public void setup () {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -61,7 +58,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void showServerTest() throws InterruptedException{
+    public void showServerTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -72,7 +69,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void showServerUsersTest() throws InterruptedException{
+    public void showServerUsersTest() throws InterruptedException {
 
     }
 }

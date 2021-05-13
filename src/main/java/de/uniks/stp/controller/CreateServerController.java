@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
+
 /**
  * The class CreateServerController is about showing the createServerView. After a server is
  * created it is closed in HoweViewController. It is called after the + Button is clicked.
@@ -35,6 +36,7 @@ public class CreateServerController {
         this.view = view;
         restClient = new RestClient();
     }
+
     /**
      * Initialise all view parameters
      */
@@ -47,8 +49,10 @@ public class CreateServerController {
         createServer.setOnAction(this::onCreateServerClicked);
 
     }
+
     /**
      * Set the Runnable parameter that is called after the Ok button is clicked
+     *
      * @param change the userKey off the personalUser
      */
     public void showCreateServerView(Runnable change) {
@@ -57,6 +61,7 @@ public class CreateServerController {
 
     /**
      * Create the server and change the currentView to the ServerView with the newly created server.
+     *
      * @param event is called when the Ok button is clicked
      */
     public void onCreateServerClicked(ActionEvent event) {

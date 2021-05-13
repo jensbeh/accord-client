@@ -122,6 +122,7 @@ public class HomeViewController {
 
     /**
      * Creates a createServer view in a new Stage.
+     *
      * @param mouseEvent is called when clicked on the + Button.
      */
     private void onshowCreateServer(MouseEvent mouseEvent) {
@@ -156,7 +157,6 @@ public class HomeViewController {
     /**
      * Changes the currently shown view to the Server view of the currentServer.
      * Also changes the online user list to an online and offline list of users in that server.
-     *
      */
     public void showServerView() {
         try {
@@ -178,6 +178,7 @@ public class HomeViewController {
 
     /**
      * Sets the clicked Server as currentServer and calls showServerView.
+     *
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
