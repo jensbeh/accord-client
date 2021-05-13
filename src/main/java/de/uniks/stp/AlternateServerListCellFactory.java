@@ -42,6 +42,7 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
+                cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
                 circle.setFill(Paint.valueOf("#a4a4a4"));
                 serverName.setText(item.getName());
