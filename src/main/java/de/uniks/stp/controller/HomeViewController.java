@@ -340,7 +340,7 @@ public class HomeViewController {
 
     private void homeButtonClicked(MouseEvent mouseEvent) {
         root.setCenter(viewBox);
-        showUser();
+        showUsers();
         this.builder.setCurrentServer(null);
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
