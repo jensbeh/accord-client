@@ -37,7 +37,11 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
-                circle.setFill(Paint.valueOf("#13d86b"));
+                if (item.isStatus()) {
+                    circle.setFill(Paint.valueOf("#13d86b"));
+                } else {
+                    circle.setFill(Paint.valueOf("#eb4034"));
+                }
                 name.setText("   " + item.getName());
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
                 name.setStyle("-fx-font-size: 18");
