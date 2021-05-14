@@ -17,14 +17,14 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
-public class AlternateServerListCellFactory implements javafx.util.Callback<ListView<Server>, ListCell<Server>>{
+public class AlternateServerListCellFactory implements javafx.util.Callback<ListView<Server>, ListCell<Server>> {
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
@@ -55,10 +55,9 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
-                if(item == currentServer) {
+                if (item == currentServer) {
                     circle.setFill(Paint.valueOf("#5a5c5e"));
-                }
-                else {
+                } else {
                     circle.setFill(Paint.valueOf("#a4a4a4"));
                 }
                 serverName.setText(item.getName());

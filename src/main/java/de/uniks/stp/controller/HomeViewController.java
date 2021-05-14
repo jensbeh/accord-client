@@ -102,7 +102,7 @@ public class HomeViewController {
         addServer.setOnMouseClicked(this::onshowCreateServer);
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
-        
+
         serverListCellFactory = new AlternateServerListCellFactory();
         serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
@@ -123,8 +123,10 @@ public class HomeViewController {
     ///////////////////////////
     // Server
     ///////////////////////////
+
     /**
      * Creates a createServer view in a new Stage.
+     *
      * @param mouseEvent is called when clicked on the + Button.
      */
     private void onshowCreateServer(MouseEvent mouseEvent) {
@@ -144,6 +146,7 @@ public class HomeViewController {
             e.printStackTrace();
         }
     }
+
     /**
      * Closes the createServerStage and calls showServerView. Is
      * called after the ok button in createServer is clicked
@@ -155,10 +158,10 @@ public class HomeViewController {
             showServers();
         });
     }
+
     /**
      * Changes the currently shown view to the Server view of the currentServer.
      * Also changes the online user list to an online and offline list of users in that server.
-     *
      */
     public void showServerView() {
         try {
@@ -174,8 +177,10 @@ public class HomeViewController {
             e.printStackTrace();
         }
     }
+
     /**
      * Sets the clicked Server as currentServer and calls showServerView.
+     *
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
@@ -193,10 +198,9 @@ public class HomeViewController {
      * Updates the circles and change the current server or Home circle color
      */
     private void updateServerListColor() {
-        if(builder.getCurrentServer() == null) {
+        if (builder.getCurrentServer() == null) {
             homeCircle.setFill(Paint.valueOf("#5a5c5e"));
-        }
-        else {
+        } else {
             homeCircle.setFill(Paint.valueOf("#a4a4a4"));
         }
         serverListCellFactory.setCurrentServer(builder.getCurrentServer());
