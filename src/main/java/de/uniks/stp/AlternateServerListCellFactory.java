@@ -28,6 +28,17 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
+    private static Server currentServer;
+
+    public static Server getCurrentServer() {
+        return currentServer;
+    }
+
+    public static void setCurrentServer(Server currentServer) {
+        AlternateServerListCellFactory.currentServer = currentServer;
+    }
+
+
     @Override
     public ListCell<Server> call(ListView<Server> param) {
         return new AlternateServerListCellFactory.ServerListCell();
@@ -44,7 +55,12 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
-                circle.setFill(Paint.valueOf("#a4a4a4"));
+                if(item == currentServer) {
+                    circle.setFill(Paint.valueOf("#5a5c5e"));
+                }
+                else {
+                    circle.setFill(Paint.valueOf("#a4a4a4"));
+                }
                 serverName.setText(item.getName());
                 serverName.setTextFill(Color.WHITE);
                 serverName.setFont(Font.font("System", FontWeight.BOLD, 12));

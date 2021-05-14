@@ -1,4 +1,4 @@
-package de.uniks.stp.controller;
+package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
