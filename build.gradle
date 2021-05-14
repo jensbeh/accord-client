@@ -47,6 +47,18 @@ dependencies {
     testImplementation group: 'org.mockito' , name: 'mockito-core', version: '3.5.13'
 
     implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
+    testImplementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
+
+    testImplementation 'org.testfx:testfx-junit:4.0.16-alpha'
+
+    implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
+    implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
+    implementation group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-client', version: '1.15'
+    implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '1.15'
 }
 
 mainClassName = 'de.uniks.stp.Launcher'

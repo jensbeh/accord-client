@@ -3,13 +3,11 @@ package de.uniks.stp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
-
 import de.uniks.stp.controller.SettingsController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;

@@ -7,16 +7,17 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.WSCallback;
+import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -28,16 +29,20 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.JsonUtil;
 
-
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonStructure;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -66,7 +71,7 @@ public class HomeViewController {
     private Stage stage;
     private ModelBuilder builder;
     private ScheduledExecutorService usersUpdateScheduler;
-    private ScheduledExecutorService serversUpdateScheduler;
+    private WebSocketClient USER_CLIENT;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -111,6 +116,7 @@ public class HomeViewController {
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverList.setCellFactory(new AlternateServerListCellFactory());
+        this.serverList.setOnMouseReleased(this::onServerClicked);
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
 
@@ -119,32 +125,47 @@ public class HomeViewController {
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
-        setupBuilder();
+        try {
+            USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
+
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    System.out.println("msg: " + msg);
+                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    String userAction = jsonMsg.getString("action");
+                    JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    String userName = jsonData.getString("name");
+                    String userId = jsonData.getString("id");
+
+                    if (userAction.equals("userJoined")) {
+                        builder.buildUser(userName, userId);
+                    }
+                    if (userAction.equals("userLeft")) {
+                        List<User> userList = builder.getPersonalUser().getUser();
+                        User removeUser = builder.buildUser(userName, userId);
+                        if (userList.contains(removeUser)) {
+                            builder.getPersonalUser().withoutUser(removeUser);
+                        }
+                    }
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+                }
+            });
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         showServers();
         showCurrentUser();
-        showUserUpdate();
-        showServersUpdate();
+        showUsers();
     }
 
-    private void setupBuilder() {
-        this.builder.addPropertyChangeListener("onlineUsers", this::handleUserListChange);
-        this.builder.addPropertyChangeListener("onlineServers", this::handleServerListChange);
-    }
 
-    private void handleUserListChange(PropertyChangeEvent event) {
-        onlineUsers.clear();
-        onlineUsers.addAll(builder.getUsers());
-    }
-
-    private void handleServerListChange(PropertyChangeEvent event) {
-        onlineServers.clear();
-        onlineServers.addAll(builder.getServer());
-    }
     ///////////////////////////
     // Server
     ///////////////////////////
 
     private void onshowCreateServer(MouseEvent mouseEvent) {
+
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"));
             Scene scene = new Scene(root);
@@ -164,25 +185,35 @@ public class HomeViewController {
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
-            List<Server> serverList = this.builder.getServer();
-            Server newServer = serverList.get(serverList.size() - 1);
-            showServerView(newServer);
+            showServerView();
         });
     }
 
-    public void showServerView(Server server) {
+    public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
-            ServerViewController serverController = new ServerViewController(root, builder, server);
+            ServerViewController serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
-            builder.clearUsers();
             // show online users and set it in root (BorderPain)
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
-
+            Platform.runLater(() -> {
+                showServers();
+                showServerUsers();
+            });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void onServerClicked(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
+            if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
+                Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
+                this.builder.setCurrentServer(selectedServer);
+                showServerView();
+            }
         }
     }
 
@@ -212,48 +243,25 @@ public class HomeViewController {
     // Users
     ///////////////////////////
 
-    private void showUser() {
+    private void showServerUsers() {
+        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
+        });
+    }
+
+    private void showUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
-            //List to track the online users in order to remove old users that are now offline
-            ArrayList<User> onlineUser = new ArrayList<>();
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    User user = builder.buildUser(userName, userId);
-                    onlineUser.add(user);
-                }
-            }
-            for (User user : builder.getPersonalUser().getUser()) {
-                if (!onlineUser.contains(user)) {
-                    builder.getPersonalUser().withoutUser(user);
+                    builder.buildUser(userName, userId);
                 }
             }
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
         });
     }
-
-    private void showUserUpdate() {
-        usersUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
-        usersUpdateScheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        Platform.runLater(() -> showUser());
-                    }
-                }, 0, 5, TimeUnit.SECONDS);
-    }
-
-    private void showServersUpdate() {
-        serversUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
-        serversUpdateScheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        Platform.runLater(() -> showServers());
-                    }
-                }, 0, 5, TimeUnit.SECONDS);
-    }
-
 
     private void showCurrentUser() {
         try {
@@ -295,7 +303,7 @@ public class HomeViewController {
     }
 
     private void ononlineUsersListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size() != 0) {
+        if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean flag = true;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             for (Channel channel : privateChats) {
@@ -319,10 +327,7 @@ public class HomeViewController {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
-        this.builder.stop();
         this.logoutButton.setOnAction(null);
-        this.usersUpdateScheduler.shutdown();
-        this.serversUpdateScheduler.shutdown();
     }
 
     public void setBuilder(ModelBuilder builder) {
@@ -335,7 +340,8 @@ public class HomeViewController {
 
     private void homeButtonClicked(MouseEvent mouseEvent) {
         root.setCenter(viewBox);
-        showUser();
+        showUsers();
+        this.builder.setCurrentServer(null);
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
     }
 
