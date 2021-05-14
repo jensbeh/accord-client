@@ -137,18 +137,16 @@ public class HomeViewController {
                     String userId = jsonData.getString("id");
 
                     if (userAction.equals("userJoined")) {
-                        User newUser = new User().setId(userId).setName(userName);
-                        builder.getPersonalUser().withUser(newUser);
-                    } else {
-                        for (User user : builder.getPersonalUser().getUser()) {
-                            if (user.getId().equals(userId)) {
-                                builder.getPersonalUser().withoutUser(user);
-                            }
+                        builder.buildUser(userName, userId);
+                    }
+                    if (userAction.equals("userLeft")) {
+                        List<User> userList = builder.getPersonalUser().getUser();
+                        User removeUser = builder.buildUser(userName, userId);
+                        if (userList.contains(removeUser)) {
+                            builder.getPersonalUser().withoutUser(removeUser);
                         }
                     }
-
                     Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
-                    //showUsers();
                 }
             });
         } catch (URISyntaxException e) {
@@ -241,8 +239,7 @@ public class HomeViewController {
         });
     }
 
-    private void showUser() {
-        onlineUsers.clear();
+    private void showUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
@@ -250,29 +247,6 @@ public class HomeViewController {
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
                     builder.buildUser(userName, userId);
-                    //runLater() is needed because it is called from outside the GUI thread and only the GUI thread can change the GUI
-                    Platform.runLater(() -> onlineUsers.add(new User().setName(userName).setStatus(true)));
-                }
-            }
-        });
-    }
-
-    private void showUsers() {
-        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
-            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
-            //List to track the online users in order to remove old users that are now offline
-            ArrayList<User> onlineUser = new ArrayList<>();
-            for (int i = 0; i < jsonResponse.length(); i++) {
-                String userName = jsonResponse.getJSONObject(i).get("name").toString();
-                String userId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (!userName.equals(builder.getPersonalUser().getName())) {
-                    User user = builder.buildUser(userName, userId);
-                    onlineUser.add(user);
-                }
-            }
-            for (User user : builder.getPersonalUser().getUser()) {
-                if (!onlineUser.contains(user)) {
-                    builder.getPersonalUser().withoutUser(user);
                 }
             }
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
