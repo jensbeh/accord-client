@@ -5,6 +5,7 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -56,6 +57,7 @@ public class HomeViewController {
     private Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
+    private AlternateServerListCellFactory serverListCellFactory;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -100,7 +102,9 @@ public class HomeViewController {
         addServer.setOnMouseClicked(this::onshowCreateServer);
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
-        serverList.setCellFactory(new AlternateServerListCellFactory());
+
+        serverListCellFactory = new AlternateServerListCellFactory();
+        serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
@@ -120,6 +124,11 @@ public class HomeViewController {
     // Server
     ///////////////////////////
 
+    /**
+     * Creates a createServer view in a new Stage.
+     *
+     * @param mouseEvent is called when clicked on the + Button.
+     */
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
@@ -132,19 +141,28 @@ public class HomeViewController {
             stage.setTitle("Create a new Server");
             stage.setScene(scene);
             stage.show();
-            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+            updateServerListColor();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Closes the createServerStage and calls showServerView. Is
+     * called after the ok button in createServer is clicked
+     */
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
             showServerView();
+            showServers();
         });
     }
 
+    /**
+     * Changes the currently shown view to the Server view of the currentServer.
+     * Also changes the online user list to an online and offline list of users in that server.
+     */
     public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
@@ -154,23 +172,39 @@ public class HomeViewController {
             this.root.setCenter(serverController.getRoot());
             // show online users and set it in root (BorderPain)
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
-            Platform.runLater(() -> {
-                showServers();
-                showServerUsers();
-            });
+            showServerUsers();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Sets the clicked Server as currentServer and calls showServerView.
+     *
+     * @param mouseEvent is called when clicked on a Server
+     */
     private void onServerClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
                 this.builder.setCurrentServer(selectedServer);
+                updateServerListColor();
                 showServerView();
             }
         }
+    }
+
+    /**
+     * Updates the circles and change the current server or Home circle color
+     */
+    private void updateServerListColor() {
+        if (builder.getCurrentServer() == null) {
+            homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        } else {
+            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+        }
+        serverListCellFactory.setCurrentServer(builder.getCurrentServer());
+        serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
     private void showServers() {
@@ -300,7 +334,7 @@ public class HomeViewController {
         root.setCenter(viewBox);
         showUser();
         this.builder.setCurrentServer(null);
-        homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        updateServerListColor();
     }
 
     private void logoutButtonOnClicked(ActionEvent actionEvent) {

@@ -4,7 +4,6 @@ import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -14,7 +13,10 @@ import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -30,7 +32,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     private RestClient restClient;
 
     @Override
-    public void start (Stage stage) {
+    public void start(Stage stage) {
         //start application
         this.stage = stage;
         app = new StageManager();
@@ -48,7 +50,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Before
-    public void setup () {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -90,7 +92,8 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test
     public void userBoxTest() throws InterruptedException {
         RestClient restClient = new RestClient();
-        restClient.login("Peter Lustig 2", "1234", response -> {});
+        restClient.login("Peter Lustig 2", "1234", response -> {
+        });
         login();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -108,7 +111,8 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void getServersTest() {
-        restMock.getServers("bla", response -> {});
+        restMock.getServers("bla", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).getServers(anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -118,7 +122,8 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void getUsersTest() {
-        restMock.getUsers("bla", response -> {});
+        restMock.getUsers("bla", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).getUsers(anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -129,7 +134,8 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test
     public void privateChatTest() throws InterruptedException {
         RestClient restClient = new RestClient();
-        restClient.login("Peter Lustig 2", "1234", response -> {});
+        restClient.login("Peter Lustig 2", "1234", response -> {
+        });
         login();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -156,7 +162,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Accord - Login", stage.getTitle());
 
-        restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {});
+        restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {
+        });
         when(res.getBody()).thenReturn(new JsonNode("{}"));
         verify(restMock).logout(anyString(), callbackCaptor.capture());
         Callback<JsonNode> callback = callbackCaptor.getValue();
