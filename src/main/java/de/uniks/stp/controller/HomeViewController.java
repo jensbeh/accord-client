@@ -5,7 +5,10 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.*;
+import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.CurrentUser;
+import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -15,14 +18,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +62,7 @@ public class HomeViewController {
     private Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
+    private VBox chatViewContainer;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -80,9 +87,13 @@ public class HomeViewController {
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         settingsButton = (Button) view.lookup("#settingsButton");
         messages = (VBox) view.lookup("#messages");
-        messageBar = (HBox) view.lookup("#messagebar");
-        messageBar.setOpacity(0);
         logoutButton = (Button) view.lookup("#logoutButton");
+        chatViewContainer = (VBox) view.lookup("#chatBox");
+        Label label = new Label();
+        label.setText("Welcome to Accord");
+        label.setFont(new Font("Arial", 24));
+        label.setTextFill(Color.WHITE);
+        chatViewContainer.getChildren().add(label);
 
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
@@ -230,7 +241,6 @@ public class HomeViewController {
             userProfileController.setUserName(currentUser.getName());
             userProfileController.setOnline();
             this.currentUserBox.getChildren().add(root);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,24 +249,25 @@ public class HomeViewController {
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2 && this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
+            this.privateChatList.getSelectionModel().getSelectedIndices();
             MessageViews();
         }
     }
 
+
     private void MessageViews() {
-        this.messages.getChildren().clear();
-        messageBar.setOpacity(1);
-        for (Message msg : this.selectedChat.getMessage()) {
-            try {
-                Parent view = FXMLLoader.load(StageManager.class.getResource("Message.fxml"));
-                MessageController messageController = new MessageController(msg, view, builder);
-                messageController.init();
+        loadChatView();
+    }
 
-                this.messages.getChildren().add(view);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    private void loadChatView() {
+        this.chatViewContainer.getChildren().clear();
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageController = new ChatViewController(view, builder);
+            messageController.init();
+            this.chatViewContainer.getChildren().add(view);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -30,6 +30,7 @@ public class LoginScreenController {
     private Label errorLabel;
     private String message;
     private final RestClient restClient;
+    private Boolean netConnection = false;
     private Label connectionLabel;
     private ModelBuilder builder;
 
@@ -88,6 +89,7 @@ public class LoginScreenController {
         if (!tempUserCheckBox.isSelected()) {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
+                netConnection = true;
             } else {
                 //if remember me selected then username and password is saved in a user.txt
                 if (rememberCheckBox.isSelected()) {
@@ -97,6 +99,7 @@ public class LoginScreenController {
                 }
                 //signIn Post
                 restClient.signIn(username, password, response -> {
+                    netConnection = true;
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
@@ -113,6 +116,16 @@ public class LoginScreenController {
         } else if (tempUserCheckBox.isSelected()) {
             errorLabel.setText("Click on Login");
         }
+        //no internet connection
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!netConnection) {
+            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
+        }
+        netConnection = false;
     }
 
     private void loginButtonOnClick(ActionEvent actionEvent) {
@@ -122,6 +135,7 @@ public class LoginScreenController {
             //if remember me selected then username and password is saved in a user.txt
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
+                netConnection = true;
             } else {
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
@@ -130,6 +144,7 @@ public class LoginScreenController {
                 }
                 //login Post
                 restClient.login(username, password, response -> {
+                    netConnection = true;
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
@@ -150,6 +165,7 @@ public class LoginScreenController {
         } else if (tempUserCheckBox.isSelected()) {
             saveRememberMe("", "");
             restClient.loginTemp(response -> {
+                netConnection = true;
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
@@ -172,8 +188,17 @@ public class LoginScreenController {
                     Platform.runLater(() -> errorLabel.setText(message));
                 }
             });
-
         }
+        //no internet connection
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!netConnection) {
+            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
+        }
+        netConnection = false;
     }
 
     public void stop() {
