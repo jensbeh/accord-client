@@ -266,6 +266,7 @@ public class HomeViewController {
             ChatViewController messageController = new ChatViewController(view, builder);
             messageController.init();
             this.chatViewContainer.getChildren().add(view);
+            chatViewContainer.setStyle("-fx-background-color: grey;");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -89,7 +89,6 @@ public class LoginScreenController {
         if (!tempUserCheckBox.isSelected()) {
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
-                netConnection = true;
             } else {
                 //if remember me selected then username and password is saved in a user.txt
                 if (rememberCheckBox.isSelected()) {
@@ -123,7 +122,7 @@ public class LoginScreenController {
             e.printStackTrace();
         }
         if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
+            Platform.runLater(() -> this.connectionLabel.setText("No connection - \nPlease check your connection and try again "));
         }
         netConnection = false;
     }
@@ -135,7 +134,6 @@ public class LoginScreenController {
             //if remember me selected then username and password is saved in a user.txt
             if (username.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Field is empty!");
-                netConnection = true;
             } else {
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
@@ -196,7 +194,7 @@ public class LoginScreenController {
             e.printStackTrace();
         }
         if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No internet connection - \nPlease check your connection and try again "));
+            Platform.runLater(() -> this.connectionLabel.setText("No connection - \nPlease check your connection and try again "));
         }
         netConnection = false;
     }

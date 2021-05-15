@@ -9,9 +9,9 @@
 
 <VBox fx:id="topVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox prefHeight="200.0" prefWidth="400.0" VBox.vgrow="ALWAYS">
+      <VBox prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS">
          <children>
-            <ListView fx:id="messageListView" prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="messageListView" prefHeight="200.0" prefWidth="390.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
       <Line endX="305.29290771484375" endY="-1.7071068286895752" startX="-100.0" stroke="#9e9e9e" VBox.vgrow="ALWAYS" />
