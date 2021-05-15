@@ -1,9 +1,6 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.AlternateChannelListCellFactory;
-import de.uniks.stp.AlternateServerListCellFactory;
-import de.uniks.stp.AlternateUserListCellFactory;
-import de.uniks.stp.StageManager;
+import de.uniks.stp.*;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
@@ -30,6 +27,7 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.JsonUtil;
+import util.SortUser;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -259,8 +257,37 @@ public class HomeViewController {
                     builder.buildUser(userName, userId);
                 }
             }
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
         });
+
+        try {
+            USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
+
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    System.out.println("msg: " + msg);
+                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    String userAction = jsonMsg.getString("action");
+                    JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    String userName = jsonData.getString("name");
+                    String userId = jsonData.getString("id");
+
+                    if (userAction.equals("userJoined")) {
+                        builder.buildUser(userName, userId);
+                    }
+                    if (userAction.equals("userLeft")) {
+                        List<User> userList = builder.getPersonalUser().getUser();
+                        User removeUser = builder.buildUser(userName, userId);
+                        if (userList.contains(removeUser)) {
+                            builder.getPersonalUser().withoutUser(removeUser);
+                        }
+                    }
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+                }
+            });
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showCurrentUser() {
