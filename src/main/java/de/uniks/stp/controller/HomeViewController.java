@@ -247,7 +247,7 @@ public class HomeViewController {
                     builder.buildUser(userName, userId);
                 }
             }
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
         });
 
         try {
@@ -272,7 +272,7 @@ public class HomeViewController {
                             builder.getPersonalUser().withoutUser(removeUser);
                         }
                     }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
                 }
             });
         } catch (URISyntaxException e) {
@@ -346,8 +346,12 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
         try {
-            this.USER_CLIENT.stop();
-            this.SERVER_USER.stop();
+            if (USER_CLIENT.getSession() != null) {
+                USER_CLIENT.stop();
+            }
+            if (SERVER_USER.getSession() != null) {
+                SERVER_USER.stop();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
