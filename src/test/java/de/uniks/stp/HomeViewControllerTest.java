@@ -1,10 +1,10 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -14,7 +14,10 @@ import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -30,7 +33,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     private RestClient restClient;
 
     @Override
-    public void start (Stage stage) {
+    public void start(Stage stage) {
         //start application
         this.stage = stage;
         app = new StageManager();
@@ -48,7 +51,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Before
-    public void setup () {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -162,5 +165,50 @@ public class HomeViewControllerTest extends ApplicationTest {
         Callback<JsonNode> callback = callbackCaptor.getValue();
         callback.completed(res);
         Assert.assertEquals("{}", res.getBody().toString());
+    }
+
+    @Test
+    public void openExistingChat() throws InterruptedException {
+        RestClient restClient = new RestClient();
+        String testUserOneName = "Peter Lustig 2";
+        String testUserTwoName = "Peter Lustig 3";
+
+        restClient.login(testUserOneName, "1234", response -> {});
+        restClient.login(testUserTwoName, "1234", response -> {});
+        login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        clickOn("#homeButton");
+        Thread.sleep(500);
+        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+
+        User testUserOne = new User();
+        User testUserTwo = new User();
+        for (User user : userList.getItems()) {
+            if (user.getName().equals("Peter Lustig 2")) {
+                testUserOne = user;
+            }
+            if (user.getName().equals("Peter Lustig 3")) {
+                testUserTwo = user;
+            }
+        }
+
+        clickOn(userList.lookup("#" + testUserOne.getId()));
+        clickOn(userList.lookup("#" + testUserOne.getId()));
+        Thread.sleep(500);
+        clickOn(userList.lookup("#" + testUserTwo.getId()));
+        clickOn(userList.lookup("#" + testUserTwo.getId()));
+
+        Thread.sleep(500);
+
+        Assert.assertEquals(testUserTwo.getName(), HomeViewController.getSelectedChat().getName());
+
+        Thread.sleep(500);
+
+        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        clickOn(privateChatList.lookup("#" + testUserOne.getId()));
+        clickOn(privateChatList.lookup("#" + testUserOne.getId()));
+
+        Assert.assertEquals(testUserOne.getName(), HomeViewController.getSelectedChat().getName());
     }
 }
