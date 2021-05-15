@@ -5,6 +5,7 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -56,6 +57,7 @@ public class HomeViewController {
     private static Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
+    private AlternateServerListCellFactory serverListCellFactory;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -100,7 +102,9 @@ public class HomeViewController {
         addServer.setOnMouseClicked(this::onshowCreateServer);
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
-        serverList.setCellFactory(new AlternateServerListCellFactory());
+
+        serverListCellFactory = new AlternateServerListCellFactory();
+        serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
@@ -137,7 +141,7 @@ public class HomeViewController {
             stage.setTitle("Create a new Server");
             stage.setScene(scene);
             stage.show();
-            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+            updateServerListColor();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -151,6 +155,7 @@ public class HomeViewController {
         Platform.runLater(() -> {
             stage.close();
             showServerView();
+            showServers();
         });
     }
 
@@ -167,10 +172,7 @@ public class HomeViewController {
             this.root.setCenter(serverController.getRoot());
             // show online users and set it in root (BorderPain)
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
-            Platform.runLater(() -> {
-                showServers();
-                showServerUsers();
-            });
+            showServerUsers();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,9 +188,23 @@ public class HomeViewController {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
                 this.builder.setCurrentServer(selectedServer);
+                updateServerListColor();
                 showServerView();
             }
         }
+    }
+
+    /**
+     * Updates the circles and change the current server or Home circle color
+     */
+    private void updateServerListColor() {
+        if (builder.getCurrentServer() == null) {
+            homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        } else {
+            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+        }
+        serverListCellFactory.setCurrentServer(builder.getCurrentServer());
+        serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
     /**
@@ -361,7 +377,7 @@ public class HomeViewController {
         root.setCenter(viewBox);
         showUser();
         this.builder.setCurrentServer(null);
-        homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        updateServerListColor();
     }
 
     /**

@@ -32,7 +32,6 @@ public class ServerViewController {
     private Label serverNameText;
     private TextField sendTextField;
     private Button sendMessageButton;
-    private JSONArray members;
     private ListView<User> onlineUsersList;
 
     /**
@@ -88,7 +87,7 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                members = body.getObject().getJSONObject("data").getJSONArray("members");
+                JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (User user : builder.getCurrentServer().getUser()) {
                     builder.getCurrentServer().withoutUser(user);
                 }
