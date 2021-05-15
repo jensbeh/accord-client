@@ -13,10 +13,13 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.*;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -28,6 +31,13 @@ public class HomeViewControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
     private RestClient restClient;
+    private String userKey1;
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
 
     @Override
     public void start (Stage stage) {
@@ -68,6 +78,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
         Assert.assertEquals("Peter Lustig", personalUserName.getText());
+        clickOn("#logoutButton");
     }
 
     @Test
@@ -85,25 +96,45 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Test 2", serverName);
+        clickOn("#logoutButton");
     }
 
     @Test
     public void userBoxTest() throws InterruptedException {
         RestClient restClient = new RestClient();
-        restClient.login("Peter Lustig 2", "1234", response -> {});
         login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        restClient.login("Peter Lustig 4", "1234", response -> {
+            String userkey = response.getBody().getObject().getJSONObject("data").getString("userKey");
+            this.userKey1 = userkey;
+        });
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
         String userName = "";
         for (User user : itemList) {
-            if (user.getName().equals("Peter Lustig 2")) {
-                userName = "Peter Lustig 2";
+            if (user.getName().equals("Peter Lustig 4")) {
+                userName = "Peter Lustig 4";
                 break;
             }
         }
-        Assert.assertEquals("Peter Lustig 2", userName);
+        Assert.assertEquals("Peter Lustig 4", userName);
+        Thread.sleep(2000);
+        restClient.logout(userKey1, response -> {});
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        itemList = userList.getItems();
+        userName = "";
+        for (User user : itemList) {
+            if (user.getName().equals("Peter Lustig 4")) {
+                userName = "Peter Lustig 4";
+                break;
+            }
+        }
+        Assert.assertEquals("", userName);
+        clickOn("#logoutButton");
     }
 
     @Test
@@ -138,6 +169,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn(userList.lookup("#user"));
         ListView<Channel> privateChatlist = lookup("#privateChatList").query();
         Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
+        clickOn("#logoutButton");
     }
 
     @Test()

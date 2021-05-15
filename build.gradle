@@ -52,6 +52,8 @@ dependencies {
     testImplementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
 
     testImplementation 'org.testfx:testfx-junit:4.0.16-alpha'
+    testCompile "org.testfx:openjfx-monocle:jdk-11+26"
+    testRuntime 'org.testfx:openjfx-monocle:jdk-11+26'
 
     implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
     implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
@@ -65,4 +67,8 @@ mainClassName = 'de.uniks.stp.Launcher'
 
 generateScenarioSource {
     classDiagramSVG = true
+}
+
+test {
+    jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
 }
