@@ -145,7 +145,9 @@ public class HomeViewController {
         Platform.runLater(() -> {
             stage.close();
             try {
-                USER_CLIENT.stop();
+                if (USER_CLIENT.getSession() != null) {
+                    USER_CLIENT.stop();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -345,13 +347,26 @@ public class HomeViewController {
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
+        try {
+            this.USER_CLIENT.stop();
+            this.SERVER_USER.stop();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
         StageManager.showSettingsScreen();
     }
 
-    private void homeButtonClicked(MouseEvent mouseEvent) {
+    private void homeButtonClicked(MouseEvent mouseEvent){
+        try {
+            if (SERVER_USER.getSession() != null) {
+                SERVER_USER.stop();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         root.setCenter(viewBox);
         this.builder.setCurrentServer(null);
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
