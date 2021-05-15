@@ -25,8 +25,26 @@ public class ModelBuilder {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id);
+        User newUser = new User().setName(name).setId(id).setStatus(true);
         personalUser.withUser(newUser);
+        return newUser;
+    }
+
+    public User buildServerUser(String name, String id, Boolean status) {
+        for (User user : currentServer.getUser()) {
+            if (user.getId().equals(id)) {
+                if (user.isStatus() == status) {
+                    return user;
+                } else {
+                    currentServer.withoutUser(user);
+                    User updatedUser = new User().setName(name).setId(id).setStatus(status);
+                    currentServer.withUser(updatedUser);
+                    return updatedUser;
+                }
+            }
+        }
+        User newUser = new User().setName(name).setId(id).setStatus(status);
+        currentServer.withUser(newUser);
         return newUser;
     }
 

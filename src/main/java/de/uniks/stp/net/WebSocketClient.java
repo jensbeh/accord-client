@@ -90,4 +90,8 @@ public class WebSocketClient extends Endpoint{
         // close session
         this.session.close();
     }
+
+    public Session getSession() {
+        return session;
+    }
 }

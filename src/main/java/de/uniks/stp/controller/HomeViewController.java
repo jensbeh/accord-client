@@ -20,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -29,18 +28,13 @@ import org.json.JSONObject;
 import util.JsonUtil;
 import util.SortUser;
 
-import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -54,8 +48,6 @@ public class HomeViewController {
     private HBox messageBar;
     private HBox viewBox;
     private ObservableList<Channel> privateChats;
-    private ObservableList<User> onlineUsers;
-    private ObservableList<Server> onlineServers;
     private Parent view;
     private ListView<Channel> privateChatList;
     private ListView<Server> serverList;
@@ -68,8 +60,8 @@ public class HomeViewController {
     private Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
-    private ScheduledExecutorService usersUpdateScheduler;
     private WebSocketClient USER_CLIENT;
+    private WebSocketClient SERVER_USER;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -106,8 +98,6 @@ public class HomeViewController {
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
-        onlineUsers = FXCollections.observableArrayList();
-        this.onlineUsersList.setItems(onlineUsers);
         viewBox = (HBox) view.lookup("#viewBox");
         addServer = (Circle) view.lookup("#addServer");
         addServer.setOnMouseClicked(this::onshowCreateServer);
@@ -115,42 +105,11 @@ public class HomeViewController {
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverList.setCellFactory(new AlternateServerListCellFactory());
         this.serverList.setOnMouseReleased(this::onServerClicked);
-        onlineServers = FXCollections.observableArrayList();
-        this.serverList.setItems(onlineServers);
 
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
-
-        try {
-            USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
-
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    System.out.println("msg: " + msg);
-                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    String userAction = jsonMsg.getString("action");
-                    JsonObject jsonData = jsonMsg.getJsonObject("data");
-                    String userName = jsonData.getString("name");
-                    String userId = jsonData.getString("id");
-
-                    if (userAction.equals("userJoined")) {
-                        builder.buildUser(userName, userId);
-                    }
-                    if (userAction.equals("userLeft")) {
-                        List<User> userList = builder.getPersonalUser().getUser();
-                        User removeUser = builder.buildUser(userName, userId);
-                        if (userList.contains(removeUser)) {
-                            builder.getPersonalUser().withoutUser(removeUser);
-                        }
-                    }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
-                }
-            });
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
 
         showServers();
         showCurrentUser();
@@ -183,6 +142,13 @@ public class HomeViewController {
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
+            try {
+                if (USER_CLIENT.getSession() != null) {
+                    USER_CLIENT.stop();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             showServerView();
         });
     }
@@ -195,7 +161,32 @@ public class HomeViewController {
             serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
             // show online users and set it in root (BorderPain)
-            serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
+            try {
+                SERVER_USER = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system?serverId=" + builder.getCurrentServer().getId()), new WSCallback() {
+
+                    @Override
+                    public void handleMessage(JsonStructure msg) {
+                        System.out.println("msg: " + msg);
+                        JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                        String userAction = jsonMsg.getString("action");
+                        JsonObject jsonData = jsonMsg.getJsonObject("data");
+                        String userName = jsonData.getString("name");
+                        String userId = jsonData.getString("id");
+
+                        if (userAction.equals("userJoined")) {
+                            builder.buildServerUser(userName, userId, true);
+                        }
+                        if (userAction.equals("userLeft")) {
+                            builder.buildServerUser(userName, userId, false);
+                        }
+                        Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
+                    }
+                });
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+
+
             Platform.runLater(() -> {
                 showServers();
                 showServerUsers();
@@ -216,7 +207,6 @@ public class HomeViewController {
     }
 
     private void showServers() {
-        onlineServers.clear();
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
@@ -257,7 +247,7 @@ public class HomeViewController {
                     builder.buildUser(userName, userId);
                 }
             }
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
         });
 
         try {
@@ -282,7 +272,7 @@ public class HomeViewController {
                             builder.getPersonalUser().withoutUser(removeUser);
                         }
                     }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
                 }
             });
         } catch (URISyntaxException e) {
@@ -355,21 +345,30 @@ public class HomeViewController {
         this.privateChatList.setOnMouseReleased(null);
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
-    }
-
-    public void setBuilder(ModelBuilder builder) {
-        this.builder = builder;
+        try {
+            this.USER_CLIENT.stop();
+            this.SERVER_USER.stop();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
         StageManager.showSettingsScreen();
     }
 
-    private void homeButtonClicked(MouseEvent mouseEvent) {
+    private void homeButtonClicked(MouseEvent mouseEvent){
+        try {
+            if (SERVER_USER.getSession() != null) {
+                SERVER_USER.stop();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         root.setCenter(viewBox);
-        showUsers();
         this.builder.setCurrentServer(null);
         homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        showUsers();
     }
 
     private void logoutButtonOnClicked(ActionEvent actionEvent) {
