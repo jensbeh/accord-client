@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,6 +31,7 @@ import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -69,6 +71,7 @@ public class HomeViewController {
         this.restClient = new RestClient();
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         // Load all view references
         root = (BorderPane) view.lookup("#root");
@@ -90,6 +93,7 @@ public class HomeViewController {
         logoutButton = (Button) view.lookup("#logoutButton");
 
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
+
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
@@ -399,6 +403,20 @@ public class HomeViewController {
     }
 
     private void logoutButtonOnClicked(ActionEvent actionEvent) {
+        try {
+            if (SERVER_USER != null) {
+                if (SERVER_USER.getSession() != null) {
+                    SERVER_USER.stop();
+                }
+            }
+            if (USER_CLIENT != null) {
+                if (USER_CLIENT.getSession() != null) {
+                    USER_CLIENT.stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         RestClient restclient = new RestClient();
         restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
             JSONObject result = response.getBody().getObject();
