@@ -199,9 +199,19 @@ public class HomeViewController {
                     Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
                 }
 
-                @Override
                 public void onClose(Session session, CloseReason closeReason) {
-
+                    System.out.println(closeReason.getCloseCode().toString());
+                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Users cannot be displayed. No connection to server.", ButtonType.OK);
+                            alert.setTitle("Error Dialog");
+                            alert.setHeaderText("No Connection");
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
+                                showServerUsers();
+                            }
+                        });
+                    }
                 }
             });
 
