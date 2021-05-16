@@ -143,8 +143,15 @@ public class HomeViewController {
         Platform.runLater(() -> {
             stage.close();
             try {
-                if (USER_CLIENT.getSession() != null) {
-                    USER_CLIENT.stop();
+                if (SERVER_USER != null) {
+                    if (SERVER_USER.getSession() != null) {
+                        SERVER_USER.stop();
+                    }
+                }
+                if (USER_CLIENT != null) {
+                    if (USER_CLIENT.getSession() != null) {
+                        USER_CLIENT.stop();
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
