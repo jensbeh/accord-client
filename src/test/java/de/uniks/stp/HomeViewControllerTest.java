@@ -212,7 +212,6 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         ListView<Channel> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
-        clickOn(privateChatList.lookup("#" + testUserOne.getId()));
 
         Assert.assertEquals(testUserOne.getName(), HomeViewController.getSelectedChat().getName());
     }
