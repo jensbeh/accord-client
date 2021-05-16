@@ -1,9 +1,6 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.AlternateChannelListCellFactory;
-import de.uniks.stp.AlternateServerListCellFactory;
-import de.uniks.stp.AlternateUserListCellFactory;
-import de.uniks.stp.StageManager;
+import de.uniks.stp.*;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
@@ -29,6 +26,7 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.JsonUtil;
+import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -163,42 +161,52 @@ public class HomeViewController {
             serverController.showServerChat();
             this.root.setCenter(serverController.getRoot());
             // show online users and set it in root (BorderPain)
-            try {
-                SERVER_USER = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system?serverId=" + builder.getCurrentServer().getId()), new WSCallback() {
-
-                    @Override
-                    public void handleMessage(JsonStructure msg) {
-                        System.out.println("msg: " + msg);
-                        JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                        String userAction = jsonMsg.getString("action");
-                        JsonObject jsonData = jsonMsg.getJsonObject("data");
-                        String userName = jsonData.getString("name");
-                        String userId = jsonData.getString("id");
-
-                        if (userAction.equals("userJoined")) {
-                            builder.buildServerUser(userName, userId, true);
-                        }
-                        if (userAction.equals("userLeft")) {
-                            builder.buildServerUser(userName, userId, false);
-                        }
-                        Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
-                    }
-                });
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-
-
             Platform.runLater(() -> {
                 showServers();
                 showServerUsers();
             });
-        } catch (IOException e) {
+
+            SERVER_USER = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system?serverId=" + builder.getCurrentServer().getId()), new WSCallback() {
+
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    System.out.println("msg: " + msg);
+                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    String userAction = jsonMsg.getString("action");
+                    JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    String userName = jsonData.getString("name");
+                    String userId = jsonData.getString("id");
+
+                    if (userAction.equals("userJoined")) {
+                        builder.buildServerUser(userName, userId, true);
+                    }
+                    if (userAction.equals("userLeft")) {
+                        builder.buildServerUser(userName, userId, false);
+                    }
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
+                }
+            });
+
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
     private void onServerClicked(MouseEvent mouseEvent) {
+        try {
+            if (SERVER_USER != null) {
+                if (SERVER_USER.getSession() != null) {
+                    SERVER_USER.stop();
+                }
+            }
+            if (USER_CLIENT != null) {
+                if (USER_CLIENT.getSession() != null) {
+                    USER_CLIENT.stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -249,7 +257,7 @@ public class HomeViewController {
                     builder.buildUser(userName, userId);
                 }
             }
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
         });
 
         try {
@@ -274,7 +282,7 @@ public class HomeViewController {
                             builder.getPersonalUser().withoutUser(removeUser);
                         }
                     }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser())));
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
                 }
             });
         } catch (URISyntaxException e) {
@@ -348,8 +356,16 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
         try {
-            this.USER_CLIENT.stop();
-            this.SERVER_USER.stop();
+            if (SERVER_USER != null) {
+                if (SERVER_USER.getSession() != null) {
+                    SERVER_USER.stop();
+                }
+            }
+            if (USER_CLIENT != null) {
+                if (USER_CLIENT.getSession() != null) {
+                    USER_CLIENT.stop();
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -359,10 +375,12 @@ public class HomeViewController {
         StageManager.showSettingsScreen();
     }
 
-    private void homeButtonClicked(MouseEvent mouseEvent){
+    private void homeButtonClicked(MouseEvent mouseEvent) {
         try {
-            if (SERVER_USER.getSession() != null) {
-                SERVER_USER.stop();
+            if (SERVER_USER != null) {
+                if (SERVER_USER.getSession() != null) {
+                    SERVER_USER.stop();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
