@@ -99,7 +99,7 @@
    <center>
       <HBox id="viewBox" style="-fx-background-color: #2c2f33;">
          <children>
-            <ListView id="privateChatList" prefHeight="581.0" prefWidth="218.0" style="-fx-background-color: #2c2f33;" />
+            <ListView id="privateChatList" prefHeight="581.0" prefWidth="218.0" style="-fx-background-color: #2c2f33;" stylesheets="@styles/ListViewStyle.css" />
             <VBox id="chatBox" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS">
                <children>
                   <VBox id="messages" alignment="CENTER" prefHeight="540.0" prefWidth="154.0" style="-fx-pref-height: 1000000;">
