@@ -1,6 +1,9 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.*;
+import de.uniks.stp.AlternateChannelListCellFactory;
+import de.uniks.stp.AlternateServerListCellFactory;
+import de.uniks.stp.AlternateUserListCellFactory;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
@@ -11,12 +14,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -31,12 +31,14 @@ import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
-import java.awt.*;
+import javax.websocket.CloseReason;
+import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -196,6 +198,11 @@ public class HomeViewController {
                     }
                     Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
                 }
+
+                @Override
+                public void onClose(Session session, CloseReason closeReason) {
+
+                }
             });
 
         } catch (IOException | URISyntaxException e) {
@@ -273,7 +280,6 @@ public class HomeViewController {
 
         try {
             USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
-
                 @Override
                 public void handleMessage(JsonStructure msg) {
                     System.out.println("msg: " + msg);
@@ -294,6 +300,21 @@ public class HomeViewController {
                         }
                     }
                     Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+                }
+
+                public void onClose(Session session, CloseReason closeReason) {
+                    System.out.println(closeReason.getCloseCode().toString());
+                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Users cannot be displayed. No connection to server.", ButtonType.OK);
+                            alert.setTitle("Error Dialog");
+                            alert.setHeaderText("No Connection");
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
+                                showUsers();
+                            }
+                        });
+                    }
                 }
             });
         } catch (URISyntaxException e) {

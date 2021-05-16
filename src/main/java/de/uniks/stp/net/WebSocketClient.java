@@ -34,7 +34,6 @@ public class WebSocketClient extends Endpoint{
             this.callback = callback;
         } catch (Exception e) {
             System.err.println("Error during establishing websocket connection:");
-            e.printStackTrace();
         }
     }
 
@@ -66,6 +65,7 @@ public class WebSocketClient extends Endpoint{
         this.noopTimer.cancel();
         // set session null
         this.session = null;
+        this.callback.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
