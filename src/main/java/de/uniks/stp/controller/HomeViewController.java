@@ -289,7 +289,7 @@ public class HomeViewController {
      * @param mouseEvent is called when double clicked on an existing chat
      */
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && this.privateChatList.getSelectionModel().getSelectedItem() != null) {
+        if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
             this.privateChatList.refresh();
             MessageViews();
