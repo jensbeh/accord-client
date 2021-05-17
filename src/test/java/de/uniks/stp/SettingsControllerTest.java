@@ -3,6 +3,7 @@ package de.uniks.stp;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
@@ -10,6 +11,12 @@ public class SettingsControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
 
     @Override
     public void start(Stage stage) {
