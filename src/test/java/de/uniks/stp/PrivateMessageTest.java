@@ -64,8 +64,10 @@ public class PrivateMessageTest {
         boolean messageReceivedByClient = messageLatch.await(20, TimeUnit.SECONDS);
         Assert.assertTrue("Time lapsed before message was received by client.", messageReceivedByClient);
         shutDownWebSocketClient();
-        restClient.logout(GUDRUN_KEY,response -> {});
-        restClient.logout(JUTTA_KEY,response -> {});
+        restClient.logout(GUDRUN_KEY, response -> {
+        });
+        restClient.logout(JUTTA_KEY, response -> {
+        });
     }
 
     private void connectWebSocketClient() throws DeploymentException, IOException {

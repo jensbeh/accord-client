@@ -122,21 +122,43 @@ public class HomeViewController {
         this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
-        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create("wss://ac.uniks.de/ws/chat?user=" + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
-            @Override
-            public void handleMessage(JsonStructure msg) {
-
-            }
-
-            @Override
-            public void onClose(Session session, CloseReason closeReason) {
-
-            }
-        });
 
         showServers();
         showCurrentUser();
         showUsers();
+
+        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create("wss://ac.uniks.de/ws/chat?user=" + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+            @Override
+            public void handleMessage(JsonStructure msg) {
+                JsonObject jsonObject = JsonUtil.parse(msg.toString());
+                if (jsonObject.getString("channel").equals("private")) {
+                    Message message;
+                    String channelName;
+                    Boolean newChat = true;
+                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        channelName = jsonObject.getString("to");
+                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
+                    } else {
+                        channelName = jsonObject.getString("from");
+                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
+                    }
+                    for (Channel c : builder.getPersonalUser().getPrivateChat()) {
+                        if (c.getName().equals(channelName)) {
+                            c.withMessage(message);
+                            newChat = false;
+                            break;
+                        }
+                    }
+                    if (newChat) {
+                        builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
+                    }
+                }
+            }
+
+            @Override
+            public void onClose(Session session, CloseReason closeReason) {
+            }
+        });
     }
 
 
