@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.WebSocketClient;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-
+    private WebSocketClient SERVER_USER;
+    private WebSocketClient USER_CLIENT;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -81,4 +83,19 @@ public class ModelBuilder {
     }
 
 
+    public WebSocketClient getSERVER_USER() {
+        return SERVER_USER;
+    }
+
+    public void setSERVER_USER(WebSocketClient SERVER_USER) {
+        this.SERVER_USER = SERVER_USER;
+    }
+
+    public WebSocketClient getUSER_CLIENT() {
+        return USER_CLIENT;
+    }
+
+    public void setUSER_CLIENT(WebSocketClient USER_CLIENT) {
+        this.USER_CLIENT = USER_CLIENT;
+    }
 }
