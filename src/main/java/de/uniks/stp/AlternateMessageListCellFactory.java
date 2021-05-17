@@ -29,6 +29,9 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
     private static class MessageListCell extends ListCell<Message> {
 
+        /**
+         * Load new CurrentUserTextMessage.FXML with new message in cell of ListView
+         */
         protected void updateItem(Message item, boolean empty) {
             // loads the message FXML and places it in the cell
             try {

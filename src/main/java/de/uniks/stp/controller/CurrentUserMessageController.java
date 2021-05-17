@@ -15,6 +15,9 @@ public class CurrentUserMessageController {
         this.message = msg;
     }
 
+    /**
+     * Change Text on usernameLabel and messageLabel
+     */
     public void init() {
         // Load all view references
         this.userNameLabel = (Label) view.lookup("#cUserName");

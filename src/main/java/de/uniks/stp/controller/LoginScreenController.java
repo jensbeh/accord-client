@@ -13,8 +13,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Scanner;
 
@@ -82,6 +80,9 @@ public class LoginScreenController {
         StageManager.showSettingsScreen();
     }
 
+    /**
+     * sign in
+     */
     private void signInButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
@@ -118,6 +119,9 @@ public class LoginScreenController {
         }
     }
 
+    /**
+     * login
+     */
     private void loginButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
@@ -181,6 +185,10 @@ public class LoginScreenController {
             noConnection();
         }
     }
+
+    /**
+     * Change Text on no connection Label
+     */
     public void noConnection() {
         //no internet connection
         try {
@@ -200,9 +208,11 @@ public class LoginScreenController {
         this.settingsButton.setOnAction(null);
     }
 
+    /**
+     * save username and password in text file
+     */
     public void saveRememberMe(String username, String password) {
         try {
-            //save username and password in text file
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
                             new FileOutputStream("saves/user.txt")));
@@ -217,12 +227,18 @@ public class LoginScreenController {
         }
     }
 
+    /**
+     * encode password
+     */
     public String encode(String password) {
         Base64.Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(password.getBytes());
     }
 
-    public static String decode(String str){
+    /**
+     * decode password
+     */
+    public static String decode(String str) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] bytes = decoder.decode(str);
         return new String(bytes);

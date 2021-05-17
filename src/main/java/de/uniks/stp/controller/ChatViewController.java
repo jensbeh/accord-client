@@ -38,6 +38,9 @@ public class ChatViewController {
         this.messageList.setItems(ob);
     }
 
+    /**
+     * get Text from TextField and build message
+     */
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
@@ -51,9 +54,10 @@ public class ChatViewController {
         }
     }
 
-
+    /**
+     * insert new message in observableList
+     */
     private static void printMessage(Message msg) {
-        //insert new message in observableList
         ob.add(msg);
     }
 }
