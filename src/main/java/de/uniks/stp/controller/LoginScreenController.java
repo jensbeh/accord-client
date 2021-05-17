@@ -111,20 +111,11 @@ public class LoginScreenController {
                         Platform.runLater(() -> errorLabel.setText(message));
                     }
                 });
+                noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
             errorLabel.setText("Click on Login");
         }
-        //no internet connection
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No connection - \nPlease check your connection and try again "));
-        }
-        netConnection = false;
     }
 
     private void loginButtonOnClick(ActionEvent actionEvent) {
@@ -159,6 +150,7 @@ public class LoginScreenController {
                         Platform.runLater(() -> errorLabel.setText(message));
                     }
                 });
+                noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
             saveRememberMe("", "");
@@ -186,7 +178,10 @@ public class LoginScreenController {
                     Platform.runLater(() -> errorLabel.setText(message));
                 }
             });
+            noConnection();
         }
+    }
+    public void noConnection() {
         //no internet connection
         try {
             Thread.sleep(1000);
