@@ -33,6 +33,7 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #2C2F33;");
             if (!empty) {
+                cell.setId("cell_" + item.getId());
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
