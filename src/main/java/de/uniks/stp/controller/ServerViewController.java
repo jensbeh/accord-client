@@ -1,10 +1,16 @@
 package de.uniks.stp.controller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -26,13 +32,16 @@ public class ServerViewController {
     private HBox root;
     private ScrollPane scrollPaneUserBox;
     private ModelBuilder builder;
-
     private VBox channelBox;
     private VBox textChannelBox;
     private Label serverNameText;
+    private JSONArray members;
     private TextField sendTextField;
     private Button sendMessageButton;
     private ListView<User> onlineUsersList;
+    private VBox chatViewContainer;
+
+
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -54,10 +63,8 @@ public class ServerViewController {
         serverNameText = (Label) view.lookup("#serverName");
         serverNameText.setText(server.getName());
         textChannelBox = (VBox) view.lookup("#textChannelBox");
-        sendTextField = (TextField) view.lookup("#sendTextField");
-        sendMessageButton = (Button) view.lookup("#sendMessageButton");
-        sendMessageButton.setOnAction(this::onSendMessage);
-
+        chatViewContainer = (VBox) view.lookup("#chatBox");
+        this.loadCurrentUserMessageFxml();
     }
 
     /**
@@ -117,6 +124,19 @@ public class ServerViewController {
 
     public void showChannels() {
 
+    }
+
+    private void loadCurrentUserMessageFxml(){
+        this.chatViewContainer.getChildren().clear();
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageController = new ChatViewController(view, builder);
+            messageController.init();
+
+            this.chatViewContainer.getChildren().add(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

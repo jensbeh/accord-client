@@ -5,17 +5,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <VBox prefWidth="102.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -100,27 +98,7 @@
       <HBox id="viewBox" style="-fx-background-color: #2c2f33;">
          <children>
             <ListView id="privateChatList" prefHeight="581.0" prefWidth="218.0" style="-fx-background-color: #2c2f33;" />
-            <VBox id="chatBox" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS">
-               <children>
-                  <VBox id="messages" alignment="CENTER" prefHeight="540.0" prefWidth="154.0" style="-fx-pref-height: 1000000;">
-                     <children>
-                        <fx:include source="Message.fxml" />
-                        <Label text="Welcome To Accord" textFill="#fffefe">
-                           <font>
-                              <Font size="26.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <HBox id="messagebar" alignment="TOP_RIGHT" nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" prefHeight="25.0" prefWidth="378.0" spacing="10.0" style="-fx-min-height: 40;">
-                     <children>
-                        <Pane prefHeight="25.0" prefWidth="1.0" />
-                        <TextField id="messageField" nodeOrientation="LEFT_TO_RIGHT" prefHeight="25.0" prefWidth="359.0" style="-fx-background-color: #ffffff; -fx-background-radius: 10; -fx-pref-width: 1000000;" />
-                        <Button id="messageButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="44.0" style="-fx-background-radius: 10; -fx-background-color: #7289da; -fx-min-width: 50;" text="send" />
-                        <Pane prefHeight="25.0" prefWidth="1.0" />
-                     </children>
-                  </HBox>
-               </children></VBox>
+            <VBox id="chatBox" fx:id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </center>
