@@ -52,7 +52,7 @@
 <text text-anchor="start" x="33.93" y="-293.4" font-family="Times,serif" font-size="14.00">Message</text>
 <polygon fill="none" stroke="black" points="10.92,-231 10.92,-287 105.92,-287 105.92,-231 10.92,-231"/>
 <text text-anchor="start" x="13.92" y="-271.4" font-family="Times,serif" font-size="14.00">from :String</text>
-<text text-anchor="start" x="13.92" y="-254.6" font-family="Times,serif" font-size="14.00">timestap :int</text>
+<text text-anchor="start" x="13.92" y="-254.6" font-family="Times,serif" font-size="14.00">timestamp :int</text>
 <text text-anchor="start" x="13.92" y="-237.8" font-family="Times,serif" font-size="14.00">message :String</text>
 </g>
 <!-- Channel&#45;&gt;Message -->
