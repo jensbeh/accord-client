@@ -5,6 +5,8 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CreateServerController;
+import de.uniks.stp.model.*;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
@@ -59,9 +61,10 @@ public class HomeViewController {
     private Circle homeCircle;
     private Button settingsButton;
     private Button logoutButton;
-    private Channel selectedChat;
+    private static Channel selectedChat;
     private Stage stage;
     private ModelBuilder builder;
+    private AlternateServerListCellFactory serverListCellFactory;
     private VBox chatViewContainer;
 
 
@@ -111,7 +114,9 @@ public class HomeViewController {
         addServer.setOnMouseClicked(this::onshowCreateServer);
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
-        serverList.setCellFactory(new AlternateServerListCellFactory());
+
+        serverListCellFactory = new AlternateServerListCellFactory();
+        serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         onlineServers = FXCollections.observableArrayList();
         this.serverList.setItems(onlineServers);
@@ -131,6 +136,11 @@ public class HomeViewController {
     // Server
     ///////////////////////////
 
+    /**
+     * Creates a createServer view in a new Stage.
+     *
+     * @param mouseEvent is called when clicked on the + Button.
+     */
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
@@ -149,13 +159,22 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Closes the createServerStage and calls showServerView. Is
+     * called after the ok button in createServer is clicked
+     */
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
             showServerView();
+            showServers();
         });
     }
 
+    /**
+     * Changes the currently shown view to the Server view of the currentServer.
+     * Also changes the online user list to an online and offline list of users in that server.
+     */
     public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("controller/ServerChatView.fxml"));
@@ -165,25 +184,44 @@ public class HomeViewController {
             this.root.setCenter(serverController.getRoot());
             // show online users and set it in root (BorderPain)
             serverController.showOnlineUsers(builder.getPersonalUser().getUserKey());
-            Platform.runLater(() -> {
-                showServers();
-                showServerUsers();
-            });
+            showServerUsers();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Sets the clicked Server as currentServer and calls showServerView.
+     *
+     * @param mouseEvent is called when clicked on a Server
+     */
     private void onServerClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
                 this.builder.setCurrentServer(selectedServer);
+                updateServerListColor();
                 showServerView();
             }
         }
     }
 
+    /**
+     * Updates the circles and change the current server or Home circle color
+     */
+    private void updateServerListColor() {
+        if (builder.getCurrentServer() == null) {
+            homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        } else {
+            homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+        }
+        serverListCellFactory.setCurrentServer(builder.getCurrentServer());
+        serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
+    }
+
+    /**
+     * Get Servers and show Servers
+     */
     private void showServers() {
         onlineServers.clear();
         if (!builder.getPersonalUser().getUserKey().equals("")) {
@@ -210,12 +248,18 @@ public class HomeViewController {
     // Users
     ///////////////////////////
 
+    /**
+     * Get Server Users and set them in Online User List
+     */
     private void showServerUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
         });
     }
 
+    /**
+     * Get the Online Users and reset old Online User List with new Online Users
+     */
     private void showUser() {
         onlineUsers.clear();
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
@@ -226,12 +270,15 @@ public class HomeViewController {
                 if (!userName.equals(builder.getPersonalUser().getName())) {
                     builder.buildUser(userName, userId);
                     //runLater() is needed because it is called from outside the GUI thread and only the GUI thread can change the GUI
-                    Platform.runLater(() -> onlineUsers.add(new User().setName(userName).setStatus(true)));
+                    Platform.runLater(() -> onlineUsers.add(new User().setId(userId).setName(userName).setStatus(true)));
                 }
             }
         });
     }
 
+    /**
+     * Display Current User
+     */
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
@@ -246,8 +293,14 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Event Mouseclick on an existing chat
+     * Opens the existing chat and shows the messages
+     *
+     * @param mouseEvent is called when double clicked on an existing chat
+     */
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2 && this.privateChatList.getSelectionModel().getSelectedItem() != null) {
+        if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
             this.privateChatList.getSelectionModel().getSelectedIndices();
             MessageViews();
@@ -272,24 +325,36 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Event Mouseclick on an online user
+     * Create new channel if chat not existing or open the existing chat and shows the messages
+     *
+     * @param mouseEvent is called when clicked on an online User
+     */
     private void ononlineUsersListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2 && this.onlineUsers.size() != 0) {
             boolean flag = true;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
+            String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
             for (Channel channel : privateChats) {
                 if (channel.getName().equals(selectedUserName)) {
+                    selectedChat = channel;
+                    this.privateChatList.refresh();
                     flag = false;
                     break;
                 }
             }
-            selectedChat = new Channel().setName(selectedUserName);
             if (flag) {
+                selectedChat = new Channel().setName(selectedUserName).setId(selectUserId);
                 privateChats.add(selectedChat);
             }
             MessageViews();
         }
     }
 
+    /**
+     * Stop running Actions when Controller gets closed
+     */
     public void stop() {
         this.addServer.setOnMouseClicked(null);
         this.homeButton.setOnMouseClicked(null);
@@ -300,20 +365,41 @@ public class HomeViewController {
         this.logoutButton.setOnAction(null);
     }
 
+    /**
+     * Set the Builder
+     *
+     * @param builder is the builder to set
+     */
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
     }
 
+    /**
+     * Clicking Settings Button opens the Settings Popup
+     *
+     * @param actionEvent is called when clicked on the Settings Button
+     */
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
         StageManager.showSettingsScreen();
     }
 
+    /**
+     * Clicking Home Button refreshes the Online Users List
+     *
+     * @param mouseEvent is called when clicked on the Home Button
+     */
     private void homeButtonClicked(MouseEvent mouseEvent) {
         root.setCenter(viewBox);
         showUser();
-        homeCircle.setFill(Paint.valueOf("#5a5c5e"));
+        this.builder.setCurrentServer(null);
+        updateServerListColor();
     }
 
+    /**
+     * Clicking Logout Button logs the currentUser out and returns to Login Screen
+     *
+     * @param actionEvent is called when clicked on the Logout Button
+     */
     private void logoutButtonOnClicked(ActionEvent actionEvent) {
         RestClient restclient = new RestClient();
         restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
@@ -323,5 +409,14 @@ public class HomeViewController {
                 Platform.runLater(StageManager::showLoginScreen);
             }
         });
+    }
+
+    /**
+     * Get the current active Channel / selected Chat
+     *
+     * @return current active Channel
+     */
+    public static Channel getSelectedChat() {
+        return selectedChat;
     }
 }
