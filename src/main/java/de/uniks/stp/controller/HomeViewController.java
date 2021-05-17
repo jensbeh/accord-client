@@ -68,6 +68,7 @@ public class HomeViewController {
     private WebSocketClient USER_CLIENT;
     private WebSocketClient SERVER_USER;
     private AlternateServerListCellFactory serverListCellFactory;
+    private Object privateChatWebSocketCLient;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -121,6 +122,17 @@ public class HomeViewController {
         this.logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create("wss://ac.uniks.de/ws/chat?user=" + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+            @Override
+            public void handleMessage(JsonStructure msg) {
+
+            }
+
+            @Override
+            public void onClose(Session session, CloseReason closeReason) {
+
+            }
+        });
 
         showServers();
         showCurrentUser();
