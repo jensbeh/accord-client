@@ -6,7 +6,6 @@ import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.CreateServerController;
-import de.uniks.stp.model.*;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
@@ -312,6 +311,9 @@ public class HomeViewController {
         loadChatView();
     }
 
+    /**
+     * load ChatView.FXML and init chatView controller
+     */
     private void loadChatView() {
         this.chatViewContainer.getChildren().clear();
         try {
