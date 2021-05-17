@@ -11,8 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-
-public class WebSocketClient extends Endpoint{
+public class WebSocketClient extends Endpoint {
     private Session session;
     private Timer noopTimer;
     private final ModelBuilder builder;
