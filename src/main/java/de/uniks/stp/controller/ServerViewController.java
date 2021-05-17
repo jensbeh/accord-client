@@ -66,6 +66,7 @@ public class ServerViewController {
     public void showServerChat() {
         showText();
         showChannels();
+        showOnlineUsers();
     }
 
     /**
@@ -80,27 +81,21 @@ public class ServerViewController {
     /**
      * Update the builder and get the ServerUser. Also sets their online and offline Status.
      *
-     * @param userKey the userKey off the personalUser
      */
-    public void showOnlineUsers(String userKey) {
-        restClient.getServerUsers(server.getId(), userKey, response -> {
+    public void showOnlineUsers() {
+        restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
-                for (User user : builder.getCurrentServer().getUser()) {
-                    builder.getCurrentServer().withoutUser(user);
-                }
+                builder.getCurrentServer().getUser().clear();
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
                     String name = member.getString("name");
                     boolean online = member.getBoolean("online");
-                    User user = new User().setCurrentUser(builder.getPersonalUser()).setId(id).setName(name).setStatus(online);
-                    builder.getCurrentServer().withUser(user);
+                    builder.buildServerUser(name, id, online);
                 }
-
-
             } else if (status.equals("failure")) {
                 System.out.println(body.getObject().getString("message"));
             }
