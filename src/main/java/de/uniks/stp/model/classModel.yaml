@@ -48,7 +48,7 @@
   roles: 	currentUser_user 	currentUser_server 	currentUser_privateChat
 
 - message: 	org.fulib.classmodel.Clazz
-  attributes: 	message_from 	message_timestap 	message_message
+  attributes: 	message_from 	message_timestamp 	message_message
   model: 	c
   modified: 	false
   name: 	Message
@@ -325,11 +325,11 @@
   type: 	String
   typeSignature: 	String
 
-- message_timestap: 	org.fulib.classmodel.Attribute
+- message_timestamp: 	org.fulib.classmodel.Attribute
   clazz: 	message
-  id: 	Message_timestap
+  id: 	Message_timestamp
   modified: 	false
-  name: 	timestap
+  name: 	timestamp
   propertyStyle: 	Bean
   type: 	int
   typeSignature: 	int
