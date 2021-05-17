@@ -52,7 +52,6 @@ public class HomeViewController {
     private VBox messages;
     private HBox messageBar;
     private HBox viewBox;
-    private ObservableList<Channel> privateChats;
     private Parent view;
     private ListView<Channel> privateChatList;
     private ListView<Server> serverList;
@@ -103,13 +102,12 @@ public class HomeViewController {
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
 
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
-        this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
-        privateChats = FXCollections.observableArrayList();
-        this.privateChatList.setItems(privateChats);
+        this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
+        this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
 
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
-        this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
+        this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         viewBox = (HBox) view.lookup("#viewBox");
         addServer = (Circle) view.lookup("#addServer");
         addServer.setOnMouseClicked(this::onshowCreateServer);
@@ -452,7 +450,7 @@ public class HomeViewController {
      *
      * @param mouseEvent is called when double clicked on an existing chat
      */
-    private void onprivateChatListClicked(MouseEvent mouseEvent) {
+    private void onPrivateChatListClicked(MouseEvent mouseEvent) {
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
             this.privateChatList.refresh();
@@ -480,22 +478,23 @@ public class HomeViewController {
      *
      * @param mouseEvent is called when clicked on an online User
      */
-    private void ononlineUsersListClicked(MouseEvent mouseEvent) {
+    private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
-            boolean flag = true;
+            boolean chatExisting = false;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
-            for (Channel channel : privateChats) {
+            for (Channel channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(selectedUserName)) {
                     selectedChat = channel;
                     this.privateChatList.refresh();
-                    flag = false;
+                    chatExisting = true;
                     break;
                 }
             }
-            if (flag) {
+            if (!chatExisting) {
                 selectedChat = new Channel().setName(selectedUserName).setId(selectUserId);
-                privateChats.add(selectedChat);
+                builder.getPersonalUser().withPrivateChat(selectedChat);
+                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
             MessageViews();
         }

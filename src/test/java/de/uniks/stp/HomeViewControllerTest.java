@@ -123,7 +123,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("Peter Lustig 4", userName);
         Thread.sleep(2000);
-        restClient.logout(userKey1, response -> {});
+        restClient.logout(userKey, response -> {});
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         itemList = userList.getItems();
