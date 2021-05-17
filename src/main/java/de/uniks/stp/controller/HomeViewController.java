@@ -67,8 +67,10 @@ public class HomeViewController {
     private ModelBuilder builder;
     private WebSocketClient USER_CLIENT;
     private WebSocketClient SERVER_USER;
+    private WebSocketClient privateChatWebSocketCLient;
     private AlternateServerListCellFactory serverListCellFactory;
-    private Object privateChatWebSocketCLient;
+    private TextField messageField;
+    private Button messageButton;
 
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -123,14 +125,25 @@ public class HomeViewController {
 
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
+        messageField = (TextField) view.lookup("#messageField");
+        messageButton = (Button) view.lookup("#messageButton");
+        messageButton.setOnAction(this::onSendClicked);
+
         showServers();
         showCurrentUser();
         showUsers();
 
         privateChatWebSocketCLient = new WebSocketClient(builder, URI.create("wss://ac.uniks.de/ws/chat?user=" + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+            /**
+             * handles server response
+             *
+             * @param msg is the response from the server as a JsonStructure
+             */
             @Override
             public void handleMessage(JsonStructure msg) {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
+                System.out.println("privateChatWebSocketClient");
+                System.out.println(msg);
                 if (jsonObject.getString("channel").equals("private")) {
                     Message message;
                     String channelName;
@@ -592,5 +605,22 @@ public class HomeViewController {
      */
     public static Channel getSelectedChat() {
         return selectedChat;
+    }
+
+
+    /**
+     * Clicking send Button sends a Message to the selected User
+     *
+     * @param actionEvent is called when clicked on the send Button
+     */
+    private void onSendClicked(ActionEvent actionEvent) {
+        if (!messageField.getText().equals("")) {
+            try {
+                privateChatWebSocketCLient.sendMessage(new JSONObject().put("channel", "private").put("to", selectedChat.getName()).put("message", messageField.getText()).toString());
+                messageField.setText("");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
