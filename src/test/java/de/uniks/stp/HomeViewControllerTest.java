@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
@@ -237,13 +238,13 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Thread.sleep(500);
 
-        Assert.assertEquals(testUserTwo.getName(), HomeViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserTwo.getName(), PrivateViewController.getSelectedChat().getName());
 
         Thread.sleep(500);
 
         ListView<Channel> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
 
-        Assert.assertEquals(testUserOne.getName(), HomeViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
     }
 }

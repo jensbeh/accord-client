@@ -9,6 +9,6 @@ public class SortUser implements Comparator<User> {
     // name
     @Override
     public int compare(User a, User b) {
-        return a.getName().compareTo(b.getName());
+        return a.getName().toLowerCase().compareTo(b.getName().toLowerCase());
     }
 }
