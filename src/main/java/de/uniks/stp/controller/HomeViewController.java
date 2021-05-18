@@ -4,14 +4,10 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.CreateServerController;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -76,6 +72,9 @@ public class HomeViewController {
         showServers();
     }
 
+    /**
+     * Shows the private home view to have a private chat with other users.
+     */
     private void showPrivateView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));

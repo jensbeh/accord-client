@@ -11,7 +11,6 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-
 <HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ListView id="privateChatList" minWidth="185.0" style="-fx-background-color: #2c2f33;" HBox.hgrow="ALWAYS" />

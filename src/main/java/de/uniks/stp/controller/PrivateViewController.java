@@ -4,7 +4,10 @@ import de.uniks.stp.AlternateChannelListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.*;
+import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.CurrentUser;
+import de.uniks.stp.model.Message;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
@@ -18,7 +21,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
@@ -46,6 +48,7 @@ public class PrivateViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private VBox messages;
+    private VBox chatBox;
     private HBox messageBar;
     private HBox viewBox;
     private ObservableList<Channel> privateChats;
@@ -53,6 +56,7 @@ public class PrivateViewController {
     private ListView<User> onlineUsersList;
     private static Channel selectedChat;
     private WebSocketClient USER_CLIENT;
+
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
@@ -62,21 +66,14 @@ public class PrivateViewController {
     public void init() {
         root = (HBox) view.lookup("#root");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
-        messages = (VBox) view.lookup("#messages");
-        messageBar = (HBox) view.lookup("#messagebar");
-        messageBar.setOpacity(0);
-
+        chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
-
         privateChatList.setCellFactory(new AlternateChannelListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
-
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::ononlineUsersListClicked);
@@ -185,13 +182,14 @@ public class PrivateViewController {
      * Message View cleanup and display recent messages with selected Chat
      */
     private void MessageViews() {
-        // Clean Message View
-        this.messages.getChildren().clear();
-        // Enable Message Bar
-        messageBar.setOpacity(1);
-        for (Message msg : selectedChat.getMessage()) {
-            // Display each Message which are saved
-            //ChatViewController.printMessage(msg);
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("MessageView.fxml"));
+            MessageViewController messageViewController = new MessageViewController(root, builder);
+            messageViewController.init();
+            this.chatBox.getChildren().clear();
+            this.chatBox.getChildren().add(root);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

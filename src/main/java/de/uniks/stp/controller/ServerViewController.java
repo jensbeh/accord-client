@@ -72,8 +72,8 @@ public class ServerViewController {
         serverNameText = (Label) view.lookup("#serverName");
         serverNameText.setText(server.getName());
         textChannelBox = (VBox) view.lookup("#textChannelBox");
-        sendTextField = (TextField) view.lookup("#sendTextField");
-        sendMessageButton = (Button) view.lookup("#sendMessageButton");
+        sendTextField = (TextField) view.lookup("#messageField");
+        sendMessageButton = (Button) view.lookup("#messageButton");
         sendMessageButton.setOnAction(this::onSendMessage);
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
