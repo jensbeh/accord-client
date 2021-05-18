@@ -7,14 +7,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<VBox fx:id="topVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="topVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS">
          <children>
             <ListView fx:id="messageListView" prefHeight="200.0" prefWidth="390.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
-      <Line endX="305.29290771484375" endY="-1.7071068286895752" startX="-100.0" stroke="#9e9e9e" VBox.vgrow="ALWAYS" />
+      <Line endX="285.1507568359375" endY="1.6360387802124023" startX="-114.14215087890625" startY="0.17157268524169922" stroke="#9e9e9e" VBox.vgrow="ALWAYS" />
       <HBox alignment="CENTER_LEFT" maxHeight="35.0" prefHeight="35.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS">
          <children>
             <TextField fx:id="messageTextField" prefHeight="25.0" prefWidth="328.0" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6;" />

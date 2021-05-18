@@ -17,6 +17,7 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private ListView<Message> messageList;
+    private AlternateMessageListCellFactory alternateMessageListCellFactory;
     private static ObservableList<Message> ob;
 
 
@@ -50,6 +51,7 @@ public class ChatViewController {
             Message message = new Message();
             message.setMessage(textMessage);
             message.setFrom(builder.getPersonalUser().getName());
+            alternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
             printMessage(message);
         }
     }
