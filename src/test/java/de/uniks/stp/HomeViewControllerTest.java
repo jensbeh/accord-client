@@ -1,6 +1,5 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
@@ -8,6 +7,7 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -246,5 +246,9 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
 
         Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
+
+        //Additional test if opened private chat is colored
+        VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
+        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216", privateChatCell.getStyle());
     }
 }
