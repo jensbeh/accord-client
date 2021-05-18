@@ -1,10 +1,19 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -15,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class PrivateMessageTest {
+public class PrivateMessageTest extends ApplicationTest {
 
     private static String GUDRUN_KEY;
     private static String JUTTA_KEY;
@@ -24,6 +33,24 @@ public class PrivateMessageTest {
     private static ClientTestEndpoint GUDRUN_CLIENT = null;
     private static ClientTestEndpoint JUTTA_CLIENT = null;
     private CountDownLatch messageLatch;
+    private Stage stage;
+    private StageManager app;
+
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
+
+    @Override
+    public void start(Stage stage) {
+        //start application
+        this.stage = stage;
+        app = new StageManager();
+        app.start(stage);
+        this.stage.centerOnScreen();
+    }
 
 
     private void setupWebsocketClient() {
@@ -66,6 +93,50 @@ public class PrivateMessageTest {
         shutDownWebSocketClient();
         restClient.logout(GUDRUN_KEY, response -> {
         });
+        restClient.logout(JUTTA_KEY, response -> {
+        });
+    }
+
+    @Test
+    public void partnerNotOnlineTest() throws InterruptedException {
+        RestClient restClient = new RestClient();
+        restClient.login("Jutta", "1", response -> {
+            JsonNode body = response.getBody();
+            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("Gudrun");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("1");
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+
+        User jutta = new User();
+        for (User u : userList.getItems()) {
+            if (u.getName().equals("Jutta")) {
+                jutta = u;
+            }
+        }
+        clickOn(userList.lookup("#" + jutta.getId()));
+        clickOn(userList.lookup("#" + jutta.getId()));
+        Channel ref = app.getBuilder().getPersonalUser().getPrivateChat().get(0);
+
+        TextField messageField = lookup("#messageField").query();
+        messageField.setText("TestNachricht");
+        clickOn("#messageButton");
+
+        /*
+        JDialog frame = waitForDialog("Message");
+        System.out.println("Found window " + frame);
+        
+         */
+
+        Assert.assertEquals("TestNachricht", messageField.getText());
+        Assert.assertEquals(ref.getMessage(), app.getBuilder().getPersonalUser().getPrivateChat().get(0).getMessage());
+
         restClient.logout(JUTTA_KEY, response -> {
         });
     }

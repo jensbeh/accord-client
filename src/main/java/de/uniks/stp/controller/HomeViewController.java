@@ -12,7 +12,6 @@ import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,6 +31,7 @@ import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
+import javax.swing.*;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import java.io.IOException;
@@ -142,10 +142,11 @@ public class HomeViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("privateChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.getString("channel").equals("private")) {
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
                     Message message;
                     String channelName;
                     Boolean newChat = true;
+                    messageField.setText("");
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         channelName = jsonObject.getString("to");
                         message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
@@ -163,6 +164,10 @@ public class HomeViewController {
                     if (newChat) {
                         builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
                     }
+                }
+                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), serverMessage, "PrivateChatError", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
@@ -616,7 +621,6 @@ public class HomeViewController {
         if (!messageField.getText().equals("")) {
             try {
                 privateChatWebSocketCLient.sendMessage(new JSONObject().put("channel", "private").put("to", selectedChat.getName()).put("message", messageField.getText()).toString());
-                messageField.setText("");
             } catch (IOException e) {
                 e.printStackTrace();
             }
