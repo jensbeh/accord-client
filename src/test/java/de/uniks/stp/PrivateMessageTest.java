@@ -12,10 +12,13 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import javax.swing.*;
 import javax.websocket.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -93,50 +96,6 @@ public class PrivateMessageTest extends ApplicationTest {
         shutDownWebSocketClient();
         restClient.logout(GUDRUN_KEY, response -> {
         });
-        restClient.logout(JUTTA_KEY, response -> {
-        });
-    }
-
-    @Test
-    public void partnerNotOnlineTest() throws InterruptedException {
-        RestClient restClient = new RestClient();
-        restClient.login("Jutta", "1", response -> {
-            JsonNode body = response.getBody();
-            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("Gudrun");
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("1");
-        clickOn("#loginButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
-
-        User jutta = new User();
-        for (User u : userList.getItems()) {
-            if (u.getName().equals("Jutta")) {
-                jutta = u;
-            }
-        }
-        clickOn(userList.lookup("#" + jutta.getId()));
-        clickOn(userList.lookup("#" + jutta.getId()));
-        Channel ref = app.getBuilder().getPersonalUser().getPrivateChat().get(0);
-
-        TextField messageField = lookup("#messageField").query();
-        messageField.setText("TestNachricht");
-        clickOn("#messageButton");
-
-        /*
-        JDialog frame = waitForDialog("Message");
-        System.out.println("Found window " + frame);
-        
-         */
-
-        Assert.assertEquals("TestNachricht", messageField.getText());
-        Assert.assertEquals(ref.getMessage(), app.getBuilder().getPersonalUser().getPrivateChat().get(0).getMessage());
-
         restClient.logout(JUTTA_KEY, response -> {
         });
     }

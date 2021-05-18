@@ -16,10 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -29,6 +26,7 @@ import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
+import javax.swing.*;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import java.io.IOException;
@@ -57,6 +55,7 @@ public class PrivateViewController {
     private static Channel selectedChat;
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
+    private TextField messageField;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -79,6 +78,7 @@ public class PrivateViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         viewBox = (HBox) view.lookup("#viewBox");
+        messageField = (TextField) view.lookup("#messageField");
         showCurrentUser();
         showUsers();
 
@@ -93,11 +93,12 @@ public class PrivateViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("privateChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.getString("channel").equals("private")) {
+                if (jsonObject.containsKey("channel") &&jsonObject.getString("channel").equals("private")) {
                     Message message;
                     String channelName;
                     Boolean newChat = true;
-                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                    messageField.setText("");
+                    if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
                         channelName = jsonObject.getString("to");
                         message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
                     } else {
@@ -114,6 +115,10 @@ public class PrivateViewController {
                     if (newChat) {
                         builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
                     }
+                }
+                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), serverMessage, "PrivateChatError", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
@@ -283,6 +288,15 @@ public class PrivateViewController {
             if (USER_CLIENT != null) {
                 if (USER_CLIENT.getSession() != null) {
                     USER_CLIENT.stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (privateChatWebSocketCLient != null) {
+                if (privateChatWebSocketCLient.getSession() != null) {
+                    privateChatWebSocketCLient.stop();
                 }
             }
         } catch (IOException e) {
