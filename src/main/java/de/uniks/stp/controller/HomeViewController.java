@@ -4,6 +4,7 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.CreateServerController;
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -42,6 +43,7 @@ public class HomeViewController {
     private Stage stage;
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
+    private static Channel selectedChat;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
