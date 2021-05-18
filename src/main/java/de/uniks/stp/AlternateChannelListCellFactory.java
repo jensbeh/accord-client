@@ -35,15 +35,15 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
             if (!empty) {
                 cell.setId("cell_" + item.getId());
                 name.setId(item.getId());
-                name.setText("   " + item.getName());
-                name.setStyle("-fx-font-size: 18");
+                name.setText(item.getName());
+                name.setStyle("-fx-font-size: 18; -fx-padding: 0 0 0 10;");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
                 if (item.getMessage().size() > 0) {
-                    message.setStyle("-fx-font-size: 18");
-                    message.setText(": " + item.getMessage().get(item.getMessage().size() - 1).getMessage());
+                    message.setStyle("-fx-font-size: 18;  -fx-padding: 0 0 0 10;");
+                    message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
                     message.setTextFill(Paint.valueOf("#FFFFFF"));
                 }
-                if(PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
+                if(PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
                     cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216");
                 } else {
                     cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216");

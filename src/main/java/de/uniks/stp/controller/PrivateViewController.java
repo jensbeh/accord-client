@@ -107,12 +107,14 @@ public class PrivateViewController {
                     for (Channel c : builder.getPersonalUser().getPrivateChat()) {
                         if (c.getName().equals(channelName)) {
                             c.withMessage(message);
+                            privateChatList.refresh();
                             newChat = false;
                             break;
                         }
                     }
                     if (newChat) {
                         builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
+                        privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
                     }
                 }
             }
