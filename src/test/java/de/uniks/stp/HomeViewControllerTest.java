@@ -1,6 +1,6 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
@@ -14,6 +14,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -32,6 +33,14 @@ public class HomeViewControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
     private RestClient restClient;
+    private String userKey;
+    private String msg;
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
 
     @Override
     public void start(Stage stage) {
@@ -72,6 +81,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
         Assert.assertEquals("Peter Lustig", personalUserName.getText());
+        clickOn("#logoutButton");
     }
 
     @Test
@@ -89,26 +99,44 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Test 2", serverName);
+        clickOn("#logoutButton");
     }
 
     @Test
     public void userBoxTest() throws InterruptedException {
         RestClient restClient = new RestClient();
-        restClient.login("Peter Lustig 2", "1234", response -> {
-        });
         login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        restClient.login("Peter Lustig 4", "1234", response -> {
+            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
+        });
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
         String userName = "";
         for (User user : itemList) {
-            if (user.getName().equals("Peter Lustig 2")) {
-                userName = "Peter Lustig 2";
+            if (user.getName().equals("Peter Lustig 4")) {
+                userName = "Peter Lustig 4";
                 break;
             }
         }
-        Assert.assertEquals("Peter Lustig 2", userName);
+        Assert.assertEquals("Peter Lustig 4", userName);
+        Thread.sleep(2000);
+        restClient.logout(userKey, response -> {});
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        itemList = userList.getItems();
+        userName = "";
+        for (User user : itemList) {
+            if (user.getName().equals("Peter Lustig 4")) {
+                userName = "Peter Lustig 4";
+                break;
+            }
+        }
+        Assert.assertEquals("", userName);
+        clickOn("#logoutButton");
     }
 
     @Test
@@ -146,6 +174,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn(userList.lookup("#user"));
         ListView<Channel> privateChatlist = lookup("#privateChatList").query();
         Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
+        clickOn("#logoutButton");
     }
 
     @Test()
@@ -179,8 +208,10 @@ public class HomeViewControllerTest extends ApplicationTest {
         String testUserOneName = "Peter Lustig 2";
         String testUserTwoName = "Peter Lustig 3";
 
-        restClient.login(testUserOneName, "1234", response -> {});
-        restClient.login(testUserTwoName, "1234", response -> {});
+        restClient.login(testUserOneName, "1234", response -> {
+        });
+        restClient.login(testUserTwoName, "1234", response -> {
+        });
         login();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -207,14 +238,14 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Thread.sleep(500);
 
-        Assert.assertEquals(testUserTwo.getName(), HomeViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserTwo.getName(), PrivateViewController.getSelectedChat().getName());
 
         Thread.sleep(500);
 
         ListView<Channel> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
 
-        Assert.assertEquals(testUserOne.getName(), HomeViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
 
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();

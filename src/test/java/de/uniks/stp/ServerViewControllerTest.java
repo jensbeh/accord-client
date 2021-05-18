@@ -12,6 +12,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -24,6 +25,12 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
 
     @Override
     public void start(Stage stage) {
