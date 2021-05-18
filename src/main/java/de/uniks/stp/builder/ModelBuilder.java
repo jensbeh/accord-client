@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.WebSocketClient;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-
+    private WebSocketClient SERVER_USER;
+    private WebSocketClient USER_CLIENT;
+    private WebSocketClient privateChatWebSocketCLient;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -25,8 +28,26 @@ public class ModelBuilder {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id);
+        User newUser = new User().setName(name).setId(id).setStatus(true);
         personalUser.withUser(newUser);
+        return newUser;
+    }
+
+    public User buildServerUser(String name, String id, Boolean status) {
+        for (User user : currentServer.getUser()) {
+            if (user.getId().equals(id)) {
+                if (user.isStatus() == status) {
+                    return user;
+                } else {
+                    currentServer.withoutUser(user);
+                    User updatedUser = new User().setName(name).setId(id).setStatus(status);
+                    currentServer.withUser(updatedUser);
+                    return updatedUser;
+                }
+            }
+        }
+        User newUser = new User().setName(name).setId(id).setStatus(status);
+        currentServer.withUser(newUser);
         return newUser;
     }
 
@@ -63,4 +84,27 @@ public class ModelBuilder {
     }
 
 
+    public WebSocketClient getSERVER_USER() {
+        return SERVER_USER;
+    }
+
+    public void setSERVER_USER(WebSocketClient SERVER_USER) {
+        this.SERVER_USER = SERVER_USER;
+    }
+
+    public WebSocketClient getUSER_CLIENT() {
+        return USER_CLIENT;
+    }
+
+    public void setUSER_CLIENT(WebSocketClient USER_CLIENT) {
+        this.USER_CLIENT = USER_CLIENT;
+    }
+
+    public WebSocketClient getPrivateChatWebSocketCLient() {
+        return privateChatWebSocketCLient;
+    }
+
+    public void setPrivateChatWebSocketCLient(WebSocketClient privateChatWebSocketCLient) {
+        this.privateChatWebSocketCLient = privateChatWebSocketCLient;
+    }
 }

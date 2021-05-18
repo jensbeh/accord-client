@@ -38,6 +38,7 @@ public class LanguageController extends SubSetting {
         this.view = view;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         // add languages
         languages.put("en", "English");
