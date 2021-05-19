@@ -87,7 +87,8 @@ public class CreateServerController {
         }
         catch (Exception e){
             e.printStackTrace();
-            if (e.getCause().toString().equals("java.net.NoRouteToHostException: No route to host: connect") || e.getCause().equals(new NoRouteToHostException())) {
+            System.out.println(e.getClass().getPackage().getName());
+            if (e.getCause().toString().equals("java.net.NoRouteToHostException: No route to host: connect") || e.getClass().getPackage().getName().equals("unirest.kong")) {
                 errorLabel.setText("No internet Connection - Please check your connection and try again");
             }
         }
