@@ -267,6 +267,7 @@ public class HomeViewController {
                 e.printStackTrace();
             }
         }
+        cleanup();
     }
 
     /**
