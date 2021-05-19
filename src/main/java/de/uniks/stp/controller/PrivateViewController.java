@@ -227,9 +227,11 @@ public class PrivateViewController {
      */
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
-            selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
-            this.privateChatList.refresh();
-            MessageViews();
+            if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().getSelectedItem())) {
+                selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
+                this.privateChatList.refresh();
+                MessageViews();
+            }
         }
     }
 
@@ -243,6 +245,11 @@ public class PrivateViewController {
             this.chatBox.getChildren().clear();
             messageViewController.init();
             this.chatBox.getChildren().add(root);
+
+            for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
+                // Display each Message which are saved
+                ChatViewController.printMessage(msg);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -255,6 +262,7 @@ public class PrivateViewController {
      * @param mouseEvent is called when clicked on an online User
      */
     private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
+        Channel currentChannel = selectedChat;
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean chatExisting = false;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
@@ -272,7 +280,8 @@ public class PrivateViewController {
                 builder.getPersonalUser().withPrivateChat(selectedChat);
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
-            MessageViews();
+            if(!selectedChat.equals(currentChannel))
+                MessageViews();
         }
     }
 

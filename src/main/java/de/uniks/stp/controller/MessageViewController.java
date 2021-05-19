@@ -1,7 +1,6 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Message;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -43,10 +42,6 @@ public class MessageViewController {
         this.messages.getChildren().clear();
         // Enable Message Bar
         messageBar.setOpacity(1);
-        for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
-            // Display each Message which are saved
-            ChatViewController.printMessage(msg);
-        }
     }
 
     /**

@@ -2,6 +2,7 @@ package de.uniks.stp;
 
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -51,7 +52,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 VBox vbox = new VBox();
                 Label userName = new Label();
                 userName.setId("userNameLabel");
-                userName.setTextFill(Color.WHITE);
+                Platform.runLater(() -> userName.setTextFill(Color.WHITE));
                 Label message = new Label();
                 message.setId("messageLabel");
                 //right alignment if User is currentUser else left

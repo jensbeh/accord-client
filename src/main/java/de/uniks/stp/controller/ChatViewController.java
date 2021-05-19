@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateMessageListCellFactory;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -69,6 +70,6 @@ public class ChatViewController {
      */
     public static void printMessage(Message msg) {
         if(PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
-            ob.add(msg);
+            Platform.runLater(() -> ob.add(msg));
     }
 }
