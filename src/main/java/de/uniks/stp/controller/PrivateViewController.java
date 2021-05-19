@@ -26,7 +26,6 @@ import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
-import javax.swing.*;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import java.io.IOException;
@@ -34,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+
 import static util.Constants.*;
 
 public class PrivateViewController {
@@ -115,6 +115,17 @@ public class PrivateViewController {
                     }
                     if (newChat) {
                         builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
+                    }
+                }
+                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                    if (!serverMessage.equals("This is not your username.")) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                            alert.setTitle("Chat Error");
+                            alert.setHeaderText(serverMessage);
+                            Optional<ButtonType> result = alert.showAndWait();
+                        });
                     }
                 }
             }

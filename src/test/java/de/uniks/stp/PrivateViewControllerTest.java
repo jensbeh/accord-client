@@ -6,6 +6,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.websocket.CloseReason;
+import java.io.IOException;
 
 public class PrivateViewControllerTest extends ApplicationTest {
 
@@ -68,5 +70,22 @@ public class PrivateViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Error Dialog", result);
+    }
+
+    @Test
+    public void chatPartnerIsOffline() throws InterruptedException, IOException {
+        login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
+        ws.sendMessage(new JSONObject().put("channel","private").put("to","-").put("message","Test").toString());
+        Thread.sleep(2000);
+        String result = "";
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+            }
+        }
+        Assert.assertEquals("Chat Error", result);
     }
 }
