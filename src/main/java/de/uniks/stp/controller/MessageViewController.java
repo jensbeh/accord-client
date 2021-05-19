@@ -37,6 +37,9 @@ public class MessageViewController {
         MessageView();
     }
 
+    /**
+     * Cleanup messages and enable messageBar
+     */
     public void MessageView() {
         // Clean Message View
         this.messages.getChildren().clear();

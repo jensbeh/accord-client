@@ -1,7 +1,9 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -192,14 +194,16 @@ public class PrivateMessageTest extends ApplicationTest {
         Label message = lookup("#msg_" + JUTTA_ID).query();
         Assert.assertEquals("This is a test message", message.getText());
 
-        /*ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        ListView<Channel> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + JUTTA_ID));
         Thread.sleep(2000);
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
+        Thread.sleep(500);
         clickOn("#sendButton");
         Thread.sleep(500);
-        Assert.assertEquals("Okay!", message.getText());*/
+        message = lookup("#msg_" + JUTTA_ID).query();
+        Assert.assertEquals("Okay!", message.getText());
 
         shutDownWebSocketClient();
         restClient.logout(GUDRUN_KEY, response -> {
