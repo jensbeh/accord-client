@@ -10,14 +10,12 @@ import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -33,7 +31,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Optional;
 
 /**
@@ -188,11 +185,10 @@ public class ServerViewController {
     public void showOnlineOfflineUsers() {
         ArrayList<User> onlineUsers = new ArrayList<>();
         ArrayList<User> offlineUsers = new ArrayList<>();
-        for(User user : builder.getCurrentServer().getUser()){
+        for (User user : builder.getCurrentServer().getUser()) {
             if (user.isStatus()) {
                 onlineUsers.add(user);
-            }
-            else {
+            } else {
                 offlineUsers.add(user);
             }
         }
