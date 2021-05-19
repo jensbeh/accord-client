@@ -137,7 +137,7 @@ public class PrivateViewController {
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "No connection to server.", ButtonType.OK);
                             alert.setTitle("No Connection Error");
-                            alert.setHeaderText("No Connection");
+                            alert.setHeaderText("No Connection - Please check and try again later");
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
                                 showUsers();
