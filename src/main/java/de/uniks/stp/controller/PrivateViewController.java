@@ -113,7 +113,13 @@ public class PrivateViewController {
                         }
                     }
                     if (newChat) {
-                        builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
+                        String userId = "";
+                        for(User user : onlineUsersList.getItems()) {
+                            if(user.getName().equals(channelName)) {
+                                userId = user.getId();
+                            }
+                        }
+                        builder.getPersonalUser().withPrivateChat(new Channel().setId(userId).setName(channelName).withMessage(message));
                         privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
                     }
                 }

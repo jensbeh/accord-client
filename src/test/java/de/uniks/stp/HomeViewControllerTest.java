@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,6 +23,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -249,6 +254,6 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216", privateChatCell.getStyle());
+        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
     }
 }
