@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import static util.Constants.*;
 
 public class PrivateViewController {
 
@@ -82,7 +83,7 @@ public class PrivateViewController {
         showCurrentUser();
         showUsers();
 
-        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create("wss://ac.uniks.de/ws/chat?user=" + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
             /**
              * handles server response
              *
@@ -143,7 +144,7 @@ public class PrivateViewController {
 
     private void startWebsocketConnection() {
         try {
-            USER_CLIENT = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system"), new WSCallback() {
+            USER_CLIENT = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
                     System.out.println("msg: " + msg);
@@ -230,10 +231,10 @@ public class PrivateViewController {
      */
     private void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("MessageView.fxml"));
-            MessageViewController messageViewController = new MessageViewController(root, builder);
-            messageViewController.init();
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
+            messageViewController.init();
             this.chatBox.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
