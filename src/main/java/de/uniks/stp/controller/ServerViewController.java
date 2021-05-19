@@ -31,6 +31,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import static util.Constants.*;
+
 /**
  * The class ServerViewController is about showing the ServerView. It is used to update the builder.
  */
@@ -131,7 +133,7 @@ public class ServerViewController {
      */
     private void showServerUsers() {
         try {
-            SERVER_USER = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system?serverId=" + builder.getCurrentServer().getId()), new WSCallback() {
+            SERVER_USER = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()), new WSCallback() {
 
                 @Override
                 public void handleMessage(JsonStructure msg) {
