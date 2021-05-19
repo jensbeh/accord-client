@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS">
          <children>
@@ -16,8 +16,10 @@
       <HBox id="container" alignment="CENTER_LEFT" prefHeight="1.0" prefWidth="3469.0" style="-fx-background-color: white;" />
       <HBox id="messageBox" alignment="CENTER" maxHeight="35.0" prefHeight="35.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: grey;">
          <children>
+            <HBox prefHeight="35.0" prefWidth="4.0" />
             <TextField fx:id="messageTextField" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6;" />
             <Button fx:id="sendButton" mnemonicParsing="false" style="-fx-background-radius: 6; -fx-background-color: ff9999;" text="Send" textFill="WHITE" />
+            <HBox prefHeight="35.0" prefWidth="4.0" />
          </children>
       </HBox>
    </children>
