@@ -12,6 +12,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class ChatViewController {
     private ModelBuilder builder;
@@ -41,6 +44,7 @@ public class ChatViewController {
         messageList.setCellFactory(new AlternateMessageListCellFactory());
         ob = FXCollections.observableArrayList();
         this.messageList.setItems(ob);
+        AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
     }
 
     /**
@@ -51,12 +55,12 @@ public class ChatViewController {
         String textMessage = messageTextField.getText();
         messageTextField.setText("");
         if (!textMessage.isEmpty()) {
-            //build Message
-            Message message = new Message();
-            message.setMessage(textMessage);
-            message.setFrom(builder.getPersonalUser().getName());
             AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-            printMessage(message);
+            try {
+                builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -64,6 +68,7 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public static void printMessage(Message msg) {
-        ob.add(msg);
+        if(PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
+            ob.add(msg);
     }
 }

@@ -58,6 +58,7 @@ public class PrivateViewController {
     private static Channel selectedChat;
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
+    private ChatViewController messageViewController;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -100,7 +101,7 @@ public class PrivateViewController {
                     Boolean newChat = true;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         channelName = jsonObject.getString("to");
-                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
+                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
                     } else {
                         channelName = jsonObject.getString("from");
                         message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
@@ -122,6 +123,9 @@ public class PrivateViewController {
                         }
                         builder.getPersonalUser().withPrivateChat(new Channel().setId(userId).setName(channelName).withMessage(message));
                         privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
+                    }
+                    if(messageViewController != null) {
+                        ChatViewController.printMessage(message);
                     }
                 }
             }
@@ -235,7 +239,7 @@ public class PrivateViewController {
     private void MessageViews() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            ChatViewController messageViewController = new ChatViewController(root, builder);
+            messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
             this.chatBox.getChildren().add(root);
