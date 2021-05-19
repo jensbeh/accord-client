@@ -124,7 +124,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("Peter Lustig 4", userName);
         Thread.sleep(2000);
-        restClient.logout(userKey, response -> {});
+        restClient.logout(userKey, response -> {
+        });
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         itemList = userList.getItems();
@@ -200,6 +201,19 @@ public class HomeViewControllerTest extends ApplicationTest {
         Callback<JsonNode> callback = callbackCaptor.getValue();
         callback.completed(res);
         Assert.assertEquals("{}", res.getBody().toString());
+    }
+
+    @Test
+    public void logoutMultiLogin() throws InterruptedException {
+        login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        RestClient restClient = new RestClient();
+        String testUserOneName = "Peter Lustig";
+        restClient.login(testUserOneName, "1234", response -> {
+        });
+        Thread.sleep(1000);
+        Assert.assertEquals("Accord - Login", stage.getTitle());
     }
 
     @Test

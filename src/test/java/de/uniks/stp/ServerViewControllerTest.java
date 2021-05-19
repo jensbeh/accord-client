@@ -90,4 +90,19 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
     }
+
+    @Test
+    public void logoutMultiLogin() throws InterruptedException {
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        RestClient restClient = new RestClient();
+        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverList.lookup("#server"));
+        String testUserOneName = "TestUser Team Bit Shift";
+        restClient.login(testUserOneName, "test123", response -> {
+        });
+        Thread.sleep(1000);
+        Assert.assertEquals("Accord - Login", stage.getTitle());
+    }
 }
