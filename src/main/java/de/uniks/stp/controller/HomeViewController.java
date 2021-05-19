@@ -44,6 +44,7 @@ public class HomeViewController {
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
     private static Channel selectedChat;
+    private ServerViewController serverController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -96,7 +97,7 @@ public class HomeViewController {
     public void showServerView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
-            ServerViewController serverController = new ServerViewController(root, builder, builder.getCurrentServer());
+            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -319,5 +320,9 @@ public class HomeViewController {
                 Platform.runLater(StageManager::showLoginScreen);
             }
         });
+    }
+
+    public ServerViewController getServerController() {
+        return serverController;
     }
 }

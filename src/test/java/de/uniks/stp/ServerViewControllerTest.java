@@ -3,10 +3,7 @@ package de.uniks.stp;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -85,10 +82,15 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn(serverList.lookup("#server"));
         app.getBuilder().buildServerUser("Test", "1234", false);
         app.getBuilder().buildServerUser("Test1", "12234", true);
-        ListView<User> onlineUserList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
-        ListView<User> offlineUserList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+
+        ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
+        ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");
+        ListView<User> offlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#offlineUsers");
+
+        app.getHomeViewController().getServerController().showOnlineOfflineUsers();
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
+        clickOn("#logoutButton");
     }
 
     @Test
