@@ -58,7 +58,6 @@ public class MessageViewController {
         if (!messageField.getText().equals("")) {
             try {
                 builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", messageField.getText()).toString());
-                messageField.setText("");
             } catch (IOException e) {
                 e.printStackTrace();
             }
