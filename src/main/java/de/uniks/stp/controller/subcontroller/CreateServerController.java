@@ -84,11 +84,9 @@ public class CreateServerController {
             } else {
                 errorLabel.setText("Error: Server name cannot be empty");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(e.getClass().getPackage().getName());
-            if (e.getCause().toString().equals("java.net.NoRouteToHostException: No route to host: connect") || e.getClass().getPackage().getName().equals("unirest.kong")) {
+            if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
                 errorLabel.setText("No internet Connection - Please check your connection and try again");
             }
         }

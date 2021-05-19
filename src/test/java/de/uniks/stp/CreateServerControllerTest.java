@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -7,6 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import junit.framework.TestCase;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -130,18 +132,16 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     @Test
     public void showNoConnectionToServerTest() throws InterruptedException {
-        loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        Circle addServer = lookup("#addServer").query();
-        clickOn(addServer);
-        TextField serverName = lookup("#serverName").query();
-        serverName.setText("TestServer");
-//        restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
-        when(restMock.postServer(anyString(),anyString())).thenThrow(UnirestException.class);
-        clickOn(addServer);
-        Label errorLabel = lookup("#errorLabel").query();
-        Assert.assertEquals("No internet Connection - Please check your connection and try again", errorLabel.getText());
+        String message = "";
+        when(restMock.postServer(anyString(), anyString())).thenThrow(new UnirestException("No route to host: connect"));
+        try {
+            restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
+        } catch (Exception e) {
+            if (e.getMessage().equals("No route to host: connect")) {
+                message = "No internet Connection - Please check your connection and try again";
+            }
+        }
+        Assert.assertEquals("No internet Connection - Please check your connection and try again", message);
         clickOn("#logoutButton");
     }
 
