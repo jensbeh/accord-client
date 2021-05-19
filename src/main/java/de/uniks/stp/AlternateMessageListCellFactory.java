@@ -57,7 +57,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 //right alignment if User is currentUser else left
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
-                    message.setStyle("-fx-background-color: pink;" + "-fx-background-radius: 4;");
+                    message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                     message.setTextFill(Color.WHITE);
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
