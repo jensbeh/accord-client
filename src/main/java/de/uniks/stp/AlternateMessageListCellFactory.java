@@ -1,22 +1,14 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.CurrentUserMessageController;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
-import java.io.IOException;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -48,7 +40,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
     private static class MessageListCell extends ListCell<Message> {
 
-        private int x;
         /**
          * shows message in cell of ListView
          */
@@ -59,8 +50,10 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             if (!empty) {
                 VBox vbox = new VBox();
                 Label userName = new Label();
+                userName.setId("userNameLabel");
                 userName.setTextFill(Color.WHITE);
                 Label message = new Label();
+                message.setId("messageLabel");
                 //right alignment if User is currentUser else left
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
@@ -74,24 +67,23 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 userName.setText(item.getFrom());
                 //new Line after 50 Characters
                 String str = item.getMessage();
-                int i = str.length();
-                i -= 50;
-                int f = 50;
-                while(i > 0){
-                    x = f;
-                    System.out.println("f: " + f);
-                    if(f <= str.length()) {
-                        if (str.charAt(f) == ' ') {
-                            str = new StringBuilder(str).insert(f, "\n").toString();
+                int textMessageLength = str.length();
+                textMessageLength -= 50;
+                int numberCharNewLine = 50;
+                while (textMessageLength > 0) {
+                    int nextSpace = numberCharNewLine;
+                    if (numberCharNewLine <= str.length()) {
+                        if (str.charAt(numberCharNewLine) == ' ') {
+                            str = new StringBuilder(str).insert(numberCharNewLine, "\n").toString();
                         } else {
-                            while (str.charAt(x) != ' ') {
-                                x -= 1;
+                            while (str.charAt(nextSpace) != ' ') {
+                                nextSpace -= 1;
                             }
-                            str = new StringBuilder(str).insert(x, "\n").toString();
+                            str = new StringBuilder(str).insert(nextSpace, "\n").toString();
                         }
                     }
-                    i -= 50;
-                    f += 50;
+                    textMessageLength -= 50;
+                    numberCharNewLine += 50;
                 }
                 message.setText(" " + str + " ");
                 vbox.getChildren().addAll(userName, message);

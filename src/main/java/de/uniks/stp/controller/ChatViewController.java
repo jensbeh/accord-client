@@ -10,6 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 public class ChatViewController {
     private ModelBuilder builder;
@@ -17,8 +19,8 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private ListView<Message> messageList;
-    private AlternateMessageListCellFactory alternateMessageListCellFactory;
     private static ObservableList<Message> ob;
+    private HBox messageBox;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -31,6 +33,8 @@ public class ChatViewController {
         this.sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         this.sendButton.setOnAction(this::sendButtonClicked);
+        this.messageBox = (HBox) view.lookup("#messageBox");
+        messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setStyle("-fx-background-color: grey;");
@@ -51,7 +55,7 @@ public class ChatViewController {
             Message message = new Message();
             message.setMessage(textMessage);
             message.setFrom(builder.getPersonalUser().getName());
-            alternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+            AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
             printMessage(message);
         }
     }
@@ -59,7 +63,7 @@ public class ChatViewController {
     /**
      * insert new message in observableList
      */
-    private static void printMessage(Message msg) {
+    public static void printMessage(Message msg) {
         ob.add(msg);
     }
 }

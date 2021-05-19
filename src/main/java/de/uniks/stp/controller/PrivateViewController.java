@@ -225,10 +225,10 @@ public class PrivateViewController {
      */
     private void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("MessageView.fxml"));
-            MessageViewController messageViewController = new MessageViewController(root, builder);
-            messageViewController.init();
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
+            messageViewController.init();
             this.chatBox.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
