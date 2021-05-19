@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -77,6 +78,16 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Test
     public void showServerUsersTest() throws InterruptedException {
-
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverList.lookup("#server"));
+        app.getBuilder().buildServerUser("Test", "1234", false);
+        app.getBuilder().buildServerUser("Test1", "12234", true);
+        ListView<User> onlineUserList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        ListView<User> offlineUserList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        Assert.assertNotEquals(0, onlineUserList.getItems().size());
+        Assert.assertNotEquals(0, offlineUserList.getItems().size());
     }
 }
