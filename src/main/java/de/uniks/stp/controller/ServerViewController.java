@@ -33,6 +33,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static util.Constants.*;
+
 /**
  * The class ServerViewController is about showing the ServerView. It is used to update the builder.
  */
@@ -54,6 +56,7 @@ public class ServerViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
+    private VBox messages;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -85,10 +88,23 @@ public class ServerViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
-
+        messages = (VBox) view.lookup("#chatBox");
         showCurrentUser();
         showOnlineUsers();
         showServerUsers();
+        showMessageView();
+    }
+
+    private void showMessageView() {
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageViewController = new ChatViewController(root, builder);
+            messageViewController.init();
+            this.messages.getChildren().clear();
+            this.messages.getChildren().add(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -137,7 +153,7 @@ public class ServerViewController {
      */
     private void showServerUsers() {
         try {
-            SERVER_USER = new WebSocketClient(builder, new URI("wss://ac.uniks.de/ws/system?serverId=" + builder.getCurrentServer().getId()), new WSCallback() {
+            SERVER_USER = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()), new WSCallback() {
 
                 @Override
                 public void handleMessage(JsonStructure msg) {

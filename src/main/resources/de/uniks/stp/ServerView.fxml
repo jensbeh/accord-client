@@ -45,7 +45,7 @@
             </VBox>
          </children>
       </VBox>
-      <VBox id="chatBox" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" style="-fx-background-color: #4d5054;">
+      <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" style="-fx-background-color: #4d5054;">
          <children>
             <VBox id="messages" alignment="CENTER" style="-fx-pref-height: 1000000;">
                <children>
