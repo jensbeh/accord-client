@@ -21,6 +21,7 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.JsonUtil;
+import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -29,6 +30,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static util.Constants.*;
@@ -50,9 +52,11 @@ public class ServerViewController {
     private TextField sendTextField;
     private Button sendMessageButton;
     private ListView<User> onlineUsersList;
+    private ListView<User> offlineUsersList;
     private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
+    private VBox messages;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -82,9 +86,25 @@ public class ServerViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
+        offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        messages = (VBox) view.lookup("#chatBox");
         showCurrentUser();
         showOnlineUsers();
         showServerUsers();
+        showMessageView();
+    }
+
+    private void showMessageView() {
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageViewController = new ChatViewController(root, builder);
+            messageViewController.init();
+            this.messages.getChildren().clear();
+            this.messages.getChildren().add(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -150,7 +170,7 @@ public class ServerViewController {
                     if (userAction.equals("userLeft")) {
                         builder.buildServerUser(userName, userId, false);
                     }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
+                    showOnlineOfflineUsers();
                 }
 
                 public void onClose(Session session, CloseReason closeReason) {
@@ -172,13 +192,26 @@ public class ServerViewController {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getCurrentServer().getUser())));
-        });
+        showOnlineOfflineUsers();
     }
 
-    public void showText() {
-
+    /**
+     * Split Users into offline and online users then update the list
+     */
+    public void showOnlineOfflineUsers() {
+        ArrayList<User> onlineUsers = new ArrayList<>();
+        ArrayList<User> offlineUsers = new ArrayList<>();
+        for (User user : builder.getCurrentServer().getUser()) {
+            if (user.isStatus()) {
+                onlineUsers.add(user);
+            } else {
+                offlineUsers.add(user);
+            }
+        }
+        onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
+        offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+        onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+        offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
     }
 
     public void onSendMessage(ActionEvent event) {

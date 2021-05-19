@@ -1,7 +1,11 @@
 package de.uniks.stp;
 
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.CurrentUserMessageController;
 import de.uniks.stp.model.User;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -42,7 +46,6 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                 }
-                circle.setFill(Paint.valueOf("#13d86b"));
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
