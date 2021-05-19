@@ -118,15 +118,19 @@ public class PrivateViewController {
                     }
                 }
                 if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String errorTitle;
                     String serverMessage = jsonObject.getJsonObject("data").getString("message");
-                    if (!serverMessage.equals("This is not your username.")) {
+                    if (serverMessage.equals("This is not your username.")) {
+                        errorTitle = "Username Error";
+                    } else{
+                        errorTitle = "Chat Error";
+                    }
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                            alert.setTitle("Chat Error");
+                            alert.setTitle(errorTitle);
                             alert.setHeaderText(serverMessage);
                             Optional<ButtonType> result = alert.showAndWait();
                         });
-                    }
                 }
             }
 
