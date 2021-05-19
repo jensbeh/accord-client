@@ -138,10 +138,10 @@ public class CreateServerControllerTest extends ApplicationTest {
             restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
         } catch (Exception e) {
             if (e.getMessage().equals("No route to host: connect")) {
-                message = "No internet Connection - Please check your connection and try again";
+                message = "No Connection - Please check your connection and try again";
             }
         }
-        Assert.assertEquals("No internet Connection - Please check your connection and try again", message);
+        Assert.assertEquals("No Connection - Please check your connection and try again", message);
     }
 
 }

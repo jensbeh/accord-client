@@ -87,7 +87,7 @@ public class CreateServerController {
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
-                errorLabel.setText("No internet Connection - Please check your connection and try again");
+                errorLabel.setText("No Connection - Please check your connection and try again");
             }
         }
 
