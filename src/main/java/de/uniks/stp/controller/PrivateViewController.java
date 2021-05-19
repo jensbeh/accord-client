@@ -93,7 +93,7 @@ public class PrivateViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("privateChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") &&jsonObject.getString("channel").equals("private")) {
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
                     Message message;
                     String channelName;
                     Boolean newChat = true;
@@ -124,6 +124,17 @@ public class PrivateViewController {
 
             @Override
             public void onClose(Session session, CloseReason closeReason) {
+                if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "No connection to server.", ButtonType.OK);
+                        alert.setTitle("Error Dialog");
+                        alert.setHeaderText("No Connection");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            showUsers();
+                        }
+                    });
+                }
             }
         });
         builder.setPrivateChatWebSocketCLient(privateChatWebSocketCLient);

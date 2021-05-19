@@ -1,24 +1,15 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 
-import javax.swing.*;
 import javax.websocket.*;
-import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
