@@ -55,8 +55,6 @@ dependencies {
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-client', version: '1.15'
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '1.15'
 
-    compile group: 'org.assertj', name: 'assertj-swing', version: '3.9.2'
-
 }
 
 mainClassName = 'de.uniks.stp.Launcher'
