@@ -153,8 +153,9 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            showServerView();
             showServers();
+            updateServerListColor();
+            showServerView();
         });
     }
 
