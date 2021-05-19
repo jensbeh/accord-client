@@ -1,11 +1,12 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
+import javafx.scene.control.Control;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
@@ -17,7 +18,6 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private RestClient restClient;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -48,9 +48,8 @@ public class PrivateViewControllerTest extends ApplicationTest {
         login();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        ModelBuilder b = app.getBuilder();
         WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
-        ws.onClose(ws.getSession(),new CloseReason(new CloseReason.CloseCode() {
+        ws.onClose(ws.getSession(), new CloseReason(new CloseReason.CloseCode() {
             /**
              * Returns the code number, for example the integer '1000' for normal closure.
              *
@@ -60,21 +59,14 @@ public class PrivateViewControllerTest extends ApplicationTest {
             public int getCode() {
                 return 1006;
             }
-        },"no Connection"));
-        while(true);
+        }, "no Connection"));
+        Thread.sleep(2000);
+        String result = "";
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+            }
+        }
+        Assert.assertEquals("Error Dialog", result);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
