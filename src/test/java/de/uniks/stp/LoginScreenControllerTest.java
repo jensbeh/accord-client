@@ -22,6 +22,7 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.Scanner;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -284,7 +285,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
                     }
                     if (i == 1) {
                         String secondLine = scanner.next();
-                        Assert.assertEquals("123", secondLine);
+                        Assert.assertEquals("123", decode(secondLine));
                     }
                     i++;
                 }
@@ -293,5 +294,14 @@ public class LoginScreenControllerTest extends ApplicationTest {
             System.err.println("Error while reading!");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * decode password
+     */
+    public static String decode(String str) {
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(str);
+        return new String(bytes);
     }
 }
