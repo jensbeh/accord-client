@@ -142,7 +142,6 @@ public class CreateServerControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("No internet Connection - Please check your connection and try again", message);
-        clickOn("#logoutButton");
     }
 
 }
