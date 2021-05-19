@@ -22,6 +22,8 @@ import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.net.NoRouteToHostException;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,12 +92,25 @@ public class CreateServerControllerTest extends ApplicationTest {
         JSONObject jsonObj = new JSONObject().accumulate("status", "success").accumulate("message", "password").append("data", data);
         when(res.getBody()).thenReturn(new JsonNode(jsonObj.toString()));
         verify(restMock).postServer(anyString(), anyString());
-
         Assert.assertEquals(jsonObj.toString(), res.getBody().toString());
+
     }
 
     @Test
     public void showServerTest() throws InterruptedException {
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        Circle addServer = lookup("#addServer").query();
+        restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
+        when(restMock).thenThrow(new NoRouteToHostException());
+        clickOn(addServer);
+        Label errorLabel = lookup("#errorLabel").query();
+        Assert.assertEquals("No internet Connection - Please check your connection and try again", errorLabel.getText());
+    }
+
+    @Test
+    public void showNoConnectionToServerTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
