@@ -53,6 +53,7 @@ public class ServerViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
+    private VBox messages;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -82,9 +83,23 @@ public class ServerViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        messages = (VBox) view.lookup("#chatBox");
         showCurrentUser();
         showOnlineUsers();
         showServerUsers();
+        showMessageView();
+    }
+
+    private void showMessageView() {
+        try {
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            ChatViewController messageViewController = new ChatViewController(root, builder);
+            messageViewController.init();
+            this.messages.getChildren().clear();
+            this.messages.getChildren().add(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

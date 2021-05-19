@@ -69,7 +69,6 @@ public class StageManager extends Application {
             stage.setMinHeight(650);
             stage.setMinWidth(900);
             stage.show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
