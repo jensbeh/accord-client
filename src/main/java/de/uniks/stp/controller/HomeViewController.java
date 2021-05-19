@@ -235,6 +235,8 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
+        this.stage.close();
+        stage = null;
         try {
             if (builder.getSERVER_USER() != null) {
                 if (builder.getSERVER_USER().getSession() != null) {
