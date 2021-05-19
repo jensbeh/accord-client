@@ -117,10 +117,6 @@ public class PrivateViewController {
                         builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
                     }
                 }
-                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
-                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), serverMessage, "PrivateChatError", JOptionPane.INFORMATION_MESSAGE);
-                }
             }
 
             @Override
