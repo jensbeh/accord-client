@@ -3,3 +3,7 @@
     -fx-padding: -10;
     -fx-opacity: 0;
 }
+
+#privateChatList .list-cell {
+    -fx-padding: 0 0 0 0;
+}

@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.Channel;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -32,6 +33,8 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #2C2F33;");
             if (!empty) {
+                cell.setId("cell_" + item.getId());
+                name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
@@ -40,7 +43,11 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
                     message.setText(": " + item.getMessage().get(item.getMessage().size() - 1).getMessage());
                     message.setTextFill(Paint.valueOf("#FFFFFF"));
                 }
-                cell.setStyle("-fx-background-color: #2C2F33;");
+                if(PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
+                    cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216");
+                } else {
+                    cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216");
+                }
                 cell.getChildren().addAll(name, message);
             }
             this.setGraphic(cell);

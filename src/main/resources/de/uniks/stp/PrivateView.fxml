@@ -13,10 +13,10 @@
 
 <HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ListView id="privateChatList" minWidth="185.0" style="-fx-background-color: #2c2f33;" HBox.hgrow="ALWAYS" />
-      <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS">
+      <ListView id="privateChatList" minWidth="185.0" style="-fx-background-color: #2c2f33;" HBox.hgrow="ALWAYS" stylesheets="@styles/ListViewStyle.css" />
+      <VBox id="chatBox" alignment="CENTER" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" style="-fx-background-color: #4d5054;" HBox.hgrow="ALWAYS">
          <children>
-            <VBox id="messages" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" style="-fx-pref-height: 1000000;">
+            <VBox id="messages" alignment="CENTER" style="-fx-pref-height: 1000000;">
                <children>
                   <fx:include source="Message.fxml" />
                   <Label text="Welcome To Accord" textFill="#fffefe">
