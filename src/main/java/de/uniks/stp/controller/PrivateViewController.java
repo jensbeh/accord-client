@@ -135,7 +135,7 @@ public class PrivateViewController {
                     System.out.println(closeReason.getCloseCode().toString());
                     if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
                         Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "No connection to server.", ButtonType.OK);
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
                             alert.setTitle("No Connection Error");
                             alert.setHeaderText("No Connection - Please check and try again later");
                             Optional<ButtonType> result = alert.showAndWait();
