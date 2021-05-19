@@ -168,6 +168,9 @@ public class ServerViewController {
                         builder.buildServerUser(userName, userId, true);
                     }
                     if (userAction.equals("userLeft")) {
+                        if (userName.equals(builder.getPersonalUser().getName())) {
+                            Platform.runLater(StageManager::showLoginScreen);
+                        }
                         builder.buildServerUser(userName, userId, false);
                     }
                     showOnlineOfflineUsers();
