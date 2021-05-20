@@ -46,9 +46,7 @@ public class PrivateViewController {
     private ModelBuilder builder;
     private VBox userBox;
     private VBox currentUserBox;
-    private VBox messages;
     private VBox chatBox;
-    private HBox messageBar;
     private HBox viewBox;
     private ObservableList<Channel> privateChats;
     private ListView<Channel> privateChatList;
@@ -118,15 +116,22 @@ public class PrivateViewController {
                         }
                     }
                     if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                        String errorTitle;
                         String serverMessage = jsonObject.getJsonObject("data").getString("message");
-                        if (!serverMessage.equals("This is not your username.")) {
-                            Platform.runLater(() -> {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                                alert.setTitle("Chat Error");
-                                alert.setHeaderText(serverMessage);
-                                Optional<ButtonType> result = alert.showAndWait();
-                            });
+                        if (serverMessage.equals("This is not your username.")) {
+                            errorTitle = "Username Error";
+                        } else {
+                            errorTitle = "Chat Error";
                         }
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                            alert.setTitle(errorTitle);
+                            alert.setHeaderText(serverMessage);
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
+                                showUsers();
+                            }
+                        });
                     }
                 }
 

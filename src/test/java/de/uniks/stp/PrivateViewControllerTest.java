@@ -69,7 +69,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
                 result = ((Stage) s).getTitle();
             }
         }
-        Assert.assertEquals("Error Dialog", result);
+        Assert.assertEquals("No Connection Error", result);
     }
 
     @Test
@@ -87,5 +87,24 @@ public class PrivateViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Chat Error", result);
+    }
+
+    @Test
+    public void invalidUsername() throws InterruptedException, IOException {
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("+");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("1");
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        Thread.sleep(2000);
+        String result = "";
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+            }
+        }
+        Assert.assertEquals("Username Error", result);
     }
 }
