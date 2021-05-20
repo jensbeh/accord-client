@@ -3,6 +3,7 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -10,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
+
+import java.net.NoRouteToHostException;
 
 /**
  * The class CreateServerController is about showing the createServerView. After a server is
@@ -47,7 +50,6 @@ public class CreateServerController {
         errorLabel = (Label) view.lookup("#errorLabel");
         createServer = (Button) view.lookup(("#createServer"));
         createServer.setOnAction(this::onCreateServerClicked);
-
     }
 
     /**
@@ -65,21 +67,29 @@ public class CreateServerController {
      * @param event is called when the Ok button is clicked
      */
     public void onCreateServerClicked(ActionEvent event) {
-        this.personalUser = builder.getPersonalUser();
-        String name = this.serverName.getText();
-        if (name != null && !name.isEmpty()) {
-            JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
-            String status = response.getObject().getString("status");
-            if (status.equals("success")) {
-                String serverId = response.getObject().getJSONObject("data").getString("id");
-                String serverName = response.getObject().getJSONObject("data").getString("name");
-                builder.setCurrentServer(builder.buildServer(serverName, serverId));
-                change.run();
-            } else if (status.equals(("failure"))) {
-                errorLabel.setText(response.getObject().getString("message"));
+        try {
+            this.personalUser = builder.getPersonalUser();
+            String name = this.serverName.getText();
+            if (name != null && !name.isEmpty()) {
+                JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
+                String status = response.getObject().getString("status");
+                if (status.equals("success")) {
+                    String serverId = response.getObject().getJSONObject("data").getString("id");
+                    String serverName = response.getObject().getJSONObject("data").getString("name");
+                    builder.setCurrentServer(builder.buildServer(serverName, serverId));
+                    change.run();
+                } else if (status.equals(("failure"))) {
+                    errorLabel.setText(response.getObject().getString("message"));
+                }
+            } else {
+                errorLabel.setText("Error: Server name cannot be empty");
             }
-        } else {
-            errorLabel.setText("Error: Server name cannot be empty");
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
+                errorLabel.setText("No Connection - Please check your connection and try again");
+            }
         }
+
     }
 }

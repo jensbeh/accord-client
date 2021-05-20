@@ -27,16 +27,16 @@ import java.util.concurrent.TimeUnit;
 
 public class PrivateMessageTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
     private static String GUDRUN_KEY;
     private static String JUTTA_KEY;
+    private static String JUTTA_ID;
     private static ClientEndpointConfig GUDRUN_CLIENT_CONFIG = null;
     private static ClientEndpointConfig JUTTA_CLIENT_CONFIG = null;
     private static ClientTestEndpoint GUDRUN_CLIENT = null;
     private static ClientTestEndpoint JUTTA_CLIENT = null;
     private CountDownLatch messageLatch;
-    private static String JUTTA_ID;
+    private Stage stage;
+    private StageManager app;
 
 
     @BeforeClass
@@ -53,6 +53,7 @@ public class PrivateMessageTest extends ApplicationTest {
         app.start(stage);
         this.stage.centerOnScreen();
     }
+
 
     private void setupWebsocketClient() {
         System.out.println("Starting WebSocket Client");

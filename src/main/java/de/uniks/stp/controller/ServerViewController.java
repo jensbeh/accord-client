@@ -168,6 +168,9 @@ public class ServerViewController {
                         builder.buildServerUser(userName, userId, true);
                     }
                     if (userAction.equals("userLeft")) {
+                        if (userName.equals(builder.getPersonalUser().getName())) {
+                            Platform.runLater(StageManager::showLoginScreen);
+                        }
                         builder.buildServerUser(userName, userId, false);
                     }
                     showOnlineOfflineUsers();
@@ -220,6 +223,20 @@ public class ServerViewController {
 
     public void showChannels() {
 
+    }
+
+    public void stop() {
+        onlineUsersList.setItems(null);
+        offlineUsersList.setItems(null);
+        try {
+            if (SERVER_USER != null) {
+                if (SERVER_USER.getSession() != null) {
+                    SERVER_USER.stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

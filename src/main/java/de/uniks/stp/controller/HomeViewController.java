@@ -47,6 +47,8 @@ public class HomeViewController {
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
     private static Channel selectedChat;
+    private PrivateViewController privateViewController;
+    private ServerViewController serverController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -81,9 +83,10 @@ public class HomeViewController {
      * Shows the private home view to have a private chat with other users.
      */
     private void showPrivateView() {
+        cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
-            PrivateViewController privateViewController = new PrivateViewController(root, builder);
+            privateViewController = new PrivateViewController(root, builder);
             privateViewController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -97,9 +100,10 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
+        cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
-            ServerViewController serverController = new ServerViewController(root, builder, builder.getCurrentServer());
+            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -239,6 +243,10 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
         this.settingsButton.setOnAction(null);
         this.logoutButton.setOnAction(null);
+        if (stage != null) {
+            this.stage.close();
+            stage = null;
+        }
         try {
             if (builder.getSERVER_USER() != null) {
                 if (builder.getSERVER_USER().getSession() != null) {
@@ -253,6 +261,16 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (builder.getPrivateChatWebSocketCLient() != null) {
+            try {
+                if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
+                    builder.getPrivateChatWebSocketCLient().stop();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        cleanup();
     }
 
     /**
@@ -320,5 +338,20 @@ public class HomeViewController {
             System.out.println(result.get("message"));
             Platform.runLater(StageManager::showLoginScreen);
         }
+    }
+
+    private void cleanup() {
+        if (privateViewController != null) {
+            privateViewController.stop();
+            privateViewController = null;
+        }
+        if (serverController != null) {
+            serverController.stop();
+            serverController = null;
+        }
+    }
+
+    public ServerViewController getServerController() {
+        return serverController;
     }
 }
