@@ -42,9 +42,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-nop
     testImplementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
 
-    testImplementation group: 'org.mockito' , name: 'mockito-core', version: '3.5.13'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.5.13'
 
-    implementation group: 'com.konghq', name:'unirest-java', version: '2.3.02'
+    implementation group: 'com.konghq', name: 'unirest-java', version: '2.3.02'
 
     testImplementation 'org.testfx:testfx-junit:4.0.16-alpha'
     testImplementation "org.testfx:openjfx-monocle:jdk-11+26"
@@ -65,4 +65,12 @@ generateScenarioSource {
 
 test {
     jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
+}
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
