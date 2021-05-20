@@ -176,7 +176,6 @@ public class PrivateMessageTest extends ApplicationTest {
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        clickOn("#homeButton");
 
         restClient.getUsers(GUDRUN_KEY, response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
