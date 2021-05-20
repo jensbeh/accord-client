@@ -69,7 +69,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
                 result = ((Stage) s).getTitle();
             }
         }
-        Assert.assertEquals("Error Dialog", result);
+        Assert.assertEquals("No Connection Error", result);
     }
 
     @Test
