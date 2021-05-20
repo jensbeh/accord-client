@@ -1,10 +1,13 @@
 package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testfx.framework.junit.ApplicationTest;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -15,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class PrivateMessageTest {
+public class PrivateMessageTest extends ApplicationTest {
 
     private static String GUDRUN_KEY;
     private static String JUTTA_KEY;
@@ -24,6 +27,24 @@ public class PrivateMessageTest {
     private static ClientTestEndpoint GUDRUN_CLIENT = null;
     private static ClientTestEndpoint JUTTA_CLIENT = null;
     private CountDownLatch messageLatch;
+    private Stage stage;
+    private StageManager app;
+
+
+    @BeforeClass
+    public static void setupHeadlessMode() {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+    }
+
+    @Override
+    public void start(Stage stage) {
+        //start application
+        this.stage = stage;
+        app = new StageManager();
+        app.start(stage);
+        this.stage.centerOnScreen();
+    }
 
 
     private void setupWebsocketClient() {

@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="createServerBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="121.0" prefWidth="417.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="createServerBox" alignment="CENTER" prefWidth="480.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="errorLabel" prefHeight="22.0" prefWidth="377.0" textFill="#fc0000" VBox.vgrow="ALWAYS">
+      <Label id="errorLabel" textFill="#fc0000" VBox.vgrow="ALWAYS">
          <font>
             <Font size="14.0" />
          </font>

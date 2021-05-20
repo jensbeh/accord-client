@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -7,9 +8,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import junit.framework.TestCase;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import kong.unirest.UnirestException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +24,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+
+import java.net.NoRouteToHostException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -81,7 +86,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
-        TextField serverName = (TextField) lookup("#serverName").query();
+        TextField serverName = lookup("#serverName").query();
         serverName.setText("TestServer");
         Assert.assertEquals("TestServer", serverName.getText());
 
@@ -90,12 +95,26 @@ public class CreateServerControllerTest extends ApplicationTest {
         JSONObject jsonObj = new JSONObject().accumulate("status", "success").accumulate("message", "password").append("data", data);
         when(res.getBody()).thenReturn(new JsonNode(jsonObj.toString()));
         verify(restMock).postServer(anyString(), anyString());
-
         Assert.assertEquals(jsonObj.toString(), res.getBody().toString());
+        clickOn("#logoutButton");
     }
 
     @Test
-    public void showServerTest() throws InterruptedException {
+    public void emptyTextField() throws InterruptedException {
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+        Label errorLabel = lookup("#errorLabel").query();
+        clickOn("#createServer");
+        Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
+        clickOn("#logoutButton");
+    }
+
+    @Test
+    public void showCreateServerTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -108,6 +127,21 @@ public class CreateServerControllerTest extends ApplicationTest {
         Thread.sleep(2000);
         Label serverNameText = lookup("#serverName").query();
         Assert.assertEquals("TestServer", serverNameText.getText());
+        clickOn("#logoutButton");
+    }
+
+    @Test
+    public void showNoConnectionToServerTest() throws InterruptedException {
+        String message = "";
+        when(restMock.postServer(anyString(), anyString())).thenThrow(new UnirestException("No route to host: connect"));
+        try {
+            restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
+        } catch (Exception e) {
+            if (e.getMessage().equals("No route to host: connect")) {
+                message = "No Connection - Please check your connection and try again";
+            }
+        }
+        Assert.assertEquals("No Connection - Please check your connection and try again", message);
     }
 
 }

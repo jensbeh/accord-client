@@ -16,10 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -36,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+
 import static util.Constants.*;
 
 public class PrivateViewController {
@@ -58,6 +56,7 @@ public class PrivateViewController {
     private static Channel selectedChat;
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
+    private TextField messageField;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -80,49 +79,75 @@ public class PrivateViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         viewBox = (HBox) view.lookup("#viewBox");
+        messageField = (TextField) view.lookup("#messageField");
         showCurrentUser();
         showUsers();
-
-        privateChatWebSocketCLient = new WebSocketClient(builder, URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
-            /**
-             * handles server response
-             *
-             * @param msg is the response from the server as a JsonStructure
-             */
-            @Override
-            public void handleMessage(JsonStructure msg) {
-                JsonObject jsonObject = JsonUtil.parse(msg.toString());
-                System.out.println("privateChatWebSocketClient");
-                System.out.println(msg);
-                if (jsonObject.getString("channel").equals("private")) {
-                    Message message;
-                    String channelName;
-                    Boolean newChat = true;
-                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                        channelName = jsonObject.getString("to");
-                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
-                    } else {
-                        channelName = jsonObject.getString("from");
-                        message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
-                    }
-                    for (Channel c : builder.getPersonalUser().getPrivateChat()) {
-                        if (c.getName().equals(channelName)) {
-                            c.withMessage(message);
-                            newChat = false;
-                            break;
+        if (builder.getPrivateChatWebSocketCLient() == null) {
+            privateChatWebSocketCLient = new WebSocketClient(builder, URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+                /**
+                 * handles server response
+                 *
+                 * @param msg is the response from the server as a JsonStructure
+                 */
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    JsonObject jsonObject = JsonUtil.parse(msg.toString());
+                    System.out.println("privateChatWebSocketClient");
+                    System.out.println(msg);
+                    if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
+                        Message message;
+                        String channelName;
+                        Boolean newChat = true;
+                        messageField.setText("");
+                        if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
+                            channelName = jsonObject.getString("to");
+                            message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("to")).setTimestamp(jsonObject.getInt("timestamp"));
+                        } else {
+                            channelName = jsonObject.getString("from");
+                            message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
+                        }
+                        for (Channel c : builder.getPersonalUser().getPrivateChat()) {
+                            if (c.getName().equals(channelName)) {
+                                c.withMessage(message);
+                                newChat = false;
+                                break;
+                            }
+                        }
+                        if (newChat) {
+                            builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
                         }
                     }
-                    if (newChat) {
-                        builder.getPersonalUser().withPrivateChat(new Channel().setName(channelName).withMessage(message));
+                    if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                        String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                        if (!serverMessage.equals("This is not your username.")) {
+                            Platform.runLater(() -> {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                                alert.setTitle("Chat Error");
+                                alert.setHeaderText(serverMessage);
+                                Optional<ButtonType> result = alert.showAndWait();
+                            });
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onClose(Session session, CloseReason closeReason) {
-            }
-        });
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocketCLient);
+                @Override
+                public void onClose(Session session, CloseReason closeReason) {
+                    System.out.println(closeReason.getCloseCode().toString());
+                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                            alert.setTitle("No Connection Error");
+                            alert.setHeaderText("No Connection - Please check and try again later");
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
+                                showUsers();
+                            }
+                        });
+                    }
+                }
+            });
+            builder.setPrivateChatWebSocketCLient(privateChatWebSocketCLient);
+        }
     }
 
     private void startWebsocketConnection() {
@@ -154,18 +179,6 @@ public class PrivateViewController {
                 }
 
                 public void onClose(Session session, CloseReason closeReason) {
-                    System.out.println(closeReason.getCloseCode().toString());
-                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Users cannot be displayed. No connection to server.", ButtonType.OK);
-                            alert.setTitle("Error Dialog");
-                            alert.setHeaderText("No Connection");
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                showUsers();
-                            }
-                        });
-                    }
                 }
             });
             builder.setUSER_CLIENT(USER_CLIENT);
@@ -287,6 +300,15 @@ public class PrivateViewController {
             if (USER_CLIENT != null) {
                 if (USER_CLIENT.getSession() != null) {
                     USER_CLIENT.stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (privateChatWebSocketCLient != null) {
+                if (privateChatWebSocketCLient.getSession() != null) {
+                    privateChatWebSocketCLient.stop();
                 }
             }
         } catch (IOException e) {
