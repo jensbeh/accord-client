@@ -3,6 +3,7 @@ package de.uniks.stp;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -86,8 +87,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");
         ListView<User> offlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#offlineUsers");
-
         app.getHomeViewController().getServerController().showOnlineOfflineUsers();
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
         clickOn("#logoutButton");

@@ -211,10 +211,12 @@ public class ServerViewController {
                 offlineUsers.add(user);
             }
         }
-        onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
-        offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
-        onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
-        offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+        Platform.runLater(() -> {
+            onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
+            offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+            onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+            offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+        });
     }
 
     public void onSendMessage(ActionEvent event) {
