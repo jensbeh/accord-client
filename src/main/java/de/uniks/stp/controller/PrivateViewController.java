@@ -171,6 +171,9 @@ public class PrivateViewController {
                         builder.buildUser(userName, userId);
                     }
                     if (userAction.equals("userLeft")) {
+                        if (userName.equals(builder.getPersonalUser().getName())) {
+                            Platform.runLater(StageManager::showLoginScreen);
+                        }
                         List<User> userList = builder.getPersonalUser().getUser();
                         User removeUser = builder.buildUser(userName, userId);
                         if (userList.contains(removeUser)) {

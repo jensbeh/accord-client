@@ -349,4 +349,8 @@ public class HomeViewController {
             serverController = null;
         }
     }
+
+    public ServerViewController getServerController() {
+        return serverController;
+    }
 }
