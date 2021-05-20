@@ -121,8 +121,9 @@ public class PrivateViewController {
                                 userId = user.getId();
                             }
                         }
-                        builder.getPersonalUser().withPrivateChat(new Channel().setId(userId).setName(channelName).withMessage(message));
-                        privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
+                        Channel channel = new Channel().setId(userId).setName(channelName).withMessage(message);
+                        builder.getPersonalUser().withPrivateChat(channel);
+                        Platform.runLater(() -> privateChatList.getItems().add(channel));
                     }
                     if(messageViewController != null) {
                         ChatViewController.printMessage(message);

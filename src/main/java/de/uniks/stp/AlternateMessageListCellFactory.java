@@ -52,7 +52,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 VBox vbox = new VBox();
                 Label userName = new Label();
                 userName.setId("userNameLabel");
-                Platform.runLater(() -> userName.setTextFill(Color.WHITE));
+                userName.setTextFill(Color.WHITE);
                 Label message = new Label();
                 message.setId("messageLabel");
                 //right alignment if User is currentUser else left
