@@ -166,6 +166,8 @@ public class PrivateViewController {
                 }
             });
             builder.setPrivateChatWebSocketCLient(privateChatWebSocketCLient);
+        } else {
+            privateChatWebSocketCLient = builder.getPrivateChatWebSocketCLient();
         }
     }
 
@@ -328,15 +330,6 @@ public class PrivateViewController {
             if (USER_CLIENT != null) {
                 if (USER_CLIENT.getSession() != null) {
                     USER_CLIENT.stop();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (privateChatWebSocketCLient != null) {
-                if (privateChatWebSocketCLient.getSession() != null) {
-                    privateChatWebSocketCLient.stop();
                 }
             }
         } catch (IOException e) {
