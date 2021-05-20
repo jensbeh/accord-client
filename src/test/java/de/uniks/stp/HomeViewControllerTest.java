@@ -65,9 +65,9 @@ public class HomeViewControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    public void login() {
+    public void login(String name) {
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("Peter Lustig");
+        usernameTextField.setText(name);
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText("1234");
         clickOn("#loginButton");
@@ -75,18 +75,18 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void personalUserTest() throws InterruptedException {
-        login();
+        login("Peter Lustig 5");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
-        Assert.assertEquals("Peter Lustig", personalUserName.getText());
+        Assert.assertEquals("Peter Lustig 5", personalUserName.getText());
         clickOn("#logoutButton");
     }
 
     @Test
     public void serverBoxTest() throws InterruptedException {
-        login();
+        login("Peter Lustig 7");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
@@ -105,7 +105,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test
     public void userBoxTest() throws InterruptedException {
         RestClient restClient = new RestClient();
-        login();
+        login("Peter Lustig 1");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         restClient.login("Peter Lustig 4", "1234", response -> {
@@ -124,9 +124,9 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("Peter Lustig 4", userName);
         Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         restClient.logout(userKey, response -> {
         });
-        WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         itemList = userList.getItems();
         userName = "";
@@ -166,8 +166,9 @@ public class HomeViewControllerTest extends ApplicationTest {
     public void privateChatTest() throws InterruptedException {
         RestClient restClient = new RestClient();
         restClient.login("Peter Lustig 2", "1234", response -> {
+            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
         });
-        login();
+        login("Peter Lustig 3");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
@@ -175,6 +176,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn(userList.lookup("#user"));
         ListView<Channel> privateChatlist = lookup("#privateChatList").query();
         Assert.assertEquals(userList.getItems().get(0).getName(), privateChatlist.getItems().get(0).getName());
+        restClient.logout(userKey, response -> {
+        });
         clickOn("#logoutButton");
     }
 
@@ -205,15 +208,20 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void logoutMultiLogin() throws InterruptedException {
-        login();
+        login("PeterLustig 6");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         RestClient restClient = new RestClient();
-        String testUserOneName = "Peter Lustig";
+        String testUserOneName = "Peter Lustig 6";
         restClient.login(testUserOneName, "1234", response -> {
+            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
         });
+        WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(1000);
         Assert.assertEquals("Accord - Login", stage.getTitle());
+        restClient.logout(userKey, response -> {
+        });
+
     }
 
     @Test
@@ -226,7 +234,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         });
         restClient.login(testUserTwoName, "1234", response -> {
         });
-        login();
+        login("Peter Lustig 8");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         clickOn("#homeButton");
@@ -264,5 +272,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216", privateChatCell.getStyle());
+        clickOn("#logoutButton");
     }
 }
