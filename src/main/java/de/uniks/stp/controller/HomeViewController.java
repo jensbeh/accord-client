@@ -83,7 +83,7 @@ public class HomeViewController {
         cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
-            PrivateViewController privateViewController = new PrivateViewController(root, builder);
+            privateViewController = new PrivateViewController(root, builder);
             privateViewController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
