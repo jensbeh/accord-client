@@ -54,7 +54,6 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        //messageTextField.setText("");
         if (!textMessage.isEmpty()) {
             AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
             try {
@@ -63,12 +62,6 @@ public class ChatViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //build Message
-            Message message = new Message();
-            message.setMessage(textMessage);
-            message.setChannel(PrivateViewController.getSelectedChat());
-            message.setFrom(builder.getPersonalUser().getName());
-            printMessage(message);
         }
     }
 

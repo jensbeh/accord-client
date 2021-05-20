@@ -94,7 +94,7 @@ public class PrivateViewController {
                     JsonObject jsonObject = JsonUtil.parse(msg.toString());
                     System.out.println("privateChatWebSocketClient");
                     System.out.println(msg);
-                    if (jsonObject.getString("channel").equals("private")) {
+                    if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
                         Message message;
                         String channelName;
                         Boolean newChat = true;
@@ -125,7 +125,7 @@ public class PrivateViewController {
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }
-                        if (messageViewController != null && !jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        if (messageViewController != null) {
                             ChatViewController.printMessage(message);
                         }
                     }
