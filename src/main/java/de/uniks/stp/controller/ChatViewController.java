@@ -54,14 +54,21 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        messageTextField.setText("");
+        //messageTextField.setText("");
         if (!textMessage.isEmpty()) {
             AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
             try {
-                builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                if(builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                    builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            //build Message
+            Message message = new Message();
+            message.setMessage(textMessage);
+            message.setChannel(PrivateViewController.getSelectedChat());
+            message.setFrom(builder.getPersonalUser().getName());
+            printMessage(message);
         }
     }
 
@@ -71,5 +78,9 @@ public class ChatViewController {
     public static void printMessage(Message msg) {
         if(PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
             Platform.runLater(() -> ob.add(msg));
+    }
+
+    public void clearMessageField() {
+        this.messageTextField.setText("");
     }
 }

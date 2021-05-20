@@ -101,6 +101,7 @@ public class PrivateViewController {
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
                             message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
+                            messageViewController.clearMessageField();
                         } else {
                             channelName = jsonObject.getString("from");
                             message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
@@ -124,7 +125,7 @@ public class PrivateViewController {
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }
-                        if (messageViewController != null) {
+                        if (messageViewController != null && !jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             ChatViewController.printMessage(message);
                         }
                     }
