@@ -22,8 +22,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -329,14 +332,12 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        RestClient restclient = new RestClient();
-        restclient.logout(builder.getPersonalUser().getUserKey(), response -> {
-            JSONObject result = response.getBody().getObject();
-            if (result.get("status").equals("success")) {
-                System.out.println(result.get("message"));
-                Platform.runLater(StageManager::showLoginScreen);
-            }
-        });
+        JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
+        JSONObject result = body.getObject();
+        if (result.get("status").equals("success")) {
+            System.out.println(result.get("message"));
+            Platform.runLater(StageManager::showLoginScreen);
+        }
     }
 
     private void cleanup() {

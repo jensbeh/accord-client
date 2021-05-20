@@ -1,13 +1,20 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.net.RestClient;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -22,6 +29,7 @@ public class PrivateMessageTest extends ApplicationTest {
 
     private static String GUDRUN_KEY;
     private static String JUTTA_KEY;
+    private static String JUTTA_ID;
     private static ClientEndpointConfig GUDRUN_CLIENT_CONFIG = null;
     private static ClientEndpointConfig JUTTA_CLIENT_CONFIG = null;
     private static ClientTestEndpoint GUDRUN_CLIENT = null;
@@ -144,5 +152,63 @@ public class PrivateMessageTest extends ApplicationTest {
             key.add(this.name);
             headers.put("userkey", key);
         }
+    }
+
+    @Test
+    public void showLastPrivateChatMessage() throws DeploymentException, IOException, InterruptedException {
+        RestClient restClient = new RestClient();
+        restClient.login("Gudrun", "1", response -> {
+            JsonNode body = response.getBody();
+            GUDRUN_KEY = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        restClient.login("Jutta", "1", response -> {
+            JsonNode body = response.getBody();
+            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+        setupWebsocketClient();
+        connectWebSocketClient();
+
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("Tuser0");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("1234");
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        restClient.getUsers(GUDRUN_KEY, response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String userName = jsonResponse.getJSONObject(i).get("name").toString();
+                String userId = jsonResponse.getJSONObject(i).get("id").toString();
+                if (userName.equals("Jutta")) {
+                    JUTTA_ID = userId;
+                }
+            }
+        });
+
+        Thread.sleep(1000);
+        JUTTA_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", "Tuser0").put("message", "This is a test message").toString());
+        Thread.sleep(2000);
+        Label message = lookup("#msg_" + JUTTA_ID).query();
+        Assert.assertEquals("This is a test message", message.getText());
+
+        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        clickOn(privateChatList.lookup("#" + JUTTA_ID));
+        Thread.sleep(2000);
+        TextField messageField = lookup("#messageTextField").query();
+        messageField.setText("Okay!");
+        Thread.sleep(500);
+        clickOn("#sendButton");
+        Thread.sleep(500);
+        message = lookup("#msg_" + JUTTA_ID).query();
+        Assert.assertEquals("Okay!", message.getText());
+
+        shutDownWebSocketClient();
+        restClient.logout(GUDRUN_KEY, response -> {
+        });
+        restClient.logout(JUTTA_KEY, response -> {
+        });
     }
 }

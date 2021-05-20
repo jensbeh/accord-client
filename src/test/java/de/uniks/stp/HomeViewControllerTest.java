@@ -227,8 +227,8 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test
     public void openExistingChat() throws InterruptedException {
         RestClient restClient = new RestClient();
-        String testUserOneName = "Peter Lustig 2";
-        String testUserTwoName = "Peter Lustig 3";
+        String testUserOneName = "Tuser1";
+        String testUserTwoName = "Tuser2";
 
         restClient.login(testUserOneName, "1234", response -> {
         });
@@ -244,10 +244,10 @@ public class HomeViewControllerTest extends ApplicationTest {
         User testUserOne = new User();
         User testUserTwo = new User();
         for (User user : userList.getItems()) {
-            if (user.getName().equals("Peter Lustig 2")) {
+            if (user.getName().equals("Tuser1")) {
                 testUserOne = user;
             }
-            if (user.getName().equals("Peter Lustig 3")) {
+            if (user.getName().equals("Tuser2")) {
                 testUserTwo = user;
             }
         }
@@ -271,7 +271,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 216", privateChatCell.getStyle());
+        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
         clickOn("#logoutButton");
     }
 }

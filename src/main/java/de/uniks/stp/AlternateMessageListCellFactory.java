@@ -2,6 +2,7 @@ package de.uniks.stp;
 
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
