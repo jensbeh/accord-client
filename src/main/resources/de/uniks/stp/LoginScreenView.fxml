@@ -51,7 +51,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="59.0" prefWidth="395.0">
                <children>
-                  <TextField fx:id="usernameTextfield" prefHeight="50.0" prefWidth="260.0" promptText="username..." style="-fx-border-color: #ea89c4;">
+                  <TextField fx:id="usernameTextfield" prefHeight="50.0" prefWidth="260.0" promptText="%textfield.prompt_username" style="-fx-border-color: #ea89c4;">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -60,7 +60,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="63.0" prefWidth="395.0">
                <children>
-                  <PasswordField fx:id="passwordTextField" prefHeight="50.0" prefWidth="260.0" promptText="password..." style="-fx-border-color: #ea89c4;">
+                  <PasswordField fx:id="passwordTextField" prefHeight="50.0" prefWidth="260.0" promptText="%textfield.prompt_password" style="-fx-border-color: #ea89c4;">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -71,7 +71,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="260.0">
                      <children>
-                        <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" text="Remember me" textFill="WHITE">
+                        <CheckBox fx:id="rememberMeCheckbox" mnemonicParsing="false" text="%checkbox.remember_me" textFill="WHITE">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -84,7 +84,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="260.0">
                      <children>
-                        <CheckBox fx:id="loginAsTempUser" mnemonicParsing="false" prefHeight="21.0" prefWidth="168.0" text="Log in as temp user" textFill="WHITE">
+                        <CheckBox fx:id="loginAsTempUser" mnemonicParsing="false" prefHeight="21.0" prefWidth="300.0" text="%checkbox.login_temp_user" textFill="WHITE">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -96,12 +96,12 @@
             <Label fx:id="connectionLabel" prefHeight="44.0" prefWidth="243.0" textFill="RED" />
             <HBox alignment="CENTER" prefHeight="76.0" prefWidth="395.0" spacing="40.0">
                <children>
-                  <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="Log in" textFill="WHITE">
+                  <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="%button.login" textFill="WHITE">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="signinButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="Sign in" textFill="WHITE">
+                  <Button fx:id="signinButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="%button.signin" textFill="WHITE">
                      <font>
                         <Font size="15.0" />
                      </font>

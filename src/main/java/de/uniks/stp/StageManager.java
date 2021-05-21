@@ -30,13 +30,13 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
+        SettingsController.setup();
+
         // start application
         stage = primaryStage;
         showLoginScreen();
         primaryStage.show();
-
-        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
-        SettingsController.setup();
     }
 
     public static void showLoginScreen() {
@@ -44,12 +44,12 @@ public class StageManager extends Application {
 
         //show login screen
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
             scene = new Scene(root);
             builder = new ModelBuilder();
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
-            stage.setTitle("Accord - Login");
+            stage.setTitle(getLangBundle().getString("window_title_login"));
             stage.setResizable(false);
             stage.setScene(scene);
             stage.sizeToScene();
@@ -166,8 +166,10 @@ public class StageManager extends Application {
 
         // Titles
         subStage.setTitle(getLangBundle().getString("window_title_settings"));
+        stage.setTitle(getLangBundle().getString("window_title_login"));
 
         SettingsController.onLanguageChanged();
         LanguageController.onLanguageChanged();
+        LoginScreenController.onLanguageChanged();
     }
 }

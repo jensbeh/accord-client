@@ -211,7 +211,7 @@ public class PrivateViewController {
     /**
      * Get the Online Users and reset old Online User List with new Online Users
      */
-    private void showUsers() {
+    public void showUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
@@ -237,6 +237,7 @@ public class PrivateViewController {
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
             userProfileController.setOnline();
+            this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
         } catch (IOException e) {

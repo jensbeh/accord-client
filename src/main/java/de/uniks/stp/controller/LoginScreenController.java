@@ -14,16 +14,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Base64;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class LoginScreenController {
     private Parent root;
-    private TextField usernameTextField;
-    private PasswordField passwordTextField;
-    private CheckBox rememberCheckBox;
-    private CheckBox tempUserCheckBox;
-    private Button loginButton;
-    private Button signInButton;
+    private static TextField usernameTextField;
+    private static PasswordField passwordTextField;
+    private static CheckBox rememberCheckBox;
+    private static CheckBox tempUserCheckBox;
+    private static Button loginButton;
+    private static Button signInButton;
     private Button settingsButton;
     private Label errorLabel;
     private String message;
@@ -39,12 +40,12 @@ public class LoginScreenController {
     }
 
     public void init() {
-        this.usernameTextField = (TextField) root.lookup("#usernameTextfield");
-        this.passwordTextField = (PasswordField) root.lookup("#passwordTextField");
-        this.rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
-        this.tempUserCheckBox = (CheckBox) root.lookup("#loginAsTempUser");
-        this.loginButton = (Button) root.lookup("#loginButton");
-        this.signInButton = (Button) root.lookup("#signinButton");
+        usernameTextField = (TextField) root.lookup("#usernameTextfield");
+        passwordTextField = (PasswordField) root.lookup("#passwordTextField");
+        rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
+        tempUserCheckBox = (CheckBox) root.lookup("#loginAsTempUser");
+        loginButton = (Button) root.lookup("#loginButton");
+        signInButton = (Button) root.lookup("#signinButton");
         this.settingsButton = (Button) root.lookup("#settingsButton");
         this.errorLabel = (Label) root.lookup("#errorLabel");
         this.connectionLabel = (Label) root.lookup("#connectionLabel");
@@ -242,5 +243,15 @@ public class LoginScreenController {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] bytes = decoder.decode(str);
         return new String(bytes);
+    }
+
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        usernameTextField.setPromptText(lang.getString("textfield.prompt_username"));
+        passwordTextField.setPromptText(lang.getString("textfield.prompt_password"));
+        rememberCheckBox.setText(lang.getString("checkbox.remember_me"));
+        tempUserCheckBox.setText(lang.getString("checkbox.login_temp_user"));
+        loginButton.setText(lang.getString("button.login"));
+        signInButton.setText(lang.getString("button.signin"));
     }
 }
