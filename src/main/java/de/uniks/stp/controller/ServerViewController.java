@@ -134,14 +134,13 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                JSONArray category = body.getObject().getJSONArray("categories");
+                JSONArray category = body.getObject().getJSONObject("data").getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 builder.getCurrentServer().getCategories().clear();
                 for (int i = 0; i < category.length(); i++) {
                     Categories categories = new Categories();
                     categories.setId(category.getString(i));
                     builder.getCurrentServer().withCategories(categories);
-                    System.out.println(builder.getCurrentServer().getCategories().get(i).toString());
                 }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
