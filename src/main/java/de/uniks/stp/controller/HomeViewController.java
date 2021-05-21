@@ -49,6 +49,7 @@ public class HomeViewController {
     private static Channel selectedChat;
     private PrivateViewController privateViewController;
     private ServerViewController serverController;
+    private Parent privateView;
     private Boolean flag = false;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -84,13 +85,19 @@ public class HomeViewController {
      * Shows the private home view to have a private chat with other users.
      */
     private void showPrivateView() {
-        cleanup();
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
-            privateViewController = new PrivateViewController(root, builder, flag);
-            privateViewController.init();
-            this.root.getChildren().clear();
-            this.root.getChildren().add(root);
+            if (privateView == null) {
+                privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
+                privateViewController = new PrivateViewController(privateView, builder, flag);
+                privateViewController.init();
+                this.root.getChildren().clear();
+                this.root.getChildren().add(privateView);
+            }
+            else {
+                this.root.getChildren().clear();
+                this.root.getChildren().add(privateView);
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,7 +108,6 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
-        cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
             serverController = new ServerViewController(root, builder, builder.getCurrentServer(), flag);

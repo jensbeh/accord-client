@@ -2,6 +2,7 @@ package de.uniks.stp.net;
 
 import kong.unirest.*;
 import org.json.JSONObject;
+
 import static util.Constants.*;
 
 public class RestClient {
@@ -40,16 +41,16 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
-    public void getServerUsers(String serverId, String userKey, Callback<JsonNode> callback){
-        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + serverId;
-        HttpRequest<?> postRequest = Unirest.get(url).header("userKey",userKey);
+    public void getServerUsers(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
         sendRequest(postRequest, callback);
     }
 
     public JsonNode postServer(String userKey, String serverName) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", serverName);
-        HttpResponse<JsonNode> response = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH).body(jsonBody).header("userKey",userKey).asJson();
+        HttpResponse<JsonNode> response = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH).body(jsonBody).header("userKey", userKey).asJson();
         return response.getBody();
     }
 

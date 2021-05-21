@@ -4,6 +4,10 @@ import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.*;
+import de.uniks.stp.model.Categories;
+import de.uniks.stp.model.CurrentUser;
+import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
@@ -235,15 +239,21 @@ public class ServerViewController {
     }
 
     /**
-     * Update the builder and get the ServerUser. Also sets their online and offline Status.
+     * Update the builder and get the ServerUser as well as the categories. Also sets their online and offline Status.
      */
     public void showOnlineUsers() {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
+                JSONArray category = body.getObject().getJSONObject("data").getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
-                builder.getCurrentServer().getUser().clear();
+                builder.getCurrentServer().getCategories().clear();
+                for (int i = 0; i < category.length(); i++) {
+                    Categories categories = new Categories();
+                    categories.setId(category.getString(i));
+                    builder.getCurrentServer().withCategories(categories);
+                }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
