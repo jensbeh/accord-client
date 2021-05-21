@@ -232,6 +232,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         restClient.login(testUserOneName, "1234", response -> {
         });
+        Thread.sleep(500);
         restClient.login(testUserTwoName, "1234", response -> {
         });
         login("Peter Lustig 8");
@@ -252,11 +253,9 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
 
-        clickOn(userList.lookup("#" + testUserOne.getId()));
-        clickOn(userList.lookup("#" + testUserOne.getId()));
+        doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         Thread.sleep(500);
-        clickOn(userList.lookup("#" + testUserTwo.getId()));
-        clickOn(userList.lookup("#" + testUserTwo.getId()));
+        doubleClickOn(userList.lookup("#" + testUserTwo.getId()));
 
         Thread.sleep(500);
 
@@ -272,6 +271,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+
+        //Additional test when homeButton is clicked and opened chat is the same
+        //Clicking homeButton will load the view - same like clicking on server and back to home
+        clickOn("#homeButton");
+        Thread.sleep(500);
+        privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
+        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+
         clickOn("#logoutButton");
     }
 }
