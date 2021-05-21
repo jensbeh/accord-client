@@ -64,7 +64,6 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private ListView<Channel> serverChatList;
     private static String channelId;
-    private Boolean flag;
 
     public static String channelId() {
         return channelId;
@@ -74,11 +73,10 @@ public class ServerViewController {
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
      * It also creates a new restClient"
      */
-    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, Boolean flag) {
+    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
-        this.flag = flag;
         restClient = new RestClient();
     }
 
@@ -232,15 +230,11 @@ public class ServerViewController {
 
     private void showMessageView() {
         try {
-            if (messageViewController != null) {
-                this.messageViewController.init();
-            } else {
-                Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-                messageViewController = new ChatViewController(root, builder, flag);
-                messageViewController.init();
-                this.messages.getChildren().clear();
-                this.messages.getChildren().add(root);
-            }
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            messageViewController = new ChatViewController(root, builder);
+            this.messages.getChildren().clear();
+            messageViewController.init();
+            this.messages.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

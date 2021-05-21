@@ -50,7 +50,7 @@ public class HomeViewController {
     private PrivateViewController privateViewController;
     private ServerViewController serverController;
     private Parent privateView;
-    private Boolean flag = false;
+    public static boolean flag = false;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -85,18 +85,20 @@ public class HomeViewController {
      * Shows the private home view to have a private chat with other users.
      */
     private void showPrivateView() {
+        flag = false;
         try {
             if (privateView == null) {
                 privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
-                privateViewController = new PrivateViewController(privateView, builder, flag);
+                privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
             }
             else {
+                this.privateViewController.showUsers();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-
+                this.privateViewController.MessageViews();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,9 +110,10 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
+        flag = true;
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
-            serverController = new ServerViewController(root, builder, builder.getCurrentServer(), flag);
+            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -179,7 +182,6 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
-        this.flag = true;
         try {
             if (builder.getSERVER_USER() != null) {
                 if (builder.getSERVER_USER().getSession() != null) {
