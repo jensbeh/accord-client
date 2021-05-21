@@ -297,11 +297,6 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }
     }
 
-    @Test
-    private void loginNoConnectionTest() {
-        
-    }
-
     /**
      * decode password
      */

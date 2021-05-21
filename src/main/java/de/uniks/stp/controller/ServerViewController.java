@@ -129,12 +129,7 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                System.out.println("ServerId: " + jsonObject.getString("channel"));
-                System.out.println("ServerId   : " + channelId());
                 if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
-                    System.out.println("from: " + jsonObject.getString("from"));
-                    System.out.println("name: " + builder.getPersonalUser().getName());
-                    System.out.println("jsonObject: " + jsonObject.toString());
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         message = new Message().setMessage(jsonObject.getString("text")).
@@ -143,10 +138,8 @@ public class ServerViewController {
                                 setChannel(builder.getCurrentServerChannel());
                         Platform.runLater(() -> messageViewController.clearMessageField());
                     }
-                    //bis hier
                     if (messageViewController != null) {
                         assert message != null;
-                        System.out.println("if");
                         ChatViewController.printMessage(message);
                     }
                 }
@@ -366,6 +359,7 @@ public class ServerViewController {
     }
 
     public void stop() {
+        flag = null;
         onlineUsersList.setItems(null);
         offlineUsersList.setItems(null);
         try {
