@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.subcontroller.LanguageController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +14,6 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 public class StageManager extends Application {
     private static ModelBuilder builder;
     private static Stage stage;
+    private static Stage subStage;
     private static HomeViewController homeViewController;
     private static LoginScreenController loginCtrl;
     private static SettingsController settingsController;
@@ -34,6 +35,7 @@ public class StageManager extends Application {
         showLoginScreen();
         primaryStage.show();
 
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
         SettingsController.setup();
     }
 
@@ -116,15 +118,15 @@ public class StageManager extends Application {
     public static void showSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"), langBundle);
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
             settingsController = new SettingsController(root);
             settingsController.init();
 
-            Stage subStage = new Stage();
-            subStage.titleProperty().bind(LangString.lStr("window_title_settings"));
+            subStage = new Stage();
+            subStage.setTitle(getLangBundle().getString("window_title_settings"));
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -153,5 +155,19 @@ public class StageManager extends Application {
 
     public static ResourceBundle getLangBundle() {
         return langBundle;
+    }
+
+    public static void resetLangBundle() {
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
+    }
+
+    public static void onLanguageChanged() {
+        resetLangBundle();
+
+        // Titles
+        subStage.setTitle(getLangBundle().getString("window_title_settings"));
+
+        SettingsController.onLanguageChanged();
+        LanguageController.onLanguageChanged();
     }
 }

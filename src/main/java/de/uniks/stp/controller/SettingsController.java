@@ -19,12 +19,14 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 public class SettingsController {
     private Parent view;
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
+    private static Button languageButton;
 
     private SubSetting subController;
 
@@ -68,8 +70,10 @@ public class SettingsController {
         this.itemList = new ArrayList<>();
 
         // add categories
-        Button languageButton = addItem("Language");
+        languageButton = addItem("Language");
         addAction(languageButton, "Language");
+
+        onLanguageChanged(); // needs to be called because new buttons added
     }
 
     public void stop() {
@@ -91,7 +95,6 @@ public class SettingsController {
 
         this.itemList.add(button);
         this.settingsItems.getChildren().add(button);
-        button.textProperty().bind(LangString.lStr("button." + buttonName));
 
         return button;
     }
@@ -128,5 +131,10 @@ public class SettingsController {
             System.err.println("Error on showing Settings Field Screen");
             e.printStackTrace();
         }
+    }
+
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        languageButton.setText(lang.getString("button.Language"));
     }
 }
