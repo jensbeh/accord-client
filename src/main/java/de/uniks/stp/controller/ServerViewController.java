@@ -63,7 +63,12 @@ public class ServerViewController {
     private VBox messages;
     private ChatViewController messageViewController;
     private ListView<Channel> serverChatList;
+    private static String channelId;
     private Boolean flag;
+
+    public static String channelId() {
+        return channelId;
+    }
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -99,6 +104,18 @@ public class ServerViewController {
         showServerUsers();
         showMessageView();
 
+        restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
+                builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray ob = body.getObject().getJSONArray("data");
+                JSONObject object = ob.getJSONObject(0);
+                channelId = object.get("id").toString();
+            } else if (status.equals("failure")) {
+                System.out.println(body.getObject().getString("message"));
+            }
+        });
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -114,16 +131,23 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(server.getId())) {
+                System.out.println("ServerId: " + jsonObject.getString("channel"));
+                System.out.println("ServerId   : " + channelId());
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
+                    System.out.println("from: " + jsonObject.getString("from"));
+                    System.out.println("name: " + builder.getPersonalUser().getName());
+                    System.out.println("jsonObject: " + jsonObject.toString());
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                        message = new Message().setMessage(jsonObject.getString("message")).
+                        message = new Message().setMessage(jsonObject.getString("text")).
                                 setFrom(jsonObject.getString("from")).
                                 setTimestamp(jsonObject.getInt("timestamp"));
-                        messageViewController.clearMessageField();
+                        Platform.runLater(()->messageViewController.clearMessageField());
                     }
+                    //bis hier
                     if (messageViewController != null) {
                         assert message != null;
+                        System.out.println("if");
                         ChatViewController.printMessage(message);
                     }
                 }
@@ -169,12 +193,10 @@ public class ServerViewController {
 
     private void startWebsocketConnection() {
         try {
-            System.out.println("Hallo9");
             SERVER_USER = new WebSocketClient(builder,
                     new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
-                    System.out.println("Hallo10");
                     System.out.println("msg: " + msg);
                     JsonObject jsonMsg = JsonUtil.parse(msg.toString());
                     String userAction = jsonMsg.getString("action");
@@ -210,11 +232,15 @@ public class ServerViewController {
 
     private void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            ChatViewController messageViewController = new ChatViewController(root, builder, flag);
-            messageViewController.init();
-            this.messages.getChildren().clear();
-            this.messages.getChildren().add(root);
+            if (messageViewController != null) {
+                this.messageViewController.init();
+            } else {
+                Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+                messageViewController = new ChatViewController(root, builder, flag);
+                messageViewController.init();
+                this.messages.getChildren().clear();
+                this.messages.getChildren().add(root);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
