@@ -158,7 +158,7 @@ public class LoginScreenController {
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        if(message.equals("Invalid credentials")) {
+                        if (message.equals("Invalid credentials")) {
                             Platform.runLater(() -> setError("error.invalid_credentials"));
                         } else {
                             Platform.runLater(() -> setError("error.login_failure"));
@@ -255,6 +255,9 @@ public class LoginScreenController {
         return new String(bytes);
     }
 
+    /**
+     * when language changed reset labels and texts with correct language
+     */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         usernameTextField.setPromptText(lang.getString("textfield.prompt_username"));
@@ -264,21 +267,31 @@ public class LoginScreenController {
         loginButton.setText(lang.getString("button.login"));
         signInButton.setText(lang.getString("button.signin"));
 
-        if(error != null && !error.equals("")) {
+        if (error != null && !error.equals("")) {
             errorLabel.setText(lang.getString(error));
         }
 
-        if(connectionError != null && !connectionError.equals("")) {
+        if (connectionError != null && !connectionError.equals("")) {
             connectionLabel.setText(lang.getString(connectionError));
         }
     }
 
+    /**
+     * set the error text in label placeholder
+     *
+     * @param errorMsg the error text
+     */
     private void setError(String errorMsg) {
         ResourceBundle lang = StageManager.getLangBundle();
         error = errorMsg;
         errorLabel.setText(lang.getString(error));
     }
 
+    /**
+     * set the connection error text in label placeholder
+     *
+     * @param connectionErrorMsg the connection error text
+     */
     private void setConnectionError(String connectionErrorMsg) {
         ResourceBundle lang = StageManager.getLangBundle();
         connectionError = connectionErrorMsg;

@@ -27,6 +27,8 @@ public class StageManager extends Application {
     private static SettingsController settingsController;
     private static Scene scene;
     private static ResourceBundle langBundle;
+    private static String stageTitleName;
+    private static String subStageTitleName;
 
     @Override
     public void start(Stage primaryStage) {
@@ -49,7 +51,7 @@ public class StageManager extends Application {
             builder = new ModelBuilder();
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
-            stage.setTitle(getLangBundle().getString("window_title_login"));
+            setStageTitle("window_title_login");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.sizeToScene();
@@ -67,7 +69,7 @@ public class StageManager extends Application {
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
-            stage.setTitle("Accord - Main");
+            setStageTitle("window_title_home");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.sizeToScene();
@@ -126,7 +128,7 @@ public class StageManager extends Application {
             settingsController.init();
 
             subStage = new Stage();
-            subStage.setTitle(getLangBundle().getString("window_title_settings"));
+            setSubStageTitle("window_title_settings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -157,16 +159,33 @@ public class StageManager extends Application {
         return langBundle;
     }
 
+    public static void setStageTitle(String name) {
+        stageTitleName = name;
+        stage.setTitle(getLangBundle().getString(stageTitleName));
+    }
+
+    public static void setSubStageTitle(String name) {
+        subStageTitleName = name;
+        subStage.setTitle(getLangBundle().getString(subStageTitleName));
+    }
+
     public static void resetLangBundle() {
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
     }
 
+    /**
+     * when language changed call every controller with view onLanguageChanged
+     */
     public static void onLanguageChanged() {
         resetLangBundle();
 
         // Titles
-        subStage.setTitle(getLangBundle().getString("window_title_settings"));
-        stage.setTitle(getLangBundle().getString("window_title_login"));
+        if (stageTitleName != null && !stageTitleName.equals("")) {
+            stage.setTitle(getLangBundle().getString(stageTitleName));
+        }
+        if (subStageTitleName != null && !subStageTitleName.equals("")) {
+            subStage.setTitle(getLangBundle().getString(subStageTitleName));
+        }
 
         SettingsController.onLanguageChanged();
         LanguageController.onLanguageChanged();

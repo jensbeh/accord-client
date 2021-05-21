@@ -5,20 +5,20 @@ import de.uniks.stp.StageManager;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import util.Constants;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.*;
-
-import javafx.scene.control.Label;
-import util.Constants;
 
 public class LanguageController extends SubSetting {
 
     private Parent view;
     private ComboBox<String> languageSelector;
     private static Label selectLanguageLabel;
-    private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;;
+    private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+    ;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
@@ -63,10 +63,18 @@ public class LanguageController extends SubSetting {
         this.languageSelector.setOnAction(this::onLanguageChanged);
     }
 
+    /**
+     * Stop running Actions when Controller gets closed
+     */
     public void stop() {
         languageSelector.setOnAction(null);
     }
 
+    /**
+     * when the user changes the language from the comboBox then switch application language and save into user local settings
+     *
+     * @param actionEvent the mouse click event
+     */
     private void onLanguageChanged(ActionEvent actionEvent) {
         // get selected language and change
         String selectedLanguage = this.languageSelector.getValue();
@@ -95,6 +103,9 @@ public class LanguageController extends SubSetting {
         return null;
     }
 
+    /**
+     * when language changed reset labels and texts with correct language
+     */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         selectLanguageLabel.setText(lang.getString("label.select_language"));
