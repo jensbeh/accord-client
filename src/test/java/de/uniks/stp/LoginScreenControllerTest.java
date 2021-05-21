@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import kong.unirest.UnirestException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -294,6 +295,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
             System.err.println("Error while reading!");
             e.printStackTrace();
         }
+    }
+
+    @Test
+    private void loginNoConnectionTest() {
+        
     }
 
     /**

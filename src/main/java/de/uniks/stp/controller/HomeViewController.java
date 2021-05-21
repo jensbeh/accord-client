@@ -49,6 +49,7 @@ public class HomeViewController {
     private static Channel selectedChat;
     private PrivateViewController privateViewController;
     private ServerViewController serverController;
+    private Boolean flag = false;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -86,7 +87,7 @@ public class HomeViewController {
         cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
-            privateViewController = new PrivateViewController(root, builder);
+            privateViewController = new PrivateViewController(root, builder, flag);
             privateViewController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -103,7 +104,7 @@ public class HomeViewController {
         cleanup();
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
-            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
+            serverController = new ServerViewController(root, builder, builder.getCurrentServer(), flag);
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
@@ -172,6 +173,7 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
+        this.flag = true;
         try {
             if (builder.getSERVER_USER() != null) {
                 if (builder.getSERVER_USER().getSession() != null) {
@@ -265,6 +267,15 @@ public class HomeViewController {
             try {
                 if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
                     builder.getPrivateChatWebSocketCLient().stop();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (builder.getServerChatWebSocketClient() != null) {
+            try {
+                if (builder.getServerChatWebSocketClient().getSession() != null) {
+                    builder.getServerChatWebSocketClient().stop();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

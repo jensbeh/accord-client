@@ -56,10 +56,12 @@ public class PrivateViewController {
     private WebSocketClient privateChatWebSocketCLient;
     private TextField messageField;
     private ChatViewController messageViewController;
+    private Boolean flag;
 
-    public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
+    public PrivateViewController(Parent view, ModelBuilder modelBuilder, Boolean flag) {
         this.view = view;
         this.builder = modelBuilder;
+        this.flag = flag;
         restClient = new RestClient();
     }
 
@@ -83,7 +85,9 @@ public class PrivateViewController {
         showUsers();
 
         if (builder.getPrivateChatWebSocketCLient() == null) {
-            privateChatWebSocketCLient = new WebSocketClient(builder, URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+            privateChatWebSocketCLient = new WebSocketClient(builder, URI.
+                    create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+                    getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
                 /**
                  * handles server response
                  *
@@ -100,11 +104,15 @@ public class PrivateViewController {
                         Boolean newChat = true;
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
-                            message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
+                            message = new Message().setMessage(jsonObject.getString("message")).
+                                    setFrom(jsonObject.getString("from")).
+                                    setTimestamp(jsonObject.getInt("timestamp"));
                             messageViewController.clearMessageField();
                         } else {
                             channelName = jsonObject.getString("from");
-                            message = new Message().setMessage(jsonObject.getString("message")).setFrom(jsonObject.getString("from")).setTimestamp(jsonObject.getInt("timestamp"));
+                            message = new Message().setMessage(jsonObject.getString("message")).
+                                    setFrom(jsonObject.getString("from")).
+                                    setTimestamp(jsonObject.getInt("timestamp"));
                         }
                         for (Channel c : builder.getPersonalUser().getPrivateChat()) {
                             if (c.getName().equals(channelName)) {
@@ -173,7 +181,8 @@ public class PrivateViewController {
 
     private void startWebsocketConnection() {
         try {
-            USER_CLIENT = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
+            USER_CLIENT = new WebSocketClient(builder,
+                    new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
                     System.out.println("msg: " + msg);
@@ -196,7 +205,8 @@ public class PrivateViewController {
                             builder.getPersonalUser().withoutUser(removeUser);
                         }
                     }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.
+                            getPersonalUser().getUser()).sorted(new SortUser())));
                 }
 
                 public void onClose(Session session, CloseReason closeReason) {
@@ -221,7 +231,8 @@ public class PrivateViewController {
                     builder.buildUser(userName, userId);
                 }
             }
-            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().getUser()).sorted(new SortUser())));
+            Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().
+                    getUser()).sorted(new SortUser())));
         });
         startWebsocketConnection();
     }
@@ -251,8 +262,10 @@ public class PrivateViewController {
      * @param mouseEvent is called when double clicked on an existing chat
      */
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
+        this.flag = false;
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
-            if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().getSelectedItem())) {
+            if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
+                    getSelectedItem())) {
                 selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
                 this.privateChatList.refresh();
                 MessageViews();
@@ -266,7 +279,7 @@ public class PrivateViewController {
     private void MessageViews() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            messageViewController = new ChatViewController(root, builder);
+            messageViewController = new ChatViewController(root, builder, flag);
             this.chatBox.getChildren().clear();
             messageViewController.init();
             this.chatBox.getChildren().add(root);
@@ -303,7 +316,8 @@ public class PrivateViewController {
             if (!chatExisting) {
                 selectedChat = new Channel().setName(selectedUserName).setId(selectUserId);
                 builder.getPersonalUser().withPrivateChat(selectedChat);
-                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
+                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
+                        getPrivateChat()));
             }
             if(!selectedChat.equals(currentChannel))
                 MessageViews();

@@ -3,9 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
@@ -31,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static util.Constants.*;
@@ -41,7 +40,7 @@ import static util.Constants.*;
 public class ServerViewController {
 
     private final RestClient restClient;
-    private final Server server;
+    private static Server server;
     private final Parent view;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
@@ -56,16 +55,21 @@ public class ServerViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
+    private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
+    private ChatViewController messageViewController;
+    private ListView<Channel> serverChatList;
+    private Boolean flag;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
      * It also creates a new restClient"
      */
-    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
+    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, Boolean flag) {
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
+        this.flag = flag;
         restClient = new RestClient();
     }
 
@@ -78,9 +82,6 @@ public class ServerViewController {
         serverNameText = (Label) view.lookup("#serverName");
         serverNameText.setText(server.getName());
         textChannelBox = (VBox) view.lookup("#textChannelBox");
-        sendTextField = (TextField) view.lookup("#messageField");
-        sendMessageButton = (Button) view.lookup("#messageButton");
-        sendMessageButton.setOnAction(this::onSendMessage);
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
@@ -93,12 +94,120 @@ public class ServerViewController {
         showOnlineUsers();
         showServerUsers();
         showMessageView();
+
+
+        serverChatWebSocketClient = new WebSocketClient(builder, URI.
+                create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+                        getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH +
+                        server.getId()), new WSCallback() {
+            /**
+             * handles server response
+             *
+             * @param msg is the response from the server as a JsonStructure
+             */
+            @Override
+            public void handleMessage(JsonStructure msg) {
+                JsonObject jsonObject = JsonUtil.parse(msg.toString());
+                System.out.println("serverChatWebSocketClient");
+                System.out.println(msg);
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(server.getId())) {
+                    Message message = null;
+                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(jsonObject.getString("message")).
+                                setFrom(jsonObject.getString("from")).
+                                setTimestamp(jsonObject.getInt("timestamp"));
+                        messageViewController.clearMessageField();
+                    }
+                    if (messageViewController != null) {
+                        assert message != null;
+                        ChatViewController.printMessage(message);
+                    }
+                }
+                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String errorTitle;
+                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                    if (serverMessage.equals("This is not your username.")) {
+                        errorTitle = "Username Error";
+                    } else {
+                        errorTitle = "Chat Error";
+                    }
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                        alert.setTitle(errorTitle);
+                        alert.setHeaderText(serverMessage);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            showServerUsers();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onClose(Session session, CloseReason closeReason) {
+                System.out.println(closeReason.getCloseCode().toString());
+                if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                        alert.setTitle("No Connection Error");
+                        alert.setHeaderText("No Connection - Please check and try again later");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            showServerUsers();
+                        }
+                    });
+                }
+            }
+        });
+        builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+
+    }
+
+    private void startWebsocketConnection() {
+        try {
+            System.out.println("Hallo9");
+            SERVER_USER = new WebSocketClient(builder,
+                    new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH), new WSCallback() {
+                @Override
+                public void handleMessage(JsonStructure msg) {
+                    System.out.println("Hallo10");
+                    System.out.println("msg: " + msg);
+                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                    String userAction = jsonMsg.getString("action");
+                    JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    String userName = jsonData.getString("name");
+                    String userId = jsonData.getString("id");
+
+                    if (userAction.equals("userJoined")) {
+                        builder.buildUser(userName, userId);
+                    }
+                    if (userAction.equals("userLeft")) {
+                        if (userName.equals(builder.getPersonalUser().getName())) {
+                            Platform.runLater(StageManager::showLoginScreen);
+                        }
+                        List<User> userList = builder.getPersonalUser().getUser();
+                        User removeUser = builder.buildUser(userName, userId);
+                        if (userList.contains(removeUser)) {
+                            builder.getPersonalUser().withoutUser(removeUser);
+                        }
+                    }
+                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.
+                            getPersonalUser().getUser()).sorted(new SortUser())));
+                }
+
+                public void onClose(Session session, CloseReason closeReason) {
+                }
+            });
+            builder.setSERVER_USER(SERVER_USER);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            ChatViewController messageViewController = new ChatViewController(root, builder);
+            ChatViewController messageViewController = new ChatViewController(root, builder, flag);
             messageViewController.init();
             this.messages.getChildren().clear();
             this.messages.getChildren().add(root);
@@ -146,6 +255,7 @@ public class ServerViewController {
                 System.out.println(body.getObject().getString("message"));
             }
         });
+
     }
 
     /**
@@ -191,6 +301,11 @@ public class ServerViewController {
                     }
                 }
             });
+
+
+            startWebsocketConnection();
+
+
             builder.setSERVER_USER(SERVER_USER);
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -219,14 +334,6 @@ public class ServerViewController {
         });
     }
 
-    public void onSendMessage(ActionEvent event) {
-
-    }
-
-    public void showChannels() {
-
-    }
-
     public void stop() {
         onlineUsersList.setItems(null);
         offlineUsersList.setItems(null);
@@ -239,6 +346,10 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Server getSelectedServer() {
+        return server;
     }
 
 }

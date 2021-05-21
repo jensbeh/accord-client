@@ -14,6 +14,7 @@ public class ModelBuilder {
     private WebSocketClient SERVER_USER;
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
+    private WebSocketClient serverChatWebSocketClient;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -107,4 +108,14 @@ public class ModelBuilder {
     public void setPrivateChatWebSocketCLient(WebSocketClient privateChatWebSocketCLient) {
         this.privateChatWebSocketCLient = privateChatWebSocketCLient;
     }
+
+    //Server WebSocket getter/setter
+    public WebSocketClient getServerChatWebSocketClient() {
+        return serverChatWebSocketClient;
+    }
+
+    public void setServerChatWebSocketClient(WebSocketClient serverChatWebSocketClient) {
+        this.serverChatWebSocketClient = serverChatWebSocketClient;
+    }
+
 }
