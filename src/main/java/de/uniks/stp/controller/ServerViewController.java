@@ -132,14 +132,11 @@ public class ServerViewController {
     public void showOnlineUsers() {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
-
             String status = body.getObject().getString("status");
-            System.out.println(status + "Test");
             if (status.equals("success")) {
                 JSONArray category = body.getObject().getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 builder.getCurrentServer().getCategories().clear();
-
                 for (int i = 0; i < category.length(); i++) {
                     Categories categories = new Categories();
                     categories.setId(category.getString(i));
