@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
@@ -131,10 +132,20 @@ public class ServerViewController {
     public void showOnlineUsers() {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
+
             String status = body.getObject().getString("status");
+            System.out.println(status + "Test");
             if (status.equals("success")) {
+                JSONArray category = body.getObject().getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
-                builder.getCurrentServer().getUser().clear();
+                builder.getCurrentServer().getCategories().clear();
+
+                for (int i = 0; i < category.length(); i++) {
+                    Categories categories = new Categories();
+                    categories.setId(category.getString(i));
+                    builder.getCurrentServer().withCategories(categories);
+                    System.out.println(builder.getCurrentServer().getCategories().get(i).toString());
+                }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
