@@ -127,7 +127,7 @@ public class ServerViewController {
     }
 
     /**
-     * Update the builder and get the ServerUser. Also sets their online and offline Status.
+     * Update the builder and get the ServerUser as well as the categories. Also sets their online and offline Status.
      */
     public void showOnlineUsers() {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
