@@ -56,12 +56,10 @@ public class PrivateViewController {
     private WebSocketClient privateChatWebSocketCLient;
     private TextField messageField;
     private ChatViewController messageViewController;
-    private Boolean flag;
 
-    public PrivateViewController(Parent view, ModelBuilder modelBuilder, Boolean flag) {
+    public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.flag = flag;
         restClient = new RestClient();
     }
 
@@ -221,7 +219,7 @@ public class PrivateViewController {
     /**
      * Get the Online Users and reset old Online User List with new Online Users
      */
-    private void showUsers() {
+    public void showUsers() {
         restClient.getUsers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
@@ -248,6 +246,7 @@ public class PrivateViewController {
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
             userProfileController.setOnline();
+            this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
         } catch (IOException e) {
@@ -262,7 +261,6 @@ public class PrivateViewController {
      * @param mouseEvent is called when double clicked on an existing chat
      */
     private void onprivateChatListClicked(MouseEvent mouseEvent) {
-        this.flag = false;
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
@@ -276,17 +274,19 @@ public class PrivateViewController {
     /**
      * Message View cleanup and display recent messages with selected Chat
      */
-    private void MessageViews() {
+    public void MessageViews() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            messageViewController = new ChatViewController(root, builder, flag);
+            messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
             this.chatBox.getChildren().add(root);
 
-            for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
-                // Display each Message which are saved
-                ChatViewController.printMessage(msg);
+            if(PrivateViewController.getSelectedChat() != null) {
+                for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
+                    // Display each Message which are saved
+                    ChatViewController.printMessage(msg);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

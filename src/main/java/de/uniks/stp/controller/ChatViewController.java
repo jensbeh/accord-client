@@ -25,13 +25,11 @@ public class ChatViewController {
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
     private HBox messageBox;
-    private static boolean flag;
 
 
-    public ChatViewController(Parent view, ModelBuilder builder, Boolean flag) {
+    public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
-        this.flag = flag;
     }
 
     public void init() {
@@ -57,7 +55,7 @@ public class ChatViewController {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
         if (!textMessage.isEmpty()) {
-            if (!flag) {
+            if (!HomeViewController.flag) {
                 AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                 try {
                     if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
@@ -81,12 +79,13 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public static void printMessage(Message msg) {
-        if (!flag) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
-            Platform.runLater(() -> ob.add(msg));
+        if (!HomeViewController.flag) {
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) { // only print message when user is on correct chat channel
+                Platform.runLater(() -> ob.add(msg));
+            }
         } else {
-            //if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
-            Platform.runLater(() -> ob.add(msg));
+            if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
+                Platform.runLater(() -> ob.add(msg));
         }
     }
 

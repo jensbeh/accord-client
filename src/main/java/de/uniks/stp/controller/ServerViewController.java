@@ -64,7 +64,6 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private ListView<Channel> serverChatList;
     private static String channelId;
-    private Boolean flag;
 
     public static String channelId() {
         return channelId;
@@ -74,11 +73,10 @@ public class ServerViewController {
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
      * It also creates a new restClient"
      */
-    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, Boolean flag) {
+    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
-        this.flag = flag;
         restClient = new RestClient();
     }
 
@@ -106,16 +104,16 @@ public class ServerViewController {
 
         restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
                 builder.getPersonalUser().getUserKey(), response -> {
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        JSONArray ob = body.getObject().getJSONArray("data");
-                        JSONObject object = ob.getJSONObject(0);
-                        channelId = object.get("id").toString();
-                    } else if (status.equals("failure")) {
-                        System.out.println(body.getObject().getString("message"));
-                    }
-                });
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray ob = body.getObject().getJSONArray("data");
+                JSONObject object = ob.getJSONObject(0);
+                channelId = object.get("id").toString();
+            } else if (status.equals("failure")) {
+                System.out.println(body.getObject().getString("message"));
+            }
+        });
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -234,9 +232,9 @@ public class ServerViewController {
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-            messageViewController = new ChatViewController(root, builder, flag);
-            messageViewController.init();
+            messageViewController = new ChatViewController(root, builder);
             this.messages.getChildren().clear();
+            messageViewController.init();
             this.messages.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
