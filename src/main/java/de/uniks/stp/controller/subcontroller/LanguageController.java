@@ -4,7 +4,6 @@ import de.uniks.stp.LangString;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,12 +11,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import util.Constants;
 
 public class LanguageController extends SubSetting {
 
     private Parent view;
     private ComboBox<String> languageSelector;
-    private static final String PATH_FILE_SETTINGS = "src/main/resources/de/uniks/stp/Settings.properties";
+    private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
@@ -50,9 +50,6 @@ public class LanguageController extends SubSetting {
         }
 
         // init view
-        Label selectLanguageLabel;
-        selectLanguageLabel = (Label) view.lookup("#label_langSelect");
-        selectLanguageLabel.textProperty().bind(LangString.lStr("label_langSelect"));
         this.languageSelector = (ComboBox<String>) view.lookup("#comboBox_langSelect");
 
         this.languageSelector.setPromptText(languages.get((LangString.getLocale().toString())));

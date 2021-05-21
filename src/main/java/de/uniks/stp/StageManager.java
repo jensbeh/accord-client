@@ -13,7 +13,9 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 
 public class StageManager extends Application {
@@ -23,6 +25,7 @@ public class StageManager extends Application {
     private static LoginScreenController loginCtrl;
     private static SettingsController settingsController;
     private static Scene scene;
+    private static ResourceBundle langBundle;
 
     @Override
     public void start(Stage primaryStage) {
@@ -113,7 +116,7 @@ public class StageManager extends Application {
     public static void showSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"), langBundle);
             Scene scene = new Scene(root);
 
             // init controller
@@ -146,5 +149,9 @@ public class StageManager extends Application {
 
     public HomeViewController getHomeViewController() {
         return homeViewController;
+    }
+
+    public static ResourceBundle getLangBundle() {
+        return langBundle;
     }
 }
