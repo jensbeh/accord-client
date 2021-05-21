@@ -106,16 +106,16 @@ public class ServerViewController {
 
         restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
                 builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            String status = body.getObject().getString("status");
-            if (status.equals("success")) {
-                JSONArray ob = body.getObject().getJSONArray("data");
-                JSONObject object = ob.getJSONObject(0);
-                channelId = object.get("id").toString();
-            } else if (status.equals("failure")) {
-                System.out.println(body.getObject().getString("message"));
-            }
-        });
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        JSONArray ob = body.getObject().getJSONArray("data");
+                        JSONObject object = ob.getJSONObject(0);
+                        channelId = object.get("id").toString();
+                    } else if (status.equals("failure")) {
+                        System.out.println(body.getObject().getString("message"));
+                    }
+                });
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -141,8 +141,9 @@ public class ServerViewController {
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         message = new Message().setMessage(jsonObject.getString("text")).
                                 setFrom(jsonObject.getString("from")).
-                                setTimestamp(jsonObject.getInt("timestamp"));
-                        Platform.runLater(()->messageViewController.clearMessageField());
+                                setTimestamp(jsonObject.getInt("timestamp")).
+                                setChannel(builder.getCurrentServerChannel());
+                        Platform.runLater(() -> messageViewController.clearMessageField());
                     }
                     //bis hier
                     if (messageViewController != null) {
@@ -232,15 +233,11 @@ public class ServerViewController {
 
     private void showMessageView() {
         try {
-            if (messageViewController != null) {
-                this.messageViewController.init();
-            } else {
-                Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
-                messageViewController = new ChatViewController(root, builder, flag);
-                messageViewController.init();
-                this.messages.getChildren().clear();
-                this.messages.getChildren().add(root);
-            }
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            messageViewController = new ChatViewController(root, builder, flag);
+            messageViewController.init();
+            this.messages.getChildren().clear();
+            this.messages.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

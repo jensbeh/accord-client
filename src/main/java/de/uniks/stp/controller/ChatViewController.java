@@ -85,7 +85,7 @@ public class ChatViewController {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
             Platform.runLater(() -> ob.add(msg));
         } else {
-            if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
+            //if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
             Platform.runLater(() -> ob.add(msg));
         }
     }
