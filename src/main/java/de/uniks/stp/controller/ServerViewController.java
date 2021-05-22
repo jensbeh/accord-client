@@ -3,18 +3,12 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.*;
-import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -34,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -112,23 +105,22 @@ public class ServerViewController {
         Thread.sleep(2000);
         restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
                 builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            String status = body.getObject().getString("status");
-            if (status.equals("success")) {
-                JSONArray ob = body.getObject().getJSONArray("data");
-                JSONObject object = ob.getJSONObject(0);
-                channelId = object.get("id").toString();
-                if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
-                    Channel channel = new Channel().setId(channelId);
-                    builder.getCurrentServer().getCategories().get(0).withChannel(channel);
-                    builder.setCurrentServerChannel(channel);
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        JSONArray ob = body.getObject().getJSONArray("data");
+                        JSONObject object = ob.getJSONObject(0);
+                        channelId = object.get("id").toString();
+                        if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
+                            Channel channel = new Channel().setId(channelId);
+                            builder.getCurrentServer().getCategories().get(0).withChannel(channel);
+                            builder.setCurrentServerChannel(channel);
 
-                }
-            } else if (status.equals("failure")) {
-                System.out.println(body.getObject().getString("message"));
-            }
-        });
-        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
+                        }
+                    } else if (status.equals("failure")) {
+                        System.out.println(body.getObject().getString("message"));
+                    }
+                });
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                         getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH +
@@ -146,12 +138,10 @@ public class ServerViewController {
                 if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                        System.out.println("Channel: " + builder.getCurrentServerChannel());
                         message = new Message().setMessage(jsonObject.getString("text")).
                                 setFrom(jsonObject.getString("from")).
                                 setTimestamp(jsonObject.getInt("timestamp")).
                                 setChannel(builder.getCurrentServerChannel());
-                        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
                         if (messageViewController != null) {
                             Platform.runLater(() -> messageViewController.clearMessageField());
                         }

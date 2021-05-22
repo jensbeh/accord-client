@@ -2,7 +2,6 @@ package de.uniks.stp;
 
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -10,8 +9,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
-import java.awt.*;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -71,26 +68,26 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
                 //new Line after 50 Characters
                 String str = item.getMessage();
-                int stelle = 0;
+                int point = 0;
                 int counter = 25;
                 boolean found = false;
                 int endPoint = 0;
                 int length = str.length();
-                while ((stelle + 50) < length) {
-                    endPoint = stelle +50;
-                    while (counter != 0 && !found ) {
+                while ((point + 50) < length) {
+                    endPoint = point + 50;
+                    while (counter != 0 && !found) {
                         counter--;
-                        if (str.charAt(endPoint-(25 - counter)) == ' ') {
-                            str = new StringBuilder(str).insert(endPoint-(25 - counter), "\n").toString();
-                            length+= 2;
+                        if (str.charAt(endPoint - (25 - counter)) == ' ') {
+                            str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
+                            length += 2;
                             found = true;
-                            stelle = endPoint-(25 - counter)+2;
+                            point = endPoint - (25 - counter) + 2;
                         }
                     }
                     if (counter == 0) {
                         str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                        length+= 2;
-                        stelle = endPoint +2;
+                        length += 2;
+                        point = endPoint + 2;
                     }
                     found = false;
                     counter = 25;

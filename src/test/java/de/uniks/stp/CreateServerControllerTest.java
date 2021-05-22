@@ -1,6 +1,5 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -8,7 +7,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import junit.framework.TestCase;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -24,8 +22,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-
-import java.net.NoRouteToHostException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;

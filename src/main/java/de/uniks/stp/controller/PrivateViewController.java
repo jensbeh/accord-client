@@ -88,7 +88,7 @@ public class PrivateViewController {
         if (builder.getPrivateChatWebSocketCLient() == null) {
             privateChatWebSocketCLient = new WebSocketClient(builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
-                    getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
+                            getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
                 /**
                  * handles server response
                  *
@@ -289,7 +289,7 @@ public class PrivateViewController {
             messageViewController.init();
             this.chatBox.getChildren().add(root);
 
-            if(PrivateViewController.getSelectedChat() != null) {
+            if (PrivateViewController.getSelectedChat() != null) {
                 for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
                     // Display each Message which are saved
                     ChatViewController.printMessage(msg);
