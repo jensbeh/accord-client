@@ -195,9 +195,9 @@ public class ServerViewController {
                     System.out.println(closeReason.getCloseCode().toString());
                     if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
                         Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Users cannot be displayed. No connection to server.", ButtonType.OK);
-                            alert.setTitle("Error Dialog");
-                            alert.setHeaderText("No Connection");
+                            Alert alert = new Alert(Alert.AlertType.ERROR, StageManager.getLangBundle().getString("error.user_cannot_be_displayed"), ButtonType.OK);
+                            alert.setTitle(StageManager.getLangBundle().getString("error.dialog"));
+                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection"));
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
                                 showServerUsers();
