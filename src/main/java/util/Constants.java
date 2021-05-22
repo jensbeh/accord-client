@@ -30,5 +30,6 @@ public class Constants {
     public static String APPDIR_ACCORD_PATH;
     public static String CONFIG_PATH = "/config";
     public static String SETTINGS_FILE = "/Settings.properties";
+    public static String USERDATA_FILE = "/userData.txt";
 }
 

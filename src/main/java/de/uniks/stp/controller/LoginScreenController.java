@@ -8,6 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import kong.unirest.JsonNode;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
+import util.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -58,25 +61,8 @@ public class LoginScreenController {
         connectionLabel.setWrapText(true);
 
         //Save last username and password that wanted to be remembered in file
-        File f = new File("saves/user.txt");
-        try {
-            if (f.exists() && !f.isDirectory()) {
-                Scanner scanner = new Scanner(f);
-                int i = 0;
-                while (scanner.hasNextLine()) {
-                    if (i == 0) {
-                        usernameTextField.setText(scanner.nextLine());
-                    }
-                    if (i == 1) {
-                        passwordTextField.setText(decode(scanner.nextLine()));
-                    }
-                    i++;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error while reading!");
-            e.printStackTrace();
-        }
+        setup();
+
         //Buttons
         this.loginButton.setOnAction(this::loginButtonOnClick);
         this.signInButton.setOnAction(this::signInButtonOnClick);
@@ -227,10 +213,11 @@ public class LoginScreenController {
      * save username and password in text file
      */
     public void saveRememberMe(String username, String password) {
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
         try {
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream("saves/user.txt")));
+                            new FileOutputStream(path_to_config + Constants.USERDATA_FILE)));
             out.write(username);
             out.newLine();
             String encodedPassword = encode(password);
@@ -238,6 +225,35 @@ public class LoginScreenController {
             out.close();
         } catch (Exception e) {
             System.out.println("Error while saving userdata.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * First check if there is a userData file already in user local directory - if not, create
+     */
+    public static void setup() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+        File f = new File(path_to_config + Constants.USERDATA_FILE);
+        try {
+            if (f.exists() && !f.isDirectory()) {
+                Scanner scanner = new Scanner(f);
+                int i = 0;
+                while (scanner.hasNextLine()) {
+                    if (i == 0) {
+                        usernameTextField.setText(scanner.nextLine());
+                    }
+                    if (i == 1) {
+                        passwordTextField.setText(decode(scanner.nextLine()));
+                    }
+                    i++;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }
