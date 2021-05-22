@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
@@ -30,6 +31,7 @@ import util.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -42,8 +44,10 @@ public class HomeViewController {
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
-    private Button logoutButton;
-    private Stage stage;
+    private static Label homeLabel;
+    private static Button logoutButton;
+    private static Stage stage;
+    private static String stageTitleName;
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
     private static Channel selectedChat;
@@ -67,6 +71,7 @@ public class HomeViewController {
         homeButton = (Circle) view.lookup("#homeButton");
         serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         settingsButton = (Button) view.lookup("#settingsButton");
+        homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
         addServer = (Circle) view.lookup("#addServer");
         addServer.setOnMouseClicked(this::onshowCreateServer);
@@ -75,7 +80,7 @@ public class HomeViewController {
         serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
-        this.logoutButton.setOnAction(this::logoutButtonOnClicked);
+        logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
         showPrivateView();
         showServers();
@@ -88,13 +93,12 @@ public class HomeViewController {
         inServerChat = false;
         try {
             if (privateView == null) {
-                privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
+                privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"), StageManager.getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-            }
-            else {
+            } else {
                 this.privateViewController.showUsers();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
@@ -134,13 +138,13 @@ public class HomeViewController {
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             CreateServerController createServerController = new CreateServerController(root, builder);
             createServerController.init();
             stage = new Stage();
             createServerController.showCreateServerView(this::onServerCreated);
-            stage.setTitle("Create a new Server");
+            setStageTitle("window_title_create_new_server");
             stage.setScene(scene);
             stage.show();
             updateServerListColor();
@@ -254,7 +258,7 @@ public class HomeViewController {
         this.homeButton.setOnMouseClicked(null);
         this.homeCircle.setOnMouseClicked(null);
         this.settingsButton.setOnAction(null);
-        this.logoutButton.setOnAction(null);
+        logoutButton.setOnAction(null);
         if (stage != null) {
             this.stage.close();
             stage = null;
@@ -373,5 +377,30 @@ public class HomeViewController {
 
     public ServerViewController getServerController() {
         return serverController;
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (homeLabel != null)
+            homeLabel.setText(lang.getString("label.home"));
+
+        if (logoutButton != null)
+            logoutButton.setText(lang.getString("button.logout"));
+
+        if (stageTitleName != null && !stageTitleName.equals("")) {
+            stage.setTitle(lang.getString(stageTitleName));
+        }
+
+        CreateServerController.onLanguageChanged();
+        PrivateViewController.onLanguageChanged();
+    }
+
+    public static void setStageTitle(String name) {
+        ResourceBundle lang = StageManager.getLangBundle();
+        stageTitleName = name;
+        stage.setTitle(lang.getString(stageTitleName));
     }
 }

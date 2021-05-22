@@ -18,7 +18,7 @@
          <children>
             <HBox prefHeight="35.0" prefWidth="4.0" />
             <TextField fx:id="messageTextField" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6;" />
-            <Button fx:id="sendButton" mnemonicParsing="false" style="-fx-background-radius: 6; -fx-background-color: ff9999;" text="Send" textFill="WHITE" />
+            <Button fx:id="sendButton" mnemonicParsing="false" style="-fx-background-radius: 6; -fx-background-color: ff9999;" text="%button.send" textFill="WHITE" />
             <HBox prefHeight="35.0" prefWidth="4.0" />
          </children>
       </HBox>

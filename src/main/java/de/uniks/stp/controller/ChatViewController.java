@@ -1,6 +1,7 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateMessageListCellFactory;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import javafx.application.Platform;
@@ -16,11 +17,12 @@ import javafx.scene.layout.Priority;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class ChatViewController {
     private ModelBuilder builder;
     private Parent view;
-    private Button sendButton;
+    private static Button sendButton;
     private TextField messageTextField;
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
@@ -34,9 +36,9 @@ public class ChatViewController {
 
     public void init() {
         // Load all view references
-        this.sendButton = (Button) view.lookup("#sendButton");
+        sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
-        this.sendButton.setOnAction(this::sendButtonClicked);
+        sendButton.setOnAction(this::sendButtonClicked);
         this.messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         //ListView with message as parameter and observableList
@@ -91,5 +93,14 @@ public class ChatViewController {
 
     public void clearMessageField() {
         this.messageTextField.setText("");
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (sendButton != null)
+            sendButton.setText(lang.getString("button.send"));
     }
 }
