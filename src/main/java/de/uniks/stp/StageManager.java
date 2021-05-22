@@ -65,7 +65,7 @@ public class StageManager extends Application {
     public static void showHome() {
         cleanup();
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"), getLangBundle());
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
@@ -190,5 +190,6 @@ public class StageManager extends Application {
         SettingsController.onLanguageChanged();
         LanguageController.onLanguageChanged();
         LoginScreenController.onLanguageChanged();
+        HomeViewController.onLanguageChanged();
     }
 }

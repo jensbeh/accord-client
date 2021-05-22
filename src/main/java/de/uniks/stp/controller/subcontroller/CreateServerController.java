@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.net.RestClient;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 
 import java.net.NoRouteToHostException;
+import java.util.ResourceBundle;
 
 /**
  * The class CreateServerController is about showing the createServerView. After a server is
@@ -24,11 +26,12 @@ public class CreateServerController {
     private final ModelBuilder builder;
     private Parent view;
     private VBox createServerBox;
-    private TextField serverName;
+    private static TextField serverName;
     private Button createServer;
     private CurrentUser personalUser;
     private Runnable change;
-    private Label errorLabel;
+    private static Label errorLabel;
+    private static String error;
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
@@ -69,7 +72,7 @@ public class CreateServerController {
     public void onCreateServerClicked(ActionEvent event) {
         try {
             this.personalUser = builder.getPersonalUser();
-            String name = this.serverName.getText();
+            String name = serverName.getText();
             if (name != null && !name.isEmpty()) {
                 JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
                 String status = response.getObject().getString("status");
@@ -79,17 +82,40 @@ public class CreateServerController {
                     builder.setCurrentServer(builder.buildServer(serverName, serverId));
                     change.run();
                 } else if (status.equals(("failure"))) {
-                    errorLabel.setText(response.getObject().getString("message"));
+                    setError("error.create_server_failure");
                 }
             } else {
-                errorLabel.setText("Error: Server name cannot be empty");
+                setError("error.server_name_field_empty");
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
-                errorLabel.setText("No Connection - Please check your connection and try again");
+                setError("error.create_server_no_connection");
             }
         }
+    }
 
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if(serverName != null)
+            serverName.setText(lang.getString("textfield.server_name"));
+
+        if (error != null && !error.equals("")) {
+            errorLabel.setText(lang.getString(error));
+        }
+    }
+
+    /**
+     * set the error text in label placeholder
+     *
+     * @param errorMsg the error text
+     */
+    private void setError(String errorMsg) {
+        ResourceBundle lang = StageManager.getLangBundle();
+        error = errorMsg;
+        errorLabel.setText(lang.getString(error));
     }
 }
