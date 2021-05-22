@@ -57,12 +57,22 @@ public class ChatViewController {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
         if (!textMessage.isEmpty()) {
-            AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-            try {
-                if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
-                    builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!HomeViewController.inServerChat) {
+                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                try {
+                    if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                        builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                try {
+                    if (builder.getServerChatWebSocketClient() != null)
+                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -71,8 +81,14 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public static void printMessage(Message msg) {
-        if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
-            Platform.runLater(() -> ob.add(msg));
+        if (!HomeViewController.inServerChat) {
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) { // only print message when user is on correct chat channel
+                Platform.runLater(() -> ob.add(msg));
+            }
+        } else {
+            if(ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
+                Platform.runLater(() -> ob.add(msg));
+        }
     }
 
     public void clearMessageField() {

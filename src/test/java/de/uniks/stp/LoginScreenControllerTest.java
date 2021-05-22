@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.scene.control.CheckBox;
@@ -10,6 +11,8 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+import util.Constants;
 
 import java.io.File;
 import java.util.Base64;
@@ -237,7 +241,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
         //Check if file with username and password is empty
-        File f = new File("saves/user.txt");
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+        File f = new File(path_to_config + Constants.USERDATA_FILE);
         try {
             if (f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
@@ -273,7 +281,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
         //Check if file with username and password were saved
-        File f = new File("saves/user.txt");
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+        File f = new File(path_to_config + Constants.USERDATA_FILE);
         try {
             if (f.exists() && !f.isDirectory()) {
                 Scanner scanner = new Scanner(f);
@@ -294,6 +306,34 @@ public class LoginScreenControllerTest extends ApplicationTest {
             System.err.println("Error while reading!");
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void noConnectionTest() throws InterruptedException {
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        Platform.runLater(() -> passwordField.setText("123"));
+        Platform.runLater(() -> usernameTextField.setText("peter"));
+        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
+        rememberBox.setSelected(true);
+
+        LoginScreenController.noConnectionTest = true;
+        clickOn("#signinButton");
+        Thread.sleep(500);
+        Label noConnectionTest = lookup("#connectionLabel").query();
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+
+        CheckBox tempBox = lookup("#loginAsTempUser").query();
+        tempBox.setSelected(true);
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+        LoginScreenController.noConnectionTest = false;
+
     }
 
     /**

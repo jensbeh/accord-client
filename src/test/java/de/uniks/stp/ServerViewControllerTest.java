@@ -3,7 +3,6 @@ package de.uniks.stp;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -105,7 +104,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         String testUserOneName = "TestUser Team Bit Shift";
         restClient.login(testUserOneName, "test123", response -> {
         });
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         Assert.assertEquals("Accord - Login", stage.getTitle());
     }
 }

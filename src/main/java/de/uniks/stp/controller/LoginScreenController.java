@@ -8,6 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import kong.unirest.JsonNode;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
+import util.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,6 +37,7 @@ public class LoginScreenController {
     private ModelBuilder builder;
     private static String error;
     private static String connectionError;
+    public static boolean noConnectionTest;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -53,26 +57,9 @@ public class LoginScreenController {
         connectionLabel = (Label) root.lookup("#connectionLabel");
         connectionLabel.setWrapText(true);
 
-        //Save last username and password that wanted to be remembered in file
-        File f = new File("saves/user.txt");
-        try {
-            if (f.exists() && !f.isDirectory()) {
-                Scanner scanner = new Scanner(f);
-                int i = 0;
-                while (scanner.hasNextLine()) {
-                    if (i == 0) {
-                        usernameTextField.setText(scanner.nextLine());
-                    }
-                    if (i == 1) {
-                        passwordTextField.setText(decode(scanner.nextLine()));
-                    }
-                    i++;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error while reading!");
-            e.printStackTrace();
-        }
+        //Get last username and password that wanted to be remembered in file
+        setup();
+
         //Buttons
         this.loginButton.setOnAction(this::loginButtonOnClick);
         this.signInButton.setOnAction(this::signInButtonOnClick);
@@ -101,24 +88,26 @@ public class LoginScreenController {
                     saveRememberMe("", "");
                 }
                 //signIn Post
-                restClient.signIn(username, password, response -> {
-                    netConnection = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> setError("error.sign_in_success"));
-                    } else if (status.equals("failure")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        if (message.equals("Name already taken")) {
-                            Platform.runLater(() -> setError("error.name_already_taken"));
-                        } else {
-                            Platform.runLater(() -> setError("error.sign_in_failure"));
+                if (!noConnectionTest) {
+                    restClient.signIn(username, password, response -> {
+                        netConnection = true;
+                        JsonNode body = response.getBody();
+                        String status = body.getObject().getString("status");
+                        if (status.equals("success")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            Platform.runLater(() -> setError("error.sign_in_success"));
+                        } else if (status.equals("failure")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            if (message.equals("Name already taken")) {
+                                Platform.runLater(() -> setError("error.name_already_taken"));
+                            } else {
+                                Platform.runLater(() -> setError("error.sign_in_failure"));
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
@@ -143,56 +132,60 @@ public class LoginScreenController {
                     saveRememberMe("", "");
                 }
                 //login Post
-                restClient.login(username, password, response -> {
-                    netConnection = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        //build user with key
-                        String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        builder.buildPersonalUser(username, userkey);
-                        //show message on screen
-                        this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> setError("error.login_success"));
-                        Platform.runLater(StageManager::showHome);
-                    } else if (status.equals("failure")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        if (message.equals("Invalid credentials")) {
-                            Platform.runLater(() -> setError("error.invalid_credentials"));
-                        } else {
-                            Platform.runLater(() -> setError("error.login_failure"));
+                if (!noConnectionTest) {
+                    restClient.login(username, password, response -> {
+                        netConnection = true;
+                        JsonNode body = response.getBody();
+                        String status = body.getObject().getString("status");
+                        if (status.equals("success")) {
+                            //build user with key
+                            String userkey = body.getObject().getJSONObject("data").getString("userKey");
+                            builder.buildPersonalUser(username, userkey);
+                            //show message on screen
+                            this.message = body.getObject().getString("status");
+                            Platform.runLater(() -> setError("error.login_success"));
+                            Platform.runLater(StageManager::showHome);
+                        } else if (status.equals("failure")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            if (message.equals("Invalid credentials")) {
+                                Platform.runLater(() -> setError("error.invalid_credentials"));
+                            } else {
+                                Platform.runLater(() -> setError("error.login_failure"));
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
             saveRememberMe("", "");
-            restClient.loginTemp(response -> {
-                netConnection = true;
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    //get name and password from server
-                    String name = body.getObject().getJSONObject("data").getString("name");
-                    String passw = body.getObject().getJSONObject("data").getString("password");
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    //fill in username and password and login of tempUser
-                    Platform.runLater(() -> {
-                        setError("error.login_success");
-                        usernameTextField.setText(name);
-                        passwordTextField.setText(passw);
-                        tempUserCheckBox.setSelected(false);
-                        loginButtonOnClick(actionEvent);
-                    });
-                } else if (status.equals("failure")) {
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> setError("error.login_failure"));
-                }
-            });
+            if (!noConnectionTest) {
+                restClient.loginTemp(response -> {
+                    netConnection = true;
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        //get name and password from server
+                        String name = body.getObject().getJSONObject("data").getString("name");
+                        String passw = body.getObject().getJSONObject("data").getString("password");
+                        //show message on screen
+                        this.message = body.getObject().getString("status");
+                        //fill in username and password and login of tempUser
+                        Platform.runLater(() -> {
+                            setError("error.login_success");
+                            usernameTextField.setText(name);
+                            passwordTextField.setText(passw);
+                            tempUserCheckBox.setSelected(false);
+                            loginButtonOnClick(actionEvent);
+                        });
+                    } else if (status.equals("failure")) {
+                        //show message on screen
+                        this.message = body.getObject().getString("status");
+                        Platform.runLater(() -> setError("error.login_failure"));
+                    }
+                });
+            }
             noConnection();
         }
     }
@@ -223,10 +216,11 @@ public class LoginScreenController {
      * save username and password in text file
      */
     public void saveRememberMe(String username, String password) {
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
         try {
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream("saves/user.txt")));
+                            new FileOutputStream(path_to_config + Constants.USERDATA_FILE)));
             out.write(username);
             out.newLine();
             String encodedPassword = encode(password);
@@ -234,6 +228,35 @@ public class LoginScreenController {
             out.close();
         } catch (Exception e) {
             System.out.println("Error while saving userdata.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * First check if there is a userData file already in user local directory - if not, create
+     */
+    public static void setup() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+        File f = new File(path_to_config + Constants.USERDATA_FILE);
+        try {
+            if (f.exists() && !f.isDirectory()) {
+                Scanner scanner = new Scanner(f);
+                int i = 0;
+                while (scanner.hasNextLine()) {
+                    if (i == 0) {
+                        usernameTextField.setText(scanner.nextLine());
+                    }
+                    if (i == 1) {
+                        passwordTextField.setText(decode(scanner.nextLine()));
+                    }
+                    i++;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }

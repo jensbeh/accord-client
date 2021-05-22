@@ -191,7 +191,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         rememberBox.setSelected(true);
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         Assert.assertEquals("Accord - Main", stage.getTitle());
         clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();

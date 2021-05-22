@@ -3,17 +3,12 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.subcontroller.CreateServerController;
-import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -44,7 +39,7 @@ import static util.Constants.*;
 public class ServerViewController {
 
     private final RestClient restClient;
-    private final Server server;
+    private static Server server;
     private final Parent view;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
@@ -62,7 +57,15 @@ public class ServerViewController {
     private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
+    private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
+    private ChatViewController messageViewController;
+    private ListView<Channel> serverChatList;
+    private static String channelId;
+
+    public static String channelId() {
+        return channelId;
+    }
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -78,7 +81,7 @@ public class ServerViewController {
     /**
      * Initialise all view parameters
      */
-    public void init() {
+    public void init() throws InterruptedException {
         root = (HBox) view.lookup("#root");
         channelBox = (VBox) view.lookup("#channelBox");
         serverNameText = (Label) view.lookup("#serverName");
@@ -87,9 +90,6 @@ public class ServerViewController {
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         textChannelBox = (VBox) view.lookup("#textChannelBox");
-        sendTextField = (TextField) view.lookup("#messageField");
-        sendMessageButton = (Button) view.lookup("#messageButton");
-        sendMessageButton.setOnAction(this::onSendMessage);
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
@@ -102,14 +102,102 @@ public class ServerViewController {
         showOnlineUsers();
         showServerUsers();
         showMessageView();
+        Thread.sleep(2000);
+        restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
+                builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        JSONArray ob = body.getObject().getJSONArray("data");
+                        JSONObject object = ob.getJSONObject(0);
+                        channelId = object.get("id").toString();
+                        if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
+                            Channel channel = new Channel().setId(channelId);
+                            builder.getCurrentServer().getCategories().get(0).withChannel(channel);
+                            builder.setCurrentServerChannel(channel);
+
+                        }
+                    } else if (status.equals("failure")) {
+                        System.out.println(body.getObject().getString("message"));
+                    }
+                });
+        serverChatWebSocketClient = new WebSocketClient(builder, URI.
+                create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+                        getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH +
+                        server.getId()), new WSCallback() {
+            /**
+             * handles server response
+             *
+             * @param msg is the response from the server as a JsonStructure
+             */
+            @Override
+            public void handleMessage(JsonStructure msg) {
+                JsonObject jsonObject = JsonUtil.parse(msg.toString());
+                System.out.println("serverChatWebSocketClient");
+                System.out.println(msg);
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
+                    Message message = null;
+                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(jsonObject.getString("text")).
+                                setFrom(jsonObject.getString("from")).
+                                setTimestamp(jsonObject.getInt("timestamp")).
+                                setChannel(builder.getCurrentServerChannel());
+                        if (messageViewController != null) {
+                            Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+
+                    }
+                    if (messageViewController != null) {
+                        assert message != null;
+                        ChatViewController.printMessage(message);
+                    }
+                }
+                if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+                    String errorTitle;
+                    String serverMessage = jsonObject.getJsonObject("data").getString("message");
+                    if (serverMessage.equals("This is not your username.")) {
+                        errorTitle = "Username Error";
+                    } else {
+                        errorTitle = "Chat Error";
+                    }
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                        alert.setTitle(errorTitle);
+                        alert.setHeaderText(serverMessage);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            showServerUsers();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onClose(Session session, CloseReason closeReason) {
+                System.out.println(closeReason.getCloseCode().toString());
+                if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                        alert.setTitle("No Connection Error");
+                        alert.setHeaderText("No Connection - Please check and try again later");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            showServerUsers();
+                        }
+                    });
+                }
+            }
+        });
+        builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+
     }
 
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
-            ChatViewController messageViewController = new ChatViewController(root, builder);
-            messageViewController.init();
+            messageViewController = new ChatViewController(root, builder);
             this.messages.getChildren().clear();
+            messageViewController.init();
             this.messages.getChildren().add(root);
         } catch (IOException e) {
             e.printStackTrace();
@@ -234,14 +322,6 @@ public class ServerViewController {
         });
     }
 
-    public void onSendMessage(ActionEvent event) {
-
-    }
-
-    public void showChannels() {
-
-    }
-
     public void stop() {
         onlineUsersList.setItems(null);
         offlineUsersList.setItems(null);
@@ -254,6 +334,10 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Server getSelectedServer() {
+        return server;
     }
 
     /**

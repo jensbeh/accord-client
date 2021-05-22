@@ -54,6 +54,7 @@ public class HomeViewController {
     private PrivateViewController privateViewController;
     private ServerViewController serverController;
     private Parent privateView;
+    public static boolean inServerChat = false;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -89,6 +90,7 @@ public class HomeViewController {
      * Shows the private home view to have a private chat with other users.
      */
     private void showPrivateView() {
+        inServerChat = false;
         try {
             if (privateView == null) {
                 privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"), StageManager.getLangBundle());
@@ -100,6 +102,9 @@ public class HomeViewController {
                 this.privateViewController.showUsers();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
+                if (PrivateViewController.getSelectedChat() != null) {
+                    this.privateViewController.MessageViews();
+                }
 
             }
         } catch (IOException e) {
@@ -112,13 +117,14 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
+        inServerChat = true;
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
             serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -197,6 +203,7 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -205,6 +212,7 @@ public class HomeViewController {
                 showServerView();
             }
         }
+        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
     }
 
     /**
@@ -276,6 +284,15 @@ public class HomeViewController {
             try {
                 if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
                     builder.getPrivateChatWebSocketCLient().stop();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (builder.getServerChatWebSocketClient() != null) {
+            try {
+                if (builder.getServerChatWebSocketClient().getSession() != null) {
+                    builder.getServerChatWebSocketClient().stop();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -376,7 +393,7 @@ public class HomeViewController {
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
 
-        if (stageTitleName != null && !stageTitleName.equals("")) {
+        if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
         }
 
