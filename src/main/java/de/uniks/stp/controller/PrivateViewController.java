@@ -338,7 +338,6 @@ public class PrivateViewController {
      * Stop running Actions when Controller gets closed
      */
     public void stop() {
-        flag = null;
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         try {

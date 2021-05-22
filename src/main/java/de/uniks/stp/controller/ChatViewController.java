@@ -84,7 +84,9 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
+            System.out.println("server: " + ServerViewController.getSelectedServer().getCategories().get(0).getId());
+            System.out.println("channel: " + msg.getChannel().getId());
+            //if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }

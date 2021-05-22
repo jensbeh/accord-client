@@ -359,7 +359,6 @@ public class ServerViewController {
     }
 
     public void stop() {
-        flag = null;
         onlineUsersList.setItems(null);
         offlineUsersList.setItems(null);
         try {
