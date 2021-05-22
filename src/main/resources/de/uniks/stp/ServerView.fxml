@@ -28,10 +28,10 @@
             </VBox>
             <VBox>
                <children>
-                  <Label text="Textchannel" textFill="WHITE" />
+                  <Label id="textChannel" text="%label.textchannel" textFill="WHITE" />
                   <VBox prefHeight="17.0" prefWidth="75.0">
                      <children>
-                        <Label alignment="CENTER" text="general" textFill="WHITE">
+                        <Label id="general" alignment="CENTER" text="%label.general" textFill="WHITE">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
@@ -50,7 +50,7 @@
             <VBox id="messages" alignment="CENTER" style="-fx-pref-height: 1000000;">
                <children>
                   <fx:include source="Message.fxml" />
-                  <Label text="Welcome To Accord" textFill="#fffefe">
+                  <Label id="welcomeToAccord" text="%label.welcome_to_accord" textFill="#fffefe">
                      <font>
                         <Font size="26.0" />
                      </font>
@@ -61,7 +61,7 @@
                <children>
                   <Pane prefHeight="25.0" prefWidth="1.0" />
                   <TextField id="messageField" nodeOrientation="LEFT_TO_RIGHT" prefHeight="25.0" prefWidth="359.0" style="-fx-background-color: #ffffff; -fx-background-radius: 10; -fx-pref-width: 1000000;" />
-                  <Button id="messageButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="44.0" style="-fx-background-radius: 10; -fx-background-color: #7289da; -fx-min-width: 50;" text="send" />
+                  <Button id="messageButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="44.0" style="-fx-background-radius: 10; -fx-background-color: #7289da; -fx-min-width: 50;" text="%button.send" />
                   <Pane prefHeight="25.0" prefWidth="1.0" />
                </children>
             </HBox>

@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
@@ -33,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static util.Constants.*;
 
@@ -50,8 +52,11 @@ public class ServerViewController {
     private VBox channelBox;
     private VBox textChannelBox;
     private Label serverNameText;
+    private static Label textChannelLabel;
+    private static Label generalLabel;
+    private static Label welcomeToAccord;
     private TextField sendTextField;
-    private Button sendMessageButton;
+    private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox userBox;
@@ -78,6 +83,9 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverNameText = (Label) view.lookup("#serverName");
         serverNameText.setText(server.getName());
+        textChannelLabel = (Label) view.lookup("#textChannel");
+        generalLabel = (Label) view.lookup("#general");
+        welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         textChannelBox = (VBox) view.lookup("#textChannelBox");
         sendTextField = (TextField) view.lookup("#messageField");
         sendMessageButton = (Button) view.lookup("#messageButton");
@@ -98,7 +106,7 @@ public class ServerViewController {
 
     private void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             ChatViewController messageViewController = new ChatViewController(root, builder);
             messageViewController.init();
             this.messages.getChildren().clear();
@@ -187,9 +195,9 @@ public class ServerViewController {
                     System.out.println(closeReason.getCloseCode().toString());
                     if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
                         Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "Users cannot be displayed. No connection to server.", ButtonType.OK);
-                            alert.setTitle("Error Dialog");
-                            alert.setHeaderText("No Connection");
+                            Alert alert = new Alert(Alert.AlertType.ERROR, StageManager.getLangBundle().getString("error.user_cannot_be_displayed"), ButtonType.OK);
+                            alert.setTitle(StageManager.getLangBundle().getString("error.dialog"));
+                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection"));
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
                                 showServerUsers();
@@ -246,6 +254,24 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (textChannelLabel != null)
+            textChannelLabel.setText(lang.getString("label.textchannel"));
+
+        if (generalLabel != null)
+            generalLabel.setText(lang.getString("label.general"));
+
+        if (welcomeToAccord != null)
+            welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
+
+        if (sendMessageButton != null)
+            sendMessageButton.setText(lang.getString("button.send"));
     }
 
 }

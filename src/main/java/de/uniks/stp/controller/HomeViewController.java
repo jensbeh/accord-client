@@ -113,7 +113,7 @@ public class HomeViewController {
      */
     public void showServerView() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
             serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
@@ -382,6 +382,7 @@ public class HomeViewController {
 
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
+        ServerViewController.onLanguageChanged();
     }
 
     public static void setStageTitle(String name) {
