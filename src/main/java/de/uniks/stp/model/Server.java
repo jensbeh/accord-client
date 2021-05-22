@@ -1,33 +1,34 @@
 package de.uniks.stp.model;
+
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.Collection;
-import java.beans.PropertyChangeSupport;
 
-public class Server
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_OWNER = "owner";
-   public static final String PROPERTY_CATEGORIES = "categories";
-   public static final String PROPERTY_USER = "user";
-   public static final String PROPERTY_CURRENT_USER = "currentUser";
-   private String name;
-   private String id;
-   private String owner;
-   private List<Categories> categories;
-   private List<User> user;
-   protected PropertyChangeSupport listeners;
-   private CurrentUser currentUser;
+public class Server {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_OWNER = "owner";
+    public static final String PROPERTY_CATEGORIES = "categories";
+    public static final String PROPERTY_USER = "user";
+    public static final String PROPERTY_CURRENT_USER = "currentUser";
+    private String name;
+    private String id;
+    private String owner;
+    private List<Categories> categories;
+    private List<User> user;
+    protected PropertyChangeSupport listeners;
+    private CurrentUser currentUser;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public Server setName(String value)
+    public Server setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -40,12 +41,12 @@ public class Server
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public Server setId(String value)
+    public Server setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -58,12 +59,12 @@ public class Server
       return this;
    }
 
-   public String getOwner()
+    public String getOwner()
    {
       return this.owner;
    }
 
-   public Server setOwner(String value)
+    public Server setOwner(String value)
    {
       if (Objects.equals(value, this.owner))
       {
@@ -76,12 +77,12 @@ public class Server
       return this;
    }
 
-   public List<Categories> getCategories()
+    public List<Categories> getCategories()
    {
       return this.categories != null ? Collections.unmodifiableList(this.categories) : Collections.emptyList();
    }
 
-   public Server withCategories(Categories value)
+    public Server withCategories(Categories value)
    {
       if (this.categories == null)
       {
@@ -96,7 +97,7 @@ public class Server
       return this;
    }
 
-   public Server withCategories(Categories... value)
+    public Server withCategories(Categories... value)
    {
       for (final Categories item : value)
       {
@@ -105,7 +106,7 @@ public class Server
       return this;
    }
 
-   public Server withCategories(Collection<? extends Categories> value)
+    public Server withCategories(Collection<? extends Categories> value)
    {
       for (final Categories item : value)
       {
@@ -114,7 +115,7 @@ public class Server
       return this;
    }
 
-   public Server withoutCategories(Categories value)
+    public Server withoutCategories(Categories value)
    {
       if (this.categories != null && this.categories.remove(value))
       {
@@ -124,7 +125,7 @@ public class Server
       return this;
    }
 
-   public Server withoutCategories(Categories... value)
+    public Server withoutCategories(Categories... value)
    {
       for (final Categories item : value)
       {
@@ -133,7 +134,7 @@ public class Server
       return this;
    }
 
-   public Server withoutCategories(Collection<? extends Categories> value)
+    public Server withoutCategories(Collection<? extends Categories> value)
    {
       for (final Categories item : value)
       {
@@ -142,12 +143,12 @@ public class Server
       return this;
    }
 
-   public List<User> getUser()
+    public List<User> getUser()
    {
       return this.user != null ? Collections.unmodifiableList(this.user) : Collections.emptyList();
    }
 
-   public Server withUser(User value)
+    public Server withUser(User value)
    {
       if (this.user == null)
       {
@@ -162,7 +163,7 @@ public class Server
       return this;
    }
 
-   public Server withUser(User... value)
+    public Server withUser(User... value)
    {
       for (final User item : value)
       {
@@ -171,7 +172,7 @@ public class Server
       return this;
    }
 
-   public Server withUser(Collection<? extends User> value)
+    public Server withUser(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -180,7 +181,7 @@ public class Server
       return this;
    }
 
-   public Server withoutUser(User value)
+    public Server withoutUser(User value)
    {
       if (this.user != null && this.user.remove(value))
       {
@@ -190,7 +191,7 @@ public class Server
       return this;
    }
 
-   public Server withoutUser(User... value)
+    public Server withoutUser(User... value)
    {
       for (final User item : value)
       {
@@ -199,7 +200,7 @@ public class Server
       return this;
    }
 
-   public Server withoutUser(Collection<? extends User> value)
+    public Server withoutUser(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -208,12 +209,12 @@ public class Server
       return this;
    }
 
-   public CurrentUser getCurrentUser()
+    public CurrentUser getCurrentUser()
    {
       return this.currentUser;
    }
 
-   public Server setCurrentUser(CurrentUser value)
+    public Server setCurrentUser(CurrentUser value)
    {
       if (this.currentUser == value)
       {
@@ -235,7 +236,7 @@ public class Server
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -245,7 +246,7 @@ public class Server
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -254,7 +255,7 @@ public class Server
       return this.listeners;
    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -264,10 +265,14 @@ public class Server
       return result.substring(1);
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.withoutCategories(new ArrayList<>(this.getCategories()));
       this.withoutUser(new ArrayList<>(this.getUser()));
       this.setCurrentUser(null);
    }
+
+    public void removeCategories() {
+        this.withoutCategories(new ArrayList<>(this.getCategories()));
+    }
 }

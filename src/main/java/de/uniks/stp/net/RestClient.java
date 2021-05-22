@@ -1,6 +1,5 @@
 package de.uniks.stp.net;
 
-import de.uniks.stp.model.Categories;
 import kong.unirest.*;
 import org.json.JSONObject;
 
@@ -48,8 +47,8 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
-    public void getCategoryChannels(String serverId, String channelId, String userKey, Callback<JsonNode> callback) {
-        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + channelId + SERVER_CHANNELS_PATH;
+    public void getCategoryChannels(String serverId, String categoryId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH;
         HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
         sendRequest(postRequest, callback);
     }

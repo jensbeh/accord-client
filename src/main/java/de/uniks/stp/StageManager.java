@@ -75,6 +75,9 @@ public class StageManager extends Application {
             stage.sizeToScene();
             stage.setMinHeight(650);
             stage.setMinWidth(900);
+            stage.setOnCloseRequest(event -> {
+                stopAll();
+            });
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,18 +88,7 @@ public class StageManager extends Application {
     public void stop() {
         try {
             super.stop();
-
-            //automatic logout if application is closed
-            if (!Objects.isNull(builder.getPersonalUser())) {
-                String userKey = builder.getPersonalUser().getUserKey();
-                if (userKey != null && !userKey.isEmpty()) {
-                    JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
-                    System.out.println("Logged out");
-                }
-            }
-
-
-            Unirest.shutDown();
+            stopAll();
         } catch (Exception e) {
             System.err.println("Error while shutdown");
             e.printStackTrace();
@@ -115,6 +107,19 @@ public class StageManager extends Application {
             homeViewController.stop();
             homeViewController = null;
         }
+    }
+
+    private static void stopAll() {
+        //automatic logout if application is closed
+        if (!Objects.isNull(builder.getPersonalUser())) {
+            String userKey = builder.getPersonalUser().getUserKey();
+            if (userKey != null && !userKey.isEmpty()) {
+                JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
+                System.out.println("Logged out");
+            }
+        }
+        Unirest.shutDown();
+        cleanup();
     }
 
     public static void showSettingsScreen() {
