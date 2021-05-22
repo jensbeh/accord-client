@@ -19,7 +19,7 @@
             <VBox id="messages" alignment="CENTER" style="-fx-pref-height: 1000000;">
                <children>
                   <fx:include source="Message.fxml" />
-                  <Label text="Welcome To Accord" textFill="#fffefe">
+                  <Label id="welcomeToAccord" text="%label.welcome_to_accord" textFill="#fffefe">
                      <font>
                         <Font size="26.0" />
                      </font>

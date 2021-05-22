@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static util.Constants.*;
 
@@ -55,6 +56,7 @@ public class PrivateViewController {
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
     private TextField messageField;
+    private static Label welcomeToAccord;
     private ChatViewController messageViewController;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
@@ -79,6 +81,7 @@ public class PrivateViewController {
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         viewBox = (HBox) view.lookup("#viewBox");
         messageField = (TextField) view.lookup("#messageField");
+        welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
         showUsers();
 
@@ -133,14 +136,18 @@ public class PrivateViewController {
                         String errorTitle;
                         String serverMessage = jsonObject.getJsonObject("data").getString("message");
                         if (serverMessage.equals("This is not your username.")) {
-                            errorTitle = "Username Error";
+                            errorTitle = StageManager.getLangBundle().getString("error.username");
                         } else {
-                            errorTitle = "Chat Error";
+                            errorTitle = StageManager.getLangBundle().getString("error.chat");
                         }
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                             alert.setTitle(errorTitle);
-                            alert.setHeaderText(serverMessage);
+                            if (serverMessage.equals("This is not your username.")) {
+                                alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
+                            } else {
+                                alert.setHeaderText(serverMessage);
+                            }
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
                                 showUsers();
@@ -155,8 +162,8 @@ public class PrivateViewController {
                     if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-                            alert.setTitle("No Connection Error");
-                            alert.setHeaderText("No Connection - Please check and try again later");
+                            alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
+                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
                                 showUsers();
@@ -266,7 +273,7 @@ public class PrivateViewController {
      */
     private void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
@@ -306,7 +313,7 @@ public class PrivateViewController {
                 builder.getPersonalUser().withPrivateChat(selectedChat);
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
-            if(!selectedChat.equals(currentChannel))
+            if (!selectedChat.equals(currentChannel))
                 MessageViews();
         }
     }
@@ -336,5 +343,16 @@ public class PrivateViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (welcomeToAccord != null)
+            welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
+
+        ChatViewController.onLanguageChanged();
     }
 }
