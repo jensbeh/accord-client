@@ -4,7 +4,6 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -13,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 
-import java.net.NoRouteToHostException;
 import java.util.ResourceBundle;
 
 /**
@@ -100,7 +98,7 @@ public class CreateServerController {
      */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        if(serverName != null)
+        if (serverName != null)
             serverName.setText(lang.getString("textfield.server_name"));
 
         if (error != null && !error.equals("")) {

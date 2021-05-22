@@ -143,7 +143,7 @@ public class PrivateViewController {
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
                             alert.setTitle(errorTitle);
-                            if(serverMessage.equals("This is not your username.")) {
+                            if (serverMessage.equals("This is not your username.")) {
                                 alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
                             } else {
                                 alert.setHeaderText(serverMessage);
@@ -313,7 +313,7 @@ public class PrivateViewController {
                 builder.getPersonalUser().withPrivateChat(selectedChat);
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
-            if(!selectedChat.equals(currentChannel))
+            if (!selectedChat.equals(currentChannel))
                 MessageViews();
         }
     }
@@ -350,7 +350,7 @@ public class PrivateViewController {
      */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        if(welcomeToAccord != null)
+        if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
         ChatViewController.onLanguageChanged();

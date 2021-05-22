@@ -59,7 +59,7 @@ public class ChatViewController {
         if (!textMessage.isEmpty()) {
             AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
             try {
-                if(builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
                     builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -71,7 +71,7 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public static void printMessage(Message msg) {
-        if(PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
+        if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) // only print message when user is on correct chat channel
             Platform.runLater(() -> ob.add(msg));
     }
 
@@ -84,7 +84,7 @@ public class ChatViewController {
      */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        if(sendButton != null)
+        if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
     }
 }

@@ -96,8 +96,7 @@ public class HomeViewController {
                 privateViewController.init();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-            }
-            else {
+            } else {
                 this.privateViewController.showUsers();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
@@ -371,10 +370,10 @@ public class HomeViewController {
      */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        if(homeLabel != null)
+        if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
 
-        if(logoutButton != null)
+        if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
 
         if (stageTitleName != null && !stageTitleName.equals("")) {
