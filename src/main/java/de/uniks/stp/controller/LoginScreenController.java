@@ -44,10 +44,6 @@ public class LoginScreenController {
         this.builder = builder;
     }
 
-    public void setRestClient() {
-
-    }
-
     public void init() {
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");
