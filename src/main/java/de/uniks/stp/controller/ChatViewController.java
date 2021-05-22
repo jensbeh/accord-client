@@ -55,7 +55,7 @@ public class ChatViewController {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
         if (!textMessage.isEmpty()) {
-            if (!HomeViewController.flag) {
+            if (!HomeViewController.inServerChat) {
                 AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                 try {
                     if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
@@ -79,14 +79,12 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public static void printMessage(Message msg) {
-        if (!HomeViewController.flag) {
+        if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) { // only print message when user is on correct chat channel
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            System.out.println("server: " + ServerViewController.getSelectedServer().getCategories().get(0).getId());
-            System.out.println("channel: " + msg.getChannel().getId());
-            //if(ServerViewController.getSelectedServer().getCategories().get(0).getId().equals(msg.getChannel().getId()))
+            if(ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }

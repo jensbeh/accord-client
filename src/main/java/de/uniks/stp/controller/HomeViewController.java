@@ -50,7 +50,7 @@ public class HomeViewController {
     private PrivateViewController privateViewController;
     private ServerViewController serverController;
     private Parent privateView;
-    public static boolean flag = false;
+    public static boolean inServerChat = false;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -85,7 +85,7 @@ public class HomeViewController {
      * Shows the private home view to have a private chat with other users.
      */
     private void showPrivateView() {
-        flag = false;
+        inServerChat = false;
         try {
             if (privateView == null) {
                 privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"));
@@ -110,7 +110,7 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
-        flag = true;
+        inServerChat = true;
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
             serverController = new ServerViewController(root, builder, builder.getCurrentServer());
@@ -196,6 +196,7 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -204,6 +205,7 @@ public class HomeViewController {
                 showServerView();
             }
         }
+        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
     }
 
     /**

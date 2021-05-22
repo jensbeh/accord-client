@@ -102,6 +102,7 @@ public class ServerViewController {
         showServerUsers();
         showMessageView();
 
+        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
         restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
                 builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -110,11 +111,17 @@ public class ServerViewController {
                 JSONArray ob = body.getObject().getJSONArray("data");
                 JSONObject object = ob.getJSONObject(0);
                 channelId = object.get("id").toString();
+                if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
+                    Channel channel = new Channel().setId(channelId);
+                    builder.getCurrentServer().getCategories().get(0).withChannel(channel);
+                    builder.setCurrentServerChannel(channel);
+
+                }
             } else if (status.equals("failure")) {
                 System.out.println(body.getObject().getString("message"));
             }
         });
-
+        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                         getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH +
@@ -132,10 +139,12 @@ public class ServerViewController {
                 if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        System.out.println("Channel: " + builder.getCurrentServerChannel());
                         message = new Message().setMessage(jsonObject.getString("text")).
                                 setFrom(jsonObject.getString("from")).
                                 setTimestamp(jsonObject.getInt("timestamp")).
                                 setChannel(builder.getCurrentServerChannel());
+                        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
                         Platform.runLater(() -> messageViewController.clearMessageField());
                     }
                     if (messageViewController != null) {
@@ -325,11 +334,7 @@ public class ServerViewController {
                     }
                 }
             });
-
-
             startWebsocketConnection();
-
-
             builder.setSERVER_USER(SERVER_USER);
         } catch (URISyntaxException e) {
             e.printStackTrace();

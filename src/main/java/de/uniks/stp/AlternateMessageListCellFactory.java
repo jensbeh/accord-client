@@ -11,6 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.awt.*;
+
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
     /**
@@ -66,25 +68,32 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setTextFill(Color.BLACK);
                 }
                 userName.setText(item.getFrom());
+
                 //new Line after 50 Characters
                 String str = item.getMessage();
-                int textMessageLength = str.length();
-                textMessageLength -= 50;
-                int numberCharNewLine = 50;
-                while (textMessageLength > 0) {
-                    int nextSpace = numberCharNewLine;
-                    if (numberCharNewLine <= str.length()) {
-                        if (str.charAt(numberCharNewLine) == ' ') {
-                            str = new StringBuilder(str).insert(numberCharNewLine, "\n").toString();
-                        } else {
-                            while (str.charAt(nextSpace) != ' ') {
-                                nextSpace -= 1;
-                            }
-                            str = new StringBuilder(str).insert(nextSpace, "\n").toString();
+                int stelle = 0;
+                int counter = 25;
+                boolean found = false;
+                int endPoint = 0;
+                int length = str.length();
+                while ((stelle + 50) < length) {
+                    endPoint = stelle +50;
+                    while (counter != 0 && !found ) {
+                        counter--;
+                        if (str.charAt(endPoint-(25 - counter)) == ' ') {
+                            str = new StringBuilder(str).insert(endPoint-(25 - counter), "\n").toString();
+                            length+= 2;
+                            found = true;
+                            stelle = endPoint-(25 - counter)+2;
                         }
                     }
-                    textMessageLength -= 50;
-                    numberCharNewLine += 50;
+                    if (counter == 0) {
+                        str = new StringBuilder(str).insert(endPoint, "\n").toString();
+                        length+= 2;
+                        stelle = endPoint +2;
+                    }
+                    found = false;
+                    counter = 25;
                 }
                 message.setText(" " + str + " ");
                 vbox.getChildren().addAll(userName, message);

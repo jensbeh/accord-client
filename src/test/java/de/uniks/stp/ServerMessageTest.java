@@ -63,6 +63,9 @@ public class ServerMessageTest extends ApplicationTest {
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#server"));
         Thread.sleep(2000);
+        Platform.runLater(()->
+                Assert.assertEquals(0, app.getBuilder().getPersonalUser().getServer().get(0)
+                        .getCategories().get(0).getChannel().get(0).getMessage().size()));
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
         Thread.sleep(500);
@@ -70,14 +73,14 @@ public class ServerMessageTest extends ApplicationTest {
         Thread.sleep(500);
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
+        System.out.println("ListView: " + privateChatMessageList.getItems().toString());
         Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
         Assert.assertEquals("peter", userNameLabel.getText());
 
 
-        //System.out.println("" + app.getBuilder().getPersonalUser().getServer().get(0)
-        //        .getCategories().get(0).getChannel().get(0).getMessage().size());
-
+        Assert.assertEquals(1, app.getBuilder().getPersonalUser().getServer().get(0)
+                .getCategories().get(0).getChannel().get(0).getMessage().size());
     }
 }
