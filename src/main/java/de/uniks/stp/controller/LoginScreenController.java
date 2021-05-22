@@ -37,6 +37,7 @@ public class LoginScreenController {
     private ModelBuilder builder;
     private static String error;
     private static String connectionError;
+    public static boolean noConnectionTest;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -87,24 +88,26 @@ public class LoginScreenController {
                     saveRememberMe("", "");
                 }
                 //signIn Post
-                restClient.signIn(username, password, response -> {
-                    netConnection = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> setError("error.sign_in_success"));
-                    } else if (status.equals("failure")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        if (message.equals("Name already taken")) {
-                            Platform.runLater(() -> setError("error.name_already_taken"));
-                        } else {
-                            Platform.runLater(() -> setError("error.sign_in_failure"));
+                if (!noConnectionTest) {
+                    restClient.signIn(username, password, response -> {
+                        netConnection = true;
+                        JsonNode body = response.getBody();
+                        String status = body.getObject().getString("status");
+                        if (status.equals("success")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            Platform.runLater(() -> setError("error.sign_in_success"));
+                        } else if (status.equals("failure")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            if (message.equals("Name already taken")) {
+                                Platform.runLater(() -> setError("error.name_already_taken"));
+                            } else {
+                                Platform.runLater(() -> setError("error.sign_in_failure"));
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
@@ -129,56 +132,60 @@ public class LoginScreenController {
                     saveRememberMe("", "");
                 }
                 //login Post
-                restClient.login(username, password, response -> {
-                    netConnection = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        //build user with key
-                        String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                        builder.buildPersonalUser(username, userkey);
-                        //show message on screen
-                        this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> setError("error.login_success"));
-                        Platform.runLater(StageManager::showHome);
-                    } else if (status.equals("failure")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("message");
-                        if (message.equals("Invalid credentials")) {
-                            Platform.runLater(() -> setError("error.invalid_credentials"));
-                        } else {
-                            Platform.runLater(() -> setError("error.login_failure"));
+                if (!noConnectionTest) {
+                    restClient.login(username, password, response -> {
+                        netConnection = true;
+                        JsonNode body = response.getBody();
+                        String status = body.getObject().getString("status");
+                        if (status.equals("success")) {
+                            //build user with key
+                            String userkey = body.getObject().getJSONObject("data").getString("userKey");
+                            builder.buildPersonalUser(username, userkey);
+                            //show message on screen
+                            this.message = body.getObject().getString("status");
+                            Platform.runLater(() -> setError("error.login_success"));
+                            Platform.runLater(StageManager::showHome);
+                        } else if (status.equals("failure")) {
+                            //show message on screen
+                            this.message = body.getObject().getString("message");
+                            if (message.equals("Invalid credentials")) {
+                                Platform.runLater(() -> setError("error.invalid_credentials"));
+                            } else {
+                                Platform.runLater(() -> setError("error.login_failure"));
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
             saveRememberMe("", "");
-            restClient.loginTemp(response -> {
-                netConnection = true;
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    //get name and password from server
-                    String name = body.getObject().getJSONObject("data").getString("name");
-                    String passw = body.getObject().getJSONObject("data").getString("password");
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    //fill in username and password and login of tempUser
-                    Platform.runLater(() -> {
-                        setError("error.login_success");
-                        usernameTextField.setText(name);
-                        passwordTextField.setText(passw);
-                        tempUserCheckBox.setSelected(false);
-                        loginButtonOnClick(actionEvent);
-                    });
-                } else if (status.equals("failure")) {
-                    //show message on screen
-                    this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> setError("error.login_failure"));
-                }
-            });
+            if (!noConnectionTest) {
+                restClient.loginTemp(response -> {
+                    netConnection = true;
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        //get name and password from server
+                        String name = body.getObject().getJSONObject("data").getString("name");
+                        String passw = body.getObject().getJSONObject("data").getString("password");
+                        //show message on screen
+                        this.message = body.getObject().getString("status");
+                        //fill in username and password and login of tempUser
+                        Platform.runLater(() -> {
+                            setError("error.login_success");
+                            usernameTextField.setText(name);
+                            passwordTextField.setText(passw);
+                            tempUserCheckBox.setSelected(false);
+                            loginButtonOnClick(actionEvent);
+                        });
+                    } else if (status.equals("failure")) {
+                        //show message on screen
+                        this.message = body.getObject().getString("status");
+                        Platform.runLater(() -> setError("error.login_failure"));
+                    }
+                });
+            }
             noConnection();
         }
     }

@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.scene.control.CheckBox;
@@ -305,6 +306,34 @@ public class LoginScreenControllerTest extends ApplicationTest {
             System.err.println("Error while reading!");
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void noConnectionTest() throws InterruptedException {
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        Platform.runLater(() -> passwordField.setText("123"));
+        Platform.runLater(() -> usernameTextField.setText("peter"));
+        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
+        rememberBox.setSelected(true);
+
+        LoginScreenController.noConnectionTest = true;
+        clickOn("#signinButton");
+        Thread.sleep(500);
+        Label noConnectionTest = lookup("#connectionLabel").query();
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+
+        CheckBox tempBox = lookup("#loginAsTempUser").query();
+        tempBox.setSelected(true);
+        clickOn("#loginButton");
+        Thread.sleep(500);
+        Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
+        LoginScreenController.noConnectionTest = false;
+
     }
 
     /**
