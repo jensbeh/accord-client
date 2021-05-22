@@ -14,23 +14,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Base64;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class LoginScreenController {
     private Parent root;
-    private TextField usernameTextField;
-    private PasswordField passwordTextField;
-    private CheckBox rememberCheckBox;
-    private CheckBox tempUserCheckBox;
-    private Button loginButton;
-    private Button signInButton;
+    private static TextField usernameTextField;
+    private static PasswordField passwordTextField;
+    private static CheckBox rememberCheckBox;
+    private static CheckBox tempUserCheckBox;
+    private static Button loginButton;
+    private static Button signInButton;
     private Button settingsButton;
-    private Label errorLabel;
+    private static Label errorLabel;
     private String message;
     private final RestClient restClient;
     private Boolean netConnection = false;
-    private Label connectionLabel;
+    private static Label connectionLabel;
     private ModelBuilder builder;
+    private static String error;
+    private static String connectionError;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
         this.restClient = new RestClient();
@@ -43,16 +46,16 @@ public class LoginScreenController {
     }
 
     public void init() {
-        this.usernameTextField = (TextField) root.lookup("#usernameTextfield");
-        this.passwordTextField = (PasswordField) root.lookup("#passwordTextField");
-        this.rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
-        this.tempUserCheckBox = (CheckBox) root.lookup("#loginAsTempUser");
-        this.loginButton = (Button) root.lookup("#loginButton");
-        this.signInButton = (Button) root.lookup("#signinButton");
+        usernameTextField = (TextField) root.lookup("#usernameTextfield");
+        passwordTextField = (PasswordField) root.lookup("#passwordTextField");
+        rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
+        tempUserCheckBox = (CheckBox) root.lookup("#loginAsTempUser");
+        loginButton = (Button) root.lookup("#loginButton");
+        signInButton = (Button) root.lookup("#signinButton");
         this.settingsButton = (Button) root.lookup("#settingsButton");
-        this.errorLabel = (Label) root.lookup("#errorLabel");
-        this.connectionLabel = (Label) root.lookup("#connectionLabel");
-        this.connectionLabel.setWrapText(true);
+        errorLabel = (Label) root.lookup("#errorLabel");
+        connectionLabel = (Label) root.lookup("#connectionLabel");
+        connectionLabel.setWrapText(true);
 
         //Save last username and password that wanted to be remembered in file
         File f = new File("saves/user.txt");
@@ -93,7 +96,7 @@ public class LoginScreenController {
         //check if username or password is missing
         if (!tempUserCheckBox.isSelected()) {
             if (username.isEmpty() || password.isEmpty()) {
-                errorLabel.setText("Field is empty!");
+                setError("error.field_is_empty");
             } else {
                 //if remember me selected then username and password is saved in a user.txt
                 if (rememberCheckBox.isSelected()) {
@@ -109,17 +112,21 @@ public class LoginScreenController {
                     if (status.equals("success")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorLabel.setText("Sign in was a " + message));
+                        Platform.runLater(() -> setError("error.sign_in_success"));
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        if (message.equals("Name already taken")) {
+                            Platform.runLater(() -> setError("error.name_already_taken"));
+                        } else {
+                            Platform.runLater(() -> setError("error.sign_in_failure"));
+                        }
                     }
                 });
                 noConnection();
             }
         } else if (tempUserCheckBox.isSelected()) {
-            errorLabel.setText("Click on Login");
+            setError("error.click_on_login");
         }
     }
 
@@ -132,7 +139,7 @@ public class LoginScreenController {
         if (!tempUserCheckBox.isSelected()) {
             //if remember me selected then username and password is saved in a user.txt
             if (username.isEmpty() || password.isEmpty()) {
-                errorLabel.setText("Field is empty!");
+                setError("error.field_is_empty");
             } else {
                 if (rememberCheckBox.isSelected()) {
                     saveRememberMe(username, password);
@@ -150,12 +157,16 @@ public class LoginScreenController {
                         builder.buildPersonalUser(username, userkey);
                         //show message on screen
                         this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> errorLabel.setText("Login was a " + message));
+                        Platform.runLater(() -> setError("error.login_success"));
                         Platform.runLater(StageManager::showHome);
                     } else if (status.equals("failure")) {
                         //show message on screen
                         this.message = body.getObject().getString("message");
-                        Platform.runLater(() -> errorLabel.setText(message));
+                        if (message.equals("Invalid credentials")) {
+                            Platform.runLater(() -> setError("error.invalid_credentials"));
+                        } else {
+                            Platform.runLater(() -> setError("error.login_failure"));
+                        }
                     }
                 });
                 noConnection();
@@ -174,7 +185,7 @@ public class LoginScreenController {
                     this.message = body.getObject().getString("status");
                     //fill in username and password and login of tempUser
                     Platform.runLater(() -> {
-                        errorLabel.setText("Login was a " + message);
+                        setError("error.login_success");
                         usernameTextField.setText(name);
                         passwordTextField.setText(passw);
                         tempUserCheckBox.setSelected(false);
@@ -183,7 +194,7 @@ public class LoginScreenController {
                 } else if (status.equals("failure")) {
                     //show message on screen
                     this.message = body.getObject().getString("status");
-                    Platform.runLater(() -> errorLabel.setText(message));
+                    Platform.runLater(() -> setError("error.login_failure"));
                 }
             });
             noConnection();
@@ -201,7 +212,7 @@ public class LoginScreenController {
             e.printStackTrace();
         }
         if (!netConnection) {
-            Platform.runLater(() -> this.connectionLabel.setText("No connection - \nPlease check your connection and try again "));
+            Platform.runLater(() -> setConnectionError("error.login_no_connection"));
         }
         netConnection = false;
     }
@@ -246,5 +257,48 @@ public class LoginScreenController {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] bytes = decoder.decode(str);
         return new String(bytes);
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        usernameTextField.setPromptText(lang.getString("textfield.prompt_username"));
+        passwordTextField.setPromptText(lang.getString("textfield.prompt_password"));
+        rememberCheckBox.setText(lang.getString("checkbox.remember_me"));
+        tempUserCheckBox.setText(lang.getString("checkbox.login_temp_user"));
+        loginButton.setText(lang.getString("button.login"));
+        signInButton.setText(lang.getString("button.signin"));
+
+        if (error != null && !error.equals("")) {
+            errorLabel.setText(lang.getString(error));
+        }
+
+        if (connectionError != null && !connectionError.equals("")) {
+            connectionLabel.setText(lang.getString(connectionError));
+        }
+    }
+
+    /**
+     * set the error text in label placeholder
+     *
+     * @param errorMsg the error text
+     */
+    private void setError(String errorMsg) {
+        ResourceBundle lang = StageManager.getLangBundle();
+        error = errorMsg;
+        errorLabel.setText(lang.getString(error));
+    }
+
+    /**
+     * set the connection error text in label placeholder
+     *
+     * @param connectionErrorMsg the connection error text
+     */
+    private void setConnectionError(String connectionErrorMsg) {
+        ResourceBundle lang = StageManager.getLangBundle();
+        connectionError = connectionErrorMsg;
+        connectionLabel.setText(lang.getString(connectionError));
     }
 }

@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import static javax.swing.JComponent.getDefaultLocale;
 
@@ -29,8 +28,7 @@ public class LangString {
 
     // gets the string with the given key
     public static String get(final String key, final Object... args) {
-        ResourceBundle bundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle", getLocale());
-        return MessageFormat.format(bundle.getString(key), args);
+        return MessageFormat.format(StageManager.getLangBundle().getString(key), args);
     }
 
     // get locale / language

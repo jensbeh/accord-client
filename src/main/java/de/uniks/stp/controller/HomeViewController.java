@@ -326,7 +326,6 @@ public class HomeViewController {
             e.printStackTrace();
         }
         this.builder.setCurrentServer(null);
-        homeCircle.setFill(Paint.valueOf("#5a5c5e"));
         showPrivateView();
         updateServerListColor();
     }

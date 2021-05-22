@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.subcontroller.LanguageController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,24 +15,30 @@ import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 
 public class StageManager extends Application {
     private static ModelBuilder builder;
     private static Stage stage;
+    private static Stage subStage;
     private static HomeViewController homeViewController;
     private static LoginScreenController loginCtrl;
     private static SettingsController settingsController;
     private static Scene scene;
+    private static ResourceBundle langBundle;
+    private static String stageTitleName;
+    private static String subStageTitleName;
 
     @Override
     public void start(Stage primaryStage) {
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
+        SettingsController.setup();
+
         // start application
         stage = primaryStage;
         showLoginScreen();
         primaryStage.show();
-
-        SettingsController.setup();
     }
 
     public static void showLoginScreen() {
@@ -39,12 +46,12 @@ public class StageManager extends Application {
 
         //show login screen
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
             scene = new Scene(root);
             builder = new ModelBuilder();
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
-            stage.setTitle("Accord - Login");
+            setStageTitle("window_title_login");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.sizeToScene();
@@ -62,7 +69,7 @@ public class StageManager extends Application {
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
-            stage.setTitle("Accord - Main");
+            setStageTitle("window_title_home");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.sizeToScene();
@@ -113,15 +120,15 @@ public class StageManager extends Application {
     public static void showSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
             settingsController = new SettingsController(root);
             settingsController.init();
 
-            Stage subStage = new Stage();
-            subStage.titleProperty().bind(LangString.lStr("window_title_settings"));
+            subStage = new Stage();
+            setSubStageTitle("window_title_settings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -146,5 +153,42 @@ public class StageManager extends Application {
 
     public HomeViewController getHomeViewController() {
         return homeViewController;
+    }
+
+    public static ResourceBundle getLangBundle() {
+        return langBundle;
+    }
+
+    public static void setStageTitle(String name) {
+        stageTitleName = name;
+        stage.setTitle(getLangBundle().getString(stageTitleName));
+    }
+
+    public static void setSubStageTitle(String name) {
+        subStageTitleName = name;
+        subStage.setTitle(getLangBundle().getString(subStageTitleName));
+    }
+
+    public static void resetLangBundle() {
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
+    }
+
+    /**
+     * when language changed call every controller with view onLanguageChanged
+     */
+    public static void onLanguageChanged() {
+        resetLangBundle();
+
+        // Titles
+        if (stageTitleName != null && !stageTitleName.equals("")) {
+            stage.setTitle(getLangBundle().getString(stageTitleName));
+        }
+        if (subStageTitleName != null && !subStageTitleName.equals("")) {
+            subStage.setTitle(getLangBundle().getString(subStageTitleName));
+        }
+
+        SettingsController.onLanguageChanged();
+        LanguageController.onLanguageChanged();
+        LoginScreenController.onLanguageChanged();
     }
 }
