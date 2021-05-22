@@ -116,12 +116,12 @@ public class HomeViewController {
     public void showServerView() {
         inServerChat = true;
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
             serverController = new ServerViewController(root, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
             this.root.getChildren().add(root);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -390,12 +390,13 @@ public class HomeViewController {
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
 
-        if (stageTitleName != null && !stageTitleName.equals("")) {
+        if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
         }
 
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
+        ServerViewController.onLanguageChanged();
     }
 
     public static void setStageTitle(String name) {

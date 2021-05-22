@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.CurrentUser;
@@ -35,6 +36,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static util.Constants.*;
 
@@ -52,8 +54,11 @@ public class ServerViewController {
     private VBox channelBox;
     private VBox textChannelBox;
     private Label serverNameText;
+    private static Label textChannelLabel;
+    private static Label generalLabel;
+    private static Label welcomeToAccord;
     private TextField sendTextField;
-    private Button sendMessageButton;
+    private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox userBox;
@@ -83,11 +88,14 @@ public class ServerViewController {
     /**
      * Initialise all view parameters
      */
-    public void init() {
+    public void init() throws InterruptedException {
         root = (HBox) view.lookup("#root");
         channelBox = (VBox) view.lookup("#channelBox");
         serverNameText = (Label) view.lookup("#serverName");
         serverNameText.setText(server.getName());
+        textChannelLabel = (Label) view.lookup("#textChannel");
+        generalLabel = (Label) view.lookup("#general");
+        welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         textChannelBox = (VBox) view.lookup("#textChannelBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
@@ -101,8 +109,7 @@ public class ServerViewController {
         showOnlineUsers();
         showServerUsers();
         showMessageView();
-
-        System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
+        Thread.sleep(2000);
         restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
                 builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -145,7 +152,10 @@ public class ServerViewController {
                                 setTimestamp(jsonObject.getInt("timestamp")).
                                 setChannel(builder.getCurrentServerChannel());
                         System.out.println("ServerView init Channel: " + builder.getCurrentServerChannel());
-                        Platform.runLater(() -> messageViewController.clearMessageField());
+                        if (messageViewController != null) {
+                            Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+
                     }
                     if (messageViewController != null) {
                         assert message != null;
@@ -192,48 +202,9 @@ public class ServerViewController {
 
     }
 
-    private void startWebsocketConnection() {
-        try {
-            SERVER_USER = new WebSocketClient(builder,
-                    new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH), new WSCallback() {
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    System.out.println("msg: " + msg);
-                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    String userAction = jsonMsg.getString("action");
-                    JsonObject jsonData = jsonMsg.getJsonObject("data");
-                    String userName = jsonData.getString("name");
-                    String userId = jsonData.getString("id");
-
-                    if (userAction.equals("userJoined")) {
-                        builder.buildUser(userName, userId);
-                    }
-                    if (userAction.equals("userLeft")) {
-                        if (userName.equals(builder.getPersonalUser().getName())) {
-                            Platform.runLater(StageManager::showLoginScreen);
-                        }
-                        List<User> userList = builder.getPersonalUser().getUser();
-                        User removeUser = builder.buildUser(userName, userId);
-                        if (userList.contains(removeUser)) {
-                            builder.getPersonalUser().withoutUser(removeUser);
-                        }
-                    }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.
-                            getPersonalUser().getUser()).sorted(new SortUser())));
-                }
-
-                public void onClose(Session session, CloseReason closeReason) {
-                }
-            });
-            builder.setSERVER_USER(SERVER_USER);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"));
+            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
             this.messages.getChildren().clear();
             messageViewController.init();
@@ -288,7 +259,6 @@ public class ServerViewController {
                 System.out.println(body.getObject().getString("message"));
             }
         });
-
     }
 
     /**
@@ -334,7 +304,6 @@ public class ServerViewController {
                     }
                 }
             });
-            startWebsocketConnection();
             builder.setSERVER_USER(SERVER_USER);
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -379,6 +348,24 @@ public class ServerViewController {
 
     public static Server getSelectedServer() {
         return server;
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (textChannelLabel != null)
+            textChannelLabel.setText(lang.getString("label.textchannel"));
+
+        if (generalLabel != null)
+            generalLabel.setText(lang.getString("label.general"));
+
+        if (welcomeToAccord != null)
+            welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
+
+        if (sendMessageButton != null)
+            sendMessageButton.setText(lang.getString("button.send"));
     }
 
 }
