@@ -25,5 +25,10 @@ public class Constants {
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";
     public static final String WS_SERVER_URL = "wss://ac.uniks.de";
+
+    // Local user
+    public static String APPDIR_ACCORD_PATH;
+    public static String CONFIG_PATH = "/config";
+    public static String SETTINGS_FILE = "/Settings.properties";
 }
 

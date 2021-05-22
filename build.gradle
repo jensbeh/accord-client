@@ -12,6 +12,7 @@ version = '1.0.0'
 repositories {
     jcenter()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 javafx {
@@ -55,6 +56,7 @@ dependencies {
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-client', version: '1.15'
     implementation group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-client', version: '1.15'
 
+    compile 'com.github.harawata:appdirs:appdirs-1.2.1'
 }
 
 mainClassName = 'de.uniks.stp.Launcher'
