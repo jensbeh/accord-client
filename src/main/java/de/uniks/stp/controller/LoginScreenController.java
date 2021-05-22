@@ -56,7 +56,7 @@ public class LoginScreenController {
         connectionLabel = (Label) root.lookup("#connectionLabel");
         connectionLabel.setWrapText(true);
 
-        //Save last username and password that wanted to be remembered in file
+        //Get last username and password that wanted to be remembered in file
         setup();
 
         //Buttons

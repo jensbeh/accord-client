@@ -102,7 +102,10 @@ public class HomeViewController {
                 this.privateViewController.showUsers();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-                this.privateViewController.MessageViews();
+                if (PrivateViewController.getSelectedChat() != null) {
+                    this.privateViewController.MessageViews();
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
