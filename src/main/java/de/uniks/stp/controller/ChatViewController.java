@@ -55,26 +55,25 @@ public class ChatViewController {
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
-        if (messageTextField.getText().length() >= 900) {
-            messageTextField.setText(messageTextField.getText().substring(0, 899));
-        }
         String textMessage = messageTextField.getText();
-        if (!textMessage.isEmpty()) {
-            if (!HomeViewController.inServerChat) {
-                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-                try {
-                    if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
-                        builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-                try {
-                    if (builder.getServerChatWebSocketClient() != null)
-                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (textMessage.length() <= 700) {
+            if (!textMessage.isEmpty()) {
+                if (!HomeViewController.inServerChat) {
+                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    try {
+                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                            builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    try {
+                        if (builder.getServerChatWebSocketClient() != null)
+                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
