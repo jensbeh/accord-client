@@ -340,6 +340,9 @@ public class PrivateViewController {
         return selectedChat;
     }
 
+    public static void setSelectedChat(Channel channel) {
+        selectedChat = channel;
+    }
 
     /**
      * Stop running Actions when Controller gets closed

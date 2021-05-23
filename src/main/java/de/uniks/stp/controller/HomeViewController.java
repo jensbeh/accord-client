@@ -363,6 +363,9 @@ public class HomeViewController {
         JSONObject result = body.getObject();
         if (result.get("status").equals("success")) {
             System.out.println(result.get("message"));
+            if (PrivateViewController.getSelectedChat() != null) {
+                PrivateViewController.setSelectedChat(null);
+            }
             Platform.runLater(StageManager::showLoginScreen);
         }
     }

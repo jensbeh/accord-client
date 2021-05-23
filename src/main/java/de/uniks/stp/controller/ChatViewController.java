@@ -56,22 +56,24 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        if (!textMessage.isEmpty()) {
-            if (!HomeViewController.inServerChat) {
-                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-                try {
-                    if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
-                        builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
-                try {
-                    if (builder.getServerChatWebSocketClient() != null)
-                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (textMessage.length() <= 700) {
+            if (!textMessage.isEmpty()) {
+                if (!HomeViewController.inServerChat) {
+                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    try {
+                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                            builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    try {
+                        if (builder.getServerChatWebSocketClient() != null)
+                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -86,7 +88,7 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if(ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
+            if (ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }
