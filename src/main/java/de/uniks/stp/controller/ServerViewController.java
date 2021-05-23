@@ -104,7 +104,9 @@ public class ServerViewController {
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
-                loadServerChannel();
+                if (status.equals("success")){
+                    loadServerChannel();
+                }
             }
         }); // members & (categories)
         showServerUsers();
