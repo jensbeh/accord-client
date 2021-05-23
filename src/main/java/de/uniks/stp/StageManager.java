@@ -56,6 +56,8 @@ public class StageManager extends Application {
             stage.setScene(scene);
             stage.sizeToScene();
             stage.centerOnScreen();
+            stage.setMinHeight(scene.getHeight());
+            stage.setMinWidth(scene.getWidth());
         } catch (Exception e) {
             System.err.println("Error on showing LoginScreen");
             e.printStackTrace();
