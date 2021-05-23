@@ -55,9 +55,11 @@ public class ChatViewController {
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
-        messageTextField.setText(messageTextField.getText().substring(0, 900));
+        if (messageTextField.getText().length() >= 900) {
+            messageTextField.setText(messageTextField.getText().substring(0, 899));
+        }
         String textMessage = messageTextField.getText();
-        if (!textMessage.isEmpty() ) {
+        if (!textMessage.isEmpty()) {
             if (!HomeViewController.inServerChat) {
                 AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                 try {
@@ -87,7 +89,7 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if(ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
+            if (ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }
