@@ -1,0 +1,12 @@
+.menu-item .label {
+    -fx-text-fill: white;
+}
+
+.menu-item:focused {
+    -fx-background-color: #1f1f1f;
+    -fx-border-color: white;
+}
+
+.context-menu {
+    -fx-background-color: #1f1f1f;
+}
