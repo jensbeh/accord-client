@@ -5,6 +5,7 @@ import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
+import de.uniks.stp.controller.subcontroller.ServerSettingsController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,6 +30,7 @@ public class StageManager extends Application {
     private static ResourceBundle langBundle;
     private static String stageTitleName;
     private static String subStageTitleName;
+    private static ServerSettingsController serverSettingsController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -131,7 +133,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            settingsController = new SettingsController(root);
+            serverSettingsController = new ServerSettingsController(root,builder,builder.getCurrentServer());
             settingsController.init();
 
             subStage = new Stage();
@@ -153,6 +155,37 @@ public class StageManager extends Application {
             e.printStackTrace();
         }
     }
+
+    public static void showServerSettingsScreen() {
+        try {
+            // load view
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings.fxml"), getLangBundle());
+            Scene scene = new Scene(root);
+
+            // init controller
+            serverSettingsController = new ServerSettingsController(root,builder,builder.getCurrentServer());
+            serverSettingsController.init();
+
+            subStage = new Stage();
+            subStage.setTitle("ServerSettings");
+            subStage.setResizable(false);
+            subStage.setScene(scene);
+            subStage.centerOnScreen();
+            subStage.initOwner(stage);
+            subStage.initModality(Modality.WINDOW_MODAL);
+            subStage.setOnCloseRequest(event -> {
+                if (serverSettingsController != null) {
+                    serverSettingsController.stop();
+                    serverSettingsController = null;
+                }
+            });
+            subStage.show();
+        } catch (Exception e) {
+            System.err.println("Error on showing ServerSetting Screen");
+            e.printStackTrace();
+        }
+    }
+
 
     public ModelBuilder getBuilder() {
         return builder;
