@@ -1,0 +1,7 @@
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #333333;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #AAAAAA;
+}
