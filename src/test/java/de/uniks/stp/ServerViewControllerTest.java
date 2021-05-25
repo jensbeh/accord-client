@@ -124,7 +124,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn(serverList.lookup("#serverName_" + testServerId));
         Thread.sleep(2000);
 
-        MenuButton serverNameText = lookup("#serverName").query();
+        MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
         clickOn("#logoutButton");

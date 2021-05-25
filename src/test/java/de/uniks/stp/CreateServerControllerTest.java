@@ -131,10 +131,11 @@ public class CreateServerControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
 
-        MenuButton serverNameText = lookup("#serverName").query();
+        MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
         clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
