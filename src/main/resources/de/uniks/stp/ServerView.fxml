@@ -20,7 +20,7 @@
             <children>
                 <VBox>
                     <children>
-                        <MenuButton id="serverName" prefHeight="25.0" prefWidth="190.0" style="-fx-background-color: #23272a; -fx-alignment: center; -fx-border-color:#23272a" stylesheets="@styles/ServerMenuButton.css" text="ServerName" textFill="WHITE">
+                        <MenuButton id="serverMenuButton" prefHeight="25.0" prefWidth="190.0" style="-fx-background-color: #23272a; -fx-alignment: center; -fx-border-color:#23272a" stylesheets="@styles/ServerMenuButton.css" text="ServerName" textFill="WHITE">
                             <items>
                                 <MenuItem id="ServerSettings" style="-fx-pref-width: 172; -fx-text-fill: white" text="⚙ Settings" />
                                 <MenuItem id="InviteUsers" style="-fx-pref-width: 172; -fx-text-fill: white" text="🙋‍♂️ Invite Users" />
