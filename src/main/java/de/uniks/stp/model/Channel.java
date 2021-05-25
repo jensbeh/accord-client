@@ -14,6 +14,7 @@ public class Channel {
     public static final String PROPERTY_CATEGORIES = "categories";
     public static final String PROPERTY_MESSAGE = "message";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
+   public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
     private String name;
     private String id;
     private Categories categories;
@@ -213,12 +214,21 @@ public class Channel {
       this.withoutMessage(new ArrayList<>(this.getMessage()));
    }
 
-    public int getUnreadMessagesCounter() {
-        return unreadMessagesCounter;
-    }
+    public int getUnreadMessagesCounter()
+   {
+      return this.unreadMessagesCounter;
+   }
 
-    public Channel setUnreadMessagesCounter(int unreadMessagesCounter) {
-        this.unreadMessagesCounter = unreadMessagesCounter;
-        return this;
-    }
+    public Channel setUnreadMessagesCounter(int value)
+   {
+      if (value == this.unreadMessagesCounter)
+      {
+         return this;
+      }
+
+      final int oldValue = this.unreadMessagesCounter;
+      this.unreadMessagesCounter = value;
+      this.firePropertyChange(PROPERTY_UNREAD_MESSAGES_COUNTER, oldValue, value);
+      return this;
+   }
 }
