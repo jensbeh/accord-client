@@ -1,11 +1,16 @@
 package de.uniks.stp;
 
-import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Channel;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
-import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -13,13 +18,28 @@ import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import javax.websocket.CloseReason;
+import javax.websocket.*;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class PrivateViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+
+    private static String testUserMainName;
+    private static String testUserMainPw;
+    private static String testUserOneName;
+    private static String testUserOnePw;
+    private static String testUser1_KEY;
+    private static String testUser1_ID;
+    private static ClientEndpointConfig testUser1_CLIENT_CONFIG = null;
+    private static ClientTestEndpoint testUser1_CLIENT = null;
+    private CountDownLatch messageLatch;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -36,18 +56,86 @@ public class PrivateViewControllerTest extends ApplicationTest {
         this.stage.centerOnScreen();
     }
 
-    public void login() {
+    public void login(String userName, String password) {
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("Peter Lustig");
+        usernameTextField.setText(userName);
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("1234");
+        passwordField.setText(password);
         clickOn("#loginButton");
+    }
+
+    private void setupWebsocketClient() {
+        System.out.println("Starting WebSocket Client");
+        testUser1_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
+                .configurator(new TestWebSocketConfigurator(testUser1_KEY))
+                .build();
+        messageLatch = new CountDownLatch(1);
+        testUser1_CLIENT = new ClientTestEndpoint();
+    }
+
+    private void connectWebSocketClient() throws DeploymentException, IOException {
+        try {
+            ContainerProvider.getWebSocketContainer().connectToServer(testUser1_CLIENT, testUser1_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=" + testUserOneName.replace(" ", "+")));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private void shutDownWebSocketClient() throws IOException {
+        System.out.println("Closing WebSocket Client\n");
+        testUser1_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
+    }
+
+    class ClientTestEndpoint extends Endpoint {
+
+        private Session session;
+
+        public Session getSession() {
+            return session;
+        }
+
+        @Override
+        public void onOpen(Session session, EndpointConfig config) {
+            this.session = session;
+            this.session.addMessageHandler(String.class, this::onMessage);
+        }
+
+        public void sendMessage(String message) throws IOException {
+            if (this.session != null && this.session.isOpen()) {
+                this.session.getBasicRemote().sendText(message);
+                this.session.getBasicRemote().flushBatch();
+            }
+        }
+
+        private void onMessage(String message) {
+            System.out.println("TEST CLIENT Received message: " + message);
+            if (message.contains("this is a test homie")) {
+                messageLatch.countDown(); // Count incoming messages
+            }
+        }
+    }
+
+    class TestWebSocketConfigurator extends ClientEndpointConfig.Configurator {
+        private final String name;
+
+        public TestWebSocketConfigurator(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void beforeRequest(Map<String, List<String>> headers) {
+            super.beforeRequest(headers);
+            ArrayList<String> key = new ArrayList<>();
+            key.add(this.name);
+            headers.put("userkey", key);
+        }
     }
 
 
     @Test
     public void noConnectionOnWebSocketTest() throws InterruptedException {
-        login();
+        login("Peter Lustig", "1234");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
@@ -74,11 +162,11 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     @Test
     public void chatPartnerIsOffline() throws InterruptedException, IOException {
-        login();
+        login("Peter Lustig", "1234");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
-        ws.sendMessage(new JSONObject().put("channel","private").put("to","-").put("message","Test").toString());
+        ws.sendMessage(new JSONObject().put("channel", "private").put("to", "-").put("message", "Test").toString());
         Thread.sleep(2000);
         String result = "";
         for (Object s : this.listTargetWindows()) {
@@ -106,5 +194,93 @@ public class PrivateViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Username Error", result);
+    }
+
+
+    @Test
+    public void onNewMessageIconCounterTest() throws InterruptedException, DeploymentException, IOException {
+
+        // test User 1 & 2 login
+        RestClient restClient = new RestClient();
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUser1_KEY = body.getObject().getJSONObject("data").getString("userKey");
+        });
+
+        Thread.sleep(2000);
+        setupWebsocketClient();
+        connectWebSocketClient();
+
+        // main User login
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserMainName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(testUserMainPw);
+        clickOn("#loginButton"); // in homeView
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        // get id from testUser2
+        restClient.getUsers(testUser1_KEY, response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String userName = jsonResponse.getJSONObject(i).get("name").toString();
+                String userId = jsonResponse.getJSONObject(i).get("id").toString();
+                if (userName.equals(testUserOneName)) {
+                    testUser1_ID = userId;
+                }
+            }
+        });
+
+        Thread.sleep(2000);
+        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "Testing notification").toString());
+        Thread.sleep(2000);
+
+        Label counter = lookup("#notificationCounter_" + testUser1_ID).query();
+        Circle background = lookup("#notificationCounterBackground_" + testUser1_ID).query();
+        Circle foreground = lookup("#notificationCounterForeground_" + testUser1_ID).query();
+
+        Assert.assertEquals("1", counter.getText());
+        Assert.assertTrue(background.isVisible());
+        Assert.assertTrue(foreground.isVisible());
+
+        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "Testing more notification").toString());
+        Thread.sleep(2000);
+
+        Label counterSecondTime = lookup("#notificationCounter_" + testUser1_ID).query();
+        Circle backgroundSecondTime = lookup("#notificationCounterBackground_" + testUser1_ID).query();
+        Circle foregroundSecondTime = lookup("#notificationCounterForeground_" + testUser1_ID).query();
+        Assert.assertEquals("2", counterSecondTime.getText());
+        Assert.assertTrue(backgroundSecondTime.isVisible());
+        Assert.assertTrue(foregroundSecondTime.isVisible());
+
+        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        clickOn(privateChatList.lookup("#" + testUser1_ID));
+        Thread.sleep(2000);
+
+
+        Assert.assertFalse(lookup("#notificationCounter_" + testUser1_ID).queryAll().contains(counterSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterBackground_" + testUser1_ID).queryAll().contains(backgroundSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterForeground_" + testUser1_ID).queryAll().contains(foregroundSecondTime));
+
+        clickOn("#logoutButton");
+
+        shutDownWebSocketClient();
+        restClient.logout(testUser1_KEY, response -> {
+        });
     }
 }
