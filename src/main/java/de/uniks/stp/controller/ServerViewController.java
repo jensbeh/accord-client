@@ -46,7 +46,7 @@ public class ServerViewController {
     private ModelBuilder builder;
     private VBox channelBox;
     private VBox textChannelBox;
-    private Label serverNameText;
+    private MenuButton serverMenuButton;
     private static Label textChannelLabel;
     private static Label generalLabel;
     private static Label welcomeToAccord;
@@ -85,8 +85,8 @@ public class ServerViewController {
     public void init() throws InterruptedException {
         root = (HBox) view.lookup("#root");
         channelBox = (VBox) view.lookup("#channelBox");
-        serverNameText = (Label) view.lookup("#serverName");
-        serverNameText.setText(server.getName());
+        serverMenuButton = (MenuButton) view.lookup("#serverName");
+        serverMenuButton.setText(server.getName());
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");

@@ -178,7 +178,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void invalidUsername() throws InterruptedException, IOException {
+    public void invalidUsername() throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("+");
         PasswordField passwordField = lookup("#passwordTextField").query();
