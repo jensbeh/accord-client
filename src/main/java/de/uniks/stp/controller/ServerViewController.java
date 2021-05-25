@@ -9,6 +9,7 @@ import de.uniks.stp.net.WSCallback;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -50,7 +51,6 @@ public class ServerViewController {
     private static Label textChannelLabel;
     private static Label generalLabel;
     private static Label welcomeToAccord;
-    private TextField sendTextField;
     private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
@@ -60,9 +60,10 @@ public class ServerViewController {
     private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
     private ChatViewController messageViewController;
-    private ListView<Channel> serverChatList;
     private static String channelId;
     private static String channelName;
+    private MenuItem serverSettings;
+    private MenuItem inviteUsers;
 
     public static String channelId() {
         return channelId;
@@ -85,8 +86,12 @@ public class ServerViewController {
     public void init() throws InterruptedException {
         root = (HBox) view.lookup("#root");
         channelBox = (VBox) view.lookup("#channelBox");
-        serverMenuButton = (MenuButton) view.lookup("#serverName");
+        serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
+        //Bad code just for testing
+        serverSettings = serverMenuButton.getItems().get(0);
+        serverSettings.setOnAction(this::onServerSettingsClicked);
+        inviteUsers = serverMenuButton.getItems().get(1);
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -104,7 +109,7 @@ public class ServerViewController {
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
-                if (status.equals("success")){
+                if (status.equals("success")) {
                     loadServerChannel();
                 }
             }
@@ -385,6 +390,10 @@ public class ServerViewController {
 
         if (sendMessageButton != null)
             sendMessageButton.setText(lang.getString("button.send"));
+    }
+
+    private void onServerSettingsClicked(ActionEvent actionEvent) {
+        StageManager.showServerSettingsScreen();
     }
 
 }
