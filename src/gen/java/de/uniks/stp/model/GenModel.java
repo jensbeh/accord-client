@@ -22,6 +22,7 @@ public class GenModel implements ClassModelDecorator {
         Clazz channel = mm.haveClass("Channel");
         mm.haveAttribute(channel, "name", Type.STRING);
         mm.haveAttribute(channel, "id", Type.STRING);
+        mm.haveAttribute(channel, "unreadMessagesCounter", Type.INT);
 
         mm.associate(categories, "channel", 3, channel, "categories", 1);
 
