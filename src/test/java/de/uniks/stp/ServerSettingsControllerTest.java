@@ -50,18 +50,17 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverList.lookup("#server"));
         clickOn("#serverMenuButton");
-        //"hillbillyEngineering
-        moveBy(0,25);
+        moveBy(0, 25);
         write("\n");
-        Assert.assertNotEquals(1,this.listTargetWindows().size());
-        String serverSettingsTitle ="";
-        for (Object object : this.listTargetWindows()){
-            if (!((Stage) object).getTitle().equals("Accord - Main")){
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        String serverSettingsTitle = "";
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 serverSettingsTitle = ((Stage) object).getTitle();
                 break;
             }
         }
-        Assert.assertNotEquals("",serverSettingsTitle);
+        Assert.assertNotEquals("", serverSettingsTitle);
         closeCurrentWindow();   // TODO talk with maurice about logging out in Test
         clickOn("#logoutButton");
     }

@@ -23,11 +23,16 @@ public class ServerSettingsController {
     }
 
     public void init() {
+        //init of sideButtons
         overview = (Button) view.lookup("#overview");
         channel = (Button) view.lookup("#channel");
         category = (Button) view.lookup("#category");
         privilege = (Button) view.lookup("#privilege");
+
+        //Highlight the OverviewButton
         newSelectedButton(overview);
+
+        //ActionHandler
         overview.setOnAction(this::onOverViewClicked);
         channel.setOnAction(this::onChannelClicked);
         category.setOnAction(this::onCategoryClicked);
@@ -36,35 +41,39 @@ public class ServerSettingsController {
 
 
     private void onOverViewClicked(ActionEvent actionEvent) {
-        if(selectedButton!=overview) {
+        if (selectedButton != overview) {
             newSelectedButton(overview);
         }
     }
 
     private void onChannelClicked(ActionEvent actionEvent) {
-        if(selectedButton!=channel) {
+        if (selectedButton != channel) {
             newSelectedButton(channel);
         }
     }
 
     private void onCategoryClicked(ActionEvent actionEvent) {
-        if(selectedButton!=category) {
+        if (selectedButton != category) {
             newSelectedButton(category);
         }
     }
 
     private void onPrivilegeClicked(ActionEvent actionEvent) {
-        if(selectedButton!=privilege) {
+        if (selectedButton != privilege) {
             newSelectedButton(privilege);
         }
     }
 
 
     public void stop() {
+        overview.setOnAction(null);
+        channel.setOnAction(null);
+        category.setOnAction(null);
+        privilege.setOnAction(null);
     }
 
     private void newSelectedButton(Button button) {
-        if(selectedButton!=null){
+        if (selectedButton != null) {
             selectedButton.setStyle("-fx-background-color: #333333;-fx-border-color:#333333");
         }
         button.setStyle("-fx-background-color: #5c5c5c;-fx-border-color:#1a1a1a");

@@ -166,6 +166,7 @@ public class StageManager extends Application {
             serverSettingsController = new ServerSettingsController(root,builder,builder.getCurrentServer());
             serverSettingsController.init();
 
+            //setting stage settings
             subStage = new Stage();
             subStage.setTitle("ServerSettings");
             subStage.setResizable(false);

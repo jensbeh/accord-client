@@ -51,7 +51,6 @@ public class ServerViewController {
     private static Label textChannelLabel;
     private static Label generalLabel;
     private static Label welcomeToAccord;
-    private TextField sendTextField;
     private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
@@ -61,7 +60,6 @@ public class ServerViewController {
     private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
     private ChatViewController messageViewController;
-    private ListView<Channel> serverChatList;
     private static String channelId;
     private static String channelName;
     private MenuItem serverSettings;
@@ -111,7 +109,7 @@ public class ServerViewController {
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
-                if (status.equals("success")){
+                if (status.equals("success")) {
                     loadServerChannel();
                 }
             }
