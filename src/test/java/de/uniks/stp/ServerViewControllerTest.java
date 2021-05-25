@@ -23,6 +23,13 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private RestClient restClient;
+    private static String testUserMainName;
+    private static String testUserMainPw;
+    private static String testUserOneName;
+    private static String testUserOnePw;
+    private static String testUserOne_UserKey;
+    private static String testServerId;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -37,6 +44,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         app = new StageManager();
         app.start(stage);
         this.stage.centerOnScreen();
+        this.restClient = new RestClient();
+
     }
 
     @Mock
@@ -53,33 +62,84 @@ public class ServerViewControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    public void loginInit() {
+    public void loginInitWithTemp() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("TestUser Team Bit Shift");
+        usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("test123");
+        passwordField.setText(testUserMainPw);
+
         clickOn("#loginButton");
 
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+    }
+
+    public void loginInit(String name, String password) throws InterruptedException {
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(name);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(password);
+
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+    }
+
+    public void getServerId() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        JsonNode body = restClient.postServer(testUserOne_UserKey, "TestServer Team Bit Shift");
+        testServerId = body.getObject().getJSONObject("data").getString("id");
+
+        restClient.logout(testUserOne_UserKey, response -> {
+        });
     }
 
     @Test
     public void showServerTest() throws InterruptedException {
-        loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#server"));
-        Label serverNameText = lookup("#serverName").query();
-        Assert.assertEquals(serverNameText.getText(), serverList.getItems().get(0).getName());
+        clickOn(serverList.lookup("#serverName_" + testServerId));
+        Thread.sleep(2000);
+
+        MenuButton serverNameText = lookup("#serverMenuButton").query();
+        Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
     public void showServerUsersTest() throws InterruptedException {
-        loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#server"));
+        clickOn(serverList.lookup("#serverName_" + testServerId));
+        Thread.sleep(2000);
+
         app.getBuilder().buildServerUser("Test", "1234", false);
         app.getBuilder().buildServerUser("Test1", "12234", true);
 
@@ -88,23 +148,31 @@ public class ServerViewControllerTest extends ApplicationTest {
         ListView<User> offlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#offlineUsers");
         app.getHomeViewController().getServerController().showOnlineOfflineUsers();
         WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
+
         clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
     public void logoutMultiLogin() throws InterruptedException {
-        loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        RestClient restClient = new RestClient();
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#server"));
-        String testUserOneName = "TestUser Team Bit Shift";
-        restClient.login(testUserOneName, "test123", response -> {
+        clickOn(serverList.lookup("#serverName_" + testServerId));
+        Thread.sleep(2000);
+
+        restClient.login(testUserOneName, testUserOnePw, response -> {
         });
+
         Thread.sleep(2000);
         Assert.assertEquals("Accord - Login", stage.getTitle());
+
+        restClient.logout(testUserOne_UserKey, response -> {
+        });
     }
 }

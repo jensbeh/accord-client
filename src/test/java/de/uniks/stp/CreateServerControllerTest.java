@@ -1,10 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -31,6 +28,8 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private String testUserName;
+    private String testUserPw;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -61,21 +60,29 @@ public class CreateServerControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    public void loginInit() {
+    public void loginInit() throws InterruptedException {
+        RestClient restClient = new RestClient();
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserName = body.getObject().getJSONObject("data").getString("name");
+            testUserPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("TestUser Team Bit Shift");
+        usernameTextField.setText(testUserName);
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("test123");
-        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
-        rememberBox.setSelected(true);
+        passwordField.setText(testUserPw);
         clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
     }
 
     @Test
     public void createServerTest() throws InterruptedException {
         loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
@@ -83,47 +90,52 @@ public class CreateServerControllerTest extends ApplicationTest {
         clickOn("#createServer");
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
         TextField serverName = lookup("#serverName").query();
-        serverName.setText("TestServer");
-        Assert.assertEquals("TestServer", serverName.getText());
+        serverName.setText("TestServer Team Bit Shift");
+        Assert.assertEquals("TestServer Team Bit Shift", serverName.getText());
 
-        restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
-        JSONObject data = new JSONObject().accumulate("id", "5e2ffbd8770dd077d03df505").accumulate("name", "TestServer");
+        restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer Team Bit Shift");
+        JSONObject data = new JSONObject().accumulate("id", "5e2ffbd8770dd077d03df505").accumulate("name", "TestServer Team Bit Shift");
         JSONObject jsonObj = new JSONObject().accumulate("status", "success").accumulate("message", "password").append("data", data);
         when(res.getBody()).thenReturn(new JsonNode(jsonObj.toString()));
         verify(restMock).postServer(anyString(), anyString());
         Assert.assertEquals(jsonObj.toString(), res.getBody().toString());
+
         clickOn("#logoutButton");
     }
 
     @Test
     public void emptyTextField() throws InterruptedException {
         loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
+
         clickOn("#logoutButton");
     }
 
     @Test
     public void showCreateServerTest() throws InterruptedException {
         loginInit();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 
-        app.getBuilder().setCurrentServer(app.getBuilder().getServers().get(app.getBuilder().getServers().size() - 1));
-        app.getHomeViewController().onServerCreated();
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        Label serverNameText = lookup("#serverName").query();
-        Assert.assertEquals("TestServer", serverNameText.getText());
+
+        MenuButton serverNameText = lookup("#serverMenuButton").query();
+        Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
+
         clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
