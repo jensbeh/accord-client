@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -34,15 +35,10 @@ public class PrivateViewControllerTest extends ApplicationTest {
     private static String testUserMainPw;
     private static String testUserOneName;
     private static String testUserOnePw;
-    private static String testUserTwoName;
-    private static String testUserTwoPw;
     private static String testUser1_KEY;
-    private static String testUser2_KEY;
-    private static String testUser2_ID;
+    private static String testUser1_ID;
     private static ClientEndpointConfig testUser1_CLIENT_CONFIG = null;
-    private static ClientEndpointConfig testUser2_CLIENT_CONFIG = null;
     private static ClientTestEndpoint testUser1_CLIENT = null;
-    private static ClientTestEndpoint testUser2_CLIENT = null;
     private CountDownLatch messageLatch;
 
     @BeforeClass
@@ -71,20 +67,15 @@ public class PrivateViewControllerTest extends ApplicationTest {
     private void setupWebsocketClient() {
         System.out.println("Starting WebSocket Client");
         testUser1_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
-                .configurator(new PrivateViewControllerTest.TestWebSocketConfigurator(testUser1_KEY))
-                .build();
-        testUser2_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
-                .configurator(new PrivateViewControllerTest.TestWebSocketConfigurator(testUser2_KEY))
+                .configurator(new TestWebSocketConfigurator(testUser1_KEY))
                 .build();
         messageLatch = new CountDownLatch(1);
-        testUser1_CLIENT = new PrivateViewControllerTest.ClientTestEndpoint();
-        testUser2_CLIENT = new PrivateViewControllerTest.ClientTestEndpoint();
+        testUser1_CLIENT = new ClientTestEndpoint();
     }
 
     private void connectWebSocketClient() throws DeploymentException, IOException {
         try {
-            ContainerProvider.getWebSocketContainer().connectToServer(testUser1_CLIENT, testUser1_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=Gudrun"));
-            ContainerProvider.getWebSocketContainer().connectToServer(testUser2_CLIENT, testUser2_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=Jutta"));
+            ContainerProvider.getWebSocketContainer().connectToServer(testUser1_CLIENT, testUser1_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=" + testUserOneName.replace(" ", "+")));
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -94,7 +85,6 @@ public class PrivateViewControllerTest extends ApplicationTest {
     private void shutDownWebSocketClient() throws IOException {
         System.out.println("Closing WebSocket Client\n");
         testUser1_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
-        testUser2_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
     }
 
     class ClientTestEndpoint extends Endpoint {
@@ -218,20 +208,10 @@ public class PrivateViewControllerTest extends ApplicationTest {
             testUserOneName = body.getObject().getJSONObject("data").getString("name");
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
+        Thread.sleep(2000);
         restClient.login(testUserOneName, testUserOnePw, response -> {
             JsonNode body = response.getBody();
             testUser1_KEY = body.getObject().getJSONObject("data").getString("userKey");
-        });
-
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserTwoName = body.getObject().getJSONObject("data").getString("name");
-            testUserTwoPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        restClient.login(testUserTwoName, testUserTwoPw, response -> {
-            JsonNode body = response.getBody();
-            testUser2_KEY = body.getObject().getJSONObject("data").getString("userKey");
         });
 
         Thread.sleep(2000);
@@ -245,6 +225,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
             testUserMainName = body.getObject().getJSONObject("data").getString("name");
             testUserMainPw = body.getObject().getJSONObject("data").getString("password");
         });
+        Thread.sleep(2000);
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
@@ -259,46 +240,47 @@ public class PrivateViewControllerTest extends ApplicationTest {
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (userName.equals(testUserTwoName)) {
-                    testUser2_ID = userId;
+                if (userName.equals(testUserOneName)) {
+                    testUser1_ID = userId;
                 }
             }
         });
 
         Thread.sleep(2000);
-        testUser2_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "Testing notification").toString());
+        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "Testing notification").toString());
         Thread.sleep(2000);
-        Label message = lookup("#msg_" + testUser2_ID).query();
-        Assert.assertEquals("This is a test message", message.getText());
 
-        clickOn("#logoutButton");
-    }
+        Label counter = lookup("#notificationCounter_" + testUser1_ID).query();
+        Circle background = lookup("#notificationCounterBackground_" + testUser1_ID).query();
+        Circle foreground = lookup("#notificationCounterForeground_" + testUser1_ID).query();
 
-    @Test
-    public void showLastPrivateChatMessage() throws DeploymentException, IOException, InterruptedException {
+        Assert.assertEquals("1", counter.getText());
+        Assert.assertTrue(background.isVisible());
+        Assert.assertTrue(foreground.isVisible());
 
-        Thread.sleep(1000);
-        testUser2_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", "Tuser0").put("message", "This is a test message").toString());
+        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "Testing more notification").toString());
         Thread.sleep(2000);
-        Label message = lookup("#msg_" + testUser2_ID).query();
-        Assert.assertEquals("This is a test message", message.getText());
+
+        Label counterSecondTime = lookup("#notificationCounter_" + testUser1_ID).query();
+        Circle backgroundSecondTime = lookup("#notificationCounterBackground_" + testUser1_ID).query();
+        Circle foregroundSecondTime = lookup("#notificationCounterForeground_" + testUser1_ID).query();
+        Assert.assertEquals("2", counterSecondTime.getText());
+        Assert.assertTrue(backgroundSecondTime.isVisible());
+        Assert.assertTrue(foregroundSecondTime.isVisible());
 
         ListView<Channel> privateChatList = lookup("#privateChatList").query();
-        clickOn(privateChatList.lookup("#" + testUser2_ID));
+        clickOn(privateChatList.lookup("#" + testUser1_ID));
         Thread.sleep(2000);
-        TextField messageField = lookup("#messageTextField").query();
-        messageField.setText("Okay!");
-        Thread.sleep(500);
-        clickOn("#sendButton");
-        Thread.sleep(500);
-        message = lookup("#msg_" + testUser2_ID).query();
-        Assert.assertEquals("Okay!", message.getText());
-/*
+
+
+        Assert.assertFalse(lookup("#notificationCounter_" + testUser1_ID).queryAll().contains(counterSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterBackground_" + testUser1_ID).queryAll().contains(backgroundSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterForeground_" + testUser1_ID).queryAll().contains(foregroundSecondTime));
+
+        clickOn("#logoutButton");
+
         shutDownWebSocketClient();
         restClient.logout(testUser1_KEY, response -> {
         });
-        restClient.logout(testUser2_KEY, response -> {
-        });
-  */
     }
 }

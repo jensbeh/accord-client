@@ -2,7 +2,6 @@ package de.uniks.stp;
 
 import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.Channel;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -13,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 public class AlternateChannelListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
     /**
@@ -90,7 +87,7 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
                 }
 
                 // set chatColor - if selected / else not selected
-                if(PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
+                if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
                     cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
                 } else {
                     cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
@@ -100,8 +97,11 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
                 if (item.getUnreadMessagesCounter() > 0) {
                     Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
                     Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
+                    background.setId("notificationCounterBackground_" + item.getId());
+                    foreground.setId("notificationCounterForeground_" + item.getId());
 
                     Label numberText = new Label();
+                    numberText.setId("notificationCounter_" + item.getId());
                     numberText.setAlignment(Pos.CENTER);
                     numberText.setTextFill(Color.BLACK);
                     numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));

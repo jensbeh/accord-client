@@ -221,5 +221,4 @@ public class Channel {
         this.unreadMessagesCounter = unreadMessagesCounter;
         return this;
     }
-
 }
