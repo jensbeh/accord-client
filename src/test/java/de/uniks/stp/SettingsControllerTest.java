@@ -1,16 +1,23 @@
 package de.uniks.stp;
 
+import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
 public class SettingsControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private RestClient restClient;
+    private static String testUserMainName;
+    private static String testUserMainPw;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -24,6 +31,27 @@ public class SettingsControllerTest extends ApplicationTest {
         app = new StageManager();
         app.start(stage);
         this.stage.centerOnScreen();
+        this.restClient = new RestClient();
+    }
+
+    public void loginInit() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserMainName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(testUserMainPw);
+
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
     }
 
     @Test
@@ -48,14 +76,7 @@ public class SettingsControllerTest extends ApplicationTest {
 
     @Test
     public void changeLanguageHomeScreen() throws InterruptedException {
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("peter");
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("123");
-        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
-        rememberBox.setSelected(true);
-        clickOn("#loginButton");
-        Thread.sleep(500);
+        loginInit();
 
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
@@ -73,5 +94,16 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn("English");
         Assert.assertEquals("Language", languageButton.getText());
         Assert.assertEquals("Select Language:", label_langSelect.getText());
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                Thread.sleep(2000);
+                break;
+            }
+        }
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 }
