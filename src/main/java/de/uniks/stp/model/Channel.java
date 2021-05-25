@@ -13,12 +13,14 @@ public class Channel
    public static final String PROPERTY_CATEGORIES = "categories";
    public static final String PROPERTY_MESSAGE = "message";
    public static final String PROPERTY_CURRENT_USER = "currentUser";
+   public static final String PROPERTY_PRIVILEGE = "privilege";
    private String name;
    private String id;
    private Categories categories;
    protected PropertyChangeSupport listeners;
    private List<Message> message;
    private CurrentUser currentUser;
+   private boolean privilege;
 
    public String getName()
    {
@@ -173,6 +175,24 @@ public class Channel
          value.withPrivateChat(this);
       }
       this.firePropertyChange(PROPERTY_CURRENT_USER, oldValue, value);
+      return this;
+   }
+
+   public boolean isPrivilege()
+   {
+      return this.privilege;
+   }
+
+   public Channel setPrivilege(boolean value)
+   {
+      if (value == this.privilege)
+      {
+         return this;
+      }
+
+      final boolean oldValue = this.privilege;
+      this.privilege = value;
+      this.firePropertyChange(PROPERTY_PRIVILEGE, oldValue, value);
       return this;
    }
 
