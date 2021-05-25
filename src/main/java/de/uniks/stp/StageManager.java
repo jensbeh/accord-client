@@ -129,7 +129,7 @@ public class StageManager extends Application {
     public static void showSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(StageManager.class.getResource("settings/Settings.fxml"), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
@@ -166,6 +166,7 @@ public class StageManager extends Application {
             serverSettingsController = new ServerSettingsController(root,builder,builder.getCurrentServer());
             serverSettingsController.init();
 
+            //setting stage settings
             subStage = new Stage();
             subStage.setTitle("ServerSettings");
             subStage.setResizable(false);

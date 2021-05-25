@@ -103,21 +103,25 @@ public class PrivateViewController {
                         Message message;
                         String channelName;
                         Boolean newChat = true;
+                        // currentUser send
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
                                     setTimestamp(jsonObject.getInt("timestamp"));
                             messageViewController.clearMessageField();
-                        } else {
+                        } else { // currentUser received
                             channelName = jsonObject.getString("from");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
                                     setTimestamp(jsonObject.getInt("timestamp"));
                         }
-                        for (Channel c : builder.getPersonalUser().getPrivateChat()) {
-                            if (c.getName().equals(channelName)) {
-                                c.withMessage(message);
+                        for (Channel channel : builder.getPersonalUser().getPrivateChat()) {
+                            if (channel.getName().equals(channelName)) {
+                                channel.withMessage(message);
+                                if (selectedChat == null || channel != selectedChat) {
+                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                }
                                 privateChatList.refresh();
                                 newChat = false;
                                 break;
@@ -130,7 +134,7 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            Channel channel = new Channel().setId(userId).setName(channelName).withMessage(message);
+                            Channel channel = new Channel().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }
@@ -272,6 +276,9 @@ public class PrivateViewController {
             if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
                 selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
+                if (selectedChat.getUnreadMessagesCounter() > 0) {
+                    selectedChat.setUnreadMessagesCounter(0);
+                }
                 this.privateChatList.refresh();
                 MessageViews();
             }
@@ -315,6 +322,9 @@ public class PrivateViewController {
             for (Channel channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(selectedUserName)) {
                     selectedChat = channel;
+                    if (selectedChat.getUnreadMessagesCounter() > 0) {
+                        selectedChat.setUnreadMessagesCounter(0);
+                    }
                     this.privateChatList.refresh();
                     chatExisting = true;
                     break;

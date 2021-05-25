@@ -24,7 +24,7 @@
   roles: 	categories_server 	categories_channel
 
 - channel: 	org.fulib.classmodel.Clazz
-  attributes: 	channel_name 	channel_id 	channel_privilege
+  attributes: 	channel_name 	channel_id 	channel_privilege channel_unreadMessagesCounter
   model: 	c
   modified: 	false
   name: 	Channel
@@ -189,6 +189,15 @@
   propertyStyle: 	Bean
   type: 	boolean
   typeSignature: 	boolean
+
+- channel_unreadMessagesCounter: 	org.fulib.classmodel.Attribute
+  clazz: 	channel
+  id: 	Channel_unreadMessagesCounter
+  modified: 	false
+  name: 	unreadMessagesCounter
+  propertyStyle: 	Bean
+  type: 	int
+  typeSignature: 	int
 
 - channel_categories: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
