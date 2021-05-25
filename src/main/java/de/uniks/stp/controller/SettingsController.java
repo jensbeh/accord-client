@@ -142,7 +142,7 @@ public class SettingsController {
         // clear old and load new subSetting view
         try {
             this.settingsContainer.getChildren().clear();
-            Parent settingsField = FXMLLoader.load(StageManager.class.getResource("view/settings/Settings_" + fxmlName + ".fxml"), StageManager.getLangBundle());
+            Parent settingsField = FXMLLoader.load(StageManager.class.getResource("settings/Settings_" + fxmlName + ".fxml"), StageManager.getLangBundle());
 
             switch (fxmlName) {
                 case "Language":

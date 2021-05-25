@@ -1,31 +1,33 @@
 package de.uniks.stp.model;
+
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.Collection;
-import java.beans.PropertyChangeSupport;
 
-public class Channel
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_CATEGORIES = "categories";
-   public static final String PROPERTY_MESSAGE = "message";
-   public static final String PROPERTY_CURRENT_USER = "currentUser";
-   private String name;
-   private String id;
-   private Categories categories;
-   protected PropertyChangeSupport listeners;
-   private List<Message> message;
-   private CurrentUser currentUser;
+public class Channel {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_CATEGORIES = "categories";
+    public static final String PROPERTY_MESSAGE = "message";
+    public static final String PROPERTY_CURRENT_USER = "currentUser";
+    private String name;
+    private String id;
+    private Categories categories;
+    protected PropertyChangeSupport listeners;
+    private List<Message> message;
+    private CurrentUser currentUser;
+    private int unreadMessagesCounter;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public Channel setName(String value)
+    public Channel setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -38,12 +40,12 @@ public class Channel
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public Channel setId(String value)
+    public Channel setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -56,12 +58,12 @@ public class Channel
       return this;
    }
 
-   public Categories getCategories()
+    public Categories getCategories()
    {
       return this.categories;
    }
 
-   public Channel setCategories(Categories value)
+    public Channel setCategories(Categories value)
    {
       if (this.categories == value)
       {
@@ -83,12 +85,12 @@ public class Channel
       return this;
    }
 
-   public List<Message> getMessage()
+    public List<Message> getMessage()
    {
       return this.message != null ? Collections.unmodifiableList(this.message) : Collections.emptyList();
    }
 
-   public Channel withMessage(Message value)
+    public Channel withMessage(Message value)
    {
       if (this.message == null)
       {
@@ -103,7 +105,7 @@ public class Channel
       return this;
    }
 
-   public Channel withMessage(Message... value)
+    public Channel withMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -112,7 +114,7 @@ public class Channel
       return this;
    }
 
-   public Channel withMessage(Collection<? extends Message> value)
+    public Channel withMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -121,7 +123,7 @@ public class Channel
       return this;
    }
 
-   public Channel withoutMessage(Message value)
+    public Channel withoutMessage(Message value)
    {
       if (this.message != null && this.message.remove(value))
       {
@@ -131,7 +133,7 @@ public class Channel
       return this;
    }
 
-   public Channel withoutMessage(Message... value)
+    public Channel withoutMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -140,7 +142,7 @@ public class Channel
       return this;
    }
 
-   public Channel withoutMessage(Collection<? extends Message> value)
+    public Channel withoutMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -149,12 +151,12 @@ public class Channel
       return this;
    }
 
-   public CurrentUser getCurrentUser()
+    public CurrentUser getCurrentUser()
    {
       return this.currentUser;
    }
 
-   public Channel setCurrentUser(CurrentUser value)
+    public Channel setCurrentUser(CurrentUser value)
    {
       if (this.currentUser == value)
       {
@@ -176,7 +178,7 @@ public class Channel
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -186,7 +188,7 @@ public class Channel
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -195,7 +197,7 @@ public class Channel
       return this.listeners;
    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -204,10 +206,20 @@ public class Channel
       return result.substring(1);
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.setCategories(null);
       this.setCurrentUser(null);
       this.withoutMessage(new ArrayList<>(this.getMessage()));
    }
+
+    public int getUnreadMessagesCounter() {
+        return unreadMessagesCounter;
+    }
+
+    public Channel setUnreadMessagesCounter(int unreadMessagesCounter) {
+        this.unreadMessagesCounter = unreadMessagesCounter;
+        return this;
+    }
+
 }
