@@ -1,36 +1,30 @@
 package de.uniks.stp;
 
-import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.ChatViewController;
-import de.uniks.stp.controller.ServerViewController;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import javax.websocket.*;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 public class ServerMessageTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
+    private RestClient restClient;
+    private static String testUserMainName;
+    private static String testUserMainPw;
+    private static String testUserOneName;
+    private static String testUserOnePw;
+    private static String testUserOne_UserKey;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -45,42 +39,88 @@ public class ServerMessageTest extends ApplicationTest {
         app = new StageManager();
         app.start(stage);
         this.stage.centerOnScreen();
+        this.restClient = new RestClient();
+    }
+
+    public void loginInitWithTempUser() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserMainName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(testUserMainPw);
+
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+    }
+
+    public void loginInit(String name, String password) throws InterruptedException {
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(name);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(password);
+
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
     }
 
     @Test
     public void testSendAllMessage() throws InterruptedException {
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("peter");
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("123");
-        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
-        rememberBox.setSelected(true);
-        clickOn("#loginButton");
-        Thread.sleep(500);
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        JsonNode body = restClient.postServer(testUserOne_UserKey, "TestServer Team Bit Shift");
+        String serverId = body.getObject().getJSONObject("data").getString("id");
+
+        restClient.logout(testUserOne_UserKey, response -> {
+        });
+
+        loginInit(testUserOneName, testUserOnePw);
+
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
+
+
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverListView.lookup("#server"));
+        clickOn(serverListView.lookup("#serverName_" + serverId));
         Thread.sleep(2000);
-        Platform.runLater(()->
-                Assert.assertEquals(0, app.getBuilder().getPersonalUser().getServer().get(0)
-                        .getCategories().get(0).getChannel().get(0).getMessage().size()));
+
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
-        Thread.sleep(500);
+        Thread.sleep(2000);
         clickOn("#sendButton");
-        Thread.sleep(500);
+        Thread.sleep(2000);
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
-        System.out.println("ListView: " + privateChatMessageList.getItems().toString());
         Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
-        Assert.assertEquals("peter", userNameLabel.getText());
+        Assert.assertEquals(testUserOneName, userNameLabel.getText());
 
+        Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
-        Assert.assertEquals(1, app.getBuilder().getPersonalUser().getServer().get(0)
-                .getCategories().get(0).getChannel().get(0).getMessage().size());
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 }

@@ -133,7 +133,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            serverSettingsController = new ServerSettingsController(root,builder,builder.getCurrentServer());
+            settingsController = new SettingsController(root);
             settingsController.init();
 
             subStage = new Stage();

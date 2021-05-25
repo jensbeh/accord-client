@@ -55,6 +55,8 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
+
+                circle.setId("serverName_" + item.getId());
                 if (item == currentServer) {
                     circle.setFill(Paint.valueOf("#5a5c5e"));
                 } else {
