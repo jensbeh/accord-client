@@ -65,15 +65,19 @@ public class ServerPrivilegeSettingsController {
         categoryChoice.getSelectionModel().select(0);
     }
 
+    // Change the Privileg of the choosen channel
     private void Change_Privilege(ActionEvent actionEvent) {
         int channelIndex = channelChoice.getSelectionModel().getSelectedIndex();
         server.getCategories().get(selectedIndex).getChannel().get(channelIndex).setPrivilege(Privilege_On_Button.isSelected());
     }
 
+    // clears the VBox when channel privileg off
     private void Privilege_Off_Button(ActionEvent actionEvent) {
         this.Privilege_On.getChildren().clear();
     }
-
+    /**
+     * load fxml when channel privileg on.
+     */
     private void Privilege_On_Button(ActionEvent actionEvent) {
         this.Privilege_On.getChildren().clear();
         try {
