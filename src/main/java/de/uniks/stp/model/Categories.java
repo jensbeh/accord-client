@@ -1,4 +1,6 @@
 package de.uniks.stp.model;
+
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -6,24 +8,23 @@ import java.util.Collections;
 import java.util.Collection;
 import java.beans.PropertyChangeSupport;
 
-public class Categories
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_SERVER = "server";
-   public static final String PROPERTY_CHANNEL = "channel";
-   private String name;
-   private String id;
-   private Server server;
-   protected PropertyChangeSupport listeners;
-   private List<Channel> channel;
+public class Categories {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_SERVER = "server";
+    public static final String PROPERTY_CHANNEL = "channel";
+    private String name;
+    private String id;
+    private Server server;
+    protected PropertyChangeSupport listeners;
+    private List<Channel> channel;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public Categories setName(String value)
+    public Categories setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -36,12 +37,12 @@ public class Categories
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public Categories setId(String value)
+    public Categories setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -54,12 +55,12 @@ public class Categories
       return this;
    }
 
-   public Server getServer()
+    public Server getServer()
    {
       return this.server;
    }
 
-   public Categories setServer(Server value)
+    public Categories setServer(Server value)
    {
       if (this.server == value)
       {
@@ -81,12 +82,12 @@ public class Categories
       return this;
    }
 
-   public List<Channel> getChannel()
+    public List<Channel> getChannel()
    {
       return this.channel != null ? Collections.unmodifiableList(this.channel) : Collections.emptyList();
    }
 
-   public Categories withChannel(Channel value)
+    public Categories withChannel(Channel value)
    {
       if (this.channel == null)
       {
@@ -101,7 +102,7 @@ public class Categories
       return this;
    }
 
-   public Categories withChannel(Channel... value)
+    public Categories withChannel(Channel... value)
    {
       for (final Channel item : value)
       {
@@ -110,7 +111,7 @@ public class Categories
       return this;
    }
 
-   public Categories withChannel(Collection<? extends Channel> value)
+    public Categories withChannel(Collection<? extends Channel> value)
    {
       for (final Channel item : value)
       {
@@ -119,7 +120,7 @@ public class Categories
       return this;
    }
 
-   public Categories withoutChannel(Channel value)
+    public Categories withoutChannel(Channel value)
    {
       if (this.channel != null && this.channel.remove(value))
       {
@@ -129,7 +130,7 @@ public class Categories
       return this;
    }
 
-   public Categories withoutChannel(Channel... value)
+    public Categories withoutChannel(Channel... value)
    {
       for (final Channel item : value)
       {
@@ -138,7 +139,7 @@ public class Categories
       return this;
    }
 
-   public Categories withoutChannel(Collection<? extends Channel> value)
+    public Categories withoutChannel(Collection<? extends Channel> value)
    {
       for (final Channel item : value)
       {
@@ -147,7 +148,7 @@ public class Categories
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -157,7 +158,7 @@ public class Categories
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -166,7 +167,7 @@ public class Categories
       return this.listeners;
    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -175,7 +176,41 @@ public class Categories
       return result.substring(1);
    }
 
-   public void removeYou()
+    public boolean addPropertyChangeListener(PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners == null) {
+            this.listeners = new PropertyChangeSupport(this);
+        }
+        this.listeners.addPropertyChangeListener(listener);
+        return true;
+    }
+
+    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners == null) {
+            this.listeners = new PropertyChangeSupport(this);
+        }
+        this.listeners.addPropertyChangeListener(propertyName, listener);
+        return true;
+    }
+
+    public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners != null) {
+            this.listeners.removePropertyChangeListener(listener);
+        }
+        return true;
+    }
+
+    public boolean removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners != null) {
+            this.listeners.removePropertyChangeListener(propertyName, listener);
+        }
+        return true;
+    }
+
+    public void removeYou()
    {
       this.setServer(null);
       this.withoutChannel(new ArrayList<>(this.getChannel()));

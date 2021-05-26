@@ -39,6 +39,7 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
+    private static Channel selectedChat;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
@@ -62,6 +63,9 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
+    private CategorySubController categorySubController;
+    private VBox categoryBox;
+    private Button test;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -74,6 +78,14 @@ public class ServerViewController {
         restClient = new RestClient();
     }
 
+    public static Channel getSelectedChat() {
+        return selectedChat;
+    }
+
+    public static void setSelectedChat(Channel Chat) {
+        selectedChat = Chat;
+    }
+
     /**
      * Initialise all view parameters
      */
@@ -82,7 +94,7 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        //Bad code just for testing
+        categoryBox = (VBox) view.lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -107,7 +119,7 @@ public class ServerViewController {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    if(builder.getCurrentServer().getCategories().size() == 0) {
+                    if (builder.getCurrentServer().getCategories().size() == 0) {
                         loadCategories();
                     }
                 }
@@ -184,6 +196,8 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+        Platform.runLater(this::generateCategoriesChannelViews);
+        Platform.runLater(() -> setSelectedChat(server.getCategories().get(0).getChannel().get(0)));
     }
 
     /**
@@ -437,4 +451,29 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
+
+    /**
+     * generates new views for all categories of the server
+     */
+    private void generateCategoriesChannelViews() {
+        for (Categories c : server.getCategories()) {
+            generateCategoryChannelView(c);
+        }
+    }
+
+    /**
+     * generates a new view for a category
+     */
+    private void generateCategoryChannelView(Categories c) {
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+            view.setId(c.getId());
+            categorySubController = new CategorySubController(view, builder, c);
+            categorySubController.init();
+            this.categoryBox.getChildren().add(view);
+        } catch (Exception e) {
+            System.err.println("Error on showing Server Settings Field Screen");
+            e.printStackTrace();
+        }
+    }
 }
