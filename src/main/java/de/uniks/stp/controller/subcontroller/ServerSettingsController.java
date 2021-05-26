@@ -67,10 +67,13 @@ public class ServerSettingsController {
             newSelectedButton(category);
         }
     }
-
+    /**
+     * shows the privilege settings from the server
+     */
     private void onPrivilegeClicked(ActionEvent actionEvent) {
         if (selectedButton != privilege) {
             newSelectedButton(privilege);
+            openSettings("Privilege");
         }
     }
 
@@ -114,6 +117,10 @@ public class ServerSettingsController {
             switch (fxmlName) {
                 case "Channel":
                     subController = new ServerSettingsChannelController(serverSettingsField, builder, server);
+                    subController.init();
+                    break;
+                case "Privilege":
+                    subController = new ServerSettingsPrivilegeController(serverSettingsField, builder, server);
                     subController.init();
                     break;
             }
