@@ -43,6 +43,7 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
+    private static Channel selectedChat;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
@@ -68,6 +69,7 @@ public class ServerViewController {
     private MenuItem inviteUsers;
     private CategorySubController categorySubController;
     private VBox categoryBox;
+    private Button test;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -78,6 +80,14 @@ public class ServerViewController {
         this.builder = modelBuilder;
         this.server = server;
         restClient = new RestClient();
+    }
+
+    public static Channel getSelectedChat() {
+        return selectedChat;
+    }
+
+    public static void setSelectedChat(Channel Chat) {
+        selectedChat = Chat;
     }
 
     /**
@@ -190,7 +200,7 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
-        generateCategoryChannelView();
+        Platform.runLater(this::generateCategoriesChannelViews);
     }
 
     /**
@@ -444,20 +454,23 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
-    private void generateCategoryChannelView() {
+    private void generateCategoriesChannelViews() {
         for (Categories c : server.getCategories()) {
             // clear old and load new subSetting view
-            try {
-                Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
-                categorySubController = new CategorySubController(view, builder, c);
-                categorySubController.init();
-                this.categoryBox.getChildren().add(view);
-            } catch (Exception e) {
-                System.err.println("Error on showing Server Settings Field Screen");
-                e.printStackTrace();
-            }
+            generateCategoryChannelView(c);
         }
+    }
 
-
+    private void generateCategoryChannelView(Categories c){
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+            view.setId(c.getId());
+            categorySubController = new CategorySubController(view, builder, c);
+            categorySubController.init();
+            this.categoryBox.getChildren().add(view);
+        } catch (Exception e) {
+            System.err.println("Error on showing Server Settings Field Screen");
+            e.printStackTrace();
+        }
     }
 }
