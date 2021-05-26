@@ -64,6 +64,23 @@
 <text text-anchor="middle" x="61.54" y="-231.26" font-family="Times,serif" font-size="14.00">message *</text>
 <text text-anchor="middle" x="68.73" y="-212.49" font-family="Times,serif" font-size="14.00">channel</text>
 </g>
+<!-- User -->
+<g id="node6" class="node">
+<title>User</title>
+<polygon fill="none" stroke="black" points="204.5,-304 204.5,-326 293.5,-326 293.5,-304 204.5,-304"/>
+<text text-anchor="start" x="235.79" y="-310.4" font-family="Times,serif" font-size="14.00">User</text>
+<polygon fill="none" stroke="black" points="204.5,-248 204.5,-304 293.5,-304 293.5,-248 204.5,-248"/>
+<text text-anchor="start" x="207.5" y="-288.4" font-family="Times,serif" font-size="14.00">name :String</text>
+<text text-anchor="start" x="207.5" y="-271.6" font-family="Times,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="207.5" y="-254.8" font-family="Times,serif" font-size="14.00">status :boolean</text>
+</g>
+<!-- Channel&#45;&gt;User -->
+<g id="edge7" class="edge">
+<title>Channel&#45;&gt;User</title>
+<path fill="none" stroke="black" d="M152.95,-208.29C167.44,-220.07 182.71,-232.49 196.68,-243.86"/>
+<text text-anchor="middle" x="147.12" y="-231.26" font-family="Times,serif" font-size="14.00">privilegedUsers *</text>
+<text text-anchor="middle" x="186.58" y="-212.49" font-family="Times,serif" font-size="14.00">privileged *</text>
+</g>
 <!-- CurrentUser -->
 <g id="node3" class="node">
 <title>CurrentUser</title>
@@ -87,29 +104,19 @@
 <text text-anchor="middle" x="270.85" y="-100.85" font-family="Times,serif" font-size="14.00">server *</text>
 <text text-anchor="middle" x="281.53" y="-73.45" font-family="Times,serif" font-size="14.00">currentUser</text>
 </g>
-<!-- User -->
-<g id="node6" class="node">
-<title>User</title>
-<polygon fill="none" stroke="black" points="242.5,-304 242.5,-326 331.5,-326 331.5,-304 242.5,-304"/>
-<text text-anchor="start" x="273.79" y="-310.4" font-family="Times,serif" font-size="14.00">User</text>
-<polygon fill="none" stroke="black" points="242.5,-248 242.5,-304 331.5,-304 331.5,-248 242.5,-248"/>
-<text text-anchor="start" x="245.5" y="-288.4" font-family="Times,serif" font-size="14.00">name :String</text>
-<text text-anchor="start" x="245.5" y="-271.6" font-family="Times,serif" font-size="14.00">id :String</text>
-<text text-anchor="start" x="245.5" y="-254.8" font-family="Times,serif" font-size="14.00">status :boolean</text>
-</g>
 <!-- CurrentUser&#45;&gt;User -->
 <g id="edge6" class="edge">
 <title>CurrentUser&#45;&gt;User</title>
-<path fill="none" stroke="black" d="M284.56,-69.21C293.46,-79.72 301.79,-92 306.5,-105 322.98,-150.48 312.62,-206.25 301.61,-243.76"/>
-<text text-anchor="middle" x="284.7" y="-231.16" font-family="Times,serif" font-size="14.00">user *</text>
+<path fill="none" stroke="black" d="M284.56,-69.21C293.46,-79.72 301.79,-92 306.5,-105 322.1,-148.04 320.89,-164.54 306.5,-208 302.31,-220.66 295.18,-232.93 287.33,-243.85"/>
+<text text-anchor="middle" x="270.42" y="-231.25" font-family="Times,serif" font-size="14.00">user *</text>
 <text text-anchor="middle" x="317.6" y="-56.61" font-family="Times,serif" font-size="14.00">currentUser</text>
 </g>
 <!-- Server&#45;&gt;User -->
-<g id="edge7" class="edge">
+<g id="edge8" class="edge">
 <title>Server&#45;&gt;User</title>
-<path fill="none" stroke="black" d="M260.94,-199.58C265.14,-213.78 269.83,-229.62 274.03,-243.83"/>
-<text text-anchor="middle" x="257.12" y="-231.23" font-family="Times,serif" font-size="14.00">user *</text>
-<text text-anchor="middle" x="238.6" y="-203.78" font-family="Times,serif" font-size="14.00">server *</text>
+<path fill="none" stroke="black" d="M248.5,-199.58C248.5,-213.78 248.5,-229.62 248.5,-243.83"/>
+<text text-anchor="middle" x="231.59" y="-231.23" font-family="Times,serif" font-size="14.00">user *</text>
+<text text-anchor="middle" x="270.85" y="-203.78" font-family="Times,serif" font-size="14.00">server *</text>
 </g>
 </g>
 </svg>

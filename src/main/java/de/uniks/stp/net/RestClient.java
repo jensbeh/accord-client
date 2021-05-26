@@ -69,4 +69,14 @@ public class RestClient {
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
         req.asJsonAsync(callback);
     }
+
+    public void updateChannel(String serverId, String categoryId, String channelId, String userKey, String serverName, boolean privilege, String[] Members, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", serverName).accumulate("privileged", privilege).accumulate("members", Members);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+
+
 }

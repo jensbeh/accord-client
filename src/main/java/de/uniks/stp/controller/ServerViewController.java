@@ -361,6 +361,8 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    boolean boolPrivilege = Boolean.parseBoolean(channelInfo.getString("privileged"));
+                    channel.setPrivilege(boolPrivilege);
 
                     if (cat.getName().equals("default") && channel.getName().equals("default-text-channel")) {
                         builder.setCurrentServerChannel(channel);

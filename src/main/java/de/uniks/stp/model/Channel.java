@@ -18,6 +18,7 @@ public class Channel
    public static final String PROPERTY_CURRENT_USER = "currentUser";
    public static final String PROPERTY_PRIVILEGE = "privilege";
    public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
+   public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
    private String name;
    private String id;
    private Categories categories;
@@ -26,6 +27,7 @@ public class Channel
    private CurrentUser currentUser;
    private boolean privilege;
    private int unreadMessagesCounter;
+   private List<User> privilegedUsers;
 
    public String getName()
    {
@@ -201,6 +203,72 @@ public class Channel
       return this;
    }
 
+   public List<User> getPrivilegedUsers()
+   {
+      return this.privilegedUsers != null ? Collections.unmodifiableList(this.privilegedUsers) : Collections.emptyList();
+   }
+
+   public Channel withPrivilegedUsers(User value)
+   {
+      if (this.privilegedUsers == null)
+      {
+         this.privilegedUsers = new ArrayList<>();
+      }
+      if (!this.privilegedUsers.contains(value))
+      {
+         this.privilegedUsers.add(value);
+         value.withPrivileged(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED_USERS, null, value);
+      }
+      return this;
+   }
+
+   public Channel withPrivilegedUsers(User... value)
+   {
+      for (final User item : value)
+      {
+         this.withPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withPrivilegedUsers(Collection<? extends User> value)
+   {
+      for (final User item : value)
+      {
+         this.withPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(User value)
+   {
+      if (this.privilegedUsers != null && this.privilegedUsers.remove(value))
+      {
+         value.withoutPrivileged(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED_USERS, value, null);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(User... value)
+   {
+      for (final User item : value)
+      {
+         this.withoutPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(Collection<? extends User> value)
+   {
+      for (final User item : value)
+      {
+         this.withoutPrivilegedUsers(item);
+      }
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -232,6 +300,7 @@ public class Channel
    public void removeYou()
    {
       this.setCategories(null);
+      this.withoutPrivilegedUsers(new ArrayList<>(this.getPrivilegedUsers()));
       this.setCurrentUser(null);
       this.withoutMessage(new ArrayList<>(this.getMessage()));
    }
