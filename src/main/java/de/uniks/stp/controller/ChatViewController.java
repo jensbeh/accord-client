@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 public class ChatViewController {
-    private ModelBuilder builder;
+    private static ModelBuilder builder;
     private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
@@ -70,7 +70,7 @@ public class ChatViewController {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null)
-                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", ServerViewController.channelId()).put("message", textMessage).toString());
+                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", builder.getCurrentServerChannel().getId()).put("message", textMessage).toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -88,7 +88,7 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if (ServerViewController.getSelectedServer().getCategories().get(0).getChannel().get(0).getId().equals(msg.getChannel().getId()))
+            if (builder.getCurrentServerChannel().getId().equals(msg.getChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }
