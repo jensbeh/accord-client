@@ -14,7 +14,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 
-public class ServerPrivilegeSettingsController {
+public class ServerPrivilegeSettingsController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;

@@ -18,8 +18,8 @@ public class ServerSettingsController {
     private Button channel;
     private Button category;
     private Button privilege;
-    private ServerPrivilegeSettingsController serverprivilegesettingscontroller;
-    private VBox serversettingsview;
+    private VBox serverSettingsContainer;
+    private SubSetting subController;
 
     public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
@@ -33,10 +33,13 @@ public class ServerSettingsController {
         channel = (Button) view.lookup("#channel");
         category = (Button) view.lookup("#category");
         privilege = (Button) view.lookup("#privilege");
-        serversettingsview = (VBox) view.lookup("#serverSettingsContainer");
 
         //Highlight the OverviewButton
         newSelectedButton(overview);
+
+        //container
+        this.serverSettingsContainer = (VBox) view.lookup("#serverSettingsContainer");
+        this.serverSettingsContainer.getChildren().clear();
 
         //ActionHandler
         overview.setOnAction(this::onOverViewClicked);
@@ -47,19 +50,20 @@ public class ServerSettingsController {
 
 
     private void onOverViewClicked(ActionEvent actionEvent) {
-        if(selectedButton!=overview) {
+        if (selectedButton != overview) {
             newSelectedButton(overview);
         }
     }
 
     private void onChannelClicked(ActionEvent actionEvent) {
-        if(selectedButton!=channel) {
+        if (selectedButton != channel) {
             newSelectedButton(channel);
+            openSettings("Channel");
         }
     }
 
     private void onCategoryClicked(ActionEvent actionEvent) {
-        if(selectedButton!=category) {
+        if (selectedButton != category) {
             newSelectedButton(category);
         }
     }
@@ -67,20 +71,9 @@ public class ServerSettingsController {
      * shows the privilege settings from the server
      */
     private void onPrivilegeClicked(ActionEvent actionEvent) {
-        if(selectedButton!=privilege) {
+        if (selectedButton != privilege) {
             newSelectedButton(privilege);
-            this.serversettingsview.getChildren().clear();
-            try {
-                //view
-                Parent view = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings_Privilege.fxml"));
-                //Controller
-                serverprivilegesettingscontroller = new ServerPrivilegeSettingsController(view, builder, server);
-                serverprivilegesettingscontroller.init();
-                this.serversettingsview.getChildren().add(view);
-            } catch (Exception e) {
-                System.err.println("Error on showing ServerSettings_Privilege");
-                e.printStackTrace();
-            }
+            openSettings("Privilege");
         }
     }
 
@@ -90,13 +83,52 @@ public class ServerSettingsController {
         channel.setOnAction(null);
         category.setOnAction(null);
         privilege.setOnAction(null);
+
+        if (subController != null) {
+            subController.stop();
+            subController = null;
+        }
     }
 
     private void newSelectedButton(Button button) {
-        if(selectedButton!=null){
+        if (selectedButton != null) {
             selectedButton.setStyle("-fx-background-color: #333333;-fx-border-color:#333333");
         }
         button.setStyle("-fx-background-color: #5c5c5c;-fx-border-color:#1a1a1a");
         selectedButton = button;
+    }
+
+    /**
+     * load / open the sub server setting on the right field
+     *
+     * @param fxmlName the fxml sub name
+     */
+    public void openSettings(String fxmlName) {
+        // stop current subController
+        if (subController != null) {
+            subController.stop();
+        }
+
+        // clear old and load new subSetting view
+        try {
+            this.serverSettingsContainer.getChildren().clear();
+            Parent serverSettingsField = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml"));
+
+            switch (fxmlName) {
+                case "Channel":
+                    subController = new ServerSettingsChannelController(serverSettingsField, builder, server);
+                    subController.init();
+                    break;
+                case "Privilege":
+                    subController = new ServerPrivilegeSettingsController(view, builder, server);
+                    subController.init();
+                    break;
+            }
+
+            this.serverSettingsContainer.getChildren().add(serverSettingsField);
+        } catch (Exception e) {
+            System.err.println("Error on showing Server Settings Field Screen");
+            e.printStackTrace();
+        }
     }
 }
