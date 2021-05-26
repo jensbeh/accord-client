@@ -451,13 +451,19 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
+
+    /**
+     * generates new views for all categories of the server
+     */
     private void generateCategoriesChannelViews() {
         for (Categories c : server.getCategories()) {
-            // clear old and load new subSetting view
             generateCategoryChannelView(c);
         }
     }
 
+    /**
+     * generates a new view for a category
+     */
     private void generateCategoryChannelView(Categories c) {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));

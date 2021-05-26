@@ -34,11 +34,14 @@ public class CategorySubController {
         channelList.setCellFactory(channeListCellFactory);
         channelList.setItems(FXCollections.observableList(category.getChannel()));
         channelList.setOnMouseClicked(this::onChannelListClicked);
+        //PCL
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelchanged);
 
     }
 
-
+    /**
+     * sets the selectedChat new.
+     */
     private void onChannelListClicked(MouseEvent mouseEvent) {
         Channel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
@@ -54,5 +57,6 @@ public class CategorySubController {
 
     public void stop() {
         channelList.setOnMouseReleased(null);
+        category.removePropertyChangeListener(this::onChannelchanged);
     }
 }
