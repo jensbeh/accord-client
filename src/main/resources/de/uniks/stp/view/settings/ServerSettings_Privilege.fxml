@@ -2,7 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.HBox?>
@@ -23,8 +23,8 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
                <children>
-                  <ChoiceBox id="Category" prefWidth="150.0" />
-                  <ChoiceBox id="Channels" prefWidth="150.0" />
+                  <ComboBox id="Category" prefWidth="150.0" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
+                  <ComboBox id="Channels" prefWidth="150.0" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">

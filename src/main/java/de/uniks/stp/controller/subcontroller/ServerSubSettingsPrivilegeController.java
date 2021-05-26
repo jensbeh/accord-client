@@ -8,15 +8,14 @@ import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ServerSubSettingsPrivilegeController {
 
-    private static ChoiceBox addUserMenu;
-    private static ChoiceBox removeUserMenu;
+    private static ComboBox addUserMenu;
+    private static ComboBox removeUserMenu;
     private static Button addUser;
     private static Button removeUser;
     private final Parent view;
@@ -34,8 +33,8 @@ public class ServerSubSettingsPrivilegeController {
     }
 
     public void init() {
-        addUserMenu = (ChoiceBox) view.lookup("#Add_User_to_Privilege");
-        removeUserMenu = (ChoiceBox) view.lookup("#Remove_User_from_Privilege");
+        addUserMenu = (ComboBox) view.lookup("#Add_User_to_Privilege");
+        removeUserMenu = (ComboBox) view.lookup("#Remove_User_from_Privilege");
         addUser = (Button) view.lookup("#User_to_Privilege");
         removeUser = (Button) view.lookup("#User_from_Privilege");
 
@@ -64,14 +63,14 @@ public class ServerSubSettingsPrivilegeController {
 
             ArrayList<String> members = new ArrayList<>();
             //members.add(server.getOwner());
-            for (User user : channel.getPrivilegedUsers()){
+            for (User user : channel.getPrivilegedUsers()) {
                 members.add(user.getId());
             }
             String[] membersArray = members.toArray(new String[0]);
 
-            restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey, server.getName(), channel.isPrivilege(), membersArray, response -> {
-
-            });
+            restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
+                    server.getName(), channel.isPrivilege(), membersArray, response -> {
+                    });
         }
     }
 
