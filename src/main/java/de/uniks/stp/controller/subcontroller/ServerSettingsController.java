@@ -63,7 +63,9 @@ public class ServerSettingsController {
             newSelectedButton(category);
         }
     }
-
+    /**
+     * shows the privilege settings from the server
+     */
     private void onPrivilegeClicked(ActionEvent actionEvent) {
         if(selectedButton!=privilege) {
             newSelectedButton(privilege);

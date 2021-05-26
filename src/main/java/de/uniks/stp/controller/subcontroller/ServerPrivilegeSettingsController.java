@@ -2,6 +2,7 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import javafx.event.ActionEvent;
@@ -19,7 +20,7 @@ public class ServerPrivilegeSettingsController {
     private final ModelBuilder builder;
     private final Server server;
     private ChoiceBox categoryChoice;
-    private ChoiceBox channelChoice;
+    private ChoiceBox<String> channelChoice;
     private RadioButton Privilege_On_Button;
     private RadioButton Privilege_Off_Button;
     private HBox Privilege_On;
@@ -35,7 +36,7 @@ public class ServerPrivilegeSettingsController {
     }
 
     public void init() {
-        categoryChoice = (ChoiceBox) view.lookup("#Category");
+        categoryChoice = (ChoiceBox<String>) view.lookup("#Category");
         channelChoice = (ChoiceBox) view.lookup("#Channels");
         Privilege_On_Button = (RadioButton) view.lookup("#Privilege_On_Button");
         Privilege_Off_Button = (RadioButton) view.lookup("#Privilege_Off_Button");
@@ -51,8 +52,10 @@ public class ServerPrivilegeSettingsController {
         Privilege_Off_Button.setOnAction(this::Privilege_Off_Button);
         Change_Privilege.setOnAction(this::Change_Privilege);
 
-        categoryChoice.getItems().add("Text Channel");
-        categoryChoice.getItems().add("Voice Channel");
+        for (Categories category : server.getCategories()) {
+            categoryChoice.getItems().add(category.getName());
+            System.out.println(category.getName());
+        }
 
         categoryChoice.setOnAction((event) -> {
             selectedIndex = categoryChoice.getSelectionModel().getSelectedIndex();
@@ -64,19 +67,21 @@ public class ServerPrivilegeSettingsController {
         });
         categoryChoice.getSelectionModel().select(0);
     }
-
-    // Change the Privileg of the choosen channel
+    /**
+     * Change the Privileg of the choosen channel
+     */
     private void Change_Privilege(ActionEvent actionEvent) {
         int channelIndex = channelChoice.getSelectionModel().getSelectedIndex();
         server.getCategories().get(selectedIndex).getChannel().get(channelIndex).setPrivilege(Privilege_On_Button.isSelected());
     }
-
-    // clears the VBox when channel privileg off
+    /**
+    * clears the VBox when channel privileg off so that the fxml is not shown
+     */
     private void Privilege_Off_Button(ActionEvent actionEvent) {
         this.Privilege_On.getChildren().clear();
     }
     /**
-     * load fxml when channel privileg on.
+     * load fxml when channel privileg on. load subcontroller.
      */
     private void Privilege_On_Button(ActionEvent actionEvent) {
         this.Privilege_On.getChildren().clear();
