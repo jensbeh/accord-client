@@ -11,7 +11,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
-import java.util.List;
 
 public class CategorySubController {
     private final Parent view;

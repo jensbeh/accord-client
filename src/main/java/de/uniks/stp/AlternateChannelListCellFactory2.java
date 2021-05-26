@@ -1,19 +1,12 @@
 package de.uniks.stp;
 
-import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Channel;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 
 public class AlternateChannelListCellFactory2 implements javafx.util.Callback<ListView<Channel>, ListCell<Channel>> {
     /**
