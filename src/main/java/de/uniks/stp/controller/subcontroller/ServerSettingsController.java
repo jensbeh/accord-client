@@ -65,6 +65,7 @@ public class ServerSettingsController {
     private void onCategoryClicked(ActionEvent actionEvent) {
         if (selectedButton != category) {
             newSelectedButton(category);
+            openSettings("Category");
         }
     }
     /**
@@ -119,9 +120,15 @@ public class ServerSettingsController {
                     subController = new ServerSettingsChannelController(serverSettingsField, builder, server);
                     subController.init();
                     break;
+                case "Category":
+                    subController = new ServerSettingsCategoryController(serverSettingsField, builder, server);
+                    subController.init();
+                    break;
                 case "Privilege":
                     subController = new ServerSettingsPrivilegeController(serverSettingsField, builder, server);
                     subController.init();
+                    break;
+                default:
                     break;
             }
 
