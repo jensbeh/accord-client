@@ -47,6 +47,12 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void getServerCategories(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public void getCategoryChannels(String serverId, String categoryId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH;
         HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);

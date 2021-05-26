@@ -45,7 +45,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         app.start(stage);
         this.stage.centerOnScreen();
         this.restClient = new RestClient();
-
     }
 
     @Mock
