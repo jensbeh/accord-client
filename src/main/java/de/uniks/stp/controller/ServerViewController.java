@@ -60,14 +60,8 @@ public class ServerViewController {
     private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
     private ChatViewController messageViewController;
-    private static String channelId;
-    private static String channelName;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
-
-    public static String channelId() {
-        return channelId;
-    }
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -105,12 +99,16 @@ public class ServerViewController {
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         messages = (VBox) view.lookup("#chatBox");
 
+        builder.setCurrentServerChannel(getDefaultChannel());
+
         showCurrentUser();
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    loadCategories();
+                    if(builder.getCurrentServer().getCategories().size() == 0) {
+                        loadCategories();
+                    }
                 }
             }
         }); // members & (categories)
@@ -131,7 +129,7 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(builder.getCurrentServerChannel().getId())) {
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         message = new Message().setMessage(jsonObject.getString("text")).
@@ -144,7 +142,8 @@ public class ServerViewController {
                     }
                     if (messageViewController != null) {
                         assert message != null;
-                        builder.getCurrentServer().getCategories().get(0).getChannel().get(0).withMessage(message);
+                        //builder.getCurrentServer().getCategories().get(0).getChannel().get(0).withMessage(message);
+                        builder.getCurrentServerChannel().withMessage(message);
                         ChatViewController.printMessage(message);
                     }
                 }
@@ -187,6 +186,9 @@ public class ServerViewController {
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
     }
 
+    /**
+     * Initial Chat View and load chat history which is saved in list
+     */
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
@@ -194,16 +196,11 @@ public class ServerViewController {
             this.messages.getChildren().clear();
             messageViewController.init();
             this.messages.getChildren().add(root);
-            if (builder.getCurrentServer() != null) {
-                if (builder.getCurrentServer().getCategories().size() != 0) {
-                    if (builder.getCurrentServer().getCategories().get(0) != null) {
-                        if (builder.getCurrentServer().getCategories().get(0).getChannel().size() != 0) {
-                            for (Message msg : builder.getCurrentServer().getCategories().get(0).getChannel().get(0).getMessage()) {
-                                // Display each Message which are saved
-                                ChatViewController.printMessage(msg);
-                            }
-                        }
-                    }
+
+            if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
+                for (Message msg : builder.getCurrentServerChannel().getMessage()) {
+                    // Display each Message which are saved
+                    ChatViewController.printMessage(msg);
                 }
             }
         } catch (IOException e) {
@@ -240,6 +237,7 @@ public class ServerViewController {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
+            server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (int i = 0; i < members.length(); i++) {
@@ -327,8 +325,10 @@ public class ServerViewController {
         });
     }
 
+    /**
+     * Gets categories from server and adds in list
+     */
     public void loadCategories() {
-        builder.getCurrentServer().removeCategories();
         restClient.getServerCategories(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -348,6 +348,11 @@ public class ServerViewController {
         });
     }
 
+    /**
+     * Gets all channels for a category and adds in list
+     *
+     * @param cat the category to load the channels from it
+     */
     public void loadChannels(Categories cat) {
         restClient.getCategoryChannels(builder.getCurrentServer().getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -362,12 +367,28 @@ public class ServerViewController {
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
 
-                    if (cat.getName().equals("default") && channel.getName().equals("default-text-channel")) {
-                        builder.setCurrentServerChannel(channel);
-                    }
+                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
+    }
+
+    /**
+     * Get the default channel which was the one when server also was created
+     *
+     * @return channel is the default channel
+     */
+    public Channel getDefaultChannel() {
+        for (Categories cat : builder.getCurrentServer().getCategories()) {
+            if (cat.getName().equals("default")) {
+                for (Channel channel : cat.getChannel()) {
+                    if (channel.getName().equals("default-text-channel")) {
+                        return channel;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void stop() {
