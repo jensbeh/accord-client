@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="400.0" style="-fx-background-color: #1f1f1f;" stylesheets="@../../styles/ServerSettingsChannel.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefHeight="248.0" prefWidth="473.0">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+               <children>
+                  <HBox alignment="BOTTOM_LEFT" prefHeight="39.0" prefWidth="360.0">
+                     <children>
+                        <Label id="editCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="Edit Category" />
+                     </children>
+                     <VBox.margin>
+                        <Insets left="40.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <ComboBox id="editCategoriesSelector" prefWidth="150.0" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsChannel.css">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </ComboBox>
+                        <VBox prefHeight="150.0" prefWidth="150.0" spacing="15.0">
+                           <children>
+                              <TextField id="editCategoryNameTextField" maxWidth="150.0" prefWidth="150.0" style="-fx-background-radius: 0; -fx-border-color: #222222; -fx-background-color: #333333; -fx-border-width: 2;" />
+                              <HBox prefHeight="100.0" prefWidth="161.0" spacing="15.0">
+                                 <children>
+                                    <Button id="changeCategoryNameButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="change" />
+                                    <Button id="deleteCategoryButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ff0000; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="Delete" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0">
+               <children>
+                  <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label id="createCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="Create Category">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets left="40.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <TextField id="createCategoryNameTextField" maxWidth="150.0" prefWidth="148.0" style="-fx-background-radius: 0; -fx-border-color: #222222; -fx-background-color: #333333; -fx-border-width: 2;">
+                           <HBox.margin>
+                              <Insets top="2.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button id="createCategoryButton" maxWidth="72.0" minHeight="30.0" minWidth="72.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="create" />
+                     </children>
+                     <VBox.margin>
+                        <Insets left="20.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets top="30.0" />
+               </padding>
+            </VBox>
+         </children>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </VBox>
+   </children>
+</VBox>
