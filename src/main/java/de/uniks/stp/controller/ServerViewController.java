@@ -86,6 +86,7 @@ public class ServerViewController {
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
+        inviteUsers.setOnAction(this::onInviteUsersClicked);
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -403,6 +404,8 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        serverSettings.setOnAction(null);
+        inviteUsers.setOnAction(null);
     }
 
     public static Server getSelectedServer() {
@@ -429,6 +432,10 @@ public class ServerViewController {
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
         StageManager.showServerSettingsScreen();
+    }
+
+    private void onInviteUsersClicked(ActionEvent actionEvent) {
+        StageManager.showInviteUsersScreen();
     }
 
 }
