@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsController;
 import javafx.application.Application;
@@ -31,6 +32,7 @@ public class StageManager extends Application {
     private static String stageTitleName;
     private static String subStageTitleName;
     private static ServerSettingsController serverSettingsController;
+    private static InviteUsersController inviteUsersController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -183,6 +185,37 @@ public class StageManager extends Application {
             subStage.show();
         } catch (Exception e) {
             System.err.println("Error on showing ServerSetting Screen");
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void showInviteUsersScreen() {
+        try {
+            // load view
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsers.fxml"));
+            Scene scene = new Scene(root);
+
+            // init controller
+            inviteUsersController = new InviteUsersController(root,builder,builder.getCurrentServer());
+            inviteUsersController.init();
+
+            subStage = new Stage();
+            subStage.setTitle("Invite Users");
+            subStage.setResizable(false);
+            subStage.setScene(scene);
+            subStage.centerOnScreen();
+            subStage.initOwner(stage);
+            subStage.initModality(Modality.WINDOW_MODAL);
+            subStage.setOnCloseRequest(event -> {
+                if (inviteUsersController != null) {
+                    inviteUsersController.stop();
+                    inviteUsersController = null;
+                }
+            });
+            subStage.show();
+        } catch (Exception e) {
+            System.err.println("Error on showing Setting Screen");
             e.printStackTrace();
         }
     }
