@@ -3,6 +3,9 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.ServerSettingsCategoryController;
+import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
+import de.uniks.stp.controller.subcontroller.ServerSettingsPrivilegeController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
@@ -28,6 +31,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -62,6 +66,8 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
+    private CategorySubController categorySubController;
+    private VBox categoryBox;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -82,7 +88,7 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        //Bad code just for testing
+        categoryBox = (VBox) view.lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -107,7 +113,7 @@ public class ServerViewController {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    if(builder.getCurrentServer().getCategories().size() == 0) {
+                    if (builder.getCurrentServer().getCategories().size() == 0) {
                         loadCategories();
                     }
                 }
@@ -184,6 +190,7 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+        generateCategoryChannelView();
     }
 
     /**
@@ -437,4 +444,20 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
+    private void generateCategoryChannelView() {
+        for (Categories c : server.getCategories()) {
+            // clear old and load new subSetting view
+            try {
+                Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+                categorySubController = new CategorySubController(view, builder, c);
+                categorySubController.init();
+                this.categoryBox.getChildren().add(view);
+            } catch (Exception e) {
+                System.err.println("Error on showing Server Settings Field Screen");
+                e.printStackTrace();
+            }
+        }
+
+
+    }
 }
