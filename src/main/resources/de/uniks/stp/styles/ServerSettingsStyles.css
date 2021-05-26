@@ -19,4 +19,8 @@
 
 .text-input {
     -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #333333;
+    -fx-border-width: 2;
 }

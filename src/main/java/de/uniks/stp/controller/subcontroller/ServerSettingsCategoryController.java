@@ -3,21 +3,21 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 
 public class ServerSettingsCategoryController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
-    private ComboBox categoriesSelector;
+    private ComboBox<Categories> categoriesSelector;
     private TextField categoryNameTextField;
     private Button changeCategoryNameButton;
     private Button deleteCategoryButton;
@@ -33,7 +33,7 @@ public class ServerSettingsCategoryController extends SubSetting {
 
     public void init() {
 
-        categoriesSelector = (ComboBox) view.lookup("#editCategoriesSelector");
+        categoriesSelector = (ComboBox<Categories>) view.lookup("#editCategoriesSelector");
         categoryNameTextField = (TextField) view.lookup("#editCategoryNameTextField");
         changeCategoryNameButton = (Button) view.lookup("#changeCategoryNameButton");
         deleteCategoryButton = (Button) view.lookup("#deleteCategoryButton");
@@ -44,22 +44,35 @@ public class ServerSettingsCategoryController extends SubSetting {
         deleteCategoryButton.setOnAction(this::deleteCategory);
         createCategoryButton.setOnAction(this::createCategory);
 
-        categoryNameTextField.setPromptText("Change name..."); //to set the hint text
-        categoryNameTextField.getParent().requestFocus();
-        createCategoryNameTextField.setPromptText("Create new one..."); //to set the hint text
-        createCategoryNameTextField.getParent().requestFocus();
-
         // load categories
         this.categoriesSelector.getItems().clear();
+        this.categoriesSelector.setOnAction(this::onCategoryClicked);
+
         for (Categories category : builder.getCurrentServer().getCategories()) {
-            this.categoriesSelector.getItems().add(category.getName());
+            this.categoriesSelector.getItems().add(category);
+            categoriesSelector.setConverter(new StringConverter<Categories>() {
+                @Override
+                public String toString(Categories object) {
+                    if (object == null) {
+                        return "Select category...";
+                    }
+                    return category.getName();
+                }
+
+                @Override
+                public Categories fromString(String string) {
+                    return null;
+                }
+            });
         }
-        categoriesSelector.valueProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                System.out.println("Selected: " + newValue);
-            }
+        Platform.runLater(() -> {
+            categoriesSelector.getSelectionModel().clearSelection();
         });
+    }
+
+    private void onCategoryClicked(Event event) {
+        Categories selectedCategory = this.categoriesSelector.getValue();
+        System.out.println("Selected Category: " + selectedCategory);
     }
 
     /**
@@ -89,6 +102,6 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.changeCategoryNameButton.setOnMouseClicked(null);
         this.deleteCategoryButton.setOnMouseClicked(null);
         this.createCategoryButton.setOnMouseClicked(null);
-        this.categoriesSelector.valueProperty().addListener((InvalidationListener) null);
+        this.categoriesSelector.setOnAction(null);
     }
 }

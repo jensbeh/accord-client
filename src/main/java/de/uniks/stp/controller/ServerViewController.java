@@ -142,7 +142,6 @@ public class ServerViewController {
                     }
                     if (messageViewController != null) {
                         assert message != null;
-                        //builder.getCurrentServer().getCategories().get(0).getChannel().get(0).withMessage(message);
                         builder.getCurrentServerChannel().withMessage(message);
                         ChatViewController.printMessage(message);
                     }

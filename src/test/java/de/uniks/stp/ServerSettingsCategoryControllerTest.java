@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -102,7 +103,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         Label editCategoryLabel = lookup("#editCategoryLabel").query();
         Label createCategoryLabel = lookup("#createCategoryLabel").query();
-        ComboBox categoriesSelector = lookup("#editCategoriesSelector").query();
+        ComboBox<Categories> categoriesSelector = lookup("#editCategoriesSelector").query();
         TextField categoryNameTextField = lookup("#editCategoryNameTextField").query();
         Button changeCategoryNameButton = lookup("#changeCategoryNameButton").query();
         Button deleteCategoryButton = lookup("#deleteCategoryButton").query();
@@ -120,6 +121,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         // select item //TODO
+        clickOn(currentServer.getCategories().get(0).getName());
 
         // type in name
         categoryNameTextField.setText("NewChannelName");
