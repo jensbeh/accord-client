@@ -14,7 +14,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 
-public class ServerPrivilegeSettingsController extends SubSetting {
+public class ServerSettingsPrivilegeController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
@@ -24,12 +24,12 @@ public class ServerPrivilegeSettingsController extends SubSetting {
     private RadioButton privilegeOnButton;
     private RadioButton privilegeOffButton;
     private HBox privilegeOn;
-    private ServerPrivilegeSubSettingsController ServerPrivilegeSubSettingsController;
+    private ServerSubSettingsPrivilegeController serverSubSettingsPrivilegeController;
     private Button changePrivilege;
     private int selectedIndex;
     private ToggleGroup group;
 
-    public ServerPrivilegeSettingsController(Parent view, ModelBuilder builder, Server server) {
+    public ServerSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server) {
         this.view = view;
         this.builder = builder;
         this.server = server;
@@ -48,9 +48,9 @@ public class ServerPrivilegeSettingsController extends SubSetting {
         privilegeOffButton.setToggleGroup(group);
         privilegeOffButton.setSelected(true);
 
-        privilegeOnButton.setOnAction(this::Privilege_On_Button);
-        privilegeOffButton.setOnAction(this::Privilege_Off_Button);
-        changePrivilege.setOnAction(this::Change_Privilege);
+        privilegeOnButton.setOnAction(this::privilegeOnButton);
+        privilegeOffButton.setOnAction(this::privilegeOffButton);
+        changePrivilege.setOnAction(this::changePrivilege);
 
         for (Categories category : server.getCategories()) {
             categoryChoice.getItems().add(category.getName());
@@ -70,7 +70,7 @@ public class ServerPrivilegeSettingsController extends SubSetting {
     /**
      * Change the Privileg of the choosen channel
      */
-    private void Change_Privilege(ActionEvent actionEvent) {
+    private void changePrivilege(ActionEvent actionEvent) {
         int channelIndex = channelChoice.getSelectionModel().getSelectedIndex();
         server.getCategories().get(selectedIndex).getChannel().get(channelIndex).setPrivilege(privilegeOnButton.isSelected());
     }
@@ -78,21 +78,21 @@ public class ServerPrivilegeSettingsController extends SubSetting {
     /**
      * clears the VBox when channel privileg off so that the fxml is not shown
      */
-    private void Privilege_Off_Button(ActionEvent actionEvent) {
+    private void privilegeOffButton(ActionEvent actionEvent) {
         this.privilegeOn.getChildren().clear();
     }
 
     /**
      * load fxml when channel privileg on. load subcontroller.
      */
-    private void Privilege_On_Button(ActionEvent actionEvent) {
+    private void privilegeOnButton(ActionEvent actionEvent) {
         this.privilegeOn.getChildren().clear();
         try {
             //view
             Parent view = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings_Privilege_UserChange.fxml"));
             //Controller
-            ServerPrivilegeSubSettingsController = new ServerPrivilegeSubSettingsController(view, builder, server);
-            ServerPrivilegeSubSettingsController.init();
+            serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server);
+            serverSubSettingsPrivilegeController.init();
             this.privilegeOn.getChildren().add(view);
         } catch (Exception e) {
             System.err.println("Error on showing ServerSettings_Privilege");

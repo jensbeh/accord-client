@@ -15,7 +15,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.ArrayList;
 
-public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
+public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
@@ -77,7 +77,7 @@ public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void openServerPrivilegeSettingsTest() throws InterruptedException {
+    public void openServerSettingsPrivilegeTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
         Circle addServer = lookup("#addServer").query();
