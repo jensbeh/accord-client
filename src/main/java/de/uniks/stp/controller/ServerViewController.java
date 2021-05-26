@@ -28,7 +28,6 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -459,7 +458,7 @@ public class ServerViewController {
         }
     }
 
-    private void generateCategoryChannelView(Categories c){
+    private void generateCategoryChannelView(Categories c) {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
             view.setId(c.getId());
