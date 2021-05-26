@@ -123,5 +123,4 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#logoutButton");
         Thread.sleep(2000);
     }
-
 }
