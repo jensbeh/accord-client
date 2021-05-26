@@ -45,6 +45,7 @@ public class CategorySubController {
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
+            channelList.refresh();
         }
     }
 

@@ -1,6 +1,8 @@
 package de.uniks.stp;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.PrivateViewController;
+import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Channel;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -39,6 +41,9 @@ public class AlternateChannelListCellFactory2 implements javafx.util.Callback<Li
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
+                if (item == ServerViewController.getSelectedChat()) {
+                    this.setStyle("-fx-background-color: #666666;");
+                }
                 // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setSpacing(5);
@@ -66,7 +71,7 @@ public class AlternateChannelListCellFactory2 implements javafx.util.Callback<Li
                 }
 
          */
-                cell.getChildren().addAll(name,message);
+                cell.getChildren().addAll(name, message);
             }
             this.setGraphic(cell);
         }
