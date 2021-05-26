@@ -237,6 +237,7 @@ public class ServerViewController {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
+            server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (int i = 0; i < members.length(); i++) {

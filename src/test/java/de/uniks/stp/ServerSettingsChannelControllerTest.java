@@ -109,8 +109,29 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
 
         clickOn("#channel");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("ServerSettings", stage.getTitle());
         Thread.sleep(2000);
+
+        Label categoryLabel = lookup("#categoryLabel").query();
+        ComboBox<String> categorySelector = lookup("#categorySelector").query();
+        Label editChannelsLabel = lookup("#editChannelsLabel").query();
+        ComboBox<String> editChannelsSelector = lookup("#editChannelsSelector").query();
+        TextField editChannelsTextField = lookup("#editChannelsTextField").query();
+        Button channelChangeButton = lookup("#channelChangeButton").query();
+        Button channelDeleteButton = lookup("#channelDeleteButton").query();
+        Label createChannelLabel = lookup("#createChannelLabel").query();
+        TextField createChannelTextField = lookup("#createChannelTextField").query();
+        RadioButton channelTextRadioButton = lookup("#channelTextRadioButton").query();
+        RadioButton channelVoiceRadioButton = lookup("#channelVoiceRadioButton").query();
+        Button channelCreateButton = lookup("#channelCreateButton").query();
+
+        Assert.assertEquals("Category", categoryLabel.getText());
+        Assert.assertEquals("Edit Channels", editChannelsLabel.getText());
+        Assert.assertEquals("Create Channel", createChannelLabel.getText());
+        Assert.assertEquals("change", channelChangeButton.getText());
+        Assert.assertEquals("Delete", channelDeleteButton.getText());
+        Assert.assertEquals("create", channelCreateButton.getText());
+        Assert.assertEquals("Text", channelTextRadioButton.getText());
+        Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
 
         clickOn("#logoutButton");
     }
