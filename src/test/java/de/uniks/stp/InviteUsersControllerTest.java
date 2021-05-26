@@ -2,9 +2,7 @@ package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
@@ -23,11 +21,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
     private static String testUserMainPw;
 
 
-
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
     }
 
     @Override
@@ -74,7 +71,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         clickOn("#serverMenuButton");
-        moveBy(0,50);
+        moveBy(0, 50);
         write("\n");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(2, this.listTargetWindows().size());
@@ -91,5 +88,40 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#logoutButton");
         Thread.sleep(2000);
     }
-    
+
+    @Test
+    public void changeInviteUsersSubViewTest() throws InterruptedException {
+        loginInitWithTempUser();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        RadioButton temp = lookup("#tempSelected").query();
+        Assert.assertTrue(temp.isSelected());
+        clickOn("#userLimitSelected");
+        Assert.assertFalse(temp.isSelected());
+        Label label = lookup("#userLimit").query();
+        Assert.assertEquals("User Limit", label.getText());
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
+    }
+
 }

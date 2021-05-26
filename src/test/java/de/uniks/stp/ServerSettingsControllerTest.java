@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -108,18 +109,21 @@ public class ServerSettingsControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-
-        Assert.assertNotEquals(2, this.listTargetWindows().size());
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals(2, this.listTargetWindows().size());
         String serverSettingsTitle = "";
         for (Object object : this.listTargetWindows()) {
             if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 serverSettingsTitle = ((Stage) object).getTitle();
                 Assert.assertNotEquals("", serverSettingsTitle);
-                ((Stage) object).close();
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
-
         clickOn("#logoutButton");
         Thread.sleep(2000);
     }
