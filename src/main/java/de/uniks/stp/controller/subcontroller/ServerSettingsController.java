@@ -120,7 +120,7 @@ public class ServerSettingsController {
                     subController.init();
                     break;
                 case "Privilege":
-                    subController = new ServerPrivilegeSettingsController(view, builder, server);
+                    subController = new ServerPrivilegeSettingsController(serverSettingsField, builder, server);
                     subController.init();
                     break;
             }

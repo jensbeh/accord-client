@@ -1,8 +1,8 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+
+import java.util.ArrayList;
 
 public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
 
@@ -29,7 +31,7 @@ public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
     }
 
     @Override
@@ -86,34 +88,45 @@ public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
         serverName.setText("TestServer Team Bit Shift");
         clickOn(createServer);
 
-        //WaitForAsyncUtils.waitForFxEvents();
-        //Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        Server server = serverListView.getItems().get(0);
+
+
+        clickOn("#homeButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
 
         clickOn("#serverMenuButton");
-        //WaitForAsyncUtils.waitForFxEvents();
-        //Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
 
         clickOn("#ServerSettings");
-        //WaitForAsyncUtils.waitForFxEvents();
-        //Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
 
         clickOn("#privilege");
-        //WaitForAsyncUtils.waitForFxEvents();
-        //Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
         RadioButton privilegeOn = lookup("#Privilege_On_Button").query();
         RadioButton privilegeOff = lookup("#Privilege_Off_Button").query();
 
         clickOn("#Privilege_On_Button");
-        //WaitForAsyncUtils.waitForFxEvents();
-        //Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
         Assert.assertTrue(privilegeOn.isSelected());
         Assert.assertFalse(privilegeOff.isSelected());
 
         Button change = lookup("#Change_Privilege").query();
         clickOn("#Change_Privilege");
 
-        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        Server server = serverListView.getItems().get(0);
+
         Assert.assertTrue(server.getCategories().get(0).getChannel().get(0).isPrivilege());
 
         clickOn("#Privilege_Off_Button");
@@ -125,9 +138,12 @@ public class ServerPrivilegeSettingsControllerTest extends ApplicationTest {
 
         ChoiceBox categoryChoice = lookup("#Category").query();
         ChoiceBox channelChoice = lookup("#Channels").query();
-        Assert.assertEquals(categoryChoice.getItems(), server.getCategories());
-        Assert.assertEquals(channelChoice.getItems(), server.getCategories().get(0).getChannel());
-
+        Assert.assertEquals(categoryChoice.getItems().get(0), server.getCategories().get(0).getName());
+        ArrayList<String> channelList = new ArrayList<>();
+        for (Channel channel : server.getCategories().get(0).getChannel()) {
+            channelList.add(channel.getName());
+        }
+        Assert.assertEquals(channelChoice.getItems(), channelList);
         clickOn("#logoutButton");
     }
 }
