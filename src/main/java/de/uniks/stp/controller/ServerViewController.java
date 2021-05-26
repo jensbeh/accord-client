@@ -110,7 +110,7 @@ public class ServerViewController {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    loadServerChannel();
+                    loadCategories();
                 }
             }
         }); // members & (categories)
@@ -187,27 +187,6 @@ public class ServerViewController {
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
     }
 
-    private void loadServerChannel() {
-        restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
-                builder.getPersonalUser().getUserKey(), response -> {
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        JSONArray ob = body.getObject().getJSONArray("data");
-                        JSONObject object = ob.getJSONObject(0);
-                        channelId = object.get("id").toString();
-                        channelName = object.get("name").toString();
-                        if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
-                            Channel channel = new Channel().setId(channelId).setName(channelName);
-                            builder.getCurrentServer().getCategories().get(0).withChannel(channel);
-                            builder.setCurrentServerChannel(channel);
-                        }
-                    } else if (status.equals("failure")) {
-                        System.out.println(body.getObject().getString("message"));
-                    }
-                });
-    }
-
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
@@ -262,15 +241,7 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                JSONArray category = body.getObject().getJSONObject("data").getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
-                if (builder.getCurrentServer().getCategories().size() == 0) {
-                    for (int i = 0; i < category.length(); i++) {
-                        Categories categories = new Categories();
-                        categories.setId(category.getString(i));
-                        builder.getCurrentServer().withCategories(categories);
-                    }
-                }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
@@ -353,6 +324,49 @@ public class ServerViewController {
             offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
             onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
             offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+        });
+    }
+
+    public void loadCategories() {
+        builder.getCurrentServer().removeCategories();
+        restClient.getServerCategories(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject categoryInfo = data.getJSONObject(i);
+                    Categories categories = new Categories();
+                    categories.setId(categoryInfo.getString("id"));
+                    categories.setName(categoryInfo.getString("name"));
+                    categories.setServer(server);
+                    builder.getCurrentServer().withCategories(categories);
+
+                    loadChannels(categories);
+                }
+            }
+        });
+    }
+
+    public void loadChannels(Categories cat) {
+        restClient.getCategoryChannels(builder.getCurrentServer().getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject channelInfo = data.getJSONObject(i);
+                    Channel channel = new Channel();
+                    channel.setCurrentUser(builder.getPersonalUser());
+                    channel.setId(channelInfo.getString("id"));
+                    channel.setName(channelInfo.getString("name"));
+                    channel.setCategories(cat);
+
+                    if (cat.getName().equals("default") && channel.getName().equals("default-text-channel")) {
+                        builder.setCurrentServerChannel(channel);
+                    }
+                }
+            }
         });
     }
 
