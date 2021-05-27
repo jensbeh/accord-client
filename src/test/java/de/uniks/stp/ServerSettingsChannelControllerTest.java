@@ -72,7 +72,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void openServerPrivilegeSettingsTest() throws InterruptedException {
+    public void openServerChannelSettingsTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
         Circle addServer = lookup("#addServer").query();
