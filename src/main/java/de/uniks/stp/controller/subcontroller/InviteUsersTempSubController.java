@@ -39,6 +39,10 @@ public class InviteUsersTempSubController {
         linkComboBox.setOnAction(this::onLinkChanged);
     }
 
+
+    /**
+     * OnCreate clicked send restclient request to the server and handles the response accordingly.
+     */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         System.out.println("onCreateLinkClicked");
         restClient.createTempLink("temporal", 0, server.getId(), builder.getPersonalUser().getUserKey(), response -> {
@@ -54,12 +58,19 @@ public class InviteUsersTempSubController {
         });
     }
 
+    /**
+     * OnDelete clicked removes selected Link from the Combobox
+     */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (selectedLink != null) {
             linkComboBox.getItems().remove(selectedLink);
         }
     }
 
+
+    /**
+     * updates the selectedLink
+     */
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedLink = this.linkComboBox.getSelectionModel().getSelectedItem();
         this.linkComboBox.setPromptText(selectedLink);
