@@ -4,6 +4,7 @@ plugins {
     // https://plugins.gradle.org/plugin/org.fulib.fulibGradle
     id 'org.fulib.fulibGradle' version '0.5.0'
     id 'org.openjfx.javafxplugin' version '0.0.9'
+    id 'jacoco' // DO NOT DELETE
 }
 
 group = 'de.uniks.stp'
@@ -76,3 +77,12 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
+/* DO NOT CHANGE THIS PART */
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+check.dependsOn jacocoTestReport
