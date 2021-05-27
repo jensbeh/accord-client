@@ -16,6 +16,7 @@ public class Constants {
     public static final String SERVER_CATEGORIES_PATH = "/categories";
     public static final String SERVER_CHANNELS_PATH = "/channels";
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
+    public static final String SERVER_INVITES = "/invites";
 
 
     // Communication
