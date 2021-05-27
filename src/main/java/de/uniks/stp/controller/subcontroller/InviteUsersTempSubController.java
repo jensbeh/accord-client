@@ -55,14 +55,7 @@ public class InviteUsersTempSubController {
     }
 
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
-        if (linkComboBox.getItems().size() > 0 && selectedLink != null) {
-            if (selectedLink.equals(linkComboBox.getPromptText())) {
-                if (linkComboBox.getItems().size() > 0) {
-                    linkComboBox.setPromptText(linkComboBox.getItems().get(1));
-                } else {
-                    linkComboBox.setPromptText("");
-                }
-            }
+        if (selectedLink != null) {
             linkComboBox.getItems().remove(selectedLink);
         }
     }
