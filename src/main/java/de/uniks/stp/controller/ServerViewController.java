@@ -261,6 +261,9 @@ public class ServerViewController {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
+            //---------------------------------------------------------------------------
+            builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
+            //---------------------------------------------------------------------------
             if (status.equals("success")) {
                 JSONArray category = body.getObject().getJSONObject("data").getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
@@ -355,6 +358,7 @@ public class ServerViewController {
             offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
         });
     }
+
 
     public void stop() {
         onlineUsersList.setItems(null);

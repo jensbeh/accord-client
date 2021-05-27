@@ -53,6 +53,12 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void postServerLeave(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + LEAVE_PATH;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public JsonNode postServer(String userKey, String serverName) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", serverName);

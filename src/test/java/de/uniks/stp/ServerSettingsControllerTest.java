@@ -64,4 +64,24 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         closeCurrentWindow();   // TODO talk with maurice about logging out in Test
         clickOn("#logoutButton");
     }
+
+    @Test
+    public void clickOnOverview() throws InterruptedException {
+        login();
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverList.lookup("#server"));
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        clickOn("#overview");
+        clickOn("#deleteServer");
+        Label serverNameLabel = lookup("#serverName").query();
+        Button leaveButton = lookup("#deleteServer").query();
+        Assert.assertEquals("Servername", serverNameLabel.getText());
+        Assert.assertEquals("Delete Server", leaveButton.getText());
+        clickOn("#logoutButton");
+    }
 }
