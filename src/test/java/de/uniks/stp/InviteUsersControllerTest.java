@@ -123,4 +123,58 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#logoutButton");
         Thread.sleep(2000);
     }
+
+
+    @Test
+    public void generateAndDeleteTempLink() throws InterruptedException {
+        loginInitWithTempUser();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+        TextField link = lookup("#linkTextField").query();
+        ComboBox<String> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (String s : links.getItems()) {
+            if (s.equals(link.getText())) {
+                certainLink = s;
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+        clickOn(links);
+        moveBy(0, 25);
+        write("\n");
+        clickOn("#deleteLink");
+        String checkDel = "";
+        for (String s : links.getItems()) {
+            if (s.equals(link.getText())) {
+                checkDel = s;
+                break;
+            }
+        }
+        Assert.assertEquals("", checkDel);
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
+    }
 }
