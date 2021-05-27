@@ -197,7 +197,6 @@ public class ServerViewController {
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
         Platform.runLater(this::generateCategoriesChannelViews);
-        Platform.runLater(() -> setSelectedChat(server.getCategories().get(0).getChannel().get(0)));
     }
 
     /**
