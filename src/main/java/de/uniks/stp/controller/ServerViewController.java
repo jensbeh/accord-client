@@ -40,12 +40,12 @@ import static util.Constants.*;
 public class ServerViewController {
 
     private static Channel selectedChat;
+    private static ModelBuilder builder;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
-    private ModelBuilder builder;
     private VBox channelBox;
     private VBox textChannelBox;
     private MenuButton serverMenuButton;
@@ -65,7 +65,6 @@ public class ServerViewController {
     private MenuItem inviteUsers;
     private CategorySubController categorySubController;
     private VBox categoryBox;
-    private Button test;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -79,11 +78,11 @@ public class ServerViewController {
     }
 
     public static Channel getSelectedChat() {
-        return selectedChat;
+        return builder.getCurrentServerChannel();
     }
 
     public static void setSelectedChat(Channel Chat) {
-        selectedChat = Chat;
+        builder.setCurrentServerChannel(Chat);
     }
 
     /**
@@ -418,10 +417,6 @@ public class ServerViewController {
         }
         serverSettings.setOnAction(null);
         inviteUsers.setOnAction(null);
-    }
-
-    public static Server getSelectedServer() {
-        return server;
     }
 
     /**

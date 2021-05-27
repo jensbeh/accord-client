@@ -1,11 +1,7 @@
 package de.uniks.stp;
 
-import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.CurrentUserMessageController;
 import de.uniks.stp.model.User;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
