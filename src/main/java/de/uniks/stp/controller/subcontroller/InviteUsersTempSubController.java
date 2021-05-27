@@ -72,11 +72,12 @@ public class InviteUsersTempSubController {
 
 
     /**
-     * updates the selectedLink
+     * updates the selectedLink and the textfield
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedLink = this.linkComboBox.getSelectionModel().getSelectedItem();
         this.linkComboBox.setPromptText(selectedLink);
+        linkTextField.setText(selectedLink);
     }
 
     public void stop() {
