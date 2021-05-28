@@ -25,6 +25,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -85,7 +86,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -113,6 +114,60 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertFalse(temp.isSelected());
         Label label = lookup("#userLimit").query();
         Assert.assertEquals("User Limit", label.getText());
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        
+        Thread.sleep(2000);
+    }
+
+
+    @Test
+    public void generateAndDeleteTempLink() throws InterruptedException {
+        loginInitWithTempUser();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+        TextField link = lookup("#linkTextField").query();
+        ComboBox<String> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (String s : links.getItems()) {
+            if (s.equals(link.getText())) {
+                certainLink = s;
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+        clickOn(links);
+        moveBy(0, 25);
+        write("\n");
+        clickOn("#deleteLink");
+        String checkDel = "";
+        for (String s : links.getItems()) {
+            if (s.equals(link.getText())) {
+                checkDel = s;
+                break;
+            }
+        }
+        Assert.assertEquals("", checkDel);
         for (Object object : this.listTargetWindows()) {
             if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 Platform.runLater(((Stage) object)::close);

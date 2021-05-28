@@ -48,6 +48,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -102,7 +103,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         restMock.login("bla", "fasel", response -> {
@@ -269,7 +270,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         restMock.loginTemp(response -> {
@@ -315,7 +316,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         //Check if file with username and password is empty
@@ -352,7 +353,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         //Check if file with username and password were saved
