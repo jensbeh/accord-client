@@ -13,9 +13,9 @@ import javafx.scene.input.MouseEvent;
 import java.beans.PropertyChangeEvent;
 
 public class CategorySubController {
-    private final Parent view;
-    private final ModelBuilder builder;
-    private final Categories category;
+    private Parent view;
+    private ModelBuilder builder;
+    private Categories category;
     private Label categoryName;
     private ListView<Channel> channelList;
     private AlternateChannelListCellFactory2 channeListCellFactory;
