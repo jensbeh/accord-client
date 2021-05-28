@@ -121,7 +121,7 @@ public class ServerMessageTest extends ApplicationTest {
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

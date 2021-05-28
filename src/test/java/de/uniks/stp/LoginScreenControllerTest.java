@@ -103,7 +103,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         restMock.login("bla", "fasel", response -> {
@@ -270,7 +270,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         restMock.loginTemp(response -> {
@@ -316,7 +316,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         //Check if file with username and password is empty
@@ -353,7 +353,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
 
         //Check if file with username and password were saved

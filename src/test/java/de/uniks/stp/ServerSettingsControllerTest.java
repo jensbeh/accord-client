@@ -125,7 +125,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 break;
             }
         }
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

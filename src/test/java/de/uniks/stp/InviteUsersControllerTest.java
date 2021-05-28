@@ -86,7 +86,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -121,7 +121,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

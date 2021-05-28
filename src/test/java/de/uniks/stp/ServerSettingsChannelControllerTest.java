@@ -134,6 +134,6 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals("Text", channelTextRadioButton.getText());
         Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
 
-        clickOn("#logoutButton");
+        
     }
 }

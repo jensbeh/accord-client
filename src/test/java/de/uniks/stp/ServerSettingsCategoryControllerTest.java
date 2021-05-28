@@ -155,7 +155,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             }
         }
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

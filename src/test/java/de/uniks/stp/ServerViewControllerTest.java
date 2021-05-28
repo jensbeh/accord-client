@@ -128,7 +128,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -154,7 +154,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -191,7 +191,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new Channel().setName("PARTEY"));
         Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(),channels.getItems().size());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

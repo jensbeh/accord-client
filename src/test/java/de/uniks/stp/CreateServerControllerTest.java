@@ -101,7 +101,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         verify(restMock).postServer(anyString(), anyString());
         Assert.assertEquals(jsonObj.toString(), res.getBody().toString());
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test
@@ -114,7 +114,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         clickOn("#createServer");
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test
@@ -135,7 +135,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 

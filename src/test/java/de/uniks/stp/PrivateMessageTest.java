@@ -274,7 +274,7 @@ public class PrivateMessageTest extends ApplicationTest {
         restClient.logout(testUserTwo_UserKey, response -> {
         });
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -349,7 +349,7 @@ public class PrivateMessageTest extends ApplicationTest {
         restClient.logout(testUserTwo_UserKey, response -> {
         });
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }
