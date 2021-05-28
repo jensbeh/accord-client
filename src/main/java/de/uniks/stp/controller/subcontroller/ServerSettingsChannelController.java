@@ -132,7 +132,7 @@ public class ServerSettingsChannelController extends SubSetting {
         disableEditing(false);
 
         selectedCategory = categorySelector.getValue();
-        loadChannels();
+        loadChannels(null);
     }
 
     /**
@@ -147,10 +147,14 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    private void loadChannels() {
+    private void loadChannels(Channel preSelectChannel) {
         selectedChannel = null;
         editChannelsSelector.getItems().clear();
         editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+
+        if(preSelectChannel != null) {
+            editChannelsSelector.getSelectionModel().select(preSelectChannel);
+        }
     }
 
     /**
@@ -172,7 +176,7 @@ public class ServerSettingsChannelController extends SubSetting {
                         selectedChannel.setName(newChannelName);
                         editChannelsTextField.setText("");
                         selectedCategory.withChannel(selectedChannel);
-                        Platform.runLater(() -> loadChannels());
+                        Platform.runLater(() -> loadChannels(selectedChannel));
                     } else {
                         System.out.println(status);
                         System.out.println(body.getObject().getString("message"));
