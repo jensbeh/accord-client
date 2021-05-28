@@ -105,7 +105,6 @@ public class HomeViewController {
                 if (PrivateViewController.getSelectedChat() != null) {
                     this.privateViewController.MessageViews();
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();

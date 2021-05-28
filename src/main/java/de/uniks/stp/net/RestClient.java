@@ -60,11 +60,45 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void postServerLeave(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + LEAVE_PATH;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public JsonNode postServer(String userKey, String serverName) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", serverName);
         HttpResponse<JsonNode> response = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH).body(jsonBody).header("userKey", userKey).asJson();
         return response.getBody();
+    }
+
+    public void updateChannel(String serverId, String categoryId, String channelId, String userKey, String channelName, boolean privilege, String[] Members, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", channelName).accumulate("privileged", privilege).accumulate("members", Members);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void putServer(String serverId, String serverName, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", serverName);
+        String body = JSONObject.valueToString(jsonObj);
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.put(url).header("userKey", userKey).body(body);
+        sendRequest(postRequest, callback);
+    }
+
+    public void deleteServer(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
+    public void createChannel(String serverId, String categoryId, String userKey, String channelName, String type, boolean privileged, String[] members, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", channelName).accumulate("type", type).accumulate("privileged", privileged).accumulate("members", members);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
     }
 
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
