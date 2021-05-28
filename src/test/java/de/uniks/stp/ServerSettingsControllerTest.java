@@ -28,7 +28,8 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -123,7 +124,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 break;
             }
         }
-        clickOn("#logoutButton");
         Thread.sleep(2000);
     }
 
@@ -146,7 +146,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Button leaveButton = lookup("#deleteServer").query();
         Assert.assertEquals("Servername", serverNameLabel.getText());
         Assert.assertEquals("Delete Server", leaveButton.getText());
-        clickOn("#logoutButton");
     }
 
     @Test
@@ -213,6 +212,5 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("", serverId);
         System.out.println("ServerList: " + serverList.getItems().toString());
-        clickOn("#logoutButton");
     }
 }
