@@ -30,6 +30,7 @@ public class ServerMessageTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -120,7 +121,7 @@ public class ServerMessageTest extends ApplicationTest {
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 }

@@ -47,6 +47,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -176,7 +177,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
             }
         }
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -200,7 +201,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
         ws.stop();
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -298,7 +299,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         Assert.assertFalse(lookup("#notificationCounterBackground_" + testUser1_ID).queryAll().contains(backgroundSecondTime));
         Assert.assertFalse(lookup("#notificationCounterForeground_" + testUser1_ID).queryAll().contains(foregroundSecondTime));
 
-        clickOn("#logoutButton");
+        
 
         shutDownWebSocketClient();
         restClient.logout(testUser1_KEY, response -> {

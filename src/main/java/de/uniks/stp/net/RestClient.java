@@ -1,5 +1,6 @@
 package de.uniks.stp.net;
 
+import de.uniks.stp.builder.ModelBuilder;
 import kong.unirest.*;
 import org.json.JSONObject;
 
@@ -68,5 +69,15 @@ public class RestClient {
 
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
         req.asJsonAsync(callback);
+    }
+
+    public void createTempLink(String type, Integer max,String serverid,String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("type", type);
+        if(type.equals("count")){
+            jsonObj.accumulate("max",max);
+        }
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH+"/"+serverid+ SERVER_INVITES).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
     }
 }

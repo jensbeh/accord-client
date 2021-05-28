@@ -27,6 +27,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -133,6 +134,6 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals("Text", channelTextRadioButton.getText());
         Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
 
-        clickOn("#logoutButton");
+        
     }
 }
