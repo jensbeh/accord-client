@@ -168,8 +168,10 @@ public class ServerSettingsChannelController extends SubSetting {
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
                         System.out.println("--> SUCCESS: changed channel name");
+                        selectedCategory.withoutChannel(selectedChannel);
                         selectedChannel.setName(newChannelName);
                         editChannelsTextField.setText("");
+                        selectedCategory.withChannel(selectedChannel);
                         Platform.runLater(() -> loadChannels());
                     } else {
                         System.out.println(status);
