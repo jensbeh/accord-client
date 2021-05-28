@@ -24,6 +24,7 @@ public class OverviewController {
 
     public void init() {
         this.serverName = (Label) view.lookup("#serverName");
+        serverName.setText(builder.getCurrentServer().getName());
         this.leaveServer = (Button) view.lookup("#leaveServer");
         //Buttons
         leaveServer.setOnAction(this::onLeaveServerClicked);

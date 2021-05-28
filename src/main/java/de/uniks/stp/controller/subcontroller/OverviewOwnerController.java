@@ -32,9 +32,11 @@ public class OverviewOwnerController {
 
     public void init() {
         this.serverName = (Label) view.lookup("#serverName");
+        serverName.setText(builder.getCurrentServer().getName());
         this.deleteServer = (Button) view.lookup("#deleteServer");
         this.changeName = (Button) view.lookup("#changeName");
         this.nameText = (TextField) view.lookup("#nameText");
+        nameText.setStyle("-fx-text-fill: white;" + "-fx-background-color:  #333333;");
         //Buttons
         deleteServer.setOnAction(this::onDeleteServerClicked);
         changeName.setOnAction(this::onChangeNameClicked);
