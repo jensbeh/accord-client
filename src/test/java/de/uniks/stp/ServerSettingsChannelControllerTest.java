@@ -95,32 +95,32 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
 
         Server currentServer = null;
         for (Server server : serverListView.getItems()) {
-            if (server.getName().equals("TestServer Team Bit Shift")) {
+            if (server.getId().equals(testServerId)) {
                 currentServer = server;
             }
         }
 
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(500);
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(500);
 
         clickOn("#serverMenuButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(500);
 
         clickOn("#ServerSettings");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(500);
 
         clickOn("#channel");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(500);
 
         Label categoryLabel = lookup("#categoryLabel").query();
         ComboBox<Categories> categorySelector = lookup("#categorySelector").query();
@@ -149,7 +149,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         clickOn(categorySelector);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(500);
-        clickOn("$$$" + currentServer.getCategories().get(0).getName());
+        clickOn(currentServer.getCategories().get(0).getName());
         Thread.sleep(500);
 
         editChannelsSelector.getItems().get(0).setName("$$$" + editChannelsSelector.getItems().get(0).getName());
@@ -157,8 +157,16 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         clickOn(editChannelsSelector);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(500);
-        clickOn("$$$" + currentServer.getCategories().get(0).getChannel().get(0).getName());
+        clickOn(currentServer.getCategories().get(0).getChannel().get(0).getName());
         Thread.sleep(500);
+
+        // Change Channel Name
+        clickOn(editChannelsTextField);
+        editChannelsTextField.setText("TestChannel");
+        clickOn(channelChangeButton);
+        Thread.sleep(2000);
+        Assert.assertEquals("TestChannel", currentServer.getCategories().get(0).getChannel().get(0).getName());
+        Assert.assertEquals("", editChannelsTextField.getText());
 
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {

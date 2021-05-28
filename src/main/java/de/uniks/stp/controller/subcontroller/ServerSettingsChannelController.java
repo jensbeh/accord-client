@@ -4,15 +4,22 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
+import kong.unirest.JsonNode;
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 
 public class ServerSettingsChannelController extends SubSetting {
     private Parent view;
     private ModelBuilder builder;
     private Server server;
+    private RestClient restClient;
 
     private Label categoryLabel;
     private ComboBox<Categories> categorySelector;
@@ -35,6 +42,7 @@ public class ServerSettingsChannelController extends SubSetting {
         this.view = view;
         this.builder = builder;
         this.server = server;
+        this.restClient = new RestClient();
     }
 
     public void init() {
@@ -54,6 +62,7 @@ public class ServerSettingsChannelController extends SubSetting {
 
         this.categorySelector.setOnAction(this::onCategoryChanged);
         this.editChannelsSelector.setOnAction(this::onChannelChanged);
+        this.channelChangeButton.setOnAction(this::onChannelChangeButtonClicked);
 
         this.categorySelector.getItems().addAll(builder.getCurrentServer().getCategories());
 
@@ -93,6 +102,7 @@ public class ServerSettingsChannelController extends SubSetting {
     public void stop() {
         categorySelector.setOnAction(null);
         editChannelsSelector.setOnAction(null);
+        channelChangeButton.setOnAction(null);
     }
 
     /**
@@ -122,7 +132,7 @@ public class ServerSettingsChannelController extends SubSetting {
         disableEditing(false);
 
         selectedCategory = categorySelector.getValue();
-        loadChannels();
+        loadChannels(null);
     }
 
     /**
@@ -137,9 +147,46 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    private void loadChannels() {
+    private void loadChannels(Channel preSelectChannel) {
         selectedChannel = null;
         editChannelsSelector.getItems().clear();
         editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+
+        if(preSelectChannel != null) {
+            editChannelsSelector.getSelectionModel().select(preSelectChannel);
+        }
+    }
+
+    /**
+     * when clicking change button, change the channel name
+     *
+     * @param actionEvent the mouse click event
+     */
+    private void onChannelChangeButtonClicked(ActionEvent actionEvent) {
+        if (selectedChannel != null && !editChannelsTextField.getText().isEmpty()) {
+            String newChannelName = editChannelsTextField.getText();
+            if (!selectedChannel.getName().equals(newChannelName)) {
+                String[] members = new String[0];
+                restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, false /*TODO*/, members /*TODO*/, response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        System.out.println("--> SUCCESS: changed channel name");
+                        selectedCategory.withoutChannel(selectedChannel);
+                        selectedChannel.setName(newChannelName);
+                        editChannelsTextField.setText("");
+                        selectedCategory.withChannel(selectedChannel);
+                        Platform.runLater(() -> loadChannels(selectedChannel));
+                    } else {
+                        System.out.println(status);
+                        System.out.println(body.getObject().getString("message"));
+                    }
+                });
+            } else {
+                System.out.println("--> ERR: New name equals old name");
+            }
+        } else {
+            System.out.println("--> ERR: No Channel selected OR Field is empty");
+        }
     }
 }
