@@ -2,14 +2,12 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.UserProfileController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -56,19 +54,22 @@ public class ServerSettingsController {
     }
 
 
+    /**
+     * Show Overview settings decide between owner and not owner
+     */
     private void onOverViewClicked(ActionEvent actionEvent) {
         if (selectedButton != overview) {
             newSelectedButton(overview);
         }
         String userId = "";
-        for (User user : builder.getCurrentServer().getUser()){
-            if (user.getName().equals(builder.getPersonalUser().getName())){
+        for (User user : builder.getCurrentServer().getUser()) {
+            if (user.getName().equals(builder.getPersonalUser().getName())) {
                 userId = user.getId();
             }
         }
         Parent root = null;
         try {
-            if (builder.getCurrentServer().getOwner().equals(userId)){
+            if (builder.getCurrentServer().getOwner().equals(userId)) {
                 root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml"), StageManager.getLangBundle());
                 OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
                 overviewOwnerController.init();
@@ -97,6 +98,7 @@ public class ServerSettingsController {
             openSettings("Category");
         }
     }
+
     /**
      * shows the privilege settings from the server
      */

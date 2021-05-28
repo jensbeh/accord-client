@@ -25,21 +25,19 @@ public class OverviewController {
     public void init() {
         this.serverName = (Label) view.lookup("#serverName");
         this.leaveServer = (Button) view.lookup("#leaveServer");
-
+        //Buttons
         leaveServer.setOnAction(this::onLeaveServerClicked);
     }
 
+    /**
+     * User leaves the current server
+     */
     private void onLeaveServerClicked(ActionEvent actionEvent) {
-        leaveServer();
-    }
-
-    public void leaveServer() {
         restClient.postServerLeave(builder.getPersonalUser().getUserKey(), builder.getCurrentServer().getId(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             System.out.println("status: " + status);
             builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
-            //remove currentUser aus serverUserList???
         });
         StageManager.showHome();
     }

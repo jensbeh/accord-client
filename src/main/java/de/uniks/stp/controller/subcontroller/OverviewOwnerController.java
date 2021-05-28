@@ -35,20 +35,25 @@ public class OverviewOwnerController {
         this.deleteServer = (Button) view.lookup("#deleteServer");
         this.changeName = (Button) view.lookup("#changeName");
         this.nameText = (TextField) view.lookup("#nameText");
-
+        //Buttons
         deleteServer.setOnAction(this::onDeleteServerClicked);
         changeName.setOnAction(this::onChangeNameClicked);
     }
 
+    /**
+     * Changes name of current server
+     */
     private void onChangeNameClicked(ActionEvent actionEvent) {
         builder.getCurrentServer().setName(nameText.getText());
         restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
-            //ServerName label direkt ändern???
         });
     }
 
+    /**
+     * Deletes current server and shows homeview
+     */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
         ButtonType button = new ButtonType("Delete Server");
         ButtonType button2 = new ButtonType("Cancel");
@@ -57,7 +62,6 @@ public class OverviewOwnerController {
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        GridPane grid = (GridPane) dialogPane.lookup(".header-panel");
         alert.setHeaderText("Warning!\n" +
                 "Do you want to delete this server\n" +
                 "all Data information of the Server will be lost ");
@@ -70,7 +74,6 @@ public class OverviewOwnerController {
                 StageManager.class.getResource("styles/AlertStyle.css").toExternalForm());
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
-
         if (result.isPresent() && result.get() == button) {
             //delete server
             restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {

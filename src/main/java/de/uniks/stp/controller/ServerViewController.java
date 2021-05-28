@@ -252,9 +252,7 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
-            //---------------------------------------------------------------------------
             builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
-            //---------------------------------------------------------------------------
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (int i = 0; i < members.length(); i++) {
@@ -358,7 +356,6 @@ public class ServerViewController {
                     categories.setName(categoryInfo.getString("name"));
                     categories.setServer(server);
                     builder.getCurrentServer().withCategories(categories);
-
                     loadChannels(categories);
                 }
             }

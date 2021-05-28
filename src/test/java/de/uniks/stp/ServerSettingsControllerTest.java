@@ -1,10 +1,9 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
@@ -29,7 +28,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
     }
 
     @Override
@@ -129,8 +128,10 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void clickOnOverview() throws InterruptedException {
-        login();
+    public void clickOnOwnerOverview() throws InterruptedException {
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+        ;
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
@@ -145,6 +146,73 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Button leaveButton = lookup("#deleteServer").query();
         Assert.assertEquals("Servername", serverNameLabel.getText());
         Assert.assertEquals("Delete Server", leaveButton.getText());
+        clickOn("#logoutButton");
+    }
+
+    @Test
+    public void changeServerNameAndDeleteServer() throws InterruptedException {
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+        TextField serverName = lookup("#serverName").query();
+        serverName.setText("TestServer");
+        clickOn("#createServer");
+        Assert.assertEquals("TestServer", serverName.getText());
+        Thread.sleep(2000);
+        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        System.out.println("ServerList: " + serverList.getItems().toString());
+        String serverId = "";
+        for (Server server : serverList.getItems()) {
+            if (server.getName().equals("TestServer")) {
+                serverId = server.getId();
+            }
+        }
+        Thread.sleep(2000);
+        clickOn(serverList.lookup("#serverName_" + serverId));
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        clickOn("#overview");
+
+        //change ServerName
+        TextField serverNameField = lookup("#nameText").query();
+        serverNameField.setText("Test2");
+        clickOn("#changeName");
+        String serverIdChangedName = "";
+        for (Server server : serverList.getItems()) {
+            if (server.getName().equals("Test2")) {
+                serverIdChangedName = server.getId();
+            }
+        }
+        Assert.assertEquals(serverId, serverIdChangedName);
+
+        //delete Server
+        clickOn("#deleteServer");
+        String result = "";
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+                Assert.assertEquals("ServerSettings", result);
+                Platform.runLater(((Stage) s)::close);
+                Thread.sleep(2000);
+                break;
+            }
+        }
+        //click on delete Button (Alert)
+
+        //check if server doesn't exist anymore
+        serverId = "";
+        for (Server server : serverList.getItems()) {
+            if (server.getName().equals("TestServer")) {
+                serverId = server.getId();
+            }
+        }
+        Assert.assertEquals("", serverId);
+        System.out.println("ServerList: " + serverList.getItems().toString());
         clickOn("#logoutButton");
     }
 }
