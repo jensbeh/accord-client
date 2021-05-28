@@ -6,8 +6,6 @@ branches:
     - master
 before_install:
   - chmod +x ./gradlew
-services:
-  - xvfb
 script:
   - ./gradlew check
   - ./gradlew jacocoTestReport

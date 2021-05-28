@@ -32,6 +32,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
