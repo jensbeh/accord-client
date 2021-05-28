@@ -1,5 +1,6 @@
 package de.uniks.stp.net;
 
+import de.uniks.stp.builder.ModelBuilder;
 import kong.unirest.*;
 import org.json.JSONObject;
 
@@ -59,6 +60,12 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void postServerLeave(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + LEAVE_PATH;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public JsonNode postServer(String userKey, String serverName) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("name", serverName);
@@ -66,17 +73,38 @@ public class RestClient {
         return response.getBody();
     }
 
-    private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
-        req.asJsonAsync(callback);
-    }
-
-    public void updateChannel(String serverId, String categoryId, String channelId, String userKey, String serverName, boolean privilege, String[] Members, Callback<JsonNode> callback) {
-        JSONObject jsonObj = new JSONObject().accumulate("name", serverName).accumulate("privileged", privilege).accumulate("members", Members);
+    public void updateChannel(String serverId, String categoryId, String channelId, String userKey, String channelName, boolean privilege, String[] Members, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", channelName).accumulate("privileged", privilege).accumulate("members", Members);
         String body = JSONObject.valueToString(jsonObj);
         HttpRequest<?> request = Unirest.put(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId).body(body).header("userKey", userKey);
         sendRequest(request, callback);
     }
 
+    public void putServer(String serverId, String serverName, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", serverName);
+        String body = JSONObject.valueToString(jsonObj);
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.put(url).header("userKey", userKey).body(body);
+        sendRequest(postRequest, callback);
+    }
 
+    public void deleteServer(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
 
+    private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
+        req.asJsonAsync(callback);
+    }
+
+    public void createTempLink(String type, Integer max,String serverid,String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("type", type);
+        if(type.equals("count")){
+            jsonObj.accumulate("max",max);
+        }
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH+"/"+serverid+ SERVER_INVITES).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
+    }
 }

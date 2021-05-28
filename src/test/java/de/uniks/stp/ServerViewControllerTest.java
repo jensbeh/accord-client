@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
@@ -35,6 +36,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -126,7 +128,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -152,7 +154,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertNotEquals(0, onlineUserList.getItems().size());
         Assert.assertNotEquals(0, offlineUserList.getItems().size());
 
-        clickOn("#logoutButton");
+        
         Thread.sleep(2000);
     }
 
@@ -173,5 +175,23 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         restClient.logout(testUserOne_UserKey, response -> {
         });
+    }
+
+
+    @Test
+    public void categoryViewTest() throws InterruptedException {
+        getServerId();
+        loginInit(testUserOneName, testUserOnePw);
+
+        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverList.lookup("#serverName_" + testServerId));
+        Thread.sleep(2000);
+
+        ListView channels = lookup("#channellist").queryListView();
+        app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new Channel().setName("PARTEY"));
+        Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(),channels.getItems().size());
+
+        
+        Thread.sleep(2000);
     }
 }

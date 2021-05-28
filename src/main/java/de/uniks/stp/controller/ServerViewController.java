@@ -40,12 +40,13 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
+    private static Channel selectedChat;
+    private static ModelBuilder builder;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
-    private ModelBuilder builder;
     private VBox channelBox;
     private VBox textChannelBox;
     private MenuButton serverMenuButton;
@@ -63,6 +64,8 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
+    private CategorySubController categorySubController;
+    private VBox categoryBox;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -75,6 +78,14 @@ public class ServerViewController {
         restClient = new RestClient();
     }
 
+    public static Channel getSelectedChat() {
+        return builder.getCurrentServerChannel();
+    }
+
+    public static void setSelectedChat(Channel Chat) {
+        builder.setCurrentServerChannel(Chat);
+    }
+
     /**
      * Initialise all view parameters
      */
@@ -83,7 +94,7 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        //Bad code just for testing
+        categoryBox = (VBox) view.lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -108,7 +119,7 @@ public class ServerViewController {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    if(builder.getCurrentServer().getCategories().size() == 0) {
+                    if (builder.getCurrentServer().getCategories().size() == 0) {
                         loadCategories();
                     }
                 }
@@ -185,6 +196,7 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+        Platform.runLater(this::generateCategoriesChannelViews);
     }
 
     /**
@@ -239,6 +251,7 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
+            builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (int i = 0; i < members.length(); i++) {
@@ -342,7 +355,6 @@ public class ServerViewController {
                     categories.setName(categoryInfo.getString("name"));
                     categories.setServer(server);
                     builder.getCurrentServer().withCategories(categories);
-
                     loadChannels(categories);
                 }
             }
@@ -423,10 +435,6 @@ public class ServerViewController {
         inviteUsers.setOnAction(null);
     }
 
-    public static Server getSelectedServer() {
-        return server;
-    }
-
     /**
      * when language changed reset labels and texts with correct language
      */
@@ -453,4 +461,29 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
+
+    /**
+     * generates new views for all categories of the server
+     */
+    private void generateCategoriesChannelViews() {
+        for (Categories c : server.getCategories()) {
+            generateCategoryChannelView(c);
+        }
+    }
+
+    /**
+     * generates a new view for a category
+     */
+    private void generateCategoryChannelView(Categories c) {
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+            view.setId(c.getId());
+            categorySubController = new CategorySubController(view, builder, c);
+            categorySubController.init();
+            this.categoryBox.getChildren().add(view);
+        } catch (Exception e) {
+            System.err.println("Error on showing Server Settings Field Screen");
+            e.printStackTrace();
+        }
+    }
 }

@@ -13,9 +13,11 @@ public class Constants {
     public static final String LOGOUT_PATH = "/users/logout";
     public static final String TEMP_USER_PATH = "/users/temp";
     public static final String SERVER_PATH = "/servers";
+    public static final String LEAVE_PATH = "/leave";
     public static final String SERVER_CATEGORIES_PATH = "/categories";
     public static final String SERVER_CHANNELS_PATH = "/channels";
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
+    public static final String SERVER_INVITES = "/invites";
 
 
     // Communication
