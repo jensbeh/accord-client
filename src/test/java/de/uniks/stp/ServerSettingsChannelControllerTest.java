@@ -1,7 +1,10 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Categories;
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -73,9 +76,10 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void openServerPrivilegeSettingsTest() throws InterruptedException {
+    public void openServerChannelSettingsTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
+
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 
@@ -88,7 +92,13 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Thread.sleep(2000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        Server server = serverListView.getItems().get(0);
+
+        Server currentServer = null;
+        for (Server server : serverListView.getItems()) {
+            if (server.getName().equals("TestServer Team Bit Shift")) {
+                currentServer = server;
+            }
+        }
 
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
@@ -113,9 +123,9 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Thread.sleep(2000);
 
         Label categoryLabel = lookup("#categoryLabel").query();
-        ComboBox<String> categorySelector = lookup("#categorySelector").query();
+        ComboBox<Categories> categorySelector = lookup("#categorySelector").query();
         Label editChannelsLabel = lookup("#editChannelsLabel").query();
-        ComboBox<String> editChannelsSelector = lookup("#editChannelsSelector").query();
+        ComboBox<Channel> editChannelsSelector = lookup("#editChannelsSelector").query();
         TextField editChannelsTextField = lookup("#editChannelsTextField").query();
         Button channelChangeButton = lookup("#channelChangeButton").query();
         Button channelDeleteButton = lookup("#channelDeleteButton").query();
@@ -134,6 +144,28 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals("Text", channelTextRadioButton.getText());
         Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
 
-        
+        categorySelector.getItems().get(0).setName("$$$" + categorySelector.getItems().get(0).getName());
+        // Test clicking Category selector
+        clickOn(categorySelector);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
+        clickOn("$$$" + currentServer.getCategories().get(0).getName());
+        Thread.sleep(500);
+
+        editChannelsSelector.getItems().get(0).setName("$$$" + editChannelsSelector.getItems().get(0).getName());
+        // Test clicking Channel selector
+        clickOn(editChannelsSelector);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
+        clickOn("$$$" + currentServer.getCategories().get(0).getChannel().get(0).getName());
+        Thread.sleep(500);
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                Thread.sleep(2000);
+                break;
+            }
+        }
     }
 }
