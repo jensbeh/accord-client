@@ -48,6 +48,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
@@ -101,7 +102,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(testUserName, personalUserName.getText());
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test
@@ -131,7 +132,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("TestServer Team Bit Shift", serverName);
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test
@@ -178,7 +179,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("", userName);
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test
@@ -231,7 +232,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         restClient.logout(userKey, response -> {
         });
 
-        clickOn("#logoutButton");
+        
     }
 
     @Test()
@@ -240,7 +241,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        clickOn("#logoutButton");
+        
 
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -347,6 +348,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         restClient.logout(testUserKeyTwo, response -> {
         });
 
-        clickOn("#logoutButton");
+        
     }
 }
