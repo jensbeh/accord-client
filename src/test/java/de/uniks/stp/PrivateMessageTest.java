@@ -4,8 +4,10 @@ import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -26,18 +28,24 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class PrivateMessageTest extends ApplicationTest {
-
-    private static String GUDRUN_KEY;
-    private static String JUTTA_KEY;
-    private static String JUTTA_ID;
-    private static ClientEndpointConfig GUDRUN_CLIENT_CONFIG = null;
-    private static ClientEndpointConfig JUTTA_CLIENT_CONFIG = null;
-    private static ClientTestEndpoint GUDRUN_CLIENT = null;
-    private static ClientTestEndpoint JUTTA_CLIENT = null;
-    private CountDownLatch messageLatch;
     private Stage stage;
     private StageManager app;
+    private RestClient restClient;
 
+    private static String testUserMainName;
+    private static String testUserMainPw;
+    private static String testUserOneName;
+    private static String testUserOnePw;
+    private static String testUserTwoName;
+    private static String testUserTwoPw;
+    private static String testUserOne_UserKey;
+    private static String testUserTwo_UserKey;
+    private static String testUserTwo_ID;
+    private static ClientEndpointConfig testUser1_CLIENT_CONFIG = null;
+    private static ClientEndpointConfig testUser2_CLIENT_CONFIG = null;
+    private static ClientTestEndpoint testUser1_CLIENT = null;
+    private static ClientTestEndpoint testUser2_CLIENT = null;
+    private CountDownLatch messageLatch;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -52,57 +60,46 @@ public class PrivateMessageTest extends ApplicationTest {
         app = new StageManager();
         app.start(stage);
         this.stage.centerOnScreen();
+        this.restClient = new RestClient();
     }
 
-
-    private void setupWebsocketClient() {
-        System.out.println("Starting WebSocket Client");
-        GUDRUN_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
-                .configurator(new TestWebSocketConfigurator(GUDRUN_KEY))
-                .build();
-        JUTTA_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
-                .configurator(new TestWebSocketConfigurator(JUTTA_KEY))
-                .build();
-        messageLatch = new CountDownLatch(1);
-        GUDRUN_CLIENT = new ClientTestEndpoint();
-        JUTTA_CLIENT = new ClientTestEndpoint();
-    }
-
-    private void shutDownWebSocketClient() throws IOException {
-        System.out.println("Closing WebSocket Client\n");
-        GUDRUN_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
-        JUTTA_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
-    }
-
-    @Test
-    public void testSendAllMessage() throws DeploymentException, IOException, InterruptedException {
-        RestClient restClient = new RestClient();
-        restClient.login("Gudrun", "1", response -> {
+    public void loginInit() throws InterruptedException {
+        restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
-            GUDRUN_KEY = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        restClient.login("Jutta", "1", response -> {
-            JsonNode body = response.getBody();
-            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
         });
         Thread.sleep(2000);
-        setupWebsocketClient();
-        connectWebSocketClient();
 
-        JUTTA_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", "Gudrun").put("message", "this is a test homie").toString());
-        boolean messageReceivedByClient = messageLatch.await(20, TimeUnit.SECONDS);
-        Assert.assertTrue("Time lapsed before message was received by client.", messageReceivedByClient);
-        shutDownWebSocketClient();
-        restClient.logout(GUDRUN_KEY, response -> {
-        });
-        restClient.logout(JUTTA_KEY, response -> {
-        });
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserMainName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(testUserMainPw);
+
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+    }
+
+    private void setupWebSocketClient() {
+        System.out.println("Starting WebSocket Client");
+        testUser1_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
+                .configurator(new TestWebSocketConfigurator(testUserOne_UserKey))
+                .build();
+        testUser2_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
+                .configurator(new TestWebSocketConfigurator(testUserTwo_UserKey))
+                .build();
+        messageLatch = new CountDownLatch(1);
+        testUser1_CLIENT = new ClientTestEndpoint();
+        testUser2_CLIENT = new ClientTestEndpoint();
     }
 
     private void connectWebSocketClient() throws DeploymentException, IOException {
         try {
-            ContainerProvider.getWebSocketContainer().connectToServer(GUDRUN_CLIENT, GUDRUN_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=Gudrun"));
-            ContainerProvider.getWebSocketContainer().connectToServer(JUTTA_CLIENT, JUTTA_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=Jutta"));
+            ContainerProvider.getWebSocketContainer().connectToServer(testUser1_CLIENT, testUser1_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=" + testUserOneName.replace(" ", "+")));
+            ContainerProvider.getWebSocketContainer().connectToServer(testUser2_CLIENT, testUser2_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=" + testUserTwoName.replace(" ", "+")));
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -154,122 +151,204 @@ public class PrivateMessageTest extends ApplicationTest {
         }
     }
 
+    private void shutDownWebSocketClient() throws IOException {
+        System.out.println("Closing WebSocket Client\n");
+        testUser1_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
+        testUser2_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
+    }
+
     @Test
-    public void showLastPrivateChatMessage() throws DeploymentException, IOException, InterruptedException {
-        RestClient restClient = new RestClient();
-        restClient.login("Gudrun", "1", response -> {
+    public void testSendAllMessage() throws DeploymentException, IOException, InterruptedException {
+        // user 1
+        restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
-            GUDRUN_KEY = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        restClient.login("Jutta", "1", response -> {
-            JsonNode body = response.getBody();
-            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
         Thread.sleep(2000);
-        setupWebsocketClient();
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        // user 2
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserTwoName = body.getObject().getJSONObject("data").getString("name");
+            testUserTwoPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserTwoName, testUserTwoPw, response -> {
+            JsonNode body = response.getBody();
+            testUserTwo_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        setupWebSocketClient();
         connectWebSocketClient();
 
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("Tuser0");
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("1234");
-        clickOn("#loginButton");
-        WaitForAsyncUtils.waitForFxEvents();
+        testUser2_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserOneName).put("message", "this is a test homie").toString());
+        boolean messageReceivedByClient = messageLatch.await(20, TimeUnit.SECONDS);
+        Assert.assertTrue("Time lapsed before message was received by client.", messageReceivedByClient);
+        shutDownWebSocketClient();
+        restClient.logout(testUserOne_UserKey, response -> {
+        });
+        restClient.logout(testUserTwo_UserKey, response -> {
+        });
+    }
+
+    @Test
+    public void showLastPrivateChatMessage() throws DeploymentException, IOException, InterruptedException {
+        // user 1
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
         Thread.sleep(2000);
 
-        restClient.getUsers(GUDRUN_KEY, response -> {
+        // user 2
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserTwoName = body.getObject().getJSONObject("data").getString("name");
+            testUserTwoPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserTwoName, testUserTwoPw, response -> {
+            JsonNode body = response.getBody();
+            testUserTwo_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        setupWebSocketClient();
+        connectWebSocketClient();
+
+        loginInit();
+
+        restClient.getUsers(testUserOne_UserKey, response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (userName.equals("Jutta")) {
-                    JUTTA_ID = userId;
+                if (userName.equals(testUserTwoName)) {
+                    testUserTwo_ID = userId;
                 }
             }
         });
 
         Thread.sleep(1000);
-        JUTTA_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", "Tuser0").put("message", "This is a test message").toString());
+        testUser2_CLIENT.sendMessage(new JSONObject().put("channel", "private").put("to", testUserMainName).put("message", "This is a test message").toString());
         Thread.sleep(2000);
-        Label message = lookup("#msg_" + JUTTA_ID).query();
+
+        Label message = lookup("#msg_" + testUserTwo_ID).query();
         Assert.assertEquals("This is a test message", message.getText());
 
         ListView<Channel> privateChatList = lookup("#privateChatList").query();
-        clickOn(privateChatList.lookup("#" + JUTTA_ID));
+        clickOn(privateChatList.lookup("#" + testUserTwo_ID));
         Thread.sleep(2000);
+
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
-        Thread.sleep(500);
+        Thread.sleep(2000);
+
         clickOn("#sendButton");
-        Thread.sleep(500);
-        message = lookup("#msg_" + JUTTA_ID).query();
+        Thread.sleep(2000);
+
+        message = lookup("#msg_" + testUserTwo_ID).query();
         Assert.assertEquals("Okay!", message.getText());
 
         shutDownWebSocketClient();
-        restClient.logout(GUDRUN_KEY, response -> {
+        restClient.logout(testUserOne_UserKey, response -> {
         });
-        restClient.logout(JUTTA_KEY, response -> {
+        restClient.logout(testUserTwo_UserKey, response -> {
         });
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
     public void testSendPrivateMessage() throws InterruptedException, IOException, DeploymentException {
-        RestClient restClient = new RestClient();
-        restClient.login("Jutta", "1", response -> {
+        // user 1
+        restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
-            JUTTA_KEY = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        restClient.login("Gudrun", "1", response -> {
-            JsonNode body = response.getBody();
-            GUDRUN_KEY = body.getObject().getJSONObject("data").getString("userKey");
+            //get name and password from server
+            testUserOneName = body.getObject().getJSONObject("data").getString("name");
+            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
         Thread.sleep(2000);
-        setupWebsocketClient();
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        // user 2
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserTwoName = body.getObject().getJSONObject("data").getString("name");
+            testUserTwoPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserTwoName, testUserTwoPw, response -> {
+            JsonNode body = response.getBody();
+            testUserTwo_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        setupWebSocketClient();
         connectWebSocketClient();
 
-        restClient.getUsers(JUTTA_KEY, response -> {
+        restClient.getUsers(testUserTwo_UserKey, response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
-                if (userName.equals("Jutta")) {
-                    JUTTA_ID = userId;
+                if (userName.equals(testUserTwoName)) {
+                    testUserTwo_ID = userId;
                 }
             }
         });
 
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("peter");
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("123");
-        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
-        rememberBox.setSelected(true);
-        clickOn("#loginButton");
-        Thread.sleep(500);
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        loginInit();
+
+        Assert.assertEquals("Accord - Main", stage.getTitle());
 
         ListView<User> privateChatList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
-        doubleClickOn(privateChatList.lookup("#" +  JUTTA_ID));
+        doubleClickOn(privateChatList.lookup("#" + testUserTwo_ID));
         Thread.sleep(2000);
+
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
         Thread.sleep(500);
+
         clickOn("#sendButton");
         Thread.sleep(500);
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
-        Label messageLabel =(Label) privateChatMessageList.lookup("#messageLabel");
-        Label userNameLabel =(Label) privateChatMessageList.lookup("#userNameLabel");
+        Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
+        Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
-        System.out.println(userNameLabel.getText());
-        Assert.assertEquals("peter", userNameLabel.getText());
+        Assert.assertEquals(testUserMainName, userNameLabel.getText());
 
         shutDownWebSocketClient();
-        restClient.logout(GUDRUN_KEY, response -> {
+        restClient.logout(testUserOne_UserKey, response -> {
         });
-        restClient.logout(JUTTA_KEY, response -> {
+        restClient.logout(testUserTwo_UserKey, response -> {
         });
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 }

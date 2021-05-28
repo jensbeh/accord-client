@@ -3,6 +3,7 @@ package de.uniks.stp;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -40,6 +41,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     private static ClientEndpointConfig testUser1_CLIENT_CONFIG = null;
     private static ClientTestEndpoint testUser1_CLIENT = null;
     private CountDownLatch messageLatch;
+    private RestClient restClient;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -54,17 +56,30 @@ public class PrivateViewControllerTest extends ApplicationTest {
         app = new StageManager();
         app.start(stage);
         this.stage.centerOnScreen();
+        this.restClient = new RestClient();
     }
 
-    public void login(String userName, String password) {
+    public void loginInit() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(userName);
+        usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(password);
+        passwordField.setText(testUserMainPw);
+
         clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
     }
 
-    private void setupWebsocketClient() {
+    private void setupWebSocketClient() {
         System.out.println("Starting WebSocket Client");
         testUser1_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
                 .configurator(new TestWebSocketConfigurator(testUser1_KEY))
@@ -135,9 +150,8 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     @Test
     public void noConnectionOnWebSocketTest() throws InterruptedException {
-        login("Peter Lustig", "1234");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        loginInit();
+
         WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
         ws.onClose(ws.getSession(), new CloseReason(new CloseReason.CloseCode() {
             /**
@@ -155,16 +169,21 @@ public class PrivateViewControllerTest extends ApplicationTest {
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
+                Assert.assertEquals("No Connection Error", result);
+                Platform.runLater(((Stage) s)::close);
+                Thread.sleep(2000);
+                break;
             }
         }
-        Assert.assertEquals("No Connection Error", result);
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
     public void chatPartnerIsOffline() throws InterruptedException, IOException {
-        login("Peter Lustig", "1234");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        loginInit();
+
         WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
         ws.sendMessage(new JSONObject().put("channel", "private").put("to", "-").put("message", "Test").toString());
         Thread.sleep(2000);
@@ -172,21 +191,30 @@ public class PrivateViewControllerTest extends ApplicationTest {
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
+                Assert.assertEquals("Chat Error", result);
+                Platform.runLater(((Stage) s)::close);
+                Thread.sleep(2000);
+                break;
             }
         }
-        Assert.assertEquals("Chat Error", result);
+
+        ws.stop();
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 
     @Test
     public void invalidUsername() throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText("+");
+        usernameTextField.setText("++");
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText("1");
+        passwordField.setText("1234");
+
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        Thread.sleep(2000);
+
         String result = "";
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -196,12 +224,10 @@ public class PrivateViewControllerTest extends ApplicationTest {
         Assert.assertEquals("Username Error", result);
     }
 
-
     @Test
     public void onNewMessageIconCounterTest() throws InterruptedException, DeploymentException, IOException {
 
         // test User 1 & 2 login
-        RestClient restClient = new RestClient();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
@@ -213,9 +239,9 @@ public class PrivateViewControllerTest extends ApplicationTest {
             JsonNode body = response.getBody();
             testUser1_KEY = body.getObject().getJSONObject("data").getString("userKey");
         });
-
         Thread.sleep(2000);
-        setupWebsocketClient();
+
+        setupWebSocketClient();
         connectWebSocketClient();
 
         // main User login
@@ -226,13 +252,8 @@ public class PrivateViewControllerTest extends ApplicationTest {
             testUserMainPw = body.getObject().getJSONObject("data").getString("password");
         });
         Thread.sleep(2000);
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(testUserMainName);
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(testUserMainPw);
-        clickOn("#loginButton"); // in homeView
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+
+        loginInit();
 
         // get id from testUser2
         restClient.getUsers(testUser1_KEY, response -> {

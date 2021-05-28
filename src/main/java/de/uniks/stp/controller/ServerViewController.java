@@ -39,6 +39,7 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
+    private static Channel selectedChat;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
@@ -60,14 +61,11 @@ public class ServerViewController {
     private WebSocketClient serverChatWebSocketClient;
     private VBox messages;
     private ChatViewController messageViewController;
-    private static String channelId;
-    private static String channelName;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
-
-    public static String channelId() {
-        return channelId;
-    }
+    private CategorySubController categorySubController;
+    private VBox categoryBox;
+    private Button test;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -80,6 +78,14 @@ public class ServerViewController {
         restClient = new RestClient();
     }
 
+    public static Channel getSelectedChat() {
+        return selectedChat;
+    }
+
+    public static void setSelectedChat(Channel Chat) {
+        selectedChat = Chat;
+    }
+
     /**
      * Initialise all view parameters
      */
@@ -88,10 +94,11 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        //Bad code just for testing
+        categoryBox = (VBox) view.lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
+        inviteUsers.setOnAction(this::onInviteUsersClicked);
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -105,12 +112,16 @@ public class ServerViewController {
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         messages = (VBox) view.lookup("#chatBox");
 
+        builder.setCurrentServerChannel(getDefaultChannel());
+
         showCurrentUser();
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
-                    loadServerChannel();
+                    if (builder.getCurrentServer().getCategories().size() == 0) {
+                        loadCategories();
+                    }
                 }
             }
         }); // members & (categories)
@@ -131,7 +142,7 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(channelId())) {
+                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(builder.getCurrentServerChannel().getId())) {
                     Message message = null;
                     if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                         message = new Message().setMessage(jsonObject.getString("text")).
@@ -144,7 +155,7 @@ public class ServerViewController {
                     }
                     if (messageViewController != null) {
                         assert message != null;
-                        builder.getCurrentServer().getCategories().get(0).getChannel().get(0).withMessage(message);
+                        builder.getCurrentServerChannel().withMessage(message);
                         ChatViewController.printMessage(message);
                     }
                 }
@@ -185,29 +196,13 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+        Platform.runLater(this::generateCategoriesChannelViews);
+        Platform.runLater(() -> setSelectedChat(server.getCategories().get(0).getChannel().get(0)));
     }
 
-    private void loadServerChannel() {
-        restClient.getCategoryChannels(server.getId(), builder.getCurrentServer().getCategories().get(0).getId(),
-                builder.getPersonalUser().getUserKey(), response -> {
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        JSONArray ob = body.getObject().getJSONArray("data");
-                        JSONObject object = ob.getJSONObject(0);
-                        channelId = object.get("id").toString();
-                        channelName = object.get("name").toString();
-                        if (builder.getCurrentServer().getCategories().get(0).getChannel().isEmpty()) {
-                            Channel channel = new Channel().setId(channelId).setName(channelName);
-                            builder.getCurrentServer().getCategories().get(0).withChannel(channel);
-                            builder.setCurrentServerChannel(channel);
-                        }
-                    } else if (status.equals("failure")) {
-                        System.out.println(body.getObject().getString("message"));
-                    }
-                });
-    }
-
+    /**
+     * Initial Chat View and load chat history which is saved in list
+     */
     private void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
@@ -215,16 +210,11 @@ public class ServerViewController {
             this.messages.getChildren().clear();
             messageViewController.init();
             this.messages.getChildren().add(root);
-            if (builder.getCurrentServer() != null) {
-                if (builder.getCurrentServer().getCategories().size() != 0) {
-                    if (builder.getCurrentServer().getCategories().get(0) != null) {
-                        if (builder.getCurrentServer().getCategories().get(0).getChannel().size() != 0) {
-                            for (Message msg : builder.getCurrentServer().getCategories().get(0).getChannel().get(0).getMessage()) {
-                                // Display each Message which are saved
-                                ChatViewController.printMessage(msg);
-                            }
-                        }
-                    }
+
+            if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
+                for (Message msg : builder.getCurrentServerChannel().getMessage()) {
+                    // Display each Message which are saved
+                    ChatViewController.printMessage(msg);
                 }
             }
         } catch (IOException e) {
@@ -261,19 +251,12 @@ public class ServerViewController {
         restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
+            server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             //---------------------------------------------------------------------------
             builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
             //---------------------------------------------------------------------------
             if (status.equals("success")) {
-                JSONArray category = body.getObject().getJSONObject("data").getJSONArray("categories");
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
-                if (builder.getCurrentServer().getCategories().size() == 0) {
-                    for (int i = 0; i < category.length(); i++) {
-                        Categories categories = new Categories();
-                        categories.setId(category.getString(i));
-                        builder.getCurrentServer().withCategories(categories);
-                    }
-                }
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
@@ -359,6 +342,71 @@ public class ServerViewController {
         });
     }
 
+    /**
+     * Gets categories from server and adds in list
+     */
+    public void loadCategories() {
+        restClient.getServerCategories(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject categoryInfo = data.getJSONObject(i);
+                    Categories categories = new Categories();
+                    categories.setId(categoryInfo.getString("id"));
+                    categories.setName(categoryInfo.getString("name"));
+                    categories.setServer(server);
+                    builder.getCurrentServer().withCategories(categories);
+
+                    loadChannels(categories);
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets all channels for a category and adds in list
+     *
+     * @param cat the category to load the channels from it
+     */
+    public void loadChannels(Categories cat) {
+        restClient.getCategoryChannels(builder.getCurrentServer().getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject channelInfo = data.getJSONObject(i);
+                    Channel channel = new Channel();
+                    channel.setCurrentUser(builder.getPersonalUser());
+                    channel.setId(channelInfo.getString("id"));
+                    channel.setName(channelInfo.getString("name"));
+                    channel.setCategories(cat);
+
+                    builder.setCurrentServerChannel(getDefaultChannel());
+                }
+            }
+        });
+    }
+
+    /**
+     * Get the default channel which was the one when server also was created
+     *
+     * @return channel is the default channel
+     */
+    public Channel getDefaultChannel() {
+        for (Categories cat : builder.getCurrentServer().getCategories()) {
+            if (cat.getName().equals("default")) {
+                for (Channel channel : cat.getChannel()) {
+                    if (channel.getName().equals("default-text-channel")) {
+                        return channel;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     public void stop() {
         onlineUsersList.setItems(null);
@@ -372,6 +420,8 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        serverSettings.setOnAction(null);
+        inviteUsers.setOnAction(null);
     }
 
     public static Server getSelectedServer() {
@@ -400,4 +450,33 @@ public class ServerViewController {
         StageManager.showServerSettingsScreen();
     }
 
+    private void onInviteUsersClicked(ActionEvent actionEvent) {
+        StageManager.showInviteUsersScreen();
+    }
+
+
+    /**
+     * generates new views for all categories of the server
+     */
+    private void generateCategoriesChannelViews() {
+        for (Categories c : server.getCategories()) {
+            generateCategoryChannelView(c);
+        }
+    }
+
+    /**
+     * generates a new view for a category
+     */
+    private void generateCategoryChannelView(Categories c) {
+        try {
+            Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+            view.setId(c.getId());
+            categorySubController = new CategorySubController(view, builder, c);
+            categorySubController.init();
+            this.categoryBox.getChildren().add(view);
+        } catch (Exception e) {
+            System.err.println("Error on showing Server Settings Field Screen");
+            e.printStackTrace();
+        }
+    }
 }

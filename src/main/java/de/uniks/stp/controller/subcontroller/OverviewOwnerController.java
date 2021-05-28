@@ -1,12 +1,18 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.net.RestClient;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import kong.unirest.JsonNode;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 public class OverviewOwnerController {
@@ -16,10 +22,12 @@ public class OverviewOwnerController {
     private Button deleteServer;
     private Button changeName;
     private TextField nameText;
+    private RestClient restClient;
 
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
+        restClient = new RestClient();
     }
 
     public void init() {
@@ -34,10 +42,14 @@ public class OverviewOwnerController {
 
     private void onChangeNameClicked(ActionEvent actionEvent) {
         builder.getCurrentServer().setName(nameText.getText());
+        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            //ServerName label direkt ändern???
+        });
     }
 
     private void onDeleteServerClicked(ActionEvent actionEvent) {
-        //Platform.runLater(() -> {
         ButtonType button = new ButtonType("Delete Server");
         ButtonType button2 = new ButtonType("Cancel");
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
@@ -54,15 +66,20 @@ public class OverviewOwnerController {
                 + "-fx-background-color: indianred;");
         buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
         buttonBar.getButtons().get(1).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
-
-        //alert.getDialogPane().getScene().getStylesheets().add("styles/AlertStyle.css");
         dialogPane.getStylesheets().add(
                 StageManager.class.getResource("styles/AlertStyle.css").toExternalForm());
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == button) {
             //delete server
+            restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                System.out.println("status: " + status);
+                builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
+            });
+            StageManager.showHome();
         }
     }
 

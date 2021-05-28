@@ -1,10 +1,8 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
@@ -14,17 +12,16 @@ import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-public class ServerSettingsControllerTest extends ApplicationTest {
+public class ServerSettingsChannelControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
     private RestClient restClient;
-    private static String testUserMainName;
-    private static String testUserMainPw;
     private static String testUserOneName;
     private static String testUserOnePw;
     private static String testUserOne_UserKey;
     private static String testServerId;
+
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -39,26 +36,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         app.start(stage);
         this.stage.centerOnScreen();
         this.restClient = new RestClient();
-    }
-
-    public void loginInitWithTempUser() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserMainName = body.getObject().getJSONObject("data").getString("name");
-            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(testUserMainName);
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(testUserMainPw);
-
-        clickOn("#loginButton");
-
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
     }
 
     public void loginInit(String name, String password) throws InterruptedException {
@@ -95,10 +72,9 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void openServerSettingsTest() throws InterruptedException {
+    public void openServerPrivilegeSettingsTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
-
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 
@@ -109,42 +85,54 @@ public class ServerSettingsControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        clickOn("#serverMenuButton");
-        moveBy(0, 25);
-        write("\n");
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals(2, this.listTargetWindows().size());
-        String serverSettingsTitle = "";
-        for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                serverSettingsTitle = ((Stage) object).getTitle();
-                Assert.assertNotEquals("", serverSettingsTitle);
-                Platform.runLater(((Stage) object)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
-        clickOn("#logoutButton");
-        Thread.sleep(2000);
-    }
 
-    @Test
-    public void clickOnOverview() throws InterruptedException {
-        login();
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        Server server = serverListView.getItems().get(0);
+
+        clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#server"));
+
+        Assert.assertEquals("Accord - Main", stage.getTitle());
+
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
         clickOn("#serverMenuButton");
-        moveBy(0, 25);
-        write("\n");
-        Assert.assertNotEquals(1, this.listTargetWindows().size());
-        clickOn("#overview");
-        clickOn("#deleteServer");
-        Label serverNameLabel = lookup("#serverName").query();
-        Button leaveButton = lookup("#deleteServer").query();
-        Assert.assertEquals("Servername", serverNameLabel.getText());
-        Assert.assertEquals("Delete Server", leaveButton.getText());
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        clickOn("#ServerSettings");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        clickOn("#channel");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        Label categoryLabel = lookup("#categoryLabel").query();
+        ComboBox<String> categorySelector = lookup("#categorySelector").query();
+        Label editChannelsLabel = lookup("#editChannelsLabel").query();
+        ComboBox<String> editChannelsSelector = lookup("#editChannelsSelector").query();
+        TextField editChannelsTextField = lookup("#editChannelsTextField").query();
+        Button channelChangeButton = lookup("#channelChangeButton").query();
+        Button channelDeleteButton = lookup("#channelDeleteButton").query();
+        Label createChannelLabel = lookup("#createChannelLabel").query();
+        TextField createChannelTextField = lookup("#createChannelTextField").query();
+        RadioButton channelTextRadioButton = lookup("#channelTextRadioButton").query();
+        RadioButton channelVoiceRadioButton = lookup("#channelVoiceRadioButton").query();
+        Button channelCreateButton = lookup("#channelCreateButton").query();
+
+        Assert.assertEquals("Category", categoryLabel.getText());
+        Assert.assertEquals("Edit Channels", editChannelsLabel.getText());
+        Assert.assertEquals("Create Channel", createChannelLabel.getText());
+        Assert.assertEquals("change", channelChangeButton.getText());
+        Assert.assertEquals("Delete", channelDeleteButton.getText());
+        Assert.assertEquals("create", channelCreateButton.getText());
+        Assert.assertEquals("Text", channelTextRadioButton.getText());
+        Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
+
         clickOn("#logoutButton");
     }
 }

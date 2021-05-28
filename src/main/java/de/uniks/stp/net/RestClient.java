@@ -47,6 +47,12 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void getServerCategories(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public void getCategoryChannels(String serverId, String categoryId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH;
         HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
@@ -64,6 +70,20 @@ public class RestClient {
         jsonBody.put("name", serverName);
         HttpResponse<JsonNode> response = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH).body(jsonBody).header("userKey", userKey).asJson();
         return response.getBody();
+    }
+
+    public void putServer(String serverId, String serverName, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", serverName);
+        String body = JSONObject.valueToString(jsonObj);
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.put(url).header("userKey", userKey).body(body);
+        sendRequest(postRequest, callback);
+    }
+
+    public void deleteServer(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId;
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
     }
 
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {

@@ -2,9 +2,7 @@ package de.uniks.stp;
 
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
@@ -14,17 +12,14 @@ import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-public class ServerSettingsControllerTest extends ApplicationTest {
+public class InviteUsersControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
     private RestClient restClient;
     private static String testUserMainName;
     private static String testUserMainPw;
-    private static String testUserOneName;
-    private static String testUserOnePw;
-    private static String testUserOne_UserKey;
-    private static String testServerId;
+
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -61,43 +56,9 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    public void loginInit(String name, String password) throws InterruptedException {
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(name);
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(password);
-
-        clickOn("#loginButton");
-
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-    }
-
-    public void getServerId() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            JsonNode body = response.getBody();
-            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        Thread.sleep(2000);
-
-        JsonNode body = restClient.postServer(testUserOne_UserKey, "TestServer Team Bit Shift");
-        testServerId = body.getObject().getJSONObject("data").getString("id");
-
-        restClient.logout(testUserOne_UserKey, response -> {
-        });
-    }
-
     @Test
-    public void openServerSettingsTest() throws InterruptedException {
-        getServerId();
-        loginInit(testUserOneName, testUserOnePw);
+    public void openInviteUsersTest() throws InterruptedException {
+        loginInitWithTempUser();
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
@@ -110,7 +71,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         clickOn("#serverMenuButton");
-        moveBy(0, 25);
+        moveBy(0, 50);
         write("\n");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(2, this.listTargetWindows().size());
@@ -129,22 +90,37 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void clickOnOverview() throws InterruptedException {
-        login();
+    public void changeInviteUsersSubViewTest() throws InterruptedException {
+        loginInitWithTempUser();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#server"));
         clickOn("#serverMenuButton");
-        moveBy(0, 25);
+        moveBy(0, 50);
         write("\n");
-        Assert.assertNotEquals(1, this.listTargetWindows().size());
-        clickOn("#overview");
-        clickOn("#deleteServer");
-        Label serverNameLabel = lookup("#serverName").query();
-        Button leaveButton = lookup("#deleteServer").query();
-        Assert.assertEquals("Servername", serverNameLabel.getText());
-        Assert.assertEquals("Delete Server", leaveButton.getText());
+        WaitForAsyncUtils.waitForFxEvents();
+        RadioButton temp = lookup("#tempSelected").query();
+        Assert.assertTrue(temp.isSelected());
+        clickOn("#userLimitSelected");
+        Assert.assertFalse(temp.isSelected());
+        Label label = lookup("#userLimit").query();
+        Assert.assertEquals("User Limit", label.getText());
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
         clickOn("#logoutButton");
+        Thread.sleep(2000);
     }
 }

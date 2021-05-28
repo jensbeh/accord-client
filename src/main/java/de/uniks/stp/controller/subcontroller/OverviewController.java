@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
@@ -18,7 +19,7 @@ public class OverviewController {
     public OverviewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        restClient = new RestClient();
+        this.restClient = new RestClient();
     }
 
     public void init() {
@@ -37,6 +38,9 @@ public class OverviewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             System.out.println("status: " + status);
+            builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
+            //remove currentUser aus serverUserList???
         });
+        StageManager.showHome();
     }
 }
