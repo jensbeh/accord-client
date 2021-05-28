@@ -87,39 +87,27 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         Button createServer = lookup("#createServer").query();
         serverName.setText("TestServer Team Bit Shift");
         clickOn(createServer);
-
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         Server server = serverListView.getItems().get(0);
 
-
         clickOn("#homeButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         clickOn("#serverMenuButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         clickOn("#ServerSettings");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         clickOn("#privilege");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+
         RadioButton privilegeOn = lookup("#Privilege_On_Button").query();
         RadioButton privilegeOff = lookup("#Privilege_Off_Button").query();
 
         clickOn("#Privilege_On_Button");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+
         Assert.assertTrue(privilegeOn.isSelected());
         Assert.assertFalse(privilegeOff.isSelected());
 

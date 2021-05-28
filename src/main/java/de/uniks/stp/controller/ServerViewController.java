@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -366,8 +367,21 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
-                    boolean boolPrivilege = Boolean.parseBoolean(channelInfo.getString("privileged"));
+                    boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
+
+                    JSONObject json = new JSONObject(channelInfo.toString());
+                    JSONArray jsonArray = json.getJSONArray("members");
+                    String memberId = "";
+
+                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                        memberId = jsonArray.getString(j);
+                        for (User user : builder.getCurrentServer().getUser()) {
+                            if (user.getId().equals(memberId)) {
+                                channel.withPrivilegedUsers(user);
+                            }
+                        }
+                    }
 
                     builder.setCurrentServerChannel(getDefaultChannel());
                 }

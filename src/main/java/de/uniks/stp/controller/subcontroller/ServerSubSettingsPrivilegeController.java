@@ -41,33 +41,36 @@ public class ServerSubSettingsPrivilegeController {
         addUser.setOnAction(this::addPrivilegedUser);
 
         for (User user : server.getUser()) {
-            if (!user.getPrivileged().contains(channel)) {
+            if (!channel.getPrivilegedUsers().contains(user)) {
                 addUserMenu.getItems().add(user.getName());
             }
         }
     }
 
+    /**
+     * set a user privileged for a channel
+     */
     private void addPrivilegedUser(ActionEvent actionEvent) {
         if (addUserMenu.getSelectionModel().getSelectedItem() != null) {
             User selectedUser = server.getUser().get(addUserMenu.getSelectionModel().getSelectedIndex());
+            // set selected user to channel as privileged
             channel.withPrivilegedUsers(selectedUser);
-            channel.setPrivilege(true);
-            addUserMenu.getSelectionModel().clearSelection();
+
             addUserMenu.getItems().clear();
+            // load only useres in addmenu who is not privileged yet
             for (User user : server.getUser()) {
-                if (!user.getPrivileged().contains(channel)) {
+                if (!channel.getPrivilegedUsers().contains(user)) {
                     addUserMenu.getItems().add(user.getName());
                 }
             }
             String userKey = builder.getPersonalUser().getUserKey();
 
             ArrayList<String> members = new ArrayList<>();
-            //members.add(server.getOwner());
             for (User user : channel.getPrivilegedUsers()) {
                 members.add(user.getId());
             }
             String[] membersArray = members.toArray(new String[0]);
-
+            // send update to server
             restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
                     server.getName(), channel.isPrivilege(), membersArray, response -> {
                     });

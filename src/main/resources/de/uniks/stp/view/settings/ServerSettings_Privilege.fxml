@@ -23,8 +23,8 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
                <children>
-                  <ComboBox id="Category" prefWidth="150.0" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
-                  <ComboBox id="Channels" prefWidth="150.0" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
+                  <ComboBox id="Category" prefWidth="150.0" promptText="Select Category" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
+                  <ComboBox id="Channels" prefWidth="150.0" promptText="Select Channel" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
