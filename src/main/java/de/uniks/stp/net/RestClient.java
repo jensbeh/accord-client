@@ -105,13 +105,20 @@ public class RestClient {
         req.asJsonAsync(callback);
     }
 
-    public void createTempLink(String type, Integer max,String serverid,String userKey, Callback<JsonNode> callback) {
+    public void createTempLink(String type, Integer max, String serverid, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("type", type);
-        if(type.equals("count")){
-            jsonObj.accumulate("max",max);
+        if (type.equals("count")) {
+            jsonObj.accumulate("max", max);
         }
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH+"/"+serverid+ SERVER_INVITES).header("userKey", userKey).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverid + SERVER_INVITES).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
+    }
+
+    public void joinServer(String serverId, String inviteId, String username, String password, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + inviteId).header("userKey", userKey).body(body);
         sendRequest(request, callback);
     }
 }

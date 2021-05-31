@@ -146,6 +146,7 @@ public class HomeViewController {
             createServerController.init();
             stage = new Stage();
             createServerController.showCreateServerView(this::onServerCreated);
+            createServerController.joinedServer(this::onServerJoined);
             setStageTitle("window_title_create_new_server");
             stage.setScene(scene);
             stage.show();
@@ -153,6 +154,13 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void onServerJoined() {
+        Platform.runLater(() -> {
+            stage.close();
+            showServers();
+        });
     }
 
     /**
