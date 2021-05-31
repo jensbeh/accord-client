@@ -1,7 +1,6 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateServerChannelListCellFactory;
-import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import javafx.collections.FXCollections;
@@ -14,15 +13,13 @@ import java.beans.PropertyChangeEvent;
 
 public class CategorySubController {
     private Parent view;
-    private ModelBuilder builder;
     private Categories category;
     private Label categoryName;
     private ListView<Channel> channelList;
     private AlternateServerChannelListCellFactory channeListCellFactory;
 
-    public CategorySubController(Parent view, ModelBuilder builder, Categories c) {
+    public CategorySubController(Parent view, Categories c) {
         this.view = view;
-        this.builder = builder;
         this.category = c;
     }
 

@@ -330,7 +330,7 @@ public class HomeViewController {
                     builder.getSERVER_USER().stop();
                 }
             }
-            if (builder.getUSER_CLIENT()!=null){
+            if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
                     builder.getUSER_CLIENT().stop();
                 }

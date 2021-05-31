@@ -466,7 +466,7 @@ public class ServerViewController {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
             view.setId(c.getId());
-            categorySubController = new CategorySubController(view, builder, c);
+            categorySubController = new CategorySubController(view, c);
             categorySubController.init();
             this.categoryBox.getChildren().add(view);
         } catch (Exception e) {

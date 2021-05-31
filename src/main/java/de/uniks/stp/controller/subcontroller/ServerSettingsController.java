@@ -67,8 +67,8 @@ public class ServerSettingsController {
                 userId = user.getId();
             }
         }
-        Parent root = null;
         try {
+            Parent root;
             if (builder.getCurrentServer().getOwner().equals(userId)) {
                 root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml"), StageManager.getLangBundle());
                 OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
