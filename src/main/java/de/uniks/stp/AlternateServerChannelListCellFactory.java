@@ -27,7 +27,7 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
     private static class ChannelListCell extends ListCell<Channel> {
 
         protected void updateItem(Channel item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             Label name = new Label();
             Label message = new Label();

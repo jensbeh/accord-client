@@ -1,7 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
@@ -13,7 +12,6 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
 import java.util.List;
-import java.util.Objects;
 
 public class InviteUsersUserLimitSubController {
 
@@ -40,12 +38,12 @@ public class InviteUsersUserLimitSubController {
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
         userLimit = (TextField) view.lookup("#maxUsers");
-        linkComboBox = (ComboBox) view.lookup("#LinkComboBox");
+        linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
 
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
-        linkComboBox.setConverter(new StringConverter<List<String>>() {
+        linkComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(List<String> list) {
                 if (list == null) {
