@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 
 public class InviteUsersController {
@@ -21,7 +20,7 @@ public class InviteUsersController {
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;
 
     public InviteUsersController(Parent view, ModelBuilder builder, Server currentServer) {
-        this.view = view;
+        InviteUsersController.view = view;
         this.builder = builder;
         this.server = currentServer;
     }
@@ -49,7 +48,7 @@ public class InviteUsersController {
             //Controller
             inviteUsersTempSubController = new InviteUsersTempSubController(view, builder, server);
             inviteUsersTempSubController.init();
-            this.inviteBox.getChildren().add(view);
+            inviteBox.getChildren().add(view);
         } catch (Exception e) {
             System.err.println("Error in tempSelected");
             e.printStackTrace();
@@ -65,7 +64,7 @@ public class InviteUsersController {
             //Controller
             inviteUsersUserLimitSubController = new InviteUsersUserLimitSubController(view, builder, server);
             inviteUsersUserLimitSubController.init();
-            this.inviteBox.getChildren().add(view);
+            inviteBox.getChildren().add(view);
         } catch (Exception e) {
             System.err.println("Error in tempSelected");
             e.printStackTrace();
@@ -76,6 +75,10 @@ public class InviteUsersController {
         if (inviteUsersTempSubController != null) {
             inviteUsersTempSubController.stop();
             inviteUsersTempSubController = null;
+        }
+        if (inviteUsersUserLimitSubController != null) {
+            inviteUsersUserLimitSubController.stop();
+            inviteUsersUserLimitSubController = null;
         }
     }
 

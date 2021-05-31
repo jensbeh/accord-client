@@ -162,7 +162,7 @@ public class ServerSettingsChannelController extends SubSetting {
         editChannelsSelector.getItems().clear();
         editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
 
-        if(preSelectChannel != null) {
+        if (preSelectChannel != null) {
             editChannelsSelector.getSelectionModel().select(preSelectChannel);
         }
     }
@@ -224,7 +224,7 @@ public class ServerSettingsChannelController extends SubSetting {
      * @param actionEvent the mouse click event
      */
     private void onChannelCreateButtonClicked(ActionEvent actionEvent) {
-        if(!createChannelTextField.getText().isEmpty()) {
+        if (!createChannelTextField.getText().isEmpty()) {
             String channelName = createChannelTextField.getText();
             String[] members = new String[0];
             restClient.createChannel(server.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), channelName, channelType, false /*TODO*/, members /*TODO*/, response -> {
@@ -243,7 +243,7 @@ public class ServerSettingsChannelController extends SubSetting {
                     Channel newChannel = new Channel().setId(channelId).setName(name).setPrivilege(privileged);
                     selectedCategory.withChannel(newChannel);
 
-                    if(privileged) {
+                    if (privileged) {
                         JSONArray privilegedMembers = data.getJSONArray("members");
                         for (int i = 0; i < privilegedMembers.length(); i++) {
                             privilegedMembers.getString(i);
@@ -252,7 +252,7 @@ public class ServerSettingsChannelController extends SubSetting {
 
                     createChannelTextField.setText("");
                     Platform.runLater(() -> loadChannels(selectedChannel));
-                }  else {
+                } else {
                     System.out.println(status);
                     System.out.println(body.getObject().getString("message"));
                 }
