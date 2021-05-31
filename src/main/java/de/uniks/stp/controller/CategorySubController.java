@@ -1,6 +1,6 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.AlternateChannelListCellFactory2;
+import de.uniks.stp.AlternateServerChannelListCellFactory;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
@@ -18,7 +18,7 @@ public class CategorySubController {
     private Categories category;
     private Label categoryName;
     private ListView<Channel> channelList;
-    private AlternateChannelListCellFactory2 channeListCellFactory;
+    private AlternateServerChannelListCellFactory channeListCellFactory;
 
     public CategorySubController(Parent view, ModelBuilder builder, Categories c) {
         this.view = view;
@@ -30,7 +30,7 @@ public class CategorySubController {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
         channelList = (ListView<Channel>) view.lookup("#channellist");
-        channeListCellFactory = new AlternateChannelListCellFactory2();
+        channeListCellFactory = new AlternateServerChannelListCellFactory();
         channelList.setCellFactory(channeListCellFactory);
         channelList.setItems(FXCollections.observableList(category.getChannel()));
         channelList.setOnMouseClicked(this::onChannelListClicked);

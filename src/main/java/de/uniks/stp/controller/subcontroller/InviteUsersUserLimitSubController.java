@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
@@ -8,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
 import java.util.List;
@@ -43,6 +45,20 @@ public class InviteUsersUserLimitSubController {
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
+        linkComboBox.setConverter(new StringConverter<List<String>>() {
+            @Override
+            public String toString(List<String> list) {
+                if (list == null) {
+                    return "Select Link...";
+                }
+                return list.get(0) + " | " + list.get(1);
+            }
+
+            @Override
+            public List<String> fromString(String string) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -51,7 +67,7 @@ public class InviteUsersUserLimitSubController {
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         if (!userLimit.getText().equals("")) {
             System.out.println("onCreateLinkClicked");
-            Integer count = 0;
+            int count = 0;
             try {
                 count = Integer.parseInt(userLimit.getText());
             } catch (NumberFormatException e) {
@@ -93,8 +109,14 @@ public class InviteUsersUserLimitSubController {
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedList = this.linkComboBox.getSelectionModel().getSelectedItem();
-        String selectedLink = selectedList.get(0);
-        String maxUsers = selectedList.get(1);
+        String selectedLink, maxUsers;
+        if (selectedList != null) {
+            selectedLink = selectedList.get(0);
+            maxUsers = selectedList.get(1);
+        } else {
+            selectedLink = "Select Link...";
+            maxUsers = "";
+        }
         this.linkComboBox.setPromptText(selectedLink);
         linkTextField.setText(selectedLink);
         userLimit.setText(maxUsers);

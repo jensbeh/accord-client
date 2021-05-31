@@ -65,6 +65,7 @@ public class ServerViewController {
     private MenuItem inviteUsers;
     private CategorySubController categorySubController;
     private VBox categoryBox;
+    private String personalID;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -325,6 +326,9 @@ public class ServerViewController {
         ArrayList<User> offlineUsers = new ArrayList<>();
         for (User user : builder.getCurrentServer().getUser()) {
             if (user.isStatus()) {
+                if (user.getName().equals(builder.getPersonalUser().getName())) {
+                    checkForOwnership(user.getId());
+                }
                 onlineUsers.add(user);
             } else {
                 offlineUsers.add(user);
@@ -468,6 +472,12 @@ public class ServerViewController {
         } catch (Exception e) {
             System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
+        }
+    }
+
+    private void checkForOwnership(String id) {
+        if (!server.getOwner().equals(id)) {
+            serverMenuButton.getItems().remove(1);
         }
     }
 }
