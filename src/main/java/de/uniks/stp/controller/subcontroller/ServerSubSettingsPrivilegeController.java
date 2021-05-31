@@ -14,15 +14,15 @@ import java.util.ArrayList;
 
 public class ServerSubSettingsPrivilegeController {
 
-    private static ComboBox addUserMenu;
-    private static ComboBox removeUserMenu;
+    private static ComboBox<String> addUserMenu;
+    private static ComboBox<String> removeUserMenu;
     private static Button addUser;
     private static Button removeUser;
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
     private final Channel channel;
-    private RestClient restClient;
+    private final RestClient restClient;
 
     public ServerSubSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server, Channel channel) {
         this.view = view;
@@ -33,17 +33,38 @@ public class ServerSubSettingsPrivilegeController {
     }
 
     public void init() {
-        addUserMenu = (ComboBox) view.lookup("#Add_User_to_Privilege");
-        removeUserMenu = (ComboBox) view.lookup("#Remove_User_from_Privilege");
+        addUserMenu = (ComboBox<String>) view.lookup("#Add_User_to_Privilege");
+        removeUserMenu = (ComboBox<String>) view.lookup("#Remove_User_from_Privilege");
         addUser = (Button) view.lookup("#User_to_Privilege");
         removeUser = (Button) view.lookup("#User_from_Privilege");
 
         addUser.setOnAction(this::addPrivilegedUser);
+        removeUser.setOnAction(this::removePrivilegedUser);
 
         for (User user : server.getUser()) {
             if (!channel.getPrivilegedUsers().contains(user)) {
                 addUserMenu.getItems().add(user.getName());
             }
+        }
+
+        for (User user : channel.getPrivilegedUsers()) {
+            removeUserMenu.getItems().add(user.getName());
+        }
+    }
+
+    /**
+     * removes a privileged user from channel
+     */
+    private void removePrivilegedUser(ActionEvent actionEvent) {
+        if (removeUserMenu.getSelectionModel().getSelectedItem() != null) {
+            User selectedUser = server.getUser().get(removeUserMenu.getSelectionModel().getSelectedIndex());
+            // remove selected user from channel as privileged
+            channel.withoutPrivilegedUsers(selectedUser);
+            // update removeMenu
+            removeUserMenu.getItems().remove(selectedUser.getName());
+            // update addMenu
+            addUserMenu.getItems().add(selectedUser.getName());
+            channelPrivilegedUserUpdate();
         }
     }
 
@@ -55,16 +76,21 @@ public class ServerSubSettingsPrivilegeController {
             User selectedUser = server.getUser().get(addUserMenu.getSelectionModel().getSelectedIndex());
             // set selected user to channel as privileged
             channel.withPrivilegedUsers(selectedUser);
+            // update addMenu
+            addUserMenu.getItems().remove(selectedUser.getName());
+            // update removeMenu
+            removeUserMenu.getItems().add(selectedUser.getName());
+            channelPrivilegedUserUpdate();
+        }
+    }
 
-            addUserMenu.getItems().clear();
-            // load only useres in addmenu who is not privileged yet
-            for (User user : server.getUser()) {
-                if (!channel.getPrivilegedUsers().contains(user)) {
-                    addUserMenu.getItems().add(user.getName());
-                }
-            }
-            String userKey = builder.getPersonalUser().getUserKey();
-
+    /**
+     * updates the channel privileged
+     */
+    private void channelPrivilegedUserUpdate() {
+        String userKey = builder.getPersonalUser().getUserKey();
+        System.out.println(channel.getPrivilegedUsers().size());
+        if (channel.getPrivilegedUsers().size() != 0) {
             ArrayList<String> members = new ArrayList<>();
             for (User user : channel.getPrivilegedUsers()) {
                 members.add(user.getId());
@@ -72,12 +98,20 @@ public class ServerSubSettingsPrivilegeController {
             String[] membersArray = members.toArray(new String[0]);
             // send update to server
             restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
-                    server.getName(), channel.isPrivilege(), membersArray, response -> {
+                    channel.getName(), channel.isPrivilege(), membersArray, response -> {
+                        System.out.println(response.getBody() + "1");
+                    });
+        } else {
+            channel.setPrivilege(false);
+            restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
+                    channel.getName(), false, null, response -> {
+                        System.out.println(response.getBody());
                     });
         }
     }
 
     public void stop() {
         addUser.setOnAction(null);
+        removeUser.setOnAction(null);
     }
 }

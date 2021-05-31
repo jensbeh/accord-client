@@ -125,8 +125,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         clickOn("#Change_Privilege");
         Assert.assertFalse(server.getCategories().get(0).getChannel().get(0).isPrivilege());
 
-        ChoiceBox categoryChoice = lookup("#Category").query();
-        ChoiceBox channelChoice = lookup("#Channels").query();
+        ChoiceBox<String> categoryChoice = lookup("#Category").query();
+        ChoiceBox<String> channelChoice = lookup("#Channels").query();
         Assert.assertEquals(categoryChoice.getItems().get(0), server.getCategories().get(0).getName());
         ArrayList<String> channelList = new ArrayList<>();
         for (Channel channel : server.getCategories().get(0).getChannel()) {
