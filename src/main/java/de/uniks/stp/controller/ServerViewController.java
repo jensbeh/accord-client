@@ -155,6 +155,15 @@ public class ServerViewController {
                             Platform.runLater(() -> messageViewController.clearMessageField());
                         }
                     }
+                    else if (!jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(jsonObject.getString("text")).
+                                setFrom(jsonObject.getString("from")).
+                                setTimestamp(jsonObject.getInt("timestamp")).
+                                setChannel(builder.getCurrentServerChannel());
+                        if (messageViewController != null) {
+                            Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+                    }
                     if (messageViewController != null) {
                         assert message != null;
                         builder.getCurrentServerChannel().withMessage(message);
