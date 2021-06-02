@@ -105,4 +105,8 @@ public class ChatViewController {
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
     }
+
+    public void stop() {
+        sendButton.setOnAction(null);
+    }
 }

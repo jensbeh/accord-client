@@ -3,6 +3,7 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -11,30 +12,36 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
+import kong.unirest.JsonNode;
+import org.json.JSONObject;
 
 public class ServerSettingsCategoryController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
-    private final Server server;
+    private RestClient restClient;
     private ComboBox<Categories> categoriesSelector;
-    private TextField categoryNameTextField;
+    private TextField changeCategoryNameTextField;
     private Button changeCategoryNameButton;
     private Button deleteCategoryButton;
     private TextField createCategoryNameTextField;
     private Button createCategoryButton;
 
+    private Server currentServer;
+    private Categories selectedCategory;
+
 
     public ServerSettingsCategoryController(Parent view, ModelBuilder builder, Server server) {
         this.view = view;
         this.builder = builder;
-        this.server = server;
+        this.currentServer = server;
+        this.restClient = new RestClient();
     }
 
     public void init() {
 
         categoriesSelector = (ComboBox<Categories>) view.lookup("#editCategoriesSelector");
-        categoryNameTextField = (TextField) view.lookup("#editCategoryNameTextField");
+        changeCategoryNameTextField = (TextField) view.lookup("#editCategoryNameTextField");
         changeCategoryNameButton = (Button) view.lookup("#changeCategoryNameButton");
         deleteCategoryButton = (Button) view.lookup("#deleteCategoryButton");
         createCategoryNameTextField = (TextField) view.lookup("#createCategoryNameTextField");
@@ -44,19 +51,16 @@ public class ServerSettingsCategoryController extends SubSetting {
         deleteCategoryButton.setOnAction(this::deleteCategory);
         createCategoryButton.setOnAction(this::createCategory);
 
-        // load categories
+        this.categoriesSelector.setPromptText("Select Category...");
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);
 
-        for (Categories category : builder.getCurrentServer().getCategories()) {
+        for (Categories category : currentServer.getCategories()) {
             this.categoriesSelector.getItems().add(category);
             categoriesSelector.setConverter(new StringConverter<Categories>() {
                 @Override
-                public String toString(Categories object) {
-                    if (object == null) {
-                        return "Select category...";
-                    }
-                    return category.getName();
+                public String toString(Categories categoryToString) {
+                    return categoryToString.getName();
                 }
 
                 @Override
@@ -65,37 +69,115 @@ public class ServerSettingsCategoryController extends SubSetting {
                 }
             });
         }
-        Platform.runLater(() -> {
-            categoriesSelector.getSelectionModel().clearSelection();
-        });
     }
 
     private void onCategoryClicked(Event event) {
-        Categories selectedCategory = this.categoriesSelector.getValue();
+        selectedCategory = this.categoriesSelector.getValue();
         System.out.println("Selected Category: " + selectedCategory);
     }
 
     /**
-     * changes the name of an existing category
+     * changes the name of an existing category when button change is clicked
      */
     private void changeCategoryName(ActionEvent actionEvent) {
+        if (selectedCategory != null && !changeCategoryNameTextField.getText().isEmpty()) {
+            String newCategoryName = changeCategoryNameTextField.getText();
+            if (!selectedCategory.getName().equals(newCategoryName)) {
 
+                restClient.updateCategory(currentServer.getId(), selectedCategory.getId(), newCategoryName, builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        System.out.println("--> SUCCESS: changed category name");
+                        currentServer.withoutCategories(selectedCategory);
+                        selectedCategory.setName(newCategoryName);
+                        currentServer.withCategories(selectedCategory);
+                        reloadCategories(selectedCategory);
+                        Platform.runLater(() -> changeCategoryNameTextField.setText(""));
+                    } else {
+                        System.out.println(status);
+                        System.out.println(body.getObject().getString("message"));
+                    }
+                });
+            } else {
+                System.out.println("--> ERR: New name equals old name");
+            }
+        } else {
+            System.out.println("--> ERR: No Category selected OR Field is empty");
+        }
     }
 
 
     /**
-     * deletes an existing and chosen category
+     * deletes an existing and chosen category when button delete is clicked
      */
 
     private void deleteCategory(ActionEvent actionEvent) {
+        if (selectedCategory != null) {
+            restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println("--> SUCCESS: deleted category");
 
+                    currentServer.withoutCategories(selectedCategory);
+                    reloadCategories(null);
+                } else {
+                    System.out.println(status);
+                    System.out.println(body.getObject().getString("message"));
+                }
+            });
+        } else {
+            System.out.println("--> ERR: No Category selected");
+        }
     }
 
     /**
-     * creates a new category
+     * creates a new category when button create is clicked
      */
     private void createCategory(ActionEvent actionEvent) {
+        if (!createCategoryNameTextField.getText().isEmpty()) {
+            String categoryName = createCategoryNameTextField.getText();
 
+            restClient.createCategory(currentServer.getId(), categoryName, builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println("--> SUCCESS: category created");
+                    JSONObject data = body.getObject().getJSONObject("data");
+                    System.out.println(data);
+                    String categoryId = data.getString("id");
+                    String name = data.getString("name");
+
+                    Categories newCategory = new Categories().setId(categoryId).setName(name);
+                    currentServer.withCategories(newCategory);
+
+                    createCategoryNameTextField.setText("");
+                    reloadCategories(null);
+
+                } else {
+                    System.out.println(status);
+                    System.out.println(body.getObject().getString("message"));
+                }
+            });
+        } else {
+            System.out.println("--> ERR: Field is empty");
+        }
+    }
+
+    /**
+     * reloads the categories in the category settings
+     */
+    private void reloadCategories(Categories preSelectCategory) {
+        selectedCategory = null;
+        Platform.runLater(() -> categoriesSelector.getItems().clear());
+        Platform.runLater(() -> categoriesSelector.getItems().addAll(currentServer.getCategories()));
+
+        if (preSelectCategory != null) {
+            Platform.runLater(() -> categoriesSelector.getSelectionModel().select(preSelectCategory));
+        } else {
+            Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
+        }
     }
 
     public void stop() {
