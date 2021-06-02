@@ -3,15 +3,10 @@
 .categoryScrollPane .scroll-bar:horizontal .track,
 .categoryScrollPane .scroll-bar:vertical .track{
 	-fx-background-color:  #23272a;
-	-fx-border-color:  transparent;
+	-fx-border-color: #23272a;
 	-fx-background-radius: 0em;
 	-fx-border-radius:2em;
 }
-
-.scroll-pane {
-    -fx-background-color: transparent;
-}
-
 
 .categoryScrollPane .scroll-bar:horizontal .increment-button ,
 .categoryScrollPane .scroll-bar:horizontal .decrement-button {
@@ -33,12 +28,12 @@
 .categoryScrollPane  .scroll-bar .increment-arrow,
 .categoryScrollPane  .scroll-bar .decrement-arrow,
  {
-	-fx-padding: 0 0 0 0 ;
+	-fx-padding:0;
 }
 
 .categoryScrollPane .scroll-bar:horizontal .thumb,
 .categoryScrollPane .scroll-bar:vertical .thumb {
-    -fx-background-color:  transparent;
+    -fx-background-color: grey;
 	-fx-background-insets: 2, 0, 0;
 	-fx-background-radius: 2em;
 

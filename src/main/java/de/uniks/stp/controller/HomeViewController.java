@@ -118,11 +118,11 @@ public class HomeViewController {
     public void showServerView() {
         inServerChat = true;
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
+            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+            serverController = new ServerViewController(serverView, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
-            this.root.getChildren().add(root);
+            this.root.getChildren().add(serverView);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

@@ -18,6 +18,7 @@ public class CategorySubController {
     private Label categoryName;
     private ListView<Channel> channelList;
     private AlternateServerChannelListCellFactory channelListCellFactory;
+    private int ROW_HEIGHT = 50;
 
     public CategorySubController(Parent view, Categories category) {
         this.view = view;
@@ -36,6 +37,11 @@ public class CategorySubController {
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.addPropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
 
+        if (category.getChannel().size() > 0) {
+            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
+        } else {
+            channelList.setPrefHeight(ROW_HEIGHT);
+        }
     }
 
     /**
@@ -51,7 +57,12 @@ public class CategorySubController {
     }
 
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
-        channelList.setItems(FXCollections.observableList(category.getChannel()));
+        Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
+        if (category.getChannel().size() > 0) {
+            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
+        } else {
+            channelList.setPrefHeight(ROW_HEIGHT);
+        }
     }
 
     private void onCategoryNameChanged(PropertyChangeEvent propertyChangeEvent) {
@@ -64,7 +75,7 @@ public class CategorySubController {
 
     public void stop() {
         channelList.setOnMouseReleased(null);
-        category.removePropertyChangeListener(this::onChannelChanged);
-        category.removePropertyChangeListener(this::onCategoryNameChanged);
+        category.removePropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
+        category.removePropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
     }
 }

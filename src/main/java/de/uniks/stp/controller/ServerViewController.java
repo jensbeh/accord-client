@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -58,7 +59,7 @@ public class ServerViewController {
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
-    private VBox messages;
+    private VBox chatBox;
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
@@ -94,7 +95,8 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        categoryBox = (VBox) view.lookup("#categoryVbox");
+        scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
+        categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -110,7 +112,7 @@ public class ServerViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
-        messages = (VBox) view.lookup("#chatBox");
+        chatBox = (VBox) view.lookup("#chatBox");
 
         categorySubControllerList = new HashMap<>();
         server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
@@ -217,6 +219,28 @@ public class ServerViewController {
                         generateCategoryChannelView(categories);
                     }
                 }
+                // category deleted
+            } else if (server.getCategories().size() < categorySubControllerList.size()) {
+                Categories toDelete = null;
+                for (Categories deletedCategory : categorySubControllerList.keySet()) {
+                    if (!server.getCategories().contains(deletedCategory)) {
+                        toDelete = deletedCategory;
+                        for (Node view : categoryBox.getChildren()) {
+                            if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
+                                    builder.setCurrentServerChannel(null);
+                                    setSelectedChat(null);
+                                    messageViewController.stop();
+                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                categorySubControllerList.get(toDelete).stop();
+                categorySubControllerList.remove(toDelete);
             }
         }
     }
@@ -228,9 +252,9 @@ public class ServerViewController {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
-            this.messages.getChildren().clear();
+            this.chatBox.getChildren().clear();
             messageViewController.init();
-            this.messages.getChildren().add(root);
+            this.chatBox.getChildren().add(root);
 
             if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
                 for (Message msg : builder.getCurrentServerChannel().getMessage()) {
@@ -487,7 +511,7 @@ public class ServerViewController {
     }
 
     /**
-     * generates a new view for a category
+     * generates a new view for a category with a FIXED width for the scrollPane
      */
     private void generateCategoryChannelView(Categories categories) {
         try {
