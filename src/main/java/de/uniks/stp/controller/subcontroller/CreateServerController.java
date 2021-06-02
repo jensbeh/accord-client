@@ -3,16 +3,17 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -24,13 +25,14 @@ public class CreateServerController {
     private final RestClient restClient;
     private final ModelBuilder builder;
     private Parent view;
-    private VBox createServerBox;
     private static TextField serverName;
     private Button createServer;
-    private CurrentUser personalUser;
-    private Runnable change;
+    private Runnable create;
     private static Label errorLabel;
     private static String error;
+    private TextField linkTextField;
+    private Button joinServer;
+    private Runnable join;
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
@@ -47,11 +49,13 @@ public class CreateServerController {
      */
     public void init() {
         // Load all view references
-        createServerBox = (VBox) view.lookup("#createServerBox");
         serverName = (TextField) view.lookup("#serverName");
         errorLabel = (Label) view.lookup("#errorLabel");
-        createServer = (Button) view.lookup(("#createServer"));
+        createServer = (Button) view.lookup("#createServer");
         createServer.setOnAction(this::onCreateServerClicked);
+        linkTextField = (TextField) view.lookup("#inviteLink");
+        joinServer = (Button) view.lookup("#joinServer");
+        joinServer.setOnAction(this::onServerJoinClicked);
     }
 
     /**
@@ -60,7 +64,7 @@ public class CreateServerController {
      * @param change the userKey off the personalUser
      */
     public void showCreateServerView(Runnable change) {
-        this.change = change;
+        this.create = change;
     }
 
     /**
@@ -70,7 +74,7 @@ public class CreateServerController {
      */
     public void onCreateServerClicked(ActionEvent event) {
         try {
-            this.personalUser = builder.getPersonalUser();
+            CurrentUser personalUser = builder.getPersonalUser();
             String name = serverName.getText();
             if (name != null && !name.isEmpty()) {
                 JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
@@ -79,7 +83,7 @@ public class CreateServerController {
                     String serverId = response.getObject().getJSONObject("data").getString("id");
                     String serverName = response.getObject().getJSONObject("data").getString("name");
                     builder.setCurrentServer(builder.buildServer(serverName, serverId));
-                    change.run();
+                    create.run();
                 } else if (status.equals(("failure"))) {
                     setError("error.create_server_failure");
                 }
@@ -107,6 +111,45 @@ public class CreateServerController {
         }
     }
 
+    public void joinNewServer(Runnable change) {
+        this.join = change;
+    }
+
+    private void onServerJoinClicked(ActionEvent actionEvent) {
+        CurrentUser currentUser = builder.getPersonalUser();
+        if (!linkTextField.getText().equals("")) {
+            String link = linkTextField.getText();
+            String[] splitLink = link.split("/");
+            String serverId = splitLink[splitLink.length - 3];
+            String inviteId = splitLink[splitLink.length - 1];
+            restClient.joinServer(serverId, inviteId, currentUser.getName(), currentUser.getPassword(), currentUser.getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    findNewServer(serverId);
+                }
+            });
+        }
+    }
+
+    private void findNewServer(String Id) {
+        restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            //List to track the online users in order to remove old users that are now offline
+            ArrayList<Server> onlineServers = new ArrayList<>();
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                Server server = builder.buildServer(serverName, serverId);
+                if (serverId.equals(Id)) {
+                    builder.setCurrentServer(server);
+                    join.run();
+                    break;
+                }
+            }
+        });
+    }
+
     /**
      * set the error text in label placeholder
      *
@@ -116,5 +159,10 @@ public class CreateServerController {
         ResourceBundle lang = StageManager.getLangBundle();
         error = errorMsg;
         errorLabel.setText(lang.getString(error));
+    }
+
+    public void stop() {
+        createServer.setOnAction(null);
+        joinServer.setOnAction(null);
     }
 }
