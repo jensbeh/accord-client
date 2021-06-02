@@ -227,13 +227,13 @@ public class ServerViewController {
                         toDelete = deletedCategory;
                         for (Node view : categoryBox.getChildren()) {
                             if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                 if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
                                     builder.setCurrentServerChannel(null);
                                     setSelectedChat(null);
                                     messageViewController.stop();
                                     Platform.runLater(() -> this.chatBox.getChildren().clear());
                                 }
-                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                 break;
                             }
                         }
