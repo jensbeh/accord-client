@@ -100,6 +100,12 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void deleteChannel(String serverId, String categoryId, String channelId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId;
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
         req.asJsonAsync(callback);
     }
