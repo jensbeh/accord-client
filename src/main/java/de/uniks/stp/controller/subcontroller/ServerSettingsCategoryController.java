@@ -123,7 +123,7 @@ public class ServerSettingsCategoryController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: changed category name");
+                    System.out.println("--> SUCCESS: deleted category");
                     currentServer.withoutCategories(selectedCategory);
                     Platform.runLater(() -> reloadCategories(null));
                 } else {
@@ -172,14 +172,14 @@ public class ServerSettingsCategoryController extends SubSetting {
      * reloads the categories in the category settings
      */
     private void reloadCategories(Categories preSelectCategory) {
-        selectedCategory = null;
-        categoriesSelector.getItems().clear();
-        categoriesSelector.getItems().addAll(currentServer.getCategories());
+        this.selectedCategory = null;
+        this.categoriesSelector.getItems().clear();
+        this.categoriesSelector.getItems().addAll(currentServer.getCategories());
 
         if (preSelectCategory != null) {
-            Platform.runLater(() -> categoriesSelector.getSelectionModel().select(preSelectCategory));
+            this.categoriesSelector.getSelectionModel().select(preSelectCategory);
         } else {
-            Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
+            this.categoriesSelector.getSelectionModel().clearSelection();
         }
     }
 

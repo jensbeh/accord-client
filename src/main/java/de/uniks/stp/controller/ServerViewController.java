@@ -95,7 +95,8 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        categoryBox = (VBox) view.lookup("#categoryVbox");
+        scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
+        categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -218,6 +219,7 @@ public class ServerViewController {
                         generateCategoryChannelView(categories);
                     }
                 }
+                // category deleted
             } else if (server.getCategories().size() < categorySubControllerList.size()) {
                 for (Categories deletedCategory : categorySubControllerList.keySet()) {
                     if (!server.getCategories().contains(deletedCategory)) {
@@ -225,7 +227,7 @@ public class ServerViewController {
                         categorySubControllerList.remove(deletedCategory);
                         for (Node view : categoryBox.getChildren()) {
                             if (view.getId().equals(deletedCategory.getId())) {
-                                Platform.runLater(() -> categoryBox.getChildren().remove(view));
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                 break;
                             }
                         }
