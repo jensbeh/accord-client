@@ -5,7 +5,6 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -142,7 +141,7 @@ public class CreateServerController {
                 String serverName = jsonResponse.getJSONObject(i).get("name").toString();
                 String serverId = jsonResponse.getJSONObject(i).get("id").toString();
                 Server server = builder.buildServer(serverName, serverId);
-                if (serverId.equals(Id)){
+                if (serverId.equals(Id)) {
                     builder.setCurrentServer(server);
                     join.run();
                     break;

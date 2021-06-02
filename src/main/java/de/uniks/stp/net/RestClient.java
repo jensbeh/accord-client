@@ -1,6 +1,5 @@
 package de.uniks.stp.net;
 
-import de.uniks.stp.builder.ModelBuilder;
 import kong.unirest.*;
 import org.json.JSONObject;
 
