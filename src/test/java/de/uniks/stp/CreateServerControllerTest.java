@@ -140,7 +140,7 @@ public class CreateServerControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void showNoConnectionToServerTest() throws InterruptedException {
+    public void showNoConnectionToServerTest() {
         String message = "";
         when(restMock.postServer(anyString(), anyString())).thenThrow(new UnirestException("No route to host: connect"));
         try {
@@ -153,4 +153,18 @@ public class CreateServerControllerTest extends ApplicationTest {
         Assert.assertEquals("No Connection - Please check your connection and try again", message);
     }
 
+    @Test
+    public void joinServer() throws InterruptedException {
+        loginInit();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+        TextField invLink = lookup("#inviteLink").query();
+        invLink.setText("https://ac.uniks.de/api/servers/60b7dafd026b3534ca5be36a/invites/60b7db05026b3534ca5be39b");
+        clickOn("#joinServer");
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(500);
+        MenuButton serverMenuButton = lookup("#serverMenuButton").query();
+        Assert.assertEquals("Hey Taeubchen Gurr Gurr",serverMenuButton.getText());
+    }
 }
