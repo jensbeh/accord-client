@@ -51,7 +51,7 @@ public class ServerSettingsCategoryController extends SubSetting {
         deleteCategoryButton.setOnAction(this::deleteCategory);
         createCategoryButton.setOnAction(this::createCategory);
 
-        // load categories
+        this.categoriesSelector.setPromptText("Select Category...");
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);
 
@@ -59,11 +59,8 @@ public class ServerSettingsCategoryController extends SubSetting {
             this.categoriesSelector.getItems().add(category);
             categoriesSelector.setConverter(new StringConverter<Categories>() {
                 @Override
-                public String toString(Categories object) {
-                    if (object == null) {
-                        return "Select category...";
-                    }
-                    return object.getName();
+                public String toString(Categories categoryToString) {
+                    return categoryToString.getName();
                 }
 
                 @Override
@@ -99,8 +96,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                         selectedCategory.setName(newCategoryName);
                         currentServer.withCategories(selectedCategory);
                         Platform.runLater(() -> {
-                                reloadCategories(selectedCategory);
-                                changeCategoryNameTextField.setText("");
+                            reloadCategories(selectedCategory);
+                            changeCategoryNameTextField.setText("");
                         });
                     } else {
                         System.out.println(status);
@@ -121,7 +118,21 @@ public class ServerSettingsCategoryController extends SubSetting {
      */
 
     private void deleteCategory(ActionEvent actionEvent) {
-
+        if (selectedCategory != null) {
+            restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println("--> SUCCESS: changed category name");
+                    currentServer.withoutCategories(selectedCategory);
+                    Platform.runLater(() -> reloadCategories(null));
+                } else {
+                    System.out.println(status);
+                    System.out.println(body.getObject().getString("message"));
+                }
+            });
+        }
+        System.out.println("--> ERR: No Category selected");
     }
 
     /**
@@ -145,8 +156,7 @@ public class ServerSettingsCategoryController extends SubSetting {
                     currentServer.withCategories(newCategory);
 
                     createCategoryNameTextField.setText("");
-                    Platform.runLater(() -> reloadCategories(newCategory));
-                    //Platform.runLater(generateOneNewCategoryChannelViews);
+                    Platform.runLater(() -> reloadCategories(null));
 
                 } else {
                     System.out.println(status);
@@ -162,11 +172,14 @@ public class ServerSettingsCategoryController extends SubSetting {
      * reloads the categories in the category settings
      */
     private void reloadCategories(Categories preSelectCategory) {
+        selectedCategory = null;
         categoriesSelector.getItems().clear();
         categoriesSelector.getItems().addAll(currentServer.getCategories());
 
         if (preSelectCategory != null) {
-            categoriesSelector.getSelectionModel().select(preSelectCategory);
+            Platform.runLater(() -> categoriesSelector.getSelectionModel().select(preSelectCategory));
+        } else {
+            Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
         }
     }
 

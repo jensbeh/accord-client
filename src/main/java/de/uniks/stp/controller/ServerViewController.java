@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -215,6 +216,19 @@ public class ServerViewController {
                 for (Categories categories : server.getCategories()) {
                     if (!categorySubControllerList.containsKey(categories)) {
                         generateCategoryChannelView(categories);
+                    }
+                }
+            } else if (server.getCategories().size() < categorySubControllerList.size()) {
+                for (Categories deletedCategory : categorySubControllerList.keySet()) {
+                    if (!server.getCategories().contains(deletedCategory)) {
+                        categorySubControllerList.get(deletedCategory).stop();
+                        categorySubControllerList.remove(deletedCategory);
+                        for (Node view : categoryBox.getChildren()) {
+                            if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> categoryBox.getChildren().remove(view));
+                                break;
+                            }
+                        }
                     }
                 }
             }
