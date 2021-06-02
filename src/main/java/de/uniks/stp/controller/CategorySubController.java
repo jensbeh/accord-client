@@ -37,6 +37,11 @@ public class CategorySubController {
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.addPropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
 
+        if (category.getChannel().size() > 0) {
+            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
+        } else {
+            channelList.setPrefHeight(ROW_HEIGHT);
+        }
     }
 
     /**
@@ -53,7 +58,11 @@ public class CategorySubController {
 
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
         Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
-        channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
+        if (category.getChannel().size() > 0) {
+            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
+        } else {
+            channelList.setPrefHeight(ROW_HEIGHT);
+        }
     }
 
     private void onCategoryNameChanged(PropertyChangeEvent propertyChangeEvent) {

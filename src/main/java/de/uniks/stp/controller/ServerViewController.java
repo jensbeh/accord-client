@@ -59,7 +59,7 @@ public class ServerViewController {
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
-    private VBox messages;
+    private VBox chatBox;
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
@@ -112,7 +112,7 @@ public class ServerViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
-        messages = (VBox) view.lookup("#chatBox");
+        chatBox = (VBox) view.lookup("#chatBox");
 
         categorySubControllerList = new HashMap<>();
         server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
@@ -227,6 +227,12 @@ public class ServerViewController {
                         toDelete = deletedCategory;
                         for (Node view : categoryBox.getChildren()) {
                             if (view.getId().equals(deletedCategory.getId())) {
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
+                                    builder.setCurrentServerChannel(null);
+                                    setSelectedChat(null);
+                                    messageViewController.stop();
+                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                }
                                 Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                 break;
                             }
@@ -246,9 +252,9 @@ public class ServerViewController {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
-            this.messages.getChildren().clear();
+            this.chatBox.getChildren().clear();
             messageViewController.init();
-            this.messages.getChildren().add(root);
+            this.chatBox.getChildren().add(root);
 
             if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
                 for (Message msg : builder.getCurrentServerChannel().getMessage()) {
