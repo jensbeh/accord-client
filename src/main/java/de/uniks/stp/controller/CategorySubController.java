@@ -65,6 +65,9 @@ public class CategorySubController {
         }
     }
 
+    /**
+     * sets the new Categoryname
+     */
     private void onCategoryNameChanged(PropertyChangeEvent propertyChangeEvent) {
         Platform.runLater(() -> categoryName.setText(category.getName()));
     }

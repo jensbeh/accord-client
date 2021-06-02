@@ -208,6 +208,9 @@ public class ServerViewController {
         }
     }
 
+    /**
+     * adds a new Controller for a new Category with new view, or deletes a category with controller and view
+     */
     private void onCategoriesChanged(PropertyChangeEvent propertyChangeEvent) {
         //Platform.runLater(this::generateCategoriesChannelViews);
 

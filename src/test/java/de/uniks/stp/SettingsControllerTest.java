@@ -104,7 +104,7 @@ public class SettingsControllerTest extends ApplicationTest {
             }
         }
 
-        
+
         Thread.sleep(2000);
     }
 }
