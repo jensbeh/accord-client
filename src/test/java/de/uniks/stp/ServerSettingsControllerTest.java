@@ -144,7 +144,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         clickOn("#deleteServer");
         Label serverNameLabel = lookup("#serverName").query();
         Button leaveButton = lookup("#deleteServer").query();
-        Assert.assertEquals("Servername", serverNameLabel.getText());
+        Assert.assertEquals("TestServer Team Bit Shift", serverNameLabel.getText());
         Assert.assertEquals("Delete Server", leaveButton.getText());
     }
 
