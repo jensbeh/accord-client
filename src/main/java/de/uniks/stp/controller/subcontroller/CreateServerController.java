@@ -3,14 +3,18 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
+import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -29,7 +33,7 @@ public class CreateServerController {
     private static String error;
     private TextField linkTextField;
     private Button joinServer;
-    private Runnable joined;
+    private Runnable join;
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
@@ -108,8 +112,8 @@ public class CreateServerController {
         }
     }
 
-    public void joinedServer(Runnable change) {
-        this.joined = change;
+    public void joinNewServer(Runnable change) {
+        this.join = change;
     }
 
     private void onServerJoinClicked(ActionEvent actionEvent) {
@@ -123,11 +127,28 @@ public class CreateServerController {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println(body);
-                    joined.run();
+                    findNewServer(serverId);
                 }
             });
         }
+    }
+
+    private void findNewServer(String Id) {
+        restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            //List to track the online users in order to remove old users that are now offline
+            ArrayList<Server> onlineServers = new ArrayList<>();
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                Server server = builder.buildServer(serverName, serverId);
+                if (serverId.equals(Id)){
+                    builder.setCurrentServer(server);
+                    join.run();
+                    break;
+                }
+            }
+        });
     }
 
     /**
