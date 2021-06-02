@@ -505,7 +505,7 @@ public class ServerViewController {
     }
 
     /**
-     * generates a new view for a category
+     * generates a new view for a category with a FIXED width for the scrollPane
      */
     private void generateCategoryChannelView(Categories categories) {
         try {

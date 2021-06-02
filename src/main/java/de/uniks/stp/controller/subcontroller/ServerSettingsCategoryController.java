@@ -69,9 +69,6 @@ public class ServerSettingsCategoryController extends SubSetting {
                 }
             });
         }
-        Platform.runLater(() -> {
-            categoriesSelector.getSelectionModel().clearSelection();
-        });
     }
 
     private void onCategoryClicked(Event event) {

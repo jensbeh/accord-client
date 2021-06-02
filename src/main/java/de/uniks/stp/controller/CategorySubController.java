@@ -66,7 +66,7 @@ public class CategorySubController {
 
     public void stop() {
         channelList.setOnMouseReleased(null);
-        category.removePropertyChangeListener(this::onChannelChanged);
-        category.removePropertyChangeListener(this::onCategoryNameChanged);
+        category.removePropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
+        category.removePropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
     }
 }
