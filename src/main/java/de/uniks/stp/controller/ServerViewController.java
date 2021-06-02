@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -126,7 +127,6 @@ public class ServerViewController {
             }
         }); // members & (categories)
         showServerUsers();
-        Platform.runLater(this::showMessageView);
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -382,10 +382,31 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    loadChannelMessages(channel);
 
                     builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
+        });
+    }
+
+    private void loadChannelMessages(Channel channel) {
+        System.out.println(new Date().getTime());
+        restClient.getChannelMessages(new Date().getTime(), builder.getCurrentServer().getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonData = data.getJSONObject(i);
+                    String from = jsonData.getString("from");
+                    long timestamp = jsonData.getLong("timestamp");
+                    String text = jsonData.getString("text");
+                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
+                    channel.withMessage(message);
+                }
+            }
+            Platform.runLater(this::showMessageView);
         });
     }
 
