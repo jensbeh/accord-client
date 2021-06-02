@@ -13,12 +13,14 @@ public class CurrentUser
    public static final String PROPERTY_USER = "user";
    public static final String PROPERTY_SERVER = "server";
    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+   public static final String PROPERTY_PASSWORD = "password";
    private String name;
    private String userKey;
    private List<User> user;
    protected PropertyChangeSupport listeners;
    private List<Server> server;
    private List<Channel> privateChat;
+   private String password;
 
    public String getName()
    {
@@ -254,6 +256,24 @@ public class CurrentUser
       return this;
    }
 
+   public String getPassword()
+   {
+      return this.password;
+   }
+
+   public CurrentUser setPassword(String value)
+   {
+      if (Objects.equals(value, this.password))
+      {
+         return this;
+      }
+
+      final String oldValue = this.password;
+      this.password = value;
+      this.firePropertyChange(PROPERTY_PASSWORD, oldValue, value);
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -279,6 +299,7 @@ public class CurrentUser
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getName());
       result.append(' ').append(this.getUserKey());
+      result.append(' ').append(this.getPassword());
       return result.substring(1);
    }
 
