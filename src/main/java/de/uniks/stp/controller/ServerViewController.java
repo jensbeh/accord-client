@@ -428,9 +428,48 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    loadChannelMessages(channel);
                 }
             }
         });
+    }
+
+    private void loadChannelMessages(Channel channel) {
+        System.out.println(new Date().getTime());
+        restClient.getChannelMessages(new Date().getTime(), builder.getCurrentServer().getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonData = data.getJSONObject(i);
+                    String from = jsonData.getString("from");
+                    long timestamp = jsonData.getLong("timestamp");
+                    String text = jsonData.getString("text");
+                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
+                    channel.withMessage(message);
+                }
+            }
+            Platform.runLater(this::showMessageView);
+        });
+    }
+
+    /**
+     * Get the default channel which was the one when server also was created
+     *
+     * @return channel is the default channel
+     */
+    public Channel getDefaultChannel() {
+        for (Categories cat : builder.getCurrentServer().getCategories()) {
+            if (cat.getName().equals("default")) {
+                for (Channel channel : cat.getChannel()) {
+                    if (channel.getName().equals("default-text-channel")) {
+                        return channel;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void stop() {

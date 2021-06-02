@@ -367,8 +367,8 @@
   modified: 	false
   name: 	timestamp
   propertyStyle: 	Bean
-  type: 	int
-  typeSignature: 	int
+  type: 	long
+  typeSignature: 	long
 
 - message_message: 	org.fulib.classmodel.Attribute
   clazz: 	message
