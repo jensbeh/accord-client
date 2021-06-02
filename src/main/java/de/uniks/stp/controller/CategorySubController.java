@@ -18,6 +18,7 @@ public class CategorySubController {
     private Label categoryName;
     private ListView<Channel> channelList;
     private AlternateServerChannelListCellFactory channelListCellFactory;
+    private int ROW_HEIGHT = 50;
 
     public CategorySubController(Parent view, Categories category) {
         this.view = view;
@@ -51,7 +52,8 @@ public class CategorySubController {
     }
 
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
-        channelList.setItems(FXCollections.observableList(category.getChannel()));
+        Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
+        channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT + 2);
     }
 
     private void onCategoryNameChanged(PropertyChangeEvent propertyChangeEvent) {

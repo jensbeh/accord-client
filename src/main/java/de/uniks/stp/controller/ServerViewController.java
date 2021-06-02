@@ -221,10 +221,10 @@ public class ServerViewController {
                 }
                 // category deleted
             } else if (server.getCategories().size() < categorySubControllerList.size()) {
+                Categories toDelete = null;
                 for (Categories deletedCategory : categorySubControllerList.keySet()) {
                     if (!server.getCategories().contains(deletedCategory)) {
-                        categorySubControllerList.get(deletedCategory).stop();
-                        categorySubControllerList.remove(deletedCategory);
+                        toDelete = deletedCategory;
                         for (Node view : categoryBox.getChildren()) {
                             if (view.getId().equals(deletedCategory.getId())) {
                                 Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
@@ -233,6 +233,8 @@ public class ServerViewController {
                         }
                     }
                 }
+                categorySubControllerList.get(toDelete).stop();
+                categorySubControllerList.remove(toDelete);
             }
         }
     }

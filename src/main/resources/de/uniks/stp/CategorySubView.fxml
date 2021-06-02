@@ -5,10 +5,10 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefHeight="202.0" prefWidth="186.0" spacing="10.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="186.0" spacing="10.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label id="categoryName" text="Label" textFill="WHITE" />
-      <ListView id="channellist" prefHeight="196.0" prefWidth="170.0" style="-fx-background-color: #23272a;" />
+      <ListView id="channellist" minHeight="50.0" prefWidth="170.0" style="-fx-background-color: #23272a;" />
    </children>
    <padding>
       <Insets right="16.0" />
