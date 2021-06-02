@@ -18,6 +18,7 @@ public class Channel
    public static final String PROPERTY_CURRENT_USER = "currentUser";
    public static final String PROPERTY_PRIVILEGE = "privilege";
    public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
+   public static final String PROPERTY_TYPE = "type";
    private String name;
    private String id;
    private Categories categories;
@@ -26,6 +27,7 @@ public class Channel
    private CurrentUser currentUser;
    private boolean privilege;
    private int unreadMessagesCounter;
+   private String type;
 
    public String getName()
    {
@@ -226,6 +228,7 @@ public class Channel
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getName());
       result.append(' ').append(this.getId());
+      result.append(' ').append(this.getType());
       return result.substring(1);
    }
 
@@ -251,6 +254,24 @@ public class Channel
       final int oldValue = this.unreadMessagesCounter;
       this.unreadMessagesCounter = value;
       this.firePropertyChange(PROPERTY_UNREAD_MESSAGES_COUNTER, oldValue, value);
+      return this;
+   }
+
+   public String getType()
+   {
+      return this.type;
+   }
+
+   public Channel setType(String value)
+   {
+      if (Objects.equals(value, this.type))
+      {
+         return this;
+      }
+
+      final String oldValue = this.type;
+      this.type = value;
+      this.firePropertyChange(PROPERTY_TYPE, oldValue, value);
       return this;
    }
 }
