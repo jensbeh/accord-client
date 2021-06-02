@@ -118,11 +118,11 @@ public class HomeViewController {
     public void showServerView() {
         inServerChat = true;
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-            serverController = new ServerViewController(root, builder, builder.getCurrentServer());
+            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+            serverController = new ServerViewController(serverView, builder, builder.getCurrentServer());
             serverController.init();
             this.root.getChildren().clear();
-            this.root.getChildren().add(root);
+            this.root.getChildren().add(serverView);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -146,6 +146,7 @@ public class HomeViewController {
             createServerController.init();
             stage = new Stage();
             createServerController.showCreateServerView(this::onServerCreated);
+            createServerController.joinNewServer(this::joinNewServer);
             setStageTitle("window_title_create_new_server");
             stage.setScene(scene);
             stage.show();
@@ -153,6 +154,15 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void joinNewServer() {
+        Platform.runLater(() -> {
+            stage.close();
+            showServers();
+            updateServerListColor();
+            showServerView();
+        });
     }
 
     /**

@@ -140,7 +140,7 @@ public class LoginScreenController {
                         if (status.equals("success")) {
                             //build user with key
                             String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                            builder.buildPersonalUser(username, userkey);
+                            builder.buildPersonalUser(username,password, userkey);
                             //show message on screen
                             this.message = body.getObject().getString("status");
                             Platform.runLater(() -> setError("error.login_success"));

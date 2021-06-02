@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -25,12 +26,11 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static util.Constants.*;
 
@@ -59,12 +59,13 @@ public class ServerViewController {
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
-    private static VBox messages;
+    private static VBox chatBox;
     private static ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
-    private CategorySubController categorySubController;
+    private static Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
+    private ScrollPane scrollPaneCategories;
     private String personalID;
 
     /**
@@ -94,7 +95,8 @@ public class ServerViewController {
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
-        categoryBox = (VBox) view.lookup("#categoryVbox");
+        scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
+        categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -110,7 +112,10 @@ public class ServerViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
-        messages = (VBox) view.lookup("#chatBox");
+        chatBox = (VBox) view.lookup("#chatBox");
+
+        categorySubControllerList = new HashMap<>();
+        server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
 
         showCurrentUser();
         loadServerInfos(new ServerInfoCallback() {
@@ -193,7 +198,51 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
-        Platform.runLater(this::generateCategoriesChannelViews);
+
+        // load views when server is selected second time - no new channel & co via Rest are taken
+        if (categorySubControllerList.size() == 0) {
+            Platform.runLater(this::generateCategoriesChannelViews);
+        }
+    }
+
+    /**
+     * adds a new Controller for a new Category with new view, or deletes a category with controller and view
+     */
+    private void onCategoriesChanged(PropertyChangeEvent propertyChangeEvent) {
+        //Platform.runLater(this::generateCategoriesChannelViews);
+
+        if (server.getCategories() != null && categorySubControllerList != null) {
+            // category added
+            if (server.getCategories().size() >= categorySubControllerList.size()) {
+                for (Categories categories : server.getCategories()) {
+                    if (!categorySubControllerList.containsKey(categories)) {
+                        generateCategoryChannelView(categories);
+                    }
+                }
+                // category deleted
+            } else if (server.getCategories().size() < categorySubControllerList.size()) {
+                Categories toDelete = null;
+                for (Categories deletedCategory : categorySubControllerList.keySet()) {
+                    if (!server.getCategories().contains(deletedCategory)) {
+                        toDelete = deletedCategory;
+                        for (Node view : categoryBox.getChildren()) {
+                            if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
+                                    builder.setCurrentServerChannel(null);
+                                    setSelectedChat(null);
+                                    messageViewController.stop();
+                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                categorySubControllerList.get(toDelete).stop();
+                categorySubControllerList.remove(toDelete);
+            }
+        }
     }
 
     /**
@@ -203,9 +252,9 @@ public class ServerViewController {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
-            messages.getChildren().clear();
+            chatBox.getChildren().clear();
             messageViewController.init();
-            messages.getChildren().add(root);
+            chatBox.getChildren().add(root);
 
             if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
                 for (Message msg : builder.getCurrentServerChannel().getMessage()) {
@@ -398,6 +447,11 @@ public class ServerViewController {
         }
         serverSettings.setOnAction(null);
         inviteUsers.setOnAction(null);
+
+        for (CategorySubController categorySubController : categorySubControllerList.values()) {
+            categorySubController.stop();
+        }
+        server.removePropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
     }
 
     /**
@@ -431,21 +485,22 @@ public class ServerViewController {
      * generates new views for all categories of the server
      */
     private void generateCategoriesChannelViews() {
-        for (Categories c : server.getCategories()) {
-            generateCategoryChannelView(c);
+        for (Categories categories : server.getCategories()) {
+            generateCategoryChannelView(categories);
         }
     }
 
     /**
-     * generates a new view for a category
+     * generates a new view for a category with a FIXED width for the scrollPane
      */
-    private void generateCategoryChannelView(Categories c) {
+    private void generateCategoryChannelView(Categories categories) {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
-            view.setId(c.getId());
-            categorySubController = new CategorySubController(view, c);
-            categorySubController.init();
-            this.categoryBox.getChildren().add(view);
+            view.setId(categories.getId());
+            CategorySubController tempCategorySubController = new CategorySubController(view, categories);
+            tempCategorySubController.init();
+            categorySubControllerList.put(categories, tempCategorySubController);
+            Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
             System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();

@@ -145,6 +145,6 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
             channelList.add(channel.getName());
         }
         Assert.assertEquals(channelChoice.getItems(), channelList);
-        
+
     }
 }

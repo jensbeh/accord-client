@@ -1,5 +1,6 @@
 package de.uniks.stp.model;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.ArrayList;
@@ -263,6 +264,40 @@ public class Server {
       result.append(' ').append(this.getId());
       result.append(' ').append(this.getOwner());
       return result.substring(1);
+   }
+
+   public boolean addPropertyChangeListener(PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners == null) {
+         this.listeners = new PropertyChangeSupport(this);
+      }
+      this.listeners.addPropertyChangeListener(listener);
+      return true;
+   }
+
+   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners == null) {
+         this.listeners = new PropertyChangeSupport(this);
+      }
+      this.listeners.addPropertyChangeListener(propertyName, listener);
+      return true;
+   }
+
+   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners != null) {
+         this.listeners.removePropertyChangeListener(listener);
+      }
+      return true;
+   }
+
+   public boolean removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners != null) {
+         this.listeners.removePropertyChangeListener(propertyName, listener);
+      }
+      return true;
    }
 
     public void removeYou()
