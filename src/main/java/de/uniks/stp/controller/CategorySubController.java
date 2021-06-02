@@ -45,6 +45,7 @@ public class CategorySubController {
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
             channelList.refresh();
+            ServerViewController.showMessageView();
         }
     }
 

@@ -59,8 +59,8 @@ public class ServerViewController {
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
-    private VBox messages;
-    private ChatViewController messageViewController;
+    private static VBox messages;
+    private static ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
     private CategorySubController categorySubController;
@@ -112,8 +112,6 @@ public class ServerViewController {
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         messages = (VBox) view.lookup("#chatBox");
 
-        builder.setCurrentServerChannel(getDefaultChannel());
-
         showCurrentUser();
         loadServerInfos(new ServerInfoCallback() {
             @Override
@@ -126,7 +124,6 @@ public class ServerViewController {
             }
         }); // members & (categories)
         showServerUsers();
-        Platform.runLater(this::showMessageView);
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -202,13 +199,13 @@ public class ServerViewController {
     /**
      * Initial Chat View and load chat history which is saved in list
      */
-    private void showMessageView() {
+    public static void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
-            this.messages.getChildren().clear();
+            messages.getChildren().clear();
             messageViewController.init();
-            this.messages.getChildren().add(root);
+            messages.getChildren().add(root);
 
             if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
                 for (Message msg : builder.getCurrentServerChannel().getMessage()) {
@@ -382,29 +379,9 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
-
-                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
-    }
-
-    /**
-     * Get the default channel which was the one when server also was created
-     *
-     * @return channel is the default channel
-     */
-    public Channel getDefaultChannel() {
-        for (Categories cat : builder.getCurrentServer().getCategories()) {
-            if (cat.getName().equals("default")) {
-                for (Channel channel : cat.getChannel()) {
-                    if (channel.getName().equals("default-text-channel")) {
-                        return channel;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public void stop() {

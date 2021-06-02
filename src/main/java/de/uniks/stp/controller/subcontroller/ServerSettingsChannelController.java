@@ -228,7 +228,6 @@ public class ServerSettingsChannelController extends SubSetting {
     private void onChannelCreateButtonClicked(ActionEvent actionEvent) {
         if (!createChannelTextField.getText().isEmpty()) {
             String channelName = createChannelTextField.getText();
-            /*TODO is every new channel not privileged?*/
             String[] members = new String[0];
             restClient.createChannel(server.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), channelName, channelType, false, members, response -> {
                 JsonNode body = response.getBody();
