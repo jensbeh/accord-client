@@ -114,6 +114,13 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void joinServer(String serverId, String inviteId, String username, String password, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + inviteId).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
+    }
+
     public void createCategory(String serverId, String categoryName, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", categoryName);
         String body = JSONObject.valueToString(jsonObj);
