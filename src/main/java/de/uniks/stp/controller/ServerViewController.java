@@ -25,12 +25,11 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static util.Constants.*;
 
@@ -63,8 +62,9 @@ public class ServerViewController {
     private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
-    private CategorySubController categorySubController;
+    private static Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
+    private ScrollPane scrollPaneCategories;
     private String personalID;
 
     /**
@@ -111,6 +111,9 @@ public class ServerViewController {
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         messages = (VBox) view.lookup("#chatBox");
+
+        categorySubControllerList = new HashMap<>();
+        server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
 
         builder.setCurrentServerChannel(getDefaultChannel());
 
@@ -196,7 +199,26 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
-        Platform.runLater(this::generateCategoriesChannelViews);
+
+        // load views when server is selected second time - no new channel & co via Rest are taken
+        if (categorySubControllerList.size() == 0) {
+            Platform.runLater(this::generateCategoriesChannelViews);
+        }
+    }
+
+    private void onCategoriesChanged(PropertyChangeEvent propertyChangeEvent) {
+        //Platform.runLater(this::generateCategoriesChannelViews);
+
+        if (server.getCategories() != null && categorySubControllerList != null) {
+            // category added
+            if (server.getCategories().size() >= categorySubControllerList.size()) {
+                for (Categories categories : server.getCategories()) {
+                    if (!categorySubControllerList.containsKey(categories)) {
+                        generateCategoryChannelView(categories);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -421,6 +443,11 @@ public class ServerViewController {
         }
         serverSettings.setOnAction(null);
         inviteUsers.setOnAction(null);
+
+        for (CategorySubController categorySubController : categorySubControllerList.values()) {
+            categorySubController.stop();
+        }
+        server.removePropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
     }
 
     /**
@@ -454,21 +481,22 @@ public class ServerViewController {
      * generates new views for all categories of the server
      */
     private void generateCategoriesChannelViews() {
-        for (Categories c : server.getCategories()) {
-            generateCategoryChannelView(c);
+        for (Categories categories : server.getCategories()) {
+            generateCategoryChannelView(categories);
         }
     }
 
     /**
      * generates a new view for a category
      */
-    private void generateCategoryChannelView(Categories c) {
+    private void generateCategoryChannelView(Categories categories) {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
-            view.setId(c.getId());
-            categorySubController = new CategorySubController(view, c);
-            categorySubController.init();
-            this.categoryBox.getChildren().add(view);
+            view.setId(categories.getId());
+            CategorySubController tempCategorySubController = new CategorySubController(view, categories);
+            tempCategorySubController.init();
+            categorySubControllerList.put(categories, tempCategorySubController);
+            Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
             System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
