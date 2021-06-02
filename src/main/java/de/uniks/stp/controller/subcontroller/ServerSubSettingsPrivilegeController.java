@@ -23,6 +23,8 @@ public class ServerSubSettingsPrivilegeController {
     private final Server server;
     private final Channel channel;
     private final RestClient restClient;
+    private User selectedRemoveUser;
+    private User selectedAddUser;
 
     public ServerSubSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server, Channel channel) {
         this.view = view;
@@ -46,7 +48,6 @@ public class ServerSubSettingsPrivilegeController {
                 addUserMenu.getItems().add(user.getName());
             }
         }
-
         for (User user : channel.getPrivilegedUsers()) {
             removeUserMenu.getItems().add(user.getName());
         }
@@ -57,13 +58,27 @@ public class ServerSubSettingsPrivilegeController {
      */
     private void removePrivilegedUser(ActionEvent actionEvent) {
         if (removeUserMenu.getSelectionModel().getSelectedItem() != null) {
-            User selectedUser = server.getUser().get(removeUserMenu.getSelectionModel().getSelectedIndex());
+            for (User user : server.getUser()) {
+                if (user.getName().equals(removeUserMenu.getSelectionModel().getSelectedItem())) {
+                    selectedRemoveUser = user;
+                }
+            }
             // remove selected user from channel as privileged
-            channel.withoutPrivilegedUsers(selectedUser);
+            channel.withoutPrivilegedUsers(selectedRemoveUser);
             // update removeMenu
-            removeUserMenu.getItems().remove(selectedUser.getName());
+            removeUserMenu.getItems().clear();
+            for (User user : server.getUser()) {
+                if (user.getPrivileged().contains(channel)) {
+                    removeUserMenu.getItems().add(user.getName());
+                }
+            }
             // update addMenu
-            addUserMenu.getItems().add(selectedUser.getName());
+            addUserMenu.getItems().clear();
+            for (User user : server.getUser()) {
+                if (!user.getPrivileged().contains(channel)) {
+                    addUserMenu.getItems().add(user.getName());
+                }
+            }
             channelPrivilegedUserUpdate();
         }
     }
@@ -73,13 +88,27 @@ public class ServerSubSettingsPrivilegeController {
      */
     private void addPrivilegedUser(ActionEvent actionEvent) {
         if (addUserMenu.getSelectionModel().getSelectedItem() != null) {
-            User selectedUser = server.getUser().get(addUserMenu.getSelectionModel().getSelectedIndex());
+            for (User user : server.getUser()) {
+                if (user.getName().equals(addUserMenu.getSelectionModel().getSelectedItem())) {
+                    selectedAddUser = user;
+                }
+            }
             // set selected user to channel as privileged
-            channel.withPrivilegedUsers(selectedUser);
+            channel.withPrivilegedUsers(selectedAddUser);
             // update addMenu
-            addUserMenu.getItems().remove(selectedUser.getName());
+            addUserMenu.getItems().clear();
+            for (User user : server.getUser()) {
+                if (!user.getPrivileged().contains(channel)) {
+                    addUserMenu.getItems().add(user.getName());
+                }
+            }
             // update removeMenu
-            removeUserMenu.getItems().add(selectedUser.getName());
+            removeUserMenu.getItems().clear();
+            for (User user : server.getUser()) {
+                if (user.getPrivileged().contains(channel)) {
+                    removeUserMenu.getItems().add(user.getName());
+                }
+            }
             channelPrivilegedUserUpdate();
         }
     }
@@ -89,7 +118,6 @@ public class ServerSubSettingsPrivilegeController {
      */
     private void channelPrivilegedUserUpdate() {
         String userKey = builder.getPersonalUser().getUserKey();
-        System.out.println(channel.getPrivilegedUsers().size());
         if (channel.getPrivilegedUsers().size() != 0) {
             ArrayList<String> members = new ArrayList<>();
             for (User user : channel.getPrivilegedUsers()) {
@@ -99,13 +127,11 @@ public class ServerSubSettingsPrivilegeController {
             // send update to server
             restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
                     channel.getName(), channel.isPrivilege(), membersArray, response -> {
-                        System.out.println(response.getBody() + "1");
                     });
         } else {
             channel.setPrivilege(false);
             restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
                     channel.getName(), false, null, response -> {
-                        System.out.println(response.getBody());
                     });
         }
     }

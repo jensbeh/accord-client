@@ -7,6 +7,7 @@ import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,17 +27,17 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
-    private ComboBox<String> categoryChoice;
-    private ComboBox<String> channelChoice;
+    private ComboBox<Categories> categoryChoice;
+    private ComboBox<Channel> channelChoice;
     private RadioButton privilegeOnButton;
     private RadioButton privilegeOffButton;
     private HBox privilegeOn;
     private ServerSubSettingsPrivilegeController serverSubSettingsPrivilegeController;
     private Button changePrivilege;
-    private int categoryIndex;
     private ToggleGroup group;
     private final RestClient restClient;
-    private int channelIndex;
+    private Categories selectedCategory;
+    private Channel selectedChannel;
 
 
     public ServerSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server) {
@@ -47,14 +48,13 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     }
 
     public void init() {
-        categoryChoice = (ComboBox<String>) view.lookup("#Category");
-        channelChoice = (ComboBox<String>) view.lookup("#Channels");
+        categoryChoice = (ComboBox<Categories>) view.lookup("#Category");
+        channelChoice = (ComboBox<Channel>) view.lookup("#Channels");
         privilegeOnButton = (RadioButton) view.lookup("#Privilege_On_Button");
         privilegeOffButton = (RadioButton) view.lookup("#Privilege_Off_Button");
         privilegeOn = (HBox) view.lookup("#Privilege_On");
         changePrivilege = (Button) view.lookup("#Change_Privilege");
 
-        // set RadioButton in group
         group = new ToggleGroup();
         privilegeOnButton.setToggleGroup(group);
         privilegeOffButton.setToggleGroup(group);
@@ -65,30 +65,57 @@ public class ServerSettingsPrivilegeController extends SubSetting {
 
         //load all categories
         for (Categories category : server.getCategories()) {
-            categoryChoice.getItems().add(category.getName());
-        }
+            categoryChoice.getItems().add(category);
+            categoryChoice.setConverter(new StringConverter<Categories>() {
+                @Override
+                public String toString(Categories object) {
+                    if (object == null) {
+                        return "Select category...";
+                    }
+                    return object.getName();
+                }
 
+                @Override
+                public Categories fromString(String string) {
+                    return null;
+                }
+            });
+        }
         // update channelList by category change
         categoryChoice.setOnAction((event) -> {
-            categoryIndex = categoryChoice.getSelectionModel().getSelectedIndex();
+            selectedCategory = categoryChoice.getSelectionModel().getSelectedItem();
+
             //clears channel comboBox and button selection by category change
-            if (channelChoice.getSelectionModel().getSelectedItem() != null) {
+            if (selectedChannel != null) {
                 group.selectToggle(null);
-                privilegeOn.getChildren().clear();
+                Platform.runLater(() -> this.privilegeOn.getChildren().clear());
             }
-            channelChoice.getItems().clear();
-            channelChoice.setPromptText("Select Channel");
+            Platform.runLater(() -> channelChoice.getItems().clear());
             // load channel for this category
-            for (Channel channel : server.getCategories().get(categoryIndex).getChannel()) {
-                channelChoice.getItems().add(channel.getName());
+            for (Channel channel : selectedCategory.getChannel()) {
+                Platform.runLater(() -> channelChoice.getItems().add(channel));
+                channelChoice.setConverter(new StringConverter<Channel>() {
+                    @Override
+                    public String toString(Channel object) {
+                        if (object == null) {
+                            return "Select channel...";
+                        }
+                        return object.getName();
+                    }
+
+                    @Override
+                    public Channel fromString(String string) {
+                        return null;
+                    }
+                });
             }
         });
 
         // update radiobutton and load correct subview for chosen channel
         channelChoice.setOnAction((event) -> {
-            if (channelChoice.getSelectionModel().getSelectedItem() != null && categoryChoice.getSelectionModel().getSelectedItem() != null) {
-                channelIndex = channelChoice.getSelectionModel().getSelectedIndex();
-                if (server.getCategories().get(categoryIndex).getChannel().get(channelIndex).isPrivilege()) {
+            selectedChannel = channelChoice.getSelectionModel().getSelectedItem();
+            if (selectedChannel != null && selectedCategory != null) {
+                if (selectedChannel.isPrivilege()) {
                     privilegeOnButton.setSelected(true);
                 } else {
                     privilegeOffButton.setSelected(true);
@@ -96,20 +123,22 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 privilegeOnButton((ActionEvent) event);
             }
         });
-
-        Channel channel = server.getCategories().get(categoryIndex).getChannel().get(channelIndex);
-        channel.addPropertyChangeListener(Channel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
+        // start property change listener
+        for (Categories cat : server.getCategories()) {
+            for (Channel channel : cat.getChannel()) {
+                channel.addPropertyChangeListener(Channel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
+            }
+        }
     }
 
     /**
      * PropertyChange when channel privilege changed
      */
     private void onPrivilegeChanged(PropertyChangeEvent propertyChangeEvent) {
-        Channel channel = server.getCategories().get(categoryIndex).getChannel().get(channelIndex);
-        privilegeOnButton.setSelected(channel.isPrivilege());
-        privilegeOffButton.setSelected(!channel.isPrivilege());
-        if (!channel.isPrivilege()) {
-            this.privilegeOn.getChildren().clear();
+        privilegeOnButton.setSelected(selectedChannel.isPrivilege());
+        privilegeOffButton.setSelected(!selectedChannel.isPrivilege());
+        if (!selectedChannel.isPrivilege()) {
+            Platform.runLater(() -> this.privilegeOn.getChildren().clear());
         }
     }
 
@@ -117,17 +146,15 @@ public class ServerSettingsPrivilegeController extends SubSetting {
      * Change the Privilege of the chosen channel
      */
     private void changePrivilege(ActionEvent actionEvent) {
-        if (channelChoice.getSelectionModel().getSelectedItem() != null && categoryChoice.getSelectionModel().getSelectedItem() != null) {
-            channelIndex = channelChoice.getSelectionModel().getSelectedIndex();
-            String channelId = server.getCategories().get(categoryIndex).getChannel().get(channelIndex).getId();
+        if (selectedChannel != null && selectedCategory != null) {
+            String channelId = selectedChannel.getId();
             String serverId = server.getId();
-            String categoryId = server.getCategories().get(categoryIndex).getId();
-            String channelName = server.getCategories().get(categoryIndex).getChannel().get(channelIndex).getName();
+            String categoryId = selectedCategory.getId();
+            String channelName = selectedChannel.getName();
             boolean privilege = privilegeOnButton.isSelected();
             String userKey = builder.getPersonalUser().getUserKey();
-            Channel channel = server.getCategories().get(categoryIndex).getChannel().get(channelIndex);
             // set changed channel privileged
-            channel.setPrivilege(privilegeOnButton.isSelected());
+            selectedChannel.setPrivilege(privilegeOnButton.isSelected());
             // send change to server
             if (privilegeOnButton.isSelected()) {
                 ArrayList<String> members = new ArrayList<>();
@@ -135,19 +162,16 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 // add owner to channel privilege
                 for (User user : server.getUser()) {
                     if (server.getOwner().equals(user.getId())) {
-                        user.withPrivileged(channel);
+                        user.withPrivileged(selectedChannel);
                     }
                 }
                 String[] membersArray = members.toArray(new String[0]);
                 restClient.updateChannel(serverId, categoryId, channelId, userKey, channelName, privilege, membersArray, response -> {
                 });
             } else {
+                ArrayList<User> privileged = new ArrayList<>(selectedChannel.getPrivilegedUsers());
+                selectedChannel.withoutPrivilegedUsers(privileged);
                 restClient.updateChannel(serverId, categoryId, channelId, userKey, channelName, privilege, null, response -> {
-                    if (response.getBody().getObject().getJSONArray("members") == null) {
-                        for (User user : channel.getPrivilegedUsers()) {
-                            user.withoutPrivileged(channel);
-                        }
-                    }
                 });
             }
             privilegeOnButton(actionEvent);
@@ -158,25 +182,27 @@ public class ServerSettingsPrivilegeController extends SubSetting {
      * clears the VBox when channel privilege off so that the fxml is not shown
      */
     private void privilegeOffButton(ActionEvent actionEvent) {
-        this.privilegeOn.getChildren().clear();
+        Platform.runLater(() -> this.privilegeOn.getChildren().clear());
     }
 
     /**
      * load fxml when channel privilege on. load subcontroller.
      */
     private void privilegeOnButton(ActionEvent actionEvent) {
-        this.privilegeOn.getChildren().clear();
+        if (serverSubSettingsPrivilegeController != null) {
+            serverSubSettingsPrivilegeController.stop();
+        }
+        Platform.runLater(() -> this.privilegeOn.getChildren().clear());
         // only load when channel privileged
-        if (channelChoice.getSelectionModel().getSelectedItem() != null && categoryChoice.getSelectionModel().getSelectedItem() != null) {
-            if (server.getCategories().get(categoryIndex).getChannel().get(channelIndex).isPrivilege()) {
+        if (selectedChannel != null && selectedCategory != null) {
+            if (selectedChannel.isPrivilege()) {
                 try {
                     //view
                     Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_Privilege_UserChange.fxml")));
-                    Channel channel = server.getCategories().get(categoryIndex).getChannel().get(channelIndex);
                     //Controller
-                    serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, channel);
+                    serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
                     serverSubSettingsPrivilegeController.init();
-                    this.privilegeOn.getChildren().add(view);
+                    Platform.runLater(() -> this.privilegeOn.getChildren().add(view));
                 } catch (Exception e) {
                     System.err.println("Error on showing ServerSettings_Privilege");
                     e.printStackTrace();
@@ -186,17 +212,20 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     }
 
     public void stop() {
-        privilegeOnButton.setOnAction(null);
-        privilegeOffButton.setOnAction(null);
-        changePrivilege.setOnAction(null);
+        this.privilegeOnButton.setOnAction(null);
+        this.privilegeOffButton.setOnAction(null);
+        this.changePrivilege.setOnAction(null);
+        this.categoryChoice.setOnAction(null);
+        this.channelChoice.setOnAction(null);
 
         if (serverSubSettingsPrivilegeController != null) {
             serverSubSettingsPrivilegeController.stop();
             serverSubSettingsPrivilegeController = null;
         }
-        for (Channel channel : server.getCategories().get(categoryIndex).getChannel()) {
-            channel.removePropertyChangeListener(this::onPrivilegeChanged);
+        for (Categories cat : server.getCategories()) {
+            for (Channel channel : cat.getChannel()) {
+                channel.removePropertyChangeListener(this::onPrivilegeChanged);
+            }
         }
-
     }
 }
