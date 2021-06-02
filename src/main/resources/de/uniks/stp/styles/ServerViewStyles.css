@@ -1,0 +1,40 @@
+/* Credits: https://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/ */
+
+.categoryScrollPane .scroll-bar:horizontal .track,
+.categoryScrollPane .scroll-bar:vertical .track{
+	-fx-background-color:  #23272a;
+	-fx-border-color: #23272a;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+}
+
+.categoryScrollPane .scroll-bar:horizontal .increment-button ,
+.categoryScrollPane .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 0 10 0;
+
+}
+
+.categoryScrollPane .scroll-bar:vertical .increment-button ,
+.categoryScrollPane .scroll-bar:vertical .decrement-button {
+
+    -fx-background-color: transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 10 0 0;
+
+}
+
+.categoryScrollPane  .scroll-bar .increment-arrow,
+.categoryScrollPane  .scroll-bar .decrement-arrow,
+ {
+	-fx-padding:0;
+}
+
+.categoryScrollPane .scroll-bar:horizontal .thumb,
+.categoryScrollPane .scroll-bar:vertical .thumb {
+    -fx-background-color: grey;
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}

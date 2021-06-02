@@ -88,19 +88,10 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         clickOn("#serverMenuButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
         clickOn("#ServerSettings");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
         clickOn("#category");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         Label editCategoryLabel = lookup("#editCategoryLabel").query();
         Label createCategoryLabel = lookup("#createCategoryLabel").query();
@@ -117,45 +108,58 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         Assert.assertEquals("Delete", deleteCategoryButton.getText());
         Assert.assertEquals("create", createCategoryButton.getText());
 
-        // click comboBox
-        clickOn(categoriesSelector);
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        // select item //TODO
-        clickOn(currentServer.getCategories().get(0).getName());
-
-        // type in name
-        categoryNameTextField.setText("NewChannelName");
-        // click change
-        clickOn(changeCategoryNameButton);
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        // lookup if changed && textField is empty //TODO
-
-        // select new/same item //TODO
-        // click delete
-        clickOn(deleteCategoryButton);
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        // lookup if deleted //TODO
 
         // type in new name for channel
-        createCategoryNameTextField.setText("NewChannelName2");
+        createCategoryNameTextField.setText("NewCategory");
         // click on create
         clickOn(createCategoryButton);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
-        // lookup if created && textField is empty //TODO
+
+        Categories newCategory = new Categories();
+        for (Categories category : categoriesSelector.getItems()) {
+            if (category.getName().equals("NewCategory")) {
+                newCategory = category;
+            }
+        }
+        Assert.assertTrue(createCategoryNameTextField.getText().equals(""));
+        Assert.assertTrue(newCategory.getName().equals("NewCategory"));
+        Assert.assertTrue(currentServer.getCategories().contains(newCategory));
+
+        clickOn(categoriesSelector);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(newCategory.getName());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        categoryNameTextField.setText("NewCategoryName");
+        clickOn(changeCategoryNameButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        for (Categories category : categoriesSelector.getItems()) {
+            if (category.getId().equals(newCategory.getId())) {
+                newCategory = category;
+            }
+        }
+
+        Assert.assertTrue(categoryNameTextField.getText().equals(""));
+        Assert.assertTrue(newCategory.getName().equals("NewCategoryName"));
+        Assert.assertTrue(currentServer.getCategories().contains(newCategory));
+
+        clickOn(deleteCategoryButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
+        Assert.assertFalse(currentServer.getCategories().contains(newCategory));
+        Assert.assertFalse(categoriesSelector.getItems().contains(newCategory));
 
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 Platform.runLater(((Stage) s)::close);
-                Thread.sleep(2000);
+                WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
-
-        
-        Thread.sleep(2000);
     }
 }

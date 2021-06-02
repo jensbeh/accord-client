@@ -69,7 +69,7 @@ public class ChatViewController {
                 } else {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getServerChatWebSocketClient() != null)
+                        if (builder.getServerChatWebSocketClient() != null && builder.getCurrentServerChannel() != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", builder.getCurrentServerChannel().getId()).put("message", textMessage).toString());
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -104,5 +104,9 @@ public class ChatViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
+    }
+
+    public void stop() {
+        sendButton.setOnAction(null);
     }
 }
