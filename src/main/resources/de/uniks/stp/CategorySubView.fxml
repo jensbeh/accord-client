@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefHeight="202.0" prefWidth="170.0" spacing="10.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="186.0" spacing="5.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="categoryName" text="Label" textFill="WHITE" />
-      <ListView id="channellist" prefHeight="196.0" prefWidth="170.0" style="-fx-background-color: #23272a;" />
+      <HBox alignment="CENTER_LEFT">
+         <children>
+            <Label id="categoryName" text="Label" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+         <VBox.margin>
+            <Insets top="5.0" />
+         </VBox.margin>
+         <padding>
+            <Insets left="10.0" />
+         </padding>
+      </HBox>
+      <ListView id="channellist" minHeight="50.0" prefWidth="170.0" style="-fx-background-color: #23272a;">
+         <VBox.margin>
+            <Insets bottom="30.0" />
+         </VBox.margin></ListView>
    </children>
+   <padding>
+      <Insets right="16.0" top="5.0" />
+   </padding>
 </VBox>

@@ -1,5 +1,6 @@
 package de.uniks.stp.model;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Channel
    public static final String PROPERTY_CURRENT_USER = "currentUser";
    public static final String PROPERTY_PRIVILEGE = "privilege";
    public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
+   public static final String PROPERTY_TYPE = "type";
+   public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
    private String name;
    private String id;
    private Categories categories;
@@ -26,6 +29,8 @@ public class Channel
    private CurrentUser currentUser;
    private boolean privilege;
    private int unreadMessagesCounter;
+   private String type;
+   private List<User> privilegedUsers;
 
    public String getName()
    {
@@ -201,6 +206,72 @@ public class Channel
       return this;
    }
 
+   public List<User> getPrivilegedUsers()
+   {
+      return this.privilegedUsers != null ? Collections.unmodifiableList(this.privilegedUsers) : Collections.emptyList();
+   }
+
+   public Channel withPrivilegedUsers(User value)
+   {
+      if (this.privilegedUsers == null)
+      {
+         this.privilegedUsers = new ArrayList<>();
+      }
+      if (!this.privilegedUsers.contains(value))
+      {
+         this.privilegedUsers.add(value);
+         value.withPrivileged(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED_USERS, null, value);
+      }
+      return this;
+   }
+
+   public Channel withPrivilegedUsers(User... value)
+   {
+      for (final User item : value)
+      {
+         this.withPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withPrivilegedUsers(Collection<? extends User> value)
+   {
+      for (final User item : value)
+      {
+         this.withPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(User value)
+   {
+      if (this.privilegedUsers != null && this.privilegedUsers.remove(value))
+      {
+         value.withoutPrivileged(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED_USERS, value, null);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(User... value)
+   {
+      for (final User item : value)
+      {
+         this.withoutPrivilegedUsers(item);
+      }
+      return this;
+   }
+
+   public Channel withoutPrivilegedUsers(Collection<? extends User> value)
+   {
+      for (final User item : value)
+      {
+         this.withoutPrivilegedUsers(item);
+      }
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -226,12 +297,31 @@ public class Channel
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getName());
       result.append(' ').append(this.getId());
+      result.append(' ').append(this.getType());
       return result.substring(1);
+   }
+
+   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners == null) {
+         this.listeners = new PropertyChangeSupport(this);
+      }
+      this.listeners.addPropertyChangeListener(propertyName, listener);
+      return true;
+   }
+
+   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners != null) {
+         this.listeners.removePropertyChangeListener(listener);
+      }
+      return true;
    }
 
    public void removeYou()
    {
       this.setCategories(null);
+      this.withoutPrivilegedUsers(new ArrayList<>(this.getPrivilegedUsers()));
       this.setCurrentUser(null);
       this.withoutMessage(new ArrayList<>(this.getMessage()));
    }
@@ -251,6 +341,24 @@ public class Channel
       final int oldValue = this.unreadMessagesCounter;
       this.unreadMessagesCounter = value;
       this.firePropertyChange(PROPERTY_UNREAD_MESSAGES_COUNTER, oldValue, value);
+      return this;
+   }
+
+   public String getType()
+   {
+      return this.type;
+   }
+
+   public Channel setType(String value)
+   {
+      if (Objects.equals(value, this.type))
+      {
+         return this;
+      }
+
+      final String oldValue = this.type;
+      this.type = value;
+      this.firePropertyChange(PROPERTY_TYPE, oldValue, value);
       return this;
    }
 }

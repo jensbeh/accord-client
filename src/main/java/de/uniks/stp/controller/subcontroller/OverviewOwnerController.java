@@ -1,18 +1,13 @@
 package de.uniks.stp.controller.subcontroller;
 
-import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.net.RestClient;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import kong.unirest.JsonNode;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 public class OverviewOwnerController {

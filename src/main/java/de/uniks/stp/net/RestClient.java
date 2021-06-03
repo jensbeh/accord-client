@@ -1,6 +1,5 @@
 package de.uniks.stp.net;
 
-import de.uniks.stp.builder.ModelBuilder;
 import kong.unirest.*;
 import org.json.JSONObject;
 
@@ -94,17 +93,56 @@ public class RestClient {
         sendRequest(postRequest, callback);
     }
 
+    public void createChannel(String serverId, String categoryId, String userKey, String channelName, String type, boolean privileged, String[] members, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", channelName).accumulate("type", type).accumulate("privileged", privileged).accumulate("members", members);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void deleteChannel(String serverId, String categoryId, String channelId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId;
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     private void sendRequest(HttpRequest<?> req, Callback<JsonNode> callback) {
         req.asJsonAsync(callback);
     }
 
-    public void createTempLink(String type, Integer max,String serverid,String userKey, Callback<JsonNode> callback) {
+    public void createTempLink(String type, Integer max, String serverid, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("type", type);
-        if(type.equals("count")){
-            jsonObj.accumulate("max",max);
+        if (type.equals("count")) {
+            jsonObj.accumulate("max", max);
         }
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH+"/"+serverid+ SERVER_INVITES).header("userKey", userKey).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverid + SERVER_INVITES).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
+    }
+
+    public void joinServer(String serverId, String inviteId, String username, String password, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + inviteId).header("userKey", userKey).body(body);
+        sendRequest(request, callback);
+    }
+
+    public void createCategory(String serverId, String categoryName, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", categoryName);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void updateCategory(String serverId, String categoryId, String categoryName, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("name", categoryName);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void deleteCategory(String serverId, String categoryId, String userKey, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.delete(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).header("userKey", userKey);
         sendRequest(request, callback);
     }
 }

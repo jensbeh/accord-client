@@ -24,12 +24,12 @@
   roles: 	categories_server 	categories_channel
 
 - channel: 	org.fulib.classmodel.Clazz
-  attributes: 	channel_name 	channel_id 	channel_unreadMessagesCounter 	channel_privilege
+  attributes: 	channel_name 	channel_id 	channel_unreadMessagesCounter 	channel_privilege 	channel_type
   model: 	c
   modified: 	false
   name: 	Channel
   propertyStyle: 	Bean
-  roles: 	channel_categories 	channel_currentUser 	channel_message
+  roles: 	channel_categories 	channel_privilegedUsers 	channel_currentUser 	channel_message
 
 - user: 	org.fulib.classmodel.Clazz
   attributes: 	user_name 	user_id 	user_status
@@ -37,10 +37,10 @@
   modified: 	false
   name: 	User
   propertyStyle: 	Bean
-  roles: 	user_server 	user_currentUser
+  roles: 	user_privileged 	user_server 	user_currentUser
 
 - currentUser: 	org.fulib.classmodel.Clazz
-  attributes: 	currentUser_name 	currentUser_userKey
+  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password
   model: 	c
   modified: 	false
   name: 	CurrentUser
@@ -199,6 +199,15 @@
   type: 	boolean
   typeSignature: 	boolean
 
+- channel_type: 	org.fulib.classmodel.Attribute
+  clazz: 	channel
+  id: 	Channel_type
+  modified: 	false
+  name: 	type
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
 - channel_categories: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	1
@@ -208,6 +217,18 @@
   name: 	categories
   other: 	categories_channel
   propertyStyle: 	Bean
+
+- channel_privilegedUsers: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	3
+  clazz: 	channel
+  collectionType: 	c1
+  id: 	Channel_privilegedUsers
+  modified: 	false
+  name: 	privilegedUsers
+  other: 	user_privileged
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
 
 - channel_currentUser: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -258,6 +279,18 @@
   type: 	boolean
   typeSignature: 	boolean
 
+- user_privileged: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	3
+  clazz: 	user
+  collectionType: 	c1
+  id: 	User_privileged
+  modified: 	false
+  name: 	privileged
+  other: 	channel_privilegedUsers
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
+
 - user_server: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	3
@@ -294,6 +327,15 @@
   id: 	CurrentUser_userKey
   modified: 	false
   name: 	userKey
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_password: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_password
+  modified: 	false
+  name: 	password
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String

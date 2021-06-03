@@ -1,11 +1,10 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.PrivateViewController;
+import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Channel;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -13,7 +12,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-public class AlternateChannelListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
+import java.lang.reflect.Field;
+
+public class AlternateServerChannelListCellFactory implements javafx.util.Callback<ListView<Channel>, ListCell<Channel>> {
+    private static ListView<Channel> channelListView;
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -26,39 +29,65 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
      */
     @Override
     public ListCell<Channel> call(ListView<Channel> param) {
+        this.channelListView = param;
         return new ChannelListCell();
     }
 
     private static class ChannelListCell extends ListCell<Channel> {
 
+        private boolean isScrollBarVisible;
+
         protected void updateItem(Channel item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             VBox cell = new VBox();
-            HBox nameAndNotificationCell = new HBox();
-            HBox nameCell = new HBox();
-            HBox lastMessageCell = new HBox();
             Label name = new Label();
-            Label message = new Label();
+            HBox nameCell = new HBox();
             HBox notificationCell = new HBox();
+            HBox nameAndNotificationCell = new HBox();
+
+            // get visibility of scrollbar
+            try {
+                VBox vBox = (VBox) channelListView.getParent().getParent();
+                ScrollPane scrollPane = (ScrollPane) vBox.getParent().getParent().getParent();
+
+                ScrollPaneSkin skin = (ScrollPaneSkin) scrollPane.getSkin();
+                Field field = skin.getClass().getDeclaredField("vsb");
+
+                field.setAccessible(true);
+                ScrollBar scrollBar = (ScrollBar) field.get(skin);
+                field.setAccessible(false);
+                isScrollBarVisible = scrollBar.isVisible();
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #2C2F33;");
+            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
+                if (item == ServerViewController.getSelectedChat() && isScrollBarVisible) {
+                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
+                }
+                if (item == ServerViewController.getSelectedChat() && !isScrollBarVisible) {
+                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+                }
+
                 // init complete cell
                 cell.setId("cell_" + item.getId());
-                cell.setPrefHeight(USE_COMPUTED_SIZE);
-                cell.setPrefWidth(183);
+                cell.setPrefWidth(USE_COMPUTED_SIZE);
+                cell.setPrefHeight(30);
+                cell.setAlignment(Pos.CENTER_LEFT);
 
-                // init name + notification cell
-                nameAndNotificationCell.setSpacing(5);
+                nameAndNotificationCell.setSpacing(9);
 
                 // init userName cell
-                nameCell.setPrefWidth(163);
+                nameCell.setPrefHeight(USE_COMPUTED_SIZE);
                 nameCell.setAlignment(Pos.CENTER_LEFT);
-
-                // init lastMessage cell
-                lastMessageCell.setPrefWidth(183);
-                lastMessageCell.setAlignment(Pos.CENTER_LEFT);
-                lastMessageCell.setStyle("-fx-padding: 5 0 0 0");
+                if (isScrollBarVisible) {
+                    nameCell.setPrefWidth(140);
+                } else {
+                    nameCell.setPrefWidth(150);
+                }
+                nameCell.setStyle("-fx-padding: 0 0 0 20;");
 
                 // init notificationCell cell
                 notificationCell.setAlignment(Pos.CENTER);
@@ -67,31 +96,14 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
                 notificationCell.setMaxHeight(notificationCircleSize);
                 notificationCell.setMinWidth(notificationCircleSize);
                 notificationCell.setMaxWidth(notificationCircleSize);
-                notificationCell.setStyle("-fx-padding: 15 15 0 0;");
+                notificationCell.setStyle("-fx-padding: 3 0 0 0;");
 
-                // set userName
+                // set channelName
                 name.setId(item.getId());
-                name.setText(item.getName());
-                name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
+                name.setText("\uD83D\uDD8A  " + item.getName());
+                name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
                 nameCell.getChildren().add(name);
-
-                // set lastMessage
-                if (item.getMessage().size() > 0) {
-                    message.setId("msg_" + item.getId());
-                    message.setPrefWidth(USE_COMPUTED_SIZE);
-                    message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
-                    message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    message.setTextFill(Paint.valueOf("#D0D0D0"));
-                    lastMessageCell.getChildren().add(message);
-                }
-
-                // set chatColor - if selected / else not selected
-                if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
-                } else {
-                    cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
-                }
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
@@ -114,7 +126,8 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
 
                 // set cells finally
                 nameAndNotificationCell.getChildren().addAll(nameCell, notificationCell);
-                cell.getChildren().addAll(nameAndNotificationCell, lastMessageCell);
+
+                cell.getChildren().addAll(nameAndNotificationCell);
             }
             this.setGraphic(cell);
         }

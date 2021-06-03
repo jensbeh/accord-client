@@ -24,6 +24,7 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(channel, "id", Type.STRING);
         mm.haveAttribute(channel, "unreadMessagesCounter", Type.INT);
         mm.haveAttribute(channel, "privilege", Type.BOOLEAN);
+        mm.haveAttribute(channel, "type", Type.STRING);
 
         mm.associate(categories, "channel", 3, channel, "categories", 1);
 
@@ -32,11 +33,13 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(user, "id", Type.STRING);
         mm.haveAttribute(user, "status", Type.BOOLEAN);
 
+        mm.associate(channel, "privilegedUsers", 3, user, "privileged", 3);
         mm.associate(server, "user", 3, user, "server", 3);
 
         Clazz currentUser = mm.haveClass("CurrentUser");
         mm.haveAttribute(currentUser, "name", Type.STRING);
         mm.haveAttribute(currentUser, "userKey", Type.STRING);
+        mm.haveAttribute(currentUser,"password",Type.STRING);
 
         mm.associate(currentUser, "user", 3, user, "currentUser", 1);
         mm.associate(currentUser, "server", 3, server, "currentUser", 1);

@@ -102,7 +102,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(testUserName, personalUserName.getText());
 
-        
+
     }
 
     @Test
@@ -132,7 +132,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("TestServer Team Bit Shift", serverName);
 
-        
+
     }
 
     @Test
@@ -179,7 +179,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("", userName);
 
-        
+
     }
 
     @Test
@@ -233,7 +233,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         restClient.logout(userKey, response -> {
         });
 
-        
+
     }
 
     @Test()
@@ -242,7 +242,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        
+
         // Clicking logout...
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
@@ -330,14 +330,14 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+        Assert.assertEquals("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
 
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
         Thread.sleep(2000);
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+        Assert.assertEquals("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
 
         restClient.logout(testUserKeyOne, response -> {
         });
@@ -345,6 +345,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         restClient.logout(testUserKeyTwo, response -> {
         });
 
-        
+
     }
 }

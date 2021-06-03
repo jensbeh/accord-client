@@ -12,8 +12,7 @@ import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
-
-import java.util.ArrayList;
+import org.json.JSONObject;
 
 public class ServerSettingsChannelController extends SubSetting {
     private Parent view;
@@ -36,6 +35,8 @@ public class ServerSettingsChannelController extends SubSetting {
 
     private Categories selectedCategory;
     private Channel selectedChannel;
+    private ToggleGroup textVoiceToggle;
+    private String channelType;
 
 
     public ServerSettingsChannelController(Parent view, ModelBuilder builder, Server server) {
@@ -60,9 +61,19 @@ public class ServerSettingsChannelController extends SubSetting {
         this.channelVoiceRadioButton = (RadioButton) view.lookup("#channelVoiceRadioButton");
         this.channelCreateButton = (Button) view.lookup("#channelCreateButton");
 
+        textVoiceToggle = new ToggleGroup();
+        channelTextRadioButton.setToggleGroup(textVoiceToggle);
+        channelVoiceRadioButton.setToggleGroup(textVoiceToggle);
+        channelTextRadioButton.setSelected(true);
+        channelType = "text";
+
         this.categorySelector.setOnAction(this::onCategoryChanged);
         this.editChannelsSelector.setOnAction(this::onChannelChanged);
         this.channelChangeButton.setOnAction(this::onChannelChangeButtonClicked);
+        this.channelTextRadioButton.setOnAction(this::onChannelTextButtonClicked);
+        this.channelVoiceRadioButton.setOnAction(this::onChannelVoiceButtonClicked);
+        this.channelCreateButton.setOnAction(this::onChannelCreateButtonClicked);
+        this.channelDeleteButton.setOnAction(this::onChannelDeleteButtonClicked);
 
         this.categorySelector.getItems().addAll(builder.getCurrentServer().getCategories());
 
@@ -103,6 +114,7 @@ public class ServerSettingsChannelController extends SubSetting {
         categorySelector.setOnAction(null);
         editChannelsSelector.setOnAction(null);
         channelChangeButton.setOnAction(null);
+        channelDeleteButton.setOnAction(null);
     }
 
     /**
@@ -152,7 +164,7 @@ public class ServerSettingsChannelController extends SubSetting {
         editChannelsSelector.getItems().clear();
         editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
 
-        if(preSelectChannel != null) {
+        if (preSelectChannel != null) {
             editChannelsSelector.getSelectionModel().select(preSelectChannel);
         }
     }
@@ -167,7 +179,7 @@ public class ServerSettingsChannelController extends SubSetting {
             String newChannelName = editChannelsTextField.getText();
             if (!selectedChannel.getName().equals(newChannelName)) {
                 String[] members = new String[0];
-                restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, false /*TODO*/, members /*TODO*/, response -> {
+                restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), members /*TODO*/, response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
@@ -187,6 +199,91 @@ public class ServerSettingsChannelController extends SubSetting {
             }
         } else {
             System.out.println("--> ERR: No Channel selected OR Field is empty");
+        }
+    }
+
+    /**
+     * when clicking on text radio button, set channelType text
+     *
+     * @param actionEvent the mouse click event
+     */
+    private void onChannelTextButtonClicked(ActionEvent actionEvent) {
+        channelType = "text";
+    }
+
+    /**
+     * when clicking on voice radio button, set channelType voice
+     *
+     * @param actionEvent the mouse click event
+     */
+    private void onChannelVoiceButtonClicked(ActionEvent actionEvent) {
+        channelType = "voice";
+    }
+
+    /**
+     * create a channel when create button clicked
+     *
+     * @param actionEvent the mouse click event
+     */
+    private void onChannelCreateButtonClicked(ActionEvent actionEvent) {
+        if (!createChannelTextField.getText().isEmpty()) {
+            String channelName = createChannelTextField.getText();
+            String[] members = new String[0];
+            restClient.createChannel(server.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), channelName, channelType, false, members, response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println("--> SUCCESS: channel created");
+                    JSONObject data = body.getObject().getJSONObject("data");
+                    String channelId = data.getString("id");
+                    String name = data.getString("name");
+                    String type = data.getString("type");
+                    boolean privileged = data.getBoolean("privileged");
+
+                    /*TODO: add privileged members list to Channel*/
+                    Channel newChannel = new Channel().setId(channelId).setType(type).setName(name).setPrivilege(privileged);
+                    selectedCategory.withChannel(newChannel);
+
+                    if (privileged) {
+                        JSONArray privilegedMembers = data.getJSONArray("members");
+                        for (int i = 0; i < privilegedMembers.length(); i++) {
+                            privilegedMembers.getString(i);
+                        }
+                    }
+
+                    createChannelTextField.setText("");
+                    Platform.runLater(() -> loadChannels(selectedChannel));
+                } else {
+                    System.out.println(status);
+                    System.out.println(body.getObject().getString("message"));
+                }
+            });
+        } else {
+            System.out.println("--> ERR: Field is empty");
+        }
+    }
+
+    /**
+     * delete a channel when delete button clicked
+     *
+     * @param actionEvent the mouse click event
+     */
+    private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
+        if (selectedChannel != null) {
+            restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println("--> SUCCESS: deleted channel");
+                    selectedCategory.withoutChannel(selectedChannel);
+                    Platform.runLater(() -> loadChannels(null));
+                } else {
+                    System.out.println(status);
+                    System.out.println(body.getObject().getString("message"));
+                }
+            });
+        } else {
+            System.out.println("--> ERR: No Channel selected");
         }
     }
 }

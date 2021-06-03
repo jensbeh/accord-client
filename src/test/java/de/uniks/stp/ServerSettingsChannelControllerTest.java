@@ -168,6 +168,24 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals("TestChannel", currentServer.getCategories().get(0).getChannel().get(0).getName());
         Assert.assertEquals("", editChannelsTextField.getText());
 
+        // Create Channel
+        int channelSize = currentServer.getCategories().get(0).getChannel().size();
+        clickOn(createChannelTextField);
+        createChannelTextField.setText("NewTestChannel");
+        clickOn(channelCreateButton);
+        Thread.sleep(2000);
+        Assert.assertEquals(channelSize + 1, currentServer.getCategories().get(0).getChannel().size());
+        Assert.assertEquals("", createChannelTextField.getText());
+
+        // Delete (created) Channel, rename first NewTestChannel to ByeChannel to not click on Server View
+        channelSize = currentServer.getCategories().get(0).getChannel().size();
+        editChannelsSelector.getItems().get(editChannelsSelector.getItems().size() - 1).setName("ByeChannel");
+        clickOn(editChannelsSelector);
+        clickOn("ByeChannel");
+        clickOn(channelDeleteButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals(channelSize - 1, currentServer.getCategories().get(0).getChannel().size());
+
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 Platform.runLater(((Stage) s)::close);

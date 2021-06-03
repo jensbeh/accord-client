@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="25.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" spacing="25.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button id="createLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="create" textFill="WHITE" />
       <TextField id="linkTextField" alignment="CENTER" style="-fx-background-color: #333333; -fx-text-fill: white;" text="link ..." />
@@ -17,7 +17,7 @@
             <Label text="Invite Links" textFill="WHITE" />
             <HBox prefHeight="100.0" prefWidth="642.0" spacing="10.0">
                <children>
-                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="519.0" style="-fx-text-fill: white; -fx-background-color: #333333;" stylesheets="@../../styles/InviteComboBox.css" />
+                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="529.0" style="-fx-text-fill: white; -fx-background-color: #333333;" stylesheets="@../../styles/InviteComboBox.css" />
                   <Button id="deleteLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="Delete" textFill="RED" />
                </children>
             </HBox>
