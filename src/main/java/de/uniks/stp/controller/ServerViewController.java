@@ -429,6 +429,23 @@ public class ServerViewController {
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
                     loadChannelMessages(channel);
+                    boolean boolPrivilege = channelInfo.getBoolean("privileged");
+                    channel.setPrivilege(boolPrivilege);
+
+                    JSONObject json = new JSONObject(channelInfo.toString());
+                    JSONArray jsonArray = json.getJSONArray("members");
+                    String memberId = "";
+
+                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                        memberId = jsonArray.getString(j);
+                        for (User user : builder.getCurrentServer().getUser()) {
+                            if (user.getId().equals(memberId)) {
+                                channel.withPrivilegedUsers(user);
+                            }
+                        }
+                    }
+
+                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
