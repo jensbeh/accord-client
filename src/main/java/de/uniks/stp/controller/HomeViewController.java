@@ -32,6 +32,9 @@ import util.Constants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -55,6 +58,7 @@ public class HomeViewController {
     private ServerViewController serverController;
     private Parent privateView;
     public static boolean inServerChat = false;
+    private static ScheduledExecutorService showServerUpdate;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -84,6 +88,16 @@ public class HomeViewController {
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
         showPrivateView();
         showServers();
+        showServerUpdate();
+    }
+
+    /**
+     * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
+     */
+    private void showServerUpdate() {
+        showServerUpdate = Executors.newSingleThreadScheduledExecutor();
+        showServerUpdate.scheduleAtFixedRate
+                (() -> Platform.runLater(this::showServers), 0, 10, TimeUnit.SECONDS);
     }
 
     /**
@@ -373,6 +387,9 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (showServerUpdate != null) {
+            showServerUpdate.shutdown();
+        }
         JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
         JSONObject result = body.getObject();
         if (result.get("status").equals("success")) {
@@ -413,7 +430,9 @@ public class HomeViewController {
         if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
         }
-
+        if (showServerUpdate != null) {
+            showServerUpdate.shutdown();
+        }
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();

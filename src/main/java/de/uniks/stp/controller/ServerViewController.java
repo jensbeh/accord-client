@@ -30,6 +30,10 @@ import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 import java.util.*;
 
 import static util.Constants.*;
@@ -117,17 +121,15 @@ public class ServerViewController {
         server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
 
         showCurrentUser();
-        loadServerInfos(new ServerInfoCallback() {
-            @Override
-            public void onSuccess(String status) {
-                if (status.equals("success")) {
-                    if (builder.getCurrentServer().getCategories().size() == 0) {
-                        loadCategories();
-                    }
+        loadServerInfos(status -> {
+            if (status.equals("success")) {
+                if (builder.getCurrentServer().getCategories().size() == 0) {
+                    loadCategories();
                 }
             }
         }); // members & (categories)
         showServerUsers();
+        //Platform.runLater(this::showMessageView);
 
         serverChatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -350,7 +352,6 @@ public class ServerViewController {
     private void showServerUsers() {
         try {
             SERVER_USER = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()), new WSCallback() {
-
                 @Override
                 public void handleMessage(JsonStructure msg) {
                     System.out.println("msg: " + msg);
@@ -359,33 +360,26 @@ public class ServerViewController {
                     JsonObject jsonData = jsonMsg.getJsonObject("data");
                     String userName = jsonData.getString("name");
                     String userId = jsonData.getString("id");
-
                     if (userAction.equals("userJoined")) {
                         builder.buildServerUser(userName, userId, true);
-                    }
-                    if (userAction.equals("userLeft")) {
+                    }else if (userAction.equals("userLeft")) {
                         if (userName.equals(builder.getPersonalUser().getName())) {
                             Platform.runLater(StageManager::showLoginScreen);
                         }
                         builder.buildServerUser(userName, userId, false);
+                    }else if (userAction.equals("serverDeleted")) {
+                        if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
+                            Platform.runLater(StageManager::showHome);
+                        }
+                    }else if (userAction.equals("serverUpdated")) {
+                        //update serverName
+                        System.out.println("update data: " + jsonData.toString());
+                    }else if (userAction.equals("serverExited")) {
+                        System.out.println("leave data: " + jsonData.toString());
                     }
                     showOnlineOfflineUsers();
                 }
-
-                public void onClose(Session session, CloseReason closeReason) {
-                    System.out.println(closeReason.getCloseCode().toString());
-                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, StageManager.getLangBundle().getString("error.user_cannot_be_displayed"), ButtonType.OK);
-                            alert.setTitle(StageManager.getLangBundle().getString("error.dialog"));
-                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection"));
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                showServerUsers();
-                            }
-                        });
-                    }
-                }
+                public void onClose(Session session, CloseReason closeReason) {}
             });
             builder.setSERVER_USER(SERVER_USER);
         } catch (URISyntaxException e) {
