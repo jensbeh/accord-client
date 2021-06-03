@@ -41,7 +41,6 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             Label name = new Label();
-            Label message = new Label();
             HBox nameCell = new HBox();
             HBox notificationCell = new HBox();
             HBox nameAndNotificationCell = new HBox();
@@ -105,16 +104,6 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
                 nameCell.getChildren().add(name);
-
-                /*
-                // set lastMessage
-                if (item.getMessage().size() > 0) {
-                    message.setId("msg_" + item.getId());
-                    message.setPrefWidth(USE_COMPUTED_SIZE);
-                    message.setStyle("-fx-font-size: 11;  -fx-padding: 0 10 0 10;");
-                    message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    message.setTextFill(Paint.valueOf("#D0D0D0"));
-                }*/
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
