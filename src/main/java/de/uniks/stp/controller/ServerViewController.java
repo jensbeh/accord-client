@@ -43,8 +43,6 @@ public class ServerViewController {
     private static Server server;
     private final Parent view;
     private ScrollPane scrollPaneUserBox;
-    private VBox channelBox;
-    private VBox textChannelBox;
     private MenuButton serverMenuButton;
     private static Label textChannelLabel;
     private static Label generalLabel;
@@ -52,7 +50,6 @@ public class ServerViewController {
     private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
-    private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
@@ -87,7 +84,6 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void init() throws InterruptedException {
-        channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
         scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
@@ -99,10 +95,8 @@ public class ServerViewController {
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
-        textChannelBox = (VBox) view.lookup("#textChannelBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
@@ -229,6 +223,9 @@ public class ServerViewController {
         if (categorySubControllerList.size() == 0) {
             Platform.runLater(this::generateCategoriesChannelViews);
         }
+        if (builder.getCurrentServerChannel() != null) {
+            showMessageView();
+        }
     }
 
     /**
@@ -258,7 +255,7 @@ public class ServerViewController {
                                     builder.setCurrentServerChannel(null);
                                     setSelectedChat(null);
                                     messageViewController.stop();
-                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                    Platform.runLater(() -> chatBox.getChildren().clear());
                                 }
                                 break;
                             }
