@@ -14,7 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -44,7 +43,6 @@ public class ServerViewController {
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
-    private HBox root;
     private ScrollPane scrollPaneUserBox;
     private VBox channelBox;
     private VBox textChannelBox;
@@ -66,7 +64,6 @@ public class ServerViewController {
     private static Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
     private ScrollPane scrollPaneCategories;
-    private String personalID;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -91,7 +88,6 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void init() throws InterruptedException {
-        root = (HBox) view.lookup("#root");
         channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
@@ -434,9 +430,9 @@ public class ServerViewController {
 
                     JSONObject json = new JSONObject(channelInfo.toString());
                     JSONArray jsonArray = json.getJSONArray("members");
-                    String memberId = "";
+                    String memberId;
 
-                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                    for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : builder.getCurrentServer().getUser()) {
                             if (user.getId().equals(memberId)) {
