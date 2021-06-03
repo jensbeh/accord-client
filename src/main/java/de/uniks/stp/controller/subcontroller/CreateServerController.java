@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -24,7 +23,7 @@ public class CreateServerController {
 
     private final RestClient restClient;
     private final ModelBuilder builder;
-    private Parent view;
+    private final Parent view;
     private static TextField serverName;
     private Button createServer;
     private Runnable create;
@@ -136,7 +135,6 @@ public class CreateServerController {
         restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
             JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
             //List to track the online users in order to remove old users that are now offline
-            ArrayList<Server> onlineServers = new ArrayList<>();
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String serverName = jsonResponse.getJSONObject(i).get("name").toString();
                 String serverId = jsonResponse.getJSONObject(i).get("id").toString();
