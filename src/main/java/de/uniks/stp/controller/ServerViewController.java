@@ -465,7 +465,7 @@ public class ServerViewController {
                     JSONArray jsonArray = json.getJSONArray("members");
                     String memberId = "";
 
-                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                    for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : builder.getCurrentServer().getUser()) {
                             if (user.getId().equals(memberId)) {

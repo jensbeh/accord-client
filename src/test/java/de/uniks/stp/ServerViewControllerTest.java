@@ -1,12 +1,10 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
