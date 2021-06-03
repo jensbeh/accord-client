@@ -1,10 +1,12 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.*;
-import javafx.scene.shape.Circle;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
@@ -26,7 +28,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     private static String testUserOnePw;
     private static String testUserOne_UserKey;
     private static String testServerId;
-
+    private ArrayList<User> privileged = new ArrayList<>();
+    private Server currentServer;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -43,6 +46,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         this.stage.centerOnScreen();
         this.restClient = new RestClient();
     }
+
 
     public void loginInit(String name, String password) throws InterruptedException {
         TextField usernameTextField = lookup("#usernameTextfield").query();
@@ -81,70 +85,125 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     public void openServerSettingsPrivilegeTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
-        Circle addServer = lookup("#addServer").query();
-        clickOn(addServer);
-
-        TextField serverName = lookup("#serverName").query();
-        Button createServer = lookup("#createServer").query();
-        serverName.setText("TestServer Team Bit Shift");
-        clickOn(createServer);
 
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        Server server = serverListView.getItems().get(0);
 
-
-        clickOn("#homeButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        for (Server server : serverListView.getItems()) {
+            if (server.getId().equals(testServerId)) {
+                currentServer = server;
+            }
+        }
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
+        Thread.sleep(1000);
         clickOn("#serverMenuButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
         clickOn("#ServerSettings");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
         clickOn("#privilege");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+
         RadioButton privilegeOn = lookup("#Privilege_On_Button").query();
         RadioButton privilegeOff = lookup("#Privilege_Off_Button").query();
+        HBox privilegeOnView = lookup("#Privilege_On").query();
 
-        clickOn("#Privilege_On_Button");
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        ComboBox<Categories> categoryChoice = lookup("#Category").query();
+        ComboBox<Channel> channelChoice = lookup("#Channels").query();
+
+        Assert.assertEquals(categoryChoice.getItems(), currentServer.getCategories());
+
+        clickOn(categoryChoice);
+        interact(() -> {
+            categoryChoice.getSelectionModel().select(0);
+        });
+        Assert.assertEquals(channelChoice.getItems(), currentServer.getCategories().get(0).getChannel());
+
+        clickOn(channelChoice);
+        interact(() -> {
+            channelChoice.getSelectionModel().select(0);
+        });
+
+        clickOn(privilegeOn);
         Assert.assertTrue(privilegeOn.isSelected());
         Assert.assertFalse(privilegeOff.isSelected());
+        Assert.assertTrue(privilegeOnView.getChildren().isEmpty());
 
-        Button change = lookup("#Change_Privilege").query();
+        for (User user : currentServer.getUser()) {
+            if (user.getId().equals(currentServer.getOwner())) {
+                privileged.add(user);
+            }
+        }
+
+        User test = new User().setName("Test").setId("1");
+        currentServer.withUser(test);
+
         clickOn("#Change_Privilege");
+        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+        Assert.assertFalse(privilegeOnView.getChildren().isEmpty());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+
+        ComboBox<String> addMenu = lookup("#Add_User_to_Privilege").query();
+        ComboBox<String> removeMenu = lookup("#Remove_User_from_Privilege").query();
+
+        clickOn(addMenu);
+        interact(() -> {
+            addMenu.getSelectionModel().select(0);
+        });
+        for (User user : currentServer.getUser()) {
+            if (user.getName().equals(addMenu.getSelectionModel().getSelectedItem())) {
+                privileged.add(user);
+            }
+        }
+        clickOn("#User_to_Privilege");
+        Assert.assertEquals(currentServer.getUser().size() - 2, addMenu.getItems().size());
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+
+        clickOn(removeMenu);
+        interact(() -> {
+            removeMenu.getSelectionModel().select(0);
+        });
+        for (User user : currentServer.getUser()) {
+            if (user.getName().equals(removeMenu.getSelectionModel().getSelectedItem())) {
+                privileged.remove(user);
+            }
+        }
+        clickOn("#User_from_Privilege");
+        Assert.assertEquals(currentServer.getUser().size() - 1, addMenu.getItems().size());
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 
 
-        Assert.assertTrue(server.getCategories().get(0).getChannel().get(0).isPrivilege());
-
-        clickOn("#Privilege_Off_Button");
+        clickOn(removeMenu);
+        interact(() -> {
+            removeMenu.getSelectionModel().select(0);
+        });
+        for (User user : currentServer.getUser()) {
+            if (user.getName().equals(removeMenu.getSelectionModel().getSelectedItem())) {
+                privileged.remove(user);
+            }
+        }
+        clickOn("#User_from_Privilege");
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertTrue(privilegeOnView.getChildren().isEmpty());
         Assert.assertTrue(privilegeOff.isSelected());
         Assert.assertFalse(privilegeOn.isSelected());
+        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+
+
+        clickOn(privilegeOn);
+        clickOn("#Change_Privilege");
+
+        clickOn(privilegeOff);
+        Assert.assertTrue(privilegeOff.isSelected());
+        Assert.assertFalse(privilegeOn.isSelected());
+        Assert.assertTrue(privilegeOnView.getChildren().isEmpty());
+        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
 
         clickOn("#Change_Privilege");
-        Assert.assertFalse(server.getCategories().get(0).getChannel().get(0).isPrivilege());
-
-        ChoiceBox categoryChoice = lookup("#Category").query();
-        ChoiceBox channelChoice = lookup("#Channels").query();
-        Assert.assertEquals(categoryChoice.getItems().get(0), server.getCategories().get(0).getName());
-        ArrayList<String> channelList = new ArrayList<>();
-        for (Channel channel : server.getCategories().get(0).getChannel()) {
-            channelList.add(channel.getName());
-        }
-        Assert.assertEquals(channelChoice.getItems(), channelList);
+        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 
     }
 }

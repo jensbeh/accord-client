@@ -437,9 +437,44 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    boolean boolPrivilege = channelInfo.getBoolean("privileged");
+                    channel.setPrivilege(boolPrivilege);
+
+                    JSONObject json = new JSONObject(channelInfo.toString());
+                    JSONArray jsonArray = json.getJSONArray("members");
+                    String memberId = "";
+
+                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                        memberId = jsonArray.getString(j);
+                        for (User user : builder.getCurrentServer().getUser()) {
+                            if (user.getId().equals(memberId)) {
+                                channel.withPrivilegedUsers(user);
+                            }
+                        }
+                    }
+
+                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
+    }
+
+    /**
+     * Get the default channel which was the one when server also was created
+     *
+     * @return channel is the default channel
+     */
+    public Channel getDefaultChannel() {
+        for (Categories cat : builder.getCurrentServer().getCategories()) {
+            if (cat.getName().equals("default")) {
+                for (Channel channel : cat.getChannel()) {
+                    if (channel.getName().equals("default-text-channel")) {
+                        return channel;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void stop() {
