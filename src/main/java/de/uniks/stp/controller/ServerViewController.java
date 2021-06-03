@@ -39,7 +39,6 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
-    private static Channel selectedChat;
     private static ModelBuilder builder;
     private final RestClient restClient;
     private static Server server;
@@ -144,15 +143,46 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(builder.getCurrentServerChannel().getId())) {
+
+                if (jsonObject.containsKey("channel")) {
                     Message message = null;
-                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                        message = new Message().setMessage(jsonObject.getString("text")).
-                                setFrom(jsonObject.getString("from")).
-                                setTimestamp(jsonObject.getInt("timestamp")).
+                    String id = jsonObject.getString("id");
+                    String channelId = jsonObject.getString("channel");
+                    int timestamp = jsonObject.getInt("timestamp");
+                    String from = jsonObject.getString("from");
+                    String text = jsonObject.getString("text");
+
+                    // currentUser send
+                    if (from.equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(text).
+                                setFrom(from).
+                                setTimestamp(timestamp).
                                 setChannel(builder.getCurrentServerChannel());
                         if (messageViewController != null) {
                             Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+                    }
+                    // currentUser received
+                    else if (!from.equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(text).
+                                setFrom(from).
+                                setTimestamp(timestamp).
+                                setChannel(builder.getCurrentServerChannel());
+                        if (messageViewController != null) {
+                            Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+
+                        for (Categories categories : server.getCategories()) {
+                            for (Channel channel : categories.getChannel()) {
+                                if (channel.getId().equals(channelId)) {
+                                    channel.withMessage(message);
+                                    if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
+                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                    }
+                                    categorySubControllerList.get(categories).refreshChannelList();
+                                    break;
+                                }
+                            }
                         }
                     }
                     if (messageViewController != null) {
@@ -435,7 +465,7 @@ public class ServerViewController {
                     JSONArray jsonArray = json.getJSONArray("members");
                     String memberId = "";
 
-                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                    for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : builder.getCurrentServer().getUser()) {
                             if (user.getId().equals(memberId)) {
@@ -443,29 +473,9 @@ public class ServerViewController {
                             }
                         }
                     }
-
-                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
-    }
-
-    /**
-     * Get the default channel which was the one when server also was created
-     *
-     * @return channel is the default channel
-     */
-    public Channel getDefaultChannel() {
-        for (Categories cat : builder.getCurrentServer().getCategories()) {
-            if (cat.getName().equals("default")) {
-                for (Channel channel : cat.getChannel()) {
-                    if (channel.getName().equals("default-text-channel")) {
-                        return channel;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public void stop() {
