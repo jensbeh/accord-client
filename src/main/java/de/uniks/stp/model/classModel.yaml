@@ -24,7 +24,7 @@
   roles: 	categories_server 	categories_channel
 
 - channel: 	org.fulib.classmodel.Clazz
-  attributes: 	channel_name 	channel_id 	channel_unreadMessagesCounter 	channel_privilege
+  attributes: 	channel_name 	channel_id 	channel_unreadMessagesCounter 	channel_privilege 	channel_type
   model: 	c
   modified: 	false
   name: 	Channel
@@ -40,7 +40,7 @@
   roles: 	user_privileged 	user_server 	user_currentUser
 
 - currentUser: 	org.fulib.classmodel.Clazz
-  attributes: 	currentUser_name 	currentUser_userKey
+  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password
   model: 	c
   modified: 	false
   name: 	CurrentUser
@@ -199,6 +199,15 @@
   type: 	boolean
   typeSignature: 	boolean
 
+- channel_type: 	org.fulib.classmodel.Attribute
+  clazz: 	channel
+  id: 	Channel_type
+  modified: 	false
+  name: 	type
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
 - channel_categories: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	1
@@ -318,6 +327,15 @@
   id: 	CurrentUser_userKey
   modified: 	false
   name: 	userKey
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_password: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_password
+  modified: 	false
+  name: 	password
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String

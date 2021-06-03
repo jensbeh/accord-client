@@ -8,7 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 
-public class AlternateChannelListCellFactory2 implements javafx.util.Callback<ListView<Channel>, ListCell<Channel>> {
+public class AlternateServerChannelListCellFactory implements javafx.util.Callback<ListView<Channel>, ListCell<Channel>> {
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -27,7 +27,7 @@ public class AlternateChannelListCellFactory2 implements javafx.util.Callback<Li
     private static class ChannelListCell extends ListCell<Channel> {
 
         protected void updateItem(Channel item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             Label name = new Label();
             Label message = new Label();

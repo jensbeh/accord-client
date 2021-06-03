@@ -32,7 +32,7 @@ public class InviteUsersTempSubController {
         createLink = (Button) view.lookup("#createLink");
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
-        linkComboBox = (ComboBox) view.lookup("#LinkComboBox");
+        linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);

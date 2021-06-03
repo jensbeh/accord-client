@@ -30,6 +30,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     private static String testServerId;
     private ArrayList<User> privileged = new ArrayList<>();
     private Server currentServer;
+    private String testUserMain_UserKey;
+    private String inviteId;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -81,6 +83,31 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         });
     }
 
+    public void loginUser() throws InterruptedException {
+        restClient.loginTemp(response -> {
+            JsonNode body = response.getBody();
+            //get name and password from server
+            testUserMainName = body.getObject().getJSONObject("data").getString("name");
+            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
+        });
+        Thread.sleep(2000);
+        restClient.login(testUserOneName, testUserOnePw, response -> {
+            JsonNode body = response.getBody();
+            testUserMain_UserKey = body.getObject().getJSONObject("data").getString("userKey");
+        });
+        Thread.sleep(2000);
+
+        restClient.createTempLink("temporal", 15, testServerId, testUserOne_UserKey, response -> {
+            JsonNode body = response.getBody();
+            inviteId = body.getObject().getJSONObject("data").getString("id");
+        });
+
+        restClient.joinServer(testServerId, inviteId, testUserMainName, testUserMainPw, testUserMain_UserKey, response -> {});
+
+        restClient.logout(testUserOne_UserKey, response -> {
+        });
+    }
+
     @Test
     public void openServerSettingsPrivilegeTest() throws InterruptedException {
         getServerId();
@@ -119,8 +146,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
         clickOn(categoryChoice);
         clickOn(currentServer.getCategories().get(0).getName());
-        Thread.sleep(2000);
         WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
         Assert.assertEquals(channelChoice.getItems(), currentServer.getCategories().get(0).getChannel());
 
         clickOn(channelChoice);
@@ -137,6 +164,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
             }
         }
         clickOn("#Change_Privilege");
+        WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
         Assert.assertFalse(privilegeOnView.getChildren().isEmpty());
@@ -145,11 +173,14 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         ComboBox<String> addMenu = lookup("#Add_User_to_Privilege").query();
         ComboBox<String> removeMenu = lookup("#Remove_User_from_Privilege").query();
 
+        //loginUser();
+        User test = new User().setName("Test").setId("1");
+        currentServer.withUser(test);
         //TODO adduser
-        /*//addMenu.getSelectionModel().select(0);
+        //addMenu.getSelectionModel().select(0);
         User add = null;
         for (User user : currentServer.getUser()){
-            if (!user.getPrivileged().contains(currentServer.getCategories().get(0).getChannel().get(0))){
+            if (!currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().contains(user)){
                 add = user;
             }
         }
@@ -177,7 +208,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         Assert.assertEquals(currentServer.getUser().size() - 1, addMenu.getItems().size());
         Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
         Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
-        */
+
 
         clickOn(removeMenu);
         clickOn(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().get(0).getName());
@@ -199,6 +230,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         clickOn(privilegeOn);
         clickOn("#Change_Privilege");
         Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         clickOn(privilegeOff);
         Assert.assertTrue(privilegeOff.isSelected());
@@ -208,6 +240,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
         clickOn("#Change_Privilege");
         Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
         Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 

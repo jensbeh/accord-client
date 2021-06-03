@@ -18,7 +18,6 @@ public class LanguageController extends SubSetting {
     private ComboBox<String> languageSelector;
     private static Label selectLanguageLabel;
     private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
-    ;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
