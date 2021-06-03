@@ -48,8 +48,9 @@ public class CategorySubController {
      * sets the selectedChat new.
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
-        Channel channel = this.channelList.getSelectionModel().getSelectedItem();
+        Channel channel = this.channelList.getSelectionModel().getSelectedItem(); //TODO message-counter reset
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
+            channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
             channelList.refresh();
@@ -81,5 +82,9 @@ public class CategorySubController {
         channelList.setOnMouseReleased(null);
         category.removePropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.removePropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
+    }
+
+    public void refreshChannelList() {
+        channelList.refresh();
     }
 }

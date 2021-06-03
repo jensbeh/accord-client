@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-public class AlternateChannelListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
+public class AlternatePrivateChatListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R

@@ -117,23 +117,23 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 }*/
 
                 // set notification color & count
-                //if (item.getUnreadMessagesCounter() > 0) {
-                Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
-                Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
-                background.setId("notificationCounterBackground_" + item.getId());
-                foreground.setId("notificationCounterForeground_" + item.getId());
+                if (item.getUnreadMessagesCounter() > 0) {
+                    Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
+                    Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
+                    background.setId("notificationCounterBackground_" + item.getId());
+                    foreground.setId("notificationCounterForeground_" + item.getId());
 
-                Label numberText = new Label();
-                numberText.setId("notificationCounter_" + item.getId());
-                numberText.setAlignment(Pos.CENTER);
-                numberText.setTextFill(Color.BLACK);
-                numberText.setText("4");//String.valueOf(item.getUnreadMessagesCounter()));
+                    Label numberText = new Label();
+                    numberText.setId("notificationCounter_" + item.getId());
+                    numberText.setAlignment(Pos.CENTER);
+                    numberText.setTextFill(Color.BLACK);
+                    numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
 
-                StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
-                stackPaneUnreadMessages.setAlignment(Pos.CENTER);
+                    StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
+                    stackPaneUnreadMessages.setAlignment(Pos.CENTER);
 
-                notificationCell.getChildren().add(stackPaneUnreadMessages);
-                //}
+                    notificationCell.getChildren().add(stackPaneUnreadMessages);
+                }
 
                 // set cells finally
                 nameAndNotificationCell.getChildren().addAll(nameCell, notificationCell);
