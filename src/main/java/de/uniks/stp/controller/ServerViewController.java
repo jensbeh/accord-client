@@ -467,7 +467,6 @@ public class ServerViewController {
                     channel.withMessage(message);
                 }
             }
-            Platform.runLater(this::showMessageView);
         });
     }
 
