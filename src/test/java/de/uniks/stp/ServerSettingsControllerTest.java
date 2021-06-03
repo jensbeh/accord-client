@@ -131,7 +131,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void clickOnOwnerOverview() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
-        ;
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
