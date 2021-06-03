@@ -1,6 +1,6 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.AlternateChannelListCellFactory;
+import de.uniks.stp.AlternatePrivateChatListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -72,7 +72,7 @@ public class PrivateViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
-        privateChatList.setCellFactory(new AlternateChannelListCellFactory());
+        privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
