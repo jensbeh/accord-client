@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
@@ -22,15 +23,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.JsonUtil;
 import util.SortUser;
-
+import java.beans.PropertyChangeEvent;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,8 +50,6 @@ public class ServerViewController {
     private final HomeViewController homeViewController;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
-    private VBox channelBox;
-    private VBox textChannelBox;
     private MenuButton serverMenuButton;
     private static Label textChannelLabel;
     private static Label generalLabel;
@@ -59,7 +57,6 @@ public class ServerViewController {
     private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
-    private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
@@ -104,8 +101,6 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void init() throws InterruptedException {
-        root = (HBox) view.lookup("#root");
-        channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
         scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
@@ -117,10 +112,8 @@ public class ServerViewController {
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
-        textChannelBox = (VBox) view.lookup("#textChannelBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
@@ -128,7 +121,6 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
 
         categorySubControllerList = new HashMap<>();
-        server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
 
         showCurrentUser();
         loadServerInfos(status -> {
@@ -240,6 +232,10 @@ public class ServerViewController {
             }
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
+        Platform.runLater(this::generateCategoriesChannelViews);
+        if (builder.getCurrentServerChannel() != null) {
+            showMessageView();
+        }
 
         // load views when server is selected second time - no new channel & co via Rest are taken
         if (categorySubControllerList.size() == 0) {
@@ -376,62 +372,245 @@ public class ServerViewController {
      */
     private void showServerUsers() {
         try {
-            SERVER_USER = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()), new WSCallback() {
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    System.out.println("msg: " + msg);
-                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    String userAction = jsonMsg.getString("action");
-                    JsonObject jsonData = jsonMsg.getJsonObject("data");
-                    //not username else name general
-                    String userName = jsonData.getString("name");
-                    String userId = jsonData.getString("id");
-                    if (userAction.equals("userJoined")) {
-                        builder.buildServerUser(userName, userId, true);
-                    } else if (userAction.equals("userLeft")) {
-                        if (userName.equals(builder.getPersonalUser().getName())) {
-                            Platform.runLater(StageManager::showLoginScreen);
-                        }
-                        builder.buildServerUser(userName, userId, false);
-                    } else if (userAction.equals("serverDeleted")) {
-                        System.out.println("Server deleted!");
-                        if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
-                            Platform.runLater(() -> {
-                                StageManager.showHome();
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                                alert.setTitle("Server deleted!");
-                                alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
-                                Optional<ButtonType> result = alert.showAndWait();
-                                if (result.isPresent() && result.get() == ButtonType.OK) {
-                                    StageManager.showHome();
-                                }
-                            });
-                        }
-                    } else if (userAction.equals("serverUpdated")) {
-                        System.out.println("Server updated!");
-                        builder.getCurrentServer().setName(userName);
-                        changeServerName();
-                        homeViewController.showServers();
-                    } else if (userAction.equals("userExited")) {
-                        System.out.println("User exited!");
-                        User leaveUser = new User();
-                        for (User user : builder.getCurrentServer().getUser()) {
-                            if (user.getName().equals(userName)) {
-                                leaveUser = user;
+            SERVER_USER = new WebSocketClient(builder, URI.
+                    create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()),
+                    new WSCallback() {
+
+                        @Override
+                        public void handleMessage(JsonStructure msg) {
+                            System.out.println("msg: " + msg);
+                            JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                            String userAction = jsonMsg.getString("action");
+                            JsonObject jsonData = jsonMsg.getJsonObject("data");
+                            String userName = jsonData.getString("name");
+                            String userId = jsonData.getString("id");
+
+                            if (userAction.equals("categoryCreated")) {
+                                createCategory(jsonData);
                             }
+                            if (userAction.equals("categoryDeleted")) {
+                                deleteCategory(jsonData);
+                            }
+                            if (userAction.equals("categoryUpdated")) {
+                                updateCategory(jsonData);
+                            }
+                            if (userAction.equals("channelCreated")) {
+                                createChannel(jsonData);
+                            }
+
+                            if (userAction.equals("channelUpdated")) {
+                                updateChannel(jsonData);
+                            }
+                            if (userAction.equals("userArrived")) {
+                                userArrived(jsonData);
+                            }
+
+                            if (userAction.equals("userJoined")) {
+                                builder.buildServerUser(userName, userId, true);
+                            }
+                            if (userAction.equals("userLeft")) {
+                                if (userName.equals(builder.getPersonalUser().getName())) {
+                                    Platform.runLater(StageManager::showLoginScreen);
+                                }
+                                builder.buildServerUser(userName, userId, false);
+                            } else if (userAction.equals("serverDeleted")) {
+                                System.out.println("Server deleted!");
+                                if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
+                                    Platform.runLater(() -> {
+                                        StageManager.showHome();
+                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                                        alert.setTitle("Server deleted!");
+                                        alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
+                                        Optional<ButtonType> result = alert.showAndWait();
+                                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                                            StageManager.showHome();
+                                        }
+                                    });
+                                }
+                            } else if (userAction.equals("serverUpdated")) {
+                                System.out.println("Server updated!");
+                                builder.getCurrentServer().setName(userName);
+                                changeServerName();
+                                homeViewController.showServers();
+                            } else if (userAction.equals("userExited")) {
+                                System.out.println("User exited!");
+                                User leaveUser = new User();
+                                for (User user : builder.getCurrentServer().getUser()) {
+                                    if (user.getName().equals(userName)) {
+                                        leaveUser = user;
+                                    }
+                                }
+                                builder.getCurrentServer().withoutUser(leaveUser);
+                            }
+
+                            showOnlineOfflineUsers();
                         }
-                        builder.getCurrentServer().withoutUser(leaveUser);
-                    }
-                    showOnlineOfflineUsers();
-                }
-                public void onClose(Session session, CloseReason closeReason) {
-                }
-            });
+
+                        public void onClose(Session session, CloseReason closeReason) {
+                        }
+                    });
             builder.setSERVER_USER(SERVER_USER);
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         showOnlineOfflineUsers();
+    }
+
+    /**
+     * adds a new Controller for a new Category with new view
+     */
+    private void createCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                boolean found = false;
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(categoryId)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Categories category = new Categories().setName(name).setId(categoryId);
+                    server.withCategories(category);
+                    generateCategoryChannelView(category);
+                }
+            }
+        }
+    }
+
+    /**
+     * deletes a category with controller and view
+     */
+    private void deleteCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+
+        Categories deletedCategory = new Categories().setName(name).setId(categoryId);
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(deletedCategory.getId())) {
+                        for (Node view : categoryBox.getChildren()) {
+                            if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
+                                categorySubControllerList.get(categories).stop();
+                                categorySubControllerList.remove(categories);
+                                server.withoutCategories(categories);
+
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
+                                    builder.setCurrentServerChannel(null);
+                                    setSelectedChat(null);
+                                    messageViewController.stop();
+                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * rename a Category and update it on the view
+     */
+    private void updateCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(categoryId) && !categories.getName().equals(name)) {
+                        categories.setName(name);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * adds the new channel to category for the user
+     */
+    private void createChannel(JsonObject jsonData) {
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        String channelType = jsonData.getString("type");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        String categoryId = jsonData.getString("category");
+
+        for (Server server : builder.getPersonalUser().getServer()) {
+            for (Categories cat : server.getCategories()) {
+                if (cat.getId().equals(categoryId)) {
+                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
+                    cat.withChannel(newChannel);
+                    Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * update userList when a user joins the server
+     */
+    private void userArrived(JsonObject jsonData) {
+        String id = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        boolean status = jsonData.getBoolean("online");
+
+        builder.getCurrentServer().withUser(builder.buildServerUser(name, id, status));
+        showOnlineOfflineUsers();
+    }
+
+    /**
+     * updates the channel name by change and the privileged with the privileged users from a channel by change
+     */
+    public void updateChannel(JsonObject jsonData) {
+        String categoryId = jsonData.getString("category");
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        String channelType = jsonData.getString("type");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        JsonArray jsonArray = jsonData.getJsonArray("members");
+        String memberId = "";
+        boolean flag = false;
+        ArrayList<User> member = new ArrayList<>();
+        for (int j = 0; j < jsonArray.size(); j++) {
+            memberId = jsonArray.getString(j);
+            for (User user : builder.getCurrentServer().getUser()) {
+                if (user.getId().equals(memberId)) {
+                    member.add(user);
+                }
+            }
+        }
+        for (Categories category : builder.getCurrentServer().getCategories()) {
+            if (category.getId().equals(categoryId)) {
+                for (Channel channel : category.getChannel()) {
+                    if (channel.getId().equals(channelId)) {
+                        flag = true;
+                        channel.setName(channelName);
+                        channel.setPrivilege(channelPrivileged);
+                        ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
+                        channel.withoutPrivilegedUsers(privileged);
+                        channel.withPrivilegedUsers(member);//TODO
+                    }
+                }
+                if (!flag) {
+                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName)
+                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
+                    category.withChannel(newChannel);
+                    Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                }
+            }
+        }
     }
 
     /**
@@ -443,7 +622,7 @@ public class ServerViewController {
         for (User user : builder.getCurrentServer().getUser()) {
             if (user.isStatus()) {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
-                    checkForOwnership(user.getId());
+                    Platform.runLater(() -> checkForOwnership(user.getId()));
                 }
                 onlineUsers.add(user);
             } else {
@@ -498,12 +677,13 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    loadChannelMessages(channel);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
                     JSONArray jsonArray = json.getJSONArray("members");
-                    String memberId = "";
+                    String memberId;
 
                     for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
@@ -513,6 +693,25 @@ public class ServerViewController {
                             }
                         }
                     }
+                }
+            }
+        });
+    }
+
+    private void loadChannelMessages(Channel channel) {
+        System.out.println(new Date().getTime());
+        restClient.getChannelMessages(new Date().getTime(), builder.getCurrentServer().getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonData = data.getJSONObject(i);
+                    String from = jsonData.getString("from");
+                    long timestamp = jsonData.getLong("timestamp");
+                    String text = jsonData.getString("text");
+                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
+                    channel.withMessage(message);
                 }
             }
         });
@@ -544,7 +743,6 @@ public class ServerViewController {
         for (CategorySubController categorySubController : categorySubControllerList.values()) {
             categorySubController.stop();
         }
-        server.removePropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
     }
 
     /**

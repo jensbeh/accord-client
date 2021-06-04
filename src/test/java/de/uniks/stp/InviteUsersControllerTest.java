@@ -57,7 +57,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void openInviteUsersTest() throws InterruptedException {
         loginInitWithTempUser();
 
@@ -90,7 +90,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void changeInviteUsersSubViewTest() throws InterruptedException {
         loginInitWithTempUser();
 
@@ -126,7 +126,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
     }
 
 
-    @Test
+    //@Test
     public void generateAndDeleteTempLink() throws InterruptedException {
         loginInitWithTempUser();
 
