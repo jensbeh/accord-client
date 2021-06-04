@@ -12,8 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -24,9 +22,9 @@ public class ServerSettingsChannelController extends SubSetting {
     private RestClient restClient;
 
     private Label categoryLabel;
-    private ComboBox<Categories> categorySelector;
+    private static ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
-    private ComboBox<Channel> editChannelsSelector;
+    private static ComboBox<Channel> editChannelsSelector;
     private TextField editChannelsTextField;
     private Button channelChangeButton;
     private Button channelDeleteButton;
@@ -36,9 +34,8 @@ public class ServerSettingsChannelController extends SubSetting {
     private RadioButton channelVoiceRadioButton;
     private Button channelCreateButton;
 
-    private Categories selectedCategory;
-    private Channel selectedChannel;
-    private ToggleGroup textVoiceToggle;
+    private static Categories selectedCategory;
+    private static Channel selectedChannel;
     private String channelType;
 
 
@@ -52,9 +49,9 @@ public class ServerSettingsChannelController extends SubSetting {
     public void init() {
         // init view
         this.categoryLabel = (Label) view.lookup("#categoryLabel");
-        this.categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
+        categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
-        this.editChannelsSelector = (ComboBox<Channel>) view.lookup("#editChannelsSelector");
+        editChannelsSelector = (ComboBox<Channel>) view.lookup("#editChannelsSelector");
         this.editChannelsTextField = (TextField) view.lookup("#editChannelsTextField");
         this.channelChangeButton = (Button) view.lookup("#channelChangeButton");
         this.channelDeleteButton = (Button) view.lookup("#channelDeleteButton");
@@ -64,23 +61,23 @@ public class ServerSettingsChannelController extends SubSetting {
         this.channelVoiceRadioButton = (RadioButton) view.lookup("#channelVoiceRadioButton");
         this.channelCreateButton = (Button) view.lookup("#channelCreateButton");
 
-        textVoiceToggle = new ToggleGroup();
+        ToggleGroup textVoiceToggle = new ToggleGroup();
         channelTextRadioButton.setToggleGroup(textVoiceToggle);
         channelVoiceRadioButton.setToggleGroup(textVoiceToggle);
         channelTextRadioButton.setSelected(true);
         channelType = "text";
 
-        this.categorySelector.setOnAction(this::onCategoryChanged);
-        this.editChannelsSelector.setOnAction(this::onChannelChanged);
+        categorySelector.setOnAction(this::onCategoryChanged);
+        editChannelsSelector.setOnAction(this::onChannelChanged);
         this.channelChangeButton.setOnAction(this::onChannelChangeButtonClicked);
         this.channelTextRadioButton.setOnAction(this::onChannelTextButtonClicked);
         this.channelVoiceRadioButton.setOnAction(this::onChannelVoiceButtonClicked);
         this.channelCreateButton.setOnAction(this::onChannelCreateButtonClicked);
         this.channelDeleteButton.setOnAction(this::onChannelDeleteButtonClicked);
 
-        this.categorySelector.getItems().addAll(builder.getCurrentServer().getCategories());
+        categorySelector.getItems().addAll(builder.getCurrentServer().getCategories());
 
-        this.categorySelector.setConverter(new StringConverter<>() {
+        categorySelector.setConverter(new StringConverter<>() {
             @Override
             public String toString(Categories object) {
                 if (object == null) {
@@ -95,7 +92,7 @@ public class ServerSettingsChannelController extends SubSetting {
             }
         });
 
-        this.editChannelsSelector.setConverter(new StringConverter<>() {
+        editChannelsSelector.setConverter(new StringConverter<>() {
             @Override
             public String toString(Channel object) {
                 if (object == null) {
@@ -162,7 +159,11 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    private void loadChannels(Channel preSelectChannel) {
+    public static void loadChannels(Channel preSelectChannel) {
+        if (categorySelector == null || editChannelsSelector == null) {
+            return;
+        }
+
         selectedChannel = null;
         editChannelsSelector.getItems().clear();
         editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
@@ -236,24 +237,7 @@ public class ServerSettingsChannelController extends SubSetting {
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
                     System.out.println("--> SUCCESS: channel created");
-                    JSONObject data = body.getObject().getJSONObject("data");
-                    String channelId = data.getString("id");
-                    String name = data.getString("name");
-                    String type = data.getString("type");
-                    boolean privileged = data.getBoolean("privileged");
-
-                    Channel newChannel = new Channel().setId(channelId).setType(type).setName(name).setPrivilege(privileged);
-                    selectedCategory.withChannel(newChannel);
-
-                    if (privileged) {
-                        JSONArray privilegedMembers = data.getJSONArray("members");
-                        for (int i = 0; i < privilegedMembers.length(); i++) {
-                            privilegedMembers.getString(i);
-                        }
-                    }
-
                     createChannelTextField.setText("");
-                    Platform.runLater(() -> loadChannels(selectedChannel));
                 } else {
                     System.out.println(status);
                     System.out.println(body.getObject().getString("message"));
@@ -296,5 +280,9 @@ public class ServerSettingsChannelController extends SubSetting {
             counter++;
         }
         return pUsers;
+    }
+
+    public static Channel getSelectedChannel() {
+        return selectedChannel;
     }
 }
