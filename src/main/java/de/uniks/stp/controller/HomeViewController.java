@@ -7,6 +7,7 @@ import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -31,6 +32,8 @@ import util.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class HomeViewController {
@@ -52,9 +55,12 @@ public class HomeViewController {
     private AlternateServerListCellFactory serverListCellFactory;
     private static Channel selectedChat;
     private PrivateViewController privateViewController;
-    private ServerViewController serverController;
     private Parent privateView;
     public static boolean inServerChat = false;
+    private static Map<Server, WebSocketClient> serverSystemWebSockets;
+    private static Map<Server, WebSocketClient> serverChatWebSockets;
+    private static Map<Server, Parent> serverViews;
+    private Map<Server, ServerViewController> serverController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -82,8 +88,28 @@ public class HomeViewController {
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+        serverSystemWebSockets = new HashMap<>();
+        serverChatWebSockets = new HashMap<>();
+        serverViews = new HashMap<>();
+        serverController = new HashMap<>();
+
         showPrivateView();
-        showServers();
+        showServers(new ServerLoadedCallback() {
+            @Override
+            public void onSuccess() {
+                for (Server server : builder.getPersonalUser().getServer()) {
+                    try {
+                        Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                        serverController.put(server, new ServerViewController(serverView, builder, server));
+                        serverController.get(server).startController();
+                        serverViews.put(server, serverView);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -118,12 +144,10 @@ public class HomeViewController {
     public void showServerView() {
         inServerChat = true;
         try {
-            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-            serverController = new ServerViewController(serverView, builder, builder.getCurrentServer());
-            serverController.init();
+            serverController.get(builder.getCurrentServer()).startShowServer();
             this.root.getChildren().clear();
-            this.root.getChildren().add(serverView);
-        } catch (IOException | InterruptedException e) {
+            this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -159,7 +183,22 @@ public class HomeViewController {
     private void joinNewServer() {
         Platform.runLater(() -> {
             stage.close();
-            showServers();
+            showServers(new ServerLoadedCallback() {
+                @Override
+                public void onSuccess() {
+                    for (Server server : builder.getPersonalUser().getServer()) {
+                        try {
+                            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                            serverController.put(server, new ServerViewController(serverView, builder, server));
+                            serverController.get(server).startController();
+                            serverViews.put(server, serverView);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
             updateServerListColor();
             showServerView();
         });
@@ -186,7 +225,22 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            showServers();
+            showServers(new ServerLoadedCallback() {
+                @Override
+                public void onSuccess() {
+                    for (Server server : builder.getPersonalUser().getServer()) {
+                        try {
+                            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                            serverController.put(server, new ServerViewController(serverView, builder, server));
+                            serverController.get(server).startController();
+                            serverViews.put(server, serverView);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
             updateServerListColor();
             showServerView();
         });
@@ -237,10 +291,14 @@ public class HomeViewController {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
+    public interface ServerLoadedCallback {
+        void onSuccess();
+    }
+
     /**
      * Get Servers and show Servers
      */
-    private void showServers() {
+    private void showServers(ServerLoadedCallback serverLoadedCallback) {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
@@ -255,9 +313,15 @@ public class HomeViewController {
                 for (Server server : builder.getPersonalUser().getServer()) {
                     if (!onlineServers.contains(server)) {
                         builder.getPersonalUser().withoutServer(server);
+                        try {
+                            serverSystemWebSockets.get(server).stop();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
+                serverLoadedCallback.onSuccess();
             });
         }
     }
@@ -389,14 +453,16 @@ public class HomeViewController {
             privateViewController.stop();
             privateViewController = null;
         }
-        if (serverController != null) {
-            serverController.stop();
-            serverController = null;
+        for (Server server : builder.getServers()) {
+            if (serverController.get(server) != null) {
+                serverController.get(server).stop();
+                serverController.remove(server);
+            }
         }
     }
 
     public ServerViewController getServerController() {
-        return serverController;
+        return serverController.get(builder.getCurrentServer());
     }
 
     /**
