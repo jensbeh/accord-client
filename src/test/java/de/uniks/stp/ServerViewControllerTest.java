@@ -221,7 +221,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void showServerTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -237,7 +237,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void showServerUsersTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -263,7 +263,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void logoutMultiLogin() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -283,7 +283,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-    @Test
+    //@Test
     public void categoryViewTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -300,7 +300,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void onNewMessageIconCounterTest() throws InterruptedException, DeploymentException, IOException {
         // test User 1 login
         restClient.loginTemp(response -> {

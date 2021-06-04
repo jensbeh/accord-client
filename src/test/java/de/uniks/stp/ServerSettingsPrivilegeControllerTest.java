@@ -81,7 +81,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void openServerSettingsPrivilegeTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);

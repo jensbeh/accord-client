@@ -88,11 +88,20 @@ public class ServerSettingsCategoryController extends SubSetting {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-                        System.out.println("--> SUCCESS: changed category name");
+                        for (Categories category : currentServer.getCategories()) {
+                            if (category.getId().equals(selectedCategory.getId())) {
+                                selectedCategory = category;
+                            }
+                        }
                         currentServer.withoutCategories(selectedCategory);
                         selectedCategory.setName(newCategoryName);
                         currentServer.withCategories(selectedCategory);
-                        reloadCategories(selectedCategory);
+
+                        Platform.runLater(() -> {
+                            categoriesSelector.getItems().clear();
+                            categoriesSelector.getItems().addAll(currentServer.getCategories());
+                        });
+
                         Platform.runLater(() -> changeCategoryNameTextField.setText(""));
                     } else {
                         System.out.println(status);
@@ -107,7 +116,6 @@ public class ServerSettingsCategoryController extends SubSetting {
         }
     }
 
-
     /**
      * deletes an existing and chosen category when button delete is clicked
      */
@@ -118,10 +126,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: deleted category");
-
-                    currentServer.withoutCategories(selectedCategory);
-                    reloadCategories(null);
+                    Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
+                    Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
                 } else {
                     System.out.println(status);
                     System.out.println(body.getObject().getString("message"));
@@ -143,18 +149,13 @@ public class ServerSettingsCategoryController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: category created");
                     JSONObject data = body.getObject().getJSONObject("data");
-                    System.out.println(data);
                     String categoryId = data.getString("id");
                     String name = data.getString("name");
 
                     Categories newCategory = new Categories().setId(categoryId).setName(name);
-                    currentServer.withCategories(newCategory);
-
+                    Platform.runLater(() -> categoriesSelector.getItems().add(newCategory));
                     createCategoryNameTextField.setText("");
-                    reloadCategories(null);
-
                 } else {
                     System.out.println(status);
                     System.out.println(body.getObject().getString("message"));
@@ -162,21 +163,6 @@ public class ServerSettingsCategoryController extends SubSetting {
             });
         } else {
             System.out.println("--> ERR: Field is empty");
-        }
-    }
-
-    /**
-     * reloads the categories in the category settings
-     */
-    private void reloadCategories(Categories preSelectCategory) {
-        selectedCategory = null;
-        Platform.runLater(() -> categoriesSelector.getItems().clear());
-        Platform.runLater(() -> categoriesSelector.getItems().addAll(currentServer.getCategories()));
-
-        if (preSelectCategory != null) {
-            Platform.runLater(() -> categoriesSelector.getSelectionModel().select(preSelectCategory));
-        } else {
-            Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
         }
     }
 

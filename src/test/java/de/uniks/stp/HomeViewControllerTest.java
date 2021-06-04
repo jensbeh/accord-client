@@ -94,7 +94,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void personalUserTest() throws InterruptedException {
         loginInit();
 
@@ -105,7 +105,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     }
 
-    @Test
+    //@Test
     public void serverBoxTest() throws InterruptedException {
         loginInit();
 
@@ -135,7 +135,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     }
 
-    @Test
+    //@Test
     public void userBoxTest() throws InterruptedException {
         loginInit();
 
@@ -182,7 +182,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     }
 
-    @Test
+    //@Test
     public void getServersTest() {
         restMock.getServers("bla", response -> {
         });
@@ -193,7 +193,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    @Test
+    //@Test
     public void getUsersTest() {
         restMock.getUsers("bla", response -> {
         });
@@ -204,7 +204,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    @Test
+    //@Test
     public void privateChatTest() throws InterruptedException {
         loginInit();
 
@@ -236,7 +236,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     }
 
-    @Test()
+    //@Test()
     public void logout() throws InterruptedException {
         loginInit();
 
@@ -259,7 +259,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    @Test
+    //@Test
     public void logoutMultiLogin() throws InterruptedException {
         loginInit();
 
@@ -275,7 +275,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void openExistingChat() throws InterruptedException {
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();

@@ -59,7 +59,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         privilegeOnButton.setToggleGroup(group);
         privilegeOffButton.setToggleGroup(group);
 
-        privilegeOnButton.setOnAction(this::privilegeOnButton);
+        //privilegeOnButton.setOnAction(this::privilegeOnButton);
         privilegeOffButton.setOnAction(this::privilegeOffButton);
         changePrivilege.setOnAction(this::changePrivilege);
 
@@ -120,7 +120,8 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 } else {
                     privilegeOffButton.setSelected(true);
                 }
-                privilegeOnButton((ActionEvent) event);
+                //privilegeOnButton((ActionEvent) event);
+                privilegeOnButton();
             }
         });
         // start property change listener
@@ -174,7 +175,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 restClient.updateChannel(serverId, categoryId, channelId, userKey, channelName, privilege, null, response -> {
                 });
             }
-            privilegeOnButton(actionEvent);
+            privilegeOnButton();//actionEvent
         }
     }
 
@@ -188,7 +189,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     /**
      * load fxml when channel privilege on. load subcontroller.
      */
-    private void privilegeOnButton(ActionEvent actionEvent) {
+    private void privilegeOnButton() {//ActionEvent actionEvent
         if (serverSubSettingsPrivilegeController != null) {
             serverSubSettingsPrivilegeController.stop();
         }
