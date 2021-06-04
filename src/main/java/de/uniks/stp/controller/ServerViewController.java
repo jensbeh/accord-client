@@ -531,7 +531,7 @@ public class ServerViewController {
         for (User user : builder.getCurrentServer().getUser()) {
             if (user.isStatus()) {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
-                    checkForOwnership(user.getId());
+                    Platform.runLater(() -> checkForOwnership(user.getId()));
                 }
                 onlineUsers.add(user);
             } else {
