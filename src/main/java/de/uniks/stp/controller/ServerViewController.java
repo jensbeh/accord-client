@@ -3,6 +3,7 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
@@ -319,6 +320,9 @@ public class ServerViewController {
                             if (userAction.equals("categoryUpdated")) {
                                 updateCategory(jsonData);
                             }
+                            if (userAction.equals("channelCreated")) {
+                                createChannel(jsonData);
+                            }
 
                             if (userAction.equals("channelUpdated")) {
                                 updateChannel(jsonData);
@@ -442,6 +446,28 @@ public class ServerViewController {
     }
 
     /**
+     * adds the new channel to category for the user
+     */
+    private void createChannel(JsonObject jsonData) {
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        String channelType = jsonData.getString("type");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        String categoryId = jsonData.getString("category");
+
+        for (Server server : builder.getPersonalUser().getServer()) {
+            for (Categories cat : server.getCategories()) {
+                if (cat.getId().equals(categoryId)) {
+                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
+                    cat.withChannel(newChannel);
+                    Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * update userList when a user joins the server
      */
     private void userArrived(JsonObject jsonData) {
@@ -460,11 +486,20 @@ public class ServerViewController {
         String categoryId = jsonData.getString("category");
         String channelId = jsonData.getString("id");
         String channelName = jsonData.getString("name");
+        String channelType = jsonData.getString("type");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
         String memberId = "";
         boolean flag = false;
-
+        ArrayList<User> member = new ArrayList<>();
+        for (int j = 0; j < jsonArray.size(); j++) {
+            memberId = jsonArray.getString(j);
+            for (User user : builder.getCurrentServer().getUser()) {
+                if (user.getId().equals(memberId)) {
+                    member.add(user);
+                }
+            }
+        }
         for (Categories category : builder.getCurrentServer().getCategories()) {
             if (category.getId().equals(categoryId)) {
                 for (Channel channel : category.getChannel()) {
@@ -474,20 +509,16 @@ public class ServerViewController {
                         channel.setPrivilege(channelPrivileged);
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
-                        for (int j = 0; j < jsonArray.size(); j++) {
-                            memberId = jsonArray.getString(j);
-                            for (User user : builder.getCurrentServer().getUser()) {
-                                if (user.getId().equals(memberId)) {
-                                    channel.withPrivilegedUsers(user);
-                                }
-                            }
-                        }
+                        channel.withPrivilegedUsers(member);//TODO
                     }
                 }
+                if (!flag) {
+                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName)
+                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
+                    category.withChannel(newChannel);
+                    Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                }
             }
-        }
-        if (!flag) {
-            //TODO create channel
         }
     }
 
