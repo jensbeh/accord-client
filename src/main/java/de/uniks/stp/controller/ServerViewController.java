@@ -398,7 +398,7 @@ public class ServerViewController {
                                 categorySubControllerList.remove(categories);
                                 server.withoutCategories(categories);
 
-                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
                                     builder.setCurrentServerChannel(null);
                                     setSelectedChat(null);
                                     messageViewController.stop();
