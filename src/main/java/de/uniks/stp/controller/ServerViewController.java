@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import util.JsonUtil;
 import util.SortUser;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
@@ -330,6 +331,12 @@ public class ServerViewController {
                     String userName = jsonData.getString("name");
                     String userId = jsonData.getString("id");
 
+                    if (userAction.equals("channelUpdated")) {
+                        updateChannel(jsonData);
+                    }
+                    if (userAction.equals("userArrived")) {
+                        userArrived(jsonData);
+                    }
                     if (userAction.equals("userJoined")) {
                         builder.buildServerUser(userName, userId, true);
                     }
@@ -362,6 +369,50 @@ public class ServerViewController {
             e.printStackTrace();
         }
         showOnlineOfflineUsers();
+    }
+
+    private void userArrived(JsonObject jsonData) {
+        String id = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        boolean status = jsonData.getBoolean("online");
+
+        builder.getCurrentServer().withUser(builder.buildServerUser(name, id, status));
+        showOnlineOfflineUsers();
+    }
+
+    public void updateChannel(JsonObject jsonData) {
+        String categoryId = jsonData.getString("category");
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        JsonArray jsonArray = jsonData.getJsonArray("members");
+        String memberId = "";
+
+        for (Categories category : builder.getCurrentServer().getCategories()) {
+            if (category.getId().equals(categoryId)) {
+                for (Channel channel : category.getChannel()) {
+                    if (channel.getId().equals(channelId)) {
+                        category.withoutChannel(channel);
+                        channel.setName(channelName);
+                        channel.setPrivilege(channelPrivileged);
+                        ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
+                        channel.withoutPrivilegedUsers(privileged);
+                        for (int j = 0; j < jsonArray.size(); j++) {
+                            memberId = jsonArray.getString(j);
+                            for (User user : builder.getCurrentServer().getUser()) {
+                                if (user.getId().equals(memberId)) {
+                                    if (!channel.getPrivilegedUsers().contains(user)) {
+                                        channel.withPrivilegedUsers(user);
+                                    }
+                                }
+                            }
+                        }
+                        category.withChannel(channel);
+                        //TODO refresh listview ...
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -435,7 +486,7 @@ public class ServerViewController {
                     JSONArray jsonArray = json.getJSONArray("members");
                     String memberId = "";
 
-                    for(int j = 0 ; j < jsonArray.length() ; j++) {
+                    for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : builder.getCurrentServer().getUser()) {
                             if (user.getId().equals(memberId)) {
@@ -443,29 +494,9 @@ public class ServerViewController {
                             }
                         }
                     }
-
-                    builder.setCurrentServerChannel(getDefaultChannel());
                 }
             }
         });
-    }
-
-    /**
-     * Get the default channel which was the one when server also was created
-     *
-     * @return channel is the default channel
-     */
-    public Channel getDefaultChannel() {
-        for (Categories cat : builder.getCurrentServer().getCategories()) {
-            if (cat.getName().equals("default")) {
-                for (Channel channel : cat.getChannel()) {
-                    if (channel.getName().equals("default-text-channel")) {
-                        return channel;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public void stop() {
