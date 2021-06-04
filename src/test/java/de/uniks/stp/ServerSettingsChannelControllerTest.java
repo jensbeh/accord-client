@@ -144,20 +144,19 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals("Text", channelTextRadioButton.getText());
         Assert.assertEquals("Voice", channelVoiceRadioButton.getText());
 
-        categorySelector.getItems().get(0).setName("$$$" + categorySelector.getItems().get(0).getName());
         // Test clicking Category selector
         clickOn(categorySelector);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(500);
-        clickOn(currentServer.getCategories().get(0).getName());
+        Platform.runLater(() -> categorySelector.getSelectionModel().select(0));
+
         Thread.sleep(500);
 
-        editChannelsSelector.getItems().get(0).setName("$$$" + editChannelsSelector.getItems().get(0).getName());
         // Test clicking Channel selector
         clickOn(editChannelsSelector);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(500);
-        clickOn(currentServer.getCategories().get(0).getChannel().get(0).getName());
+        Platform.runLater(() -> editChannelsSelector.getSelectionModel().select(0));
         Thread.sleep(500);
 
         // Change Channel Name
@@ -176,6 +175,14 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Thread.sleep(2000);
         Assert.assertEquals(channelSize + 1, currentServer.getCategories().get(0).getChannel().size());
         Assert.assertEquals("", createChannelTextField.getText());
+        boolean found = false;
+        for(Channel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
+            if(channel.getName().equals("NewTestChannel")) {
+                found = true;
+                break;
+            }
+        }
+        Assert.assertTrue(found);
 
         // Delete (created) Channel, rename first NewTestChannel to ByeChannel to not click on Server View
         channelSize = currentServer.getCategories().get(0).getChannel().size();
