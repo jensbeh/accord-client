@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,6 +14,8 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class ServerSettingsChannelController extends SubSetting {
     private Parent view;
@@ -178,8 +181,7 @@ public class ServerSettingsChannelController extends SubSetting {
         if (selectedChannel != null && !editChannelsTextField.getText().isEmpty()) {
             String newChannelName = editChannelsTextField.getText();
             if (!selectedChannel.getName().equals(newChannelName)) {
-                String[] members = new String[0];
-                restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), members /*TODO*/, response -> {
+                restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), userListToStringArray(selectedChannel.getPrivilegedUsers()), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
@@ -240,7 +242,6 @@ public class ServerSettingsChannelController extends SubSetting {
                     String type = data.getString("type");
                     boolean privileged = data.getBoolean("privileged");
 
-                    /*TODO: add privileged members list to Channel*/
                     Channel newChannel = new Channel().setId(channelId).setType(type).setName(name).setPrivilege(privileged);
                     selectedCategory.withChannel(newChannel);
 
@@ -285,5 +286,15 @@ public class ServerSettingsChannelController extends SubSetting {
         } else {
             System.out.println("--> ERR: No Channel selected");
         }
+    }
+
+    public String[] userListToStringArray(List<User> users) {
+        String[] pUsers = new String[users.size()];
+        int counter = 0;
+        for (User u : users) {
+            pUsers[counter] = u.getId();
+            counter++;
+        }
+        return pUsers;
     }
 }
