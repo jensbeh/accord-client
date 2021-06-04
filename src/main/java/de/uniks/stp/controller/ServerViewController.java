@@ -326,6 +326,12 @@ public class ServerViewController {
                             if (userAction.equals("channelDeleted")) {
                                 deleteChannel(jsonData);
                             }
+                            if (userAction.equals("channelUpdated")) {
+                                updateChannel(jsonData);
+                            }
+                            if (userAction.equals("userArrived")) {
+                                userArrived(jsonData);
+                            }
 
                             if (userAction.equals("userJoined")) {
                                 builder.buildServerUser(userName, userId, true);
@@ -491,6 +497,61 @@ public class ServerViewController {
     }
 
     /**
+     * update userList when a user joins the server
+     */
+    private void userArrived(JsonObject jsonData) {
+        String id = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        boolean status = jsonData.getBoolean("online");
+
+        builder.getCurrentServer().withUser(builder.buildServerUser(name, id, status));
+        showOnlineOfflineUsers();
+    }
+
+    /**
+     * updates the channel name by change and the privileged with the privileged users from a channel by change
+     */
+    public void updateChannel(JsonObject jsonData) {
+        String categoryId = jsonData.getString("category");
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        String channelType = jsonData.getString("type");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        JsonArray jsonArray = jsonData.getJsonArray("members");
+        String memberId = "";
+        boolean flag = false;
+        ArrayList<User> member = new ArrayList<>();
+        for (int j = 0; j < jsonArray.size(); j++) {
+            memberId = jsonArray.getString(j);
+            for (User user : builder.getCurrentServer().getUser()) {
+                if (user.getId().equals(memberId)) {
+                    member.add(user);
+                }
+            }
+        }
+        for (Categories category : builder.getCurrentServer().getCategories()) {
+            if (category.getId().equals(categoryId)) {
+                for (Channel channel : category.getChannel()) {
+                    if (channel.getId().equals(channelId)) {
+                        flag = true;
+                        channel.setName(channelName);
+                        channel.setPrivilege(channelPrivileged);
+                        ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
+                        channel.withoutPrivilegedUsers(privileged);
+                        channel.withPrivilegedUsers(member);
+                    }
+                }
+                if (!flag) {
+                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName)
+                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
+                    category.withChannel(newChannel);
+                    Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                }
+            }
+        }
+    }
+
+    /**
      * Split Users into offline and online users then update the list
      */
     public void showOnlineOfflineUsers() {
@@ -499,7 +560,7 @@ public class ServerViewController {
         for (User user : builder.getCurrentServer().getUser()) {
             if (user.isStatus()) {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
-                    checkForOwnership(user.getId());
+                    Platform.runLater(() -> checkForOwnership(user.getId()));
                 }
                 onlineUsers.add(user);
             } else {
