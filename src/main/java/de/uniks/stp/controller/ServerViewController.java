@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,11 +31,10 @@ import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static util.Constants.*;
 
@@ -47,6 +47,7 @@ public class ServerViewController {
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
+    private final HomeViewController homeViewController;
     private HBox root;
     private ScrollPane scrollPaneUserBox;
     private VBox channelBox;
@@ -70,12 +71,14 @@ public class ServerViewController {
     private VBox categoryBox;
     private ScrollPane scrollPaneCategories;
     private String personalID;
+    private static ScheduledExecutorService showServerUpdate;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
      * It also creates a new restClient"
      */
-    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
+    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
@@ -88,6 +91,13 @@ public class ServerViewController {
 
     public static void setSelectedChat(Channel Chat) {
         builder.setCurrentServerChannel(Chat);
+    }
+
+    public WebSocketClient getServerWebSocket() {
+        return SERVER_USER;
+    }
+    public WebSocketClient getServerChatWebSocket() {
+        return serverChatWebSocketClient;
     }
 
     /**
@@ -235,7 +245,22 @@ public class ServerViewController {
         if (categorySubControllerList.size() == 0) {
             Platform.runLater(this::generateCategoriesChannelViews);
         }
+        //showServerUpdate();
     }
+
+    /**
+     * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
+     */
+    /*private void showServerUpdate() {
+        showServerUpdate = Executors.newSingleThreadScheduledExecutor();
+        showServerUpdate.scheduleAtFixedRate
+                (() -> Platform.runLater(this::changeServerName), 0, 2, TimeUnit.SECONDS);
+    }*/
+
+    private void changeServerName() {
+        serverMenuButton.setText(server.getName());
+    }
+
 
     /**
      * adds a new Controller for a new Category with new view, or deletes a category with controller and view
@@ -358,28 +383,49 @@ public class ServerViewController {
                     JsonObject jsonMsg = JsonUtil.parse(msg.toString());
                     String userAction = jsonMsg.getString("action");
                     JsonObject jsonData = jsonMsg.getJsonObject("data");
+                    //not username else name general
                     String userName = jsonData.getString("name");
                     String userId = jsonData.getString("id");
                     if (userAction.equals("userJoined")) {
                         builder.buildServerUser(userName, userId, true);
-                    }else if (userAction.equals("userLeft")) {
+                    } else if (userAction.equals("userLeft")) {
                         if (userName.equals(builder.getPersonalUser().getName())) {
                             Platform.runLater(StageManager::showLoginScreen);
                         }
                         builder.buildServerUser(userName, userId, false);
-                    }else if (userAction.equals("serverDeleted")) {
+                    } else if (userAction.equals("serverDeleted")) {
+                        System.out.println("Server deleted!");
                         if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
-                            Platform.runLater(StageManager::showHome);
+                            Platform.runLater(() -> {
+                                StageManager.showHome();
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                                alert.setTitle("Server deleted!");
+                                alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
+                                Optional<ButtonType> result = alert.showAndWait();
+                                if (result.isPresent() && result.get() == ButtonType.OK) {
+                                    StageManager.showHome();
+                                }
+                            });
                         }
-                    }else if (userAction.equals("serverUpdated")) {
-                        //update serverName
-                        System.out.println("update data: " + jsonData.toString());
-                    }else if (userAction.equals("serverExited")) {
-                        System.out.println("leave data: " + jsonData.toString());
+                    } else if (userAction.equals("serverUpdated")) {
+                        System.out.println("Server updated!");
+                        builder.getCurrentServer().setName(userName);
+                        changeServerName();
+                        homeViewController.showServers();
+                    } else if (userAction.equals("userExited")) {
+                        System.out.println("User exited!");
+                        User leaveUser = new User();
+                        for (User user : builder.getCurrentServer().getUser()) {
+                            if (user.getName().equals(userName)) {
+                                leaveUser = user;
+                            }
+                        }
+                        builder.getCurrentServer().withoutUser(leaveUser);
                     }
                     showOnlineOfflineUsers();
                 }
-                public void onClose(Session session, CloseReason closeReason) {}
+                public void onClose(Session session, CloseReason closeReason) {
+                }
             });
             builder.setSERVER_USER(SERVER_USER);
         } catch (URISyntaxException e) {
@@ -481,8 +527,16 @@ public class ServerViewController {
                     SERVER_USER.stop();
                 }
             }
+            if (serverChatWebSocketClient != null) {
+                if (serverChatWebSocketClient.getSession() != null) {
+                    serverChatWebSocketClient.stop();
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (showServerUpdate != null) {
+            showServerUpdate.shutdown();
         }
         serverSettings.setOnAction(null);
         inviteUsers.setOnAction(null);

@@ -3,10 +3,12 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
 public class OverviewController {
@@ -34,12 +36,18 @@ public class OverviewController {
      * User leaves the current server
      */
     private void onLeaveServerClicked(ActionEvent actionEvent) {
-        restClient.postServerLeave(builder.getPersonalUser().getUserKey(), builder.getCurrentServer().getId(), response -> {
+        restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
+            System.out.println("body: " + body);
             String status = body.getObject().getString("status");
             System.out.println("status: " + status);
             builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
         });
         StageManager.showHome();
+        Platform.runLater(()->{
+            Stage stage = (Stage) serverName.getScene().getWindow();
+            stage.close();
+        });
+
     }
 }

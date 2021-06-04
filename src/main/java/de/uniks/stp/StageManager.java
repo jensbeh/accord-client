@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -91,7 +92,7 @@ public class StageManager extends Application {
     }
 
     @Override
-    public void stop() {
+    public void stop() throws IOException {
         try {
             super.stop();
             stopAll();

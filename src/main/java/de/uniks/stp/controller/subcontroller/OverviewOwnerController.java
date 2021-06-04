@@ -3,9 +3,12 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
 import java.util.Optional;
@@ -41,6 +44,7 @@ public class OverviewOwnerController {
      * Changes name of current server
      */
     private void onChangeNameClicked(ActionEvent actionEvent) {
+        serverName.setText(nameText.getText());
         builder.getCurrentServer().setName(nameText.getText());
         restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -75,11 +79,17 @@ public class OverviewOwnerController {
             //delete server
             restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();
+                System.out.println("Overview controller: " + body.toString());
                 String status = body.getObject().getString("status");
                 System.out.println("status: " + status);
                 builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
             });
             StageManager.showHome();
+            Platform.runLater(()->{
+                Stage stage = (Stage) serverName.getScene().getWindow();
+                stage.close();
+            });
+
         }
     }
 
