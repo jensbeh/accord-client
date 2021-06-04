@@ -122,9 +122,14 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 newCategory = category;
             }
         }
+
         Assert.assertTrue(createCategoryNameTextField.getText().equals(""));
         Assert.assertTrue(newCategory.getName().equals("NewCategory"));
-        Assert.assertTrue(currentServer.getCategories().contains(newCategory));
+        for (Categories categories : app.getBuilder().getCurrentServer().getCategories()) {
+            if (categories.getId().equals(newCategory.getId())) {
+                Assert.assertTrue(categories.getId().equals(newCategory.getId()));
+            }
+        }
 
         clickOn(categoriesSelector);
         WaitForAsyncUtils.waitForFxEvents();
@@ -147,11 +152,19 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         Assert.assertTrue(newCategory.getName().equals("NewCategoryName"));
         Assert.assertTrue(currentServer.getCategories().contains(newCategory));
 
+        clickOn(categoriesSelector);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(newCategory.getName());
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+
         clickOn(deleteCategoryButton);
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
 
-        Assert.assertFalse(currentServer.getCategories().contains(newCategory));
+        Assert.assertFalse(app.getBuilder().getCurrentServer().getCategories().contains(newCategory));
+
         Assert.assertFalse(categoriesSelector.getItems().contains(newCategory));
 
         for (Object s : this.listTargetWindows()) {

@@ -26,10 +26,8 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import static util.Constants.*;
@@ -114,7 +112,6 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
 
         categorySubControllerList = new HashMap<>();
-        server.addPropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
 
         showCurrentUser();
         loadServerInfos(new ServerInfoCallback() {
@@ -229,50 +226,7 @@ public class ServerViewController {
         });
         builder.setServerChatWebSocketClient(serverChatWebSocketClient);
 
-        // load views when server is selected second time - no new channel & co via Rest are taken
-        if (categorySubControllerList.size() == 0) {
-            Platform.runLater(this::generateCategoriesChannelViews);
-        }
-    }
-
-    /**
-     * adds a new Controller for a new Category with new view, or deletes a category with controller and view
-     */
-    private void onCategoriesChanged(PropertyChangeEvent propertyChangeEvent) {
-        //Platform.runLater(this::generateCategoriesChannelViews);
-
-        if (server.getCategories() != null && categorySubControllerList != null) {
-            // category added
-            if (server.getCategories().size() >= categorySubControllerList.size()) {
-                for (Categories categories : server.getCategories()) {
-                    if (!categorySubControllerList.containsKey(categories)) {
-                        generateCategoryChannelView(categories);
-                    }
-                }
-                // category deleted
-            } else if (server.getCategories().size() < categorySubControllerList.size()) {
-                Categories toDelete = null;
-                for (Categories deletedCategory : categorySubControllerList.keySet()) {
-                    if (!server.getCategories().contains(deletedCategory)) {
-                        toDelete = deletedCategory;
-                        for (Node view : categoryBox.getChildren()) {
-                            if (view.getId().equals(deletedCategory.getId())) {
-                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
-                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
-                                    builder.setCurrentServerChannel(null);
-                                    setSelectedChat(null);
-                                    messageViewController.stop();
-                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                categorySubControllerList.get(toDelete).stop();
-                categorySubControllerList.remove(toDelete);
-            }
-        }
+        Platform.runLater(this::generateCategoriesChannelViews);
     }
 
     /**
@@ -349,49 +303,141 @@ public class ServerViewController {
      */
     private void showServerUsers() {
         try {
-            SERVER_USER = new WebSocketClient(builder, new URI(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()), new WSCallback() {
+            SERVER_USER = new WebSocketClient(builder, URI.
+                    create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + builder.getCurrentServer().getId()),
+                    new WSCallback() {
 
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    System.out.println("msg: " + msg);
-                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    String userAction = jsonMsg.getString("action");
-                    JsonObject jsonData = jsonMsg.getJsonObject("data");
-                    String userName = jsonData.getString("name");
-                    String userId = jsonData.getString("id");
+                        @Override
+                        public void handleMessage(JsonStructure msg) {
+                            System.out.println("msg: " + msg);
+                            JsonObject jsonMsg = JsonUtil.parse(msg.toString());
+                            String userAction = jsonMsg.getString("action");
+                            JsonObject jsonData = jsonMsg.getJsonObject("data");
+                            String userName = jsonData.getString("name");
+                            String userId = jsonData.getString("id");
 
-                    if (userAction.equals("userJoined")) {
-                        builder.buildServerUser(userName, userId, true);
-                    }
-                    if (userAction.equals("userLeft")) {
-                        if (userName.equals(builder.getPersonalUser().getName())) {
-                            Platform.runLater(StageManager::showLoginScreen);
-                        }
-                        builder.buildServerUser(userName, userId, false);
-                    }
-                    showOnlineOfflineUsers();
-                }
-
-                public void onClose(Session session, CloseReason closeReason) {
-                    System.out.println(closeReason.getCloseCode().toString());
-                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, StageManager.getLangBundle().getString("error.user_cannot_be_displayed"), ButtonType.OK);
-                            alert.setTitle(StageManager.getLangBundle().getString("error.dialog"));
-                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection"));
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                showServerUsers();
+                            if (userAction.equals("categoryCreated")) {
+                                createCategory(jsonData);
                             }
-                        });
-                    }
-                }
-            });
+                            if (userAction.equals("categoryDeleted")) {
+                                deleteCategory(jsonData);
+                            }
+                            if (userAction.equals("categoryUpdated")) {
+                                updateCategory(jsonData);
+                            }
+
+                            if (userAction.equals("userJoined")) {
+                                builder.buildServerUser(userName, userId, true);
+                            }
+                            if (userAction.equals("userLeft")) {
+                                if (userName.equals(builder.getPersonalUser().getName())) {
+                                    Platform.runLater(StageManager::showLoginScreen);
+                                }
+                                builder.buildServerUser(userName, userId, false);
+                            }
+                            showOnlineOfflineUsers();
+                        }
+
+                        public void onClose(Session session, CloseReason closeReason) {
+                            System.out.println(closeReason.getCloseCode().toString());
+                            if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+                                Platform.runLater(() -> {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR, StageManager.getLangBundle().getString("error.user_cannot_be_displayed"), ButtonType.OK);
+                                    alert.setTitle(StageManager.getLangBundle().getString("error.dialog"));
+                                    alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection"));
+                                    Optional<ButtonType> result = alert.showAndWait();
+                                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                                        showServerUsers();
+                                    }
+                                });
+                            }
+                        }
+                    });
             builder.setSERVER_USER(SERVER_USER);
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         showOnlineOfflineUsers();
+    }
+
+    /**
+     * adds a new Controller for a new Category with new view
+     */
+    private void createCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                boolean found = false;
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(categoryId)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Categories category = new Categories().setName(name).setId(categoryId);
+                    server.withCategories(category);
+                    generateCategoryChannelView(category);
+                }
+            }
+        }
+    }
+
+    /**
+     * deletes a category with controller and view
+     */
+    private void deleteCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+
+        Categories deletedCategory = new Categories().setName(name).setId(categoryId);
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(deletedCategory.getId())) {
+                        for (Node view : categoryBox.getChildren()) {
+                            if (view.getId().equals(deletedCategory.getId())) {
+                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
+                                categorySubControllerList.get(categories).stop();
+                                categorySubControllerList.remove(categories);
+                                server.withoutCategories(categories);
+
+                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
+                                    builder.setCurrentServerChannel(null);
+                                    setSelectedChat(null);
+                                    messageViewController.stop();
+                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * rename a Category and update it on the view
+     */
+    private void updateCategory(JsonObject jsonData) {
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(categoryId) && !categories.getName().equals(name)) {
+                        categories.setName(name);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -496,7 +542,6 @@ public class ServerViewController {
         for (CategorySubController categorySubController : categorySubControllerList.values()) {
             categorySubController.stop();
         }
-        server.removePropertyChangeListener(Server.PROPERTY_CATEGORIES, this::onCategoriesChanged);
     }
 
     /**
