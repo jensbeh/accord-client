@@ -199,11 +199,11 @@ public class HomeViewController {
      */
     private void onServerClicked(MouseEvent mouseEvent) {
         try {
-            if (builder.getSERVER_USER() != null) {
-                if (builder.getSERVER_USER().getSession() != null) {
-                    builder.getSERVER_USER().stop();
-                }
-            }
+//            if (builder.getSERVER_USER() != null) {
+//                if (builder.getSERVER_USER().getSession() != null) {
+//                    builder.getSERVER_USER().stop();
+//                }
+//            }
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
                     builder.getUSER_CLIENT().stop();

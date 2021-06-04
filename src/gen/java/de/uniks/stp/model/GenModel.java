@@ -48,7 +48,7 @@ public class GenModel implements ClassModelDecorator {
 
         Clazz msg = mm.haveClass("Message");
         mm.haveAttribute(msg, "from", Type.STRING);
-        mm.haveAttribute(msg, "timestamp", Type.INT);
+        mm.haveAttribute(msg, "timestamp", Type.LONG);
         mm.haveAttribute(msg, "message", Type.STRING);
 
         mm.associate(channel, "message", 3, msg, "channel", 1);

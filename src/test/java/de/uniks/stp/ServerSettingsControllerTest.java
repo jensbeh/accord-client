@@ -94,7 +94,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void openServerSettingsTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -127,7 +127,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void clickOnOwnerOverview() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
@@ -148,7 +148,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Assert.assertEquals("Delete Server", leaveButton.getText());
     }
 
-    @Test
+    //@Test
     public void changeServerNameAndDeleteServer() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);

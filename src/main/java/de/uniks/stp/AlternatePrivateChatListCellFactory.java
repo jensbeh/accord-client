@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-public class AlternateChannelListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
+public class AlternatePrivateChatListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -41,22 +41,22 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
             Label message = new Label();
             HBox notificationCell = new HBox();
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #2C2F33;");
+            this.setStyle("-fx-background-color: #2C2F33; -fx-padding: 2 2 2 2;");
             if (!empty) {
                 // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setPrefHeight(USE_COMPUTED_SIZE);
-                cell.setPrefWidth(183);
+                cell.setPrefWidth(179);
 
                 // init name + notification cell
                 nameAndNotificationCell.setSpacing(5);
 
                 // init userName cell
-                nameCell.setPrefWidth(163);
+                nameCell.setPrefWidth(159);
                 nameCell.setAlignment(Pos.CENTER_LEFT);
 
                 // init lastMessage cell
-                lastMessageCell.setPrefWidth(183);
+                lastMessageCell.setPrefWidth(179);
                 lastMessageCell.setAlignment(Pos.CENTER_LEFT);
                 lastMessageCell.setStyle("-fx-padding: 5 0 0 0");
 
@@ -88,9 +88,11 @@ public class AlternateChannelListCellFactory implements javafx.util.Callback<jav
 
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
+                    //cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
+                    cell.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
                 } else {
-                    cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
+                    //cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
+                    cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
                 }
 
                 // set notification color & count

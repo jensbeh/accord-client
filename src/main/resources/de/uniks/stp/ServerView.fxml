@@ -30,11 +30,7 @@
             </ScrollPane>
             </children>
         </VBox>
-        <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="2110.0" prefWidth="3469.0" spacing="10.0" style="-fx-background-color: #4d5054;">
-            <children>
-            <fx:include source="ChatView.fxml" />
-            </children>
-        </VBox>
+        <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="2110.0" prefWidth="3469.0" spacing="10.0" style="-fx-background-color: #4d5054;" />
         <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" maxWidth="185.0" minWidth="185.0" pannable="true" style="-fx-background-color: #23272a; -fx-background: #23272a;" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
             <content>
                 <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
