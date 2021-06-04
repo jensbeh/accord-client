@@ -81,7 +81,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void createServerTest() throws InterruptedException {
         loginInit();
 
@@ -104,7 +104,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     }
 
-    @Test
+    //@Test
     public void emptyTextField() throws InterruptedException {
         loginInit();
 
@@ -117,7 +117,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     }
 
-    @Test
+    //@Test
     public void showCreateServerTest() throws InterruptedException {
         loginInit();
 
@@ -139,7 +139,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void showNoConnectionToServerTest() {
         String message = "";
         when(restMock.postServer(anyString(), anyString())).thenThrow(new UnirestException("No route to host: connect"));
@@ -153,7 +153,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         Assert.assertEquals("No Connection - Please check your connection and try again", message);
     }
 
-    @Test
+    //@Test
     public void joinServer() throws InterruptedException {
         loginInit();
 

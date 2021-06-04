@@ -77,7 +77,7 @@ public class ServerMessageTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void testSendAllMessage() throws InterruptedException {
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();

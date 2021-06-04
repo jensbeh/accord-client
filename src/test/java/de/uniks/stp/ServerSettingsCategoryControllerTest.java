@@ -73,7 +73,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void openServerSettingsCategoryTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
