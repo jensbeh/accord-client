@@ -6,13 +6,13 @@ public class Message
 {
    public static final String PROPERTY_FROM = "from";
    public static final String PROPERTY_MESSAGE = "message";
-   public static final String PROPERTY_TIMESTAMP = "timestamp";
    public static final String PROPERTY_CHANNEL = "channel";
+   public static final String PROPERTY_TIMESTAMP = "timestamp";
    private String from;
    private String message;
    protected PropertyChangeSupport listeners;
-   private int timestamp;
    private Channel channel;
+   private long timestamp;
 
    public String getFrom()
    {
@@ -50,24 +50,6 @@ public class Message
       return this;
    }
 
-   public int getTimestamp()
-   {
-      return this.timestamp;
-   }
-
-   public Message setTimestamp(int value)
-   {
-      if (value == this.timestamp)
-      {
-         return this;
-      }
-
-      final int oldValue = this.timestamp;
-      this.timestamp = value;
-      this.firePropertyChange(PROPERTY_TIMESTAMP, oldValue, value);
-      return this;
-   }
-
    public Message setChannel(Channel value)
    {
       if (this.channel == value)
@@ -93,6 +75,24 @@ public class Message
    public Channel getChannel()
    {
       return this.channel;
+   }
+
+   public long getTimestamp()
+   {
+      return this.timestamp;
+   }
+
+   public Message setTimestamp(long value)
+   {
+      if (value == this.timestamp)
+      {
+         return this;
+      }
+
+      final long oldValue = this.timestamp;
+      this.timestamp = value;
+      this.firePropertyChange(PROPERTY_TIMESTAMP, oldValue, value);
+      return this;
    }
 
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)

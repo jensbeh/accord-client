@@ -14,7 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -40,15 +39,11 @@ import static util.Constants.*;
  */
 public class ServerViewController {
 
-    private static Channel selectedChat;
     private static ModelBuilder builder;
     private final RestClient restClient;
     private static Server server;
     private final Parent view;
-    private HBox root;
     private ScrollPane scrollPaneUserBox;
-    private VBox channelBox;
-    private VBox textChannelBox;
     private MenuButton serverMenuButton;
     private static Label textChannelLabel;
     private static Label generalLabel;
@@ -56,7 +51,6 @@ public class ServerViewController {
     private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
-    private VBox userBox;
     private VBox currentUserBox;
     private WebSocketClient SERVER_USER;
     private WebSocketClient serverChatWebSocketClient;
@@ -67,7 +61,6 @@ public class ServerViewController {
     private static Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
     private ScrollPane scrollPaneCategories;
-    private String personalID;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -92,8 +85,6 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void init() throws InterruptedException {
-        root = (HBox) view.lookup("#root");
-        channelBox = (VBox) view.lookup("#channelBox");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         serverMenuButton.setText(server.getName());
         scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
@@ -105,10 +96,8 @@ public class ServerViewController {
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
-        textChannelBox = (VBox) view.lookup("#textChannelBox");
         scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
@@ -145,15 +134,46 @@ public class ServerViewController {
                 JsonObject jsonObject = JsonUtil.parse(msg.toString());
                 System.out.println("serverChatWebSocketClient");
                 System.out.println(msg);
-                if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals(builder.getCurrentServerChannel().getId())) {
+
+                if (jsonObject.containsKey("channel")) {
                     Message message = null;
-                    if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                        message = new Message().setMessage(jsonObject.getString("text")).
-                                setFrom(jsonObject.getString("from")).
-                                setTimestamp(jsonObject.getInt("timestamp")).
+                    String id = jsonObject.getString("id");
+                    String channelId = jsonObject.getString("channel");
+                    int timestamp = jsonObject.getInt("timestamp");
+                    String from = jsonObject.getString("from");
+                    String text = jsonObject.getString("text");
+
+                    // currentUser send
+                    if (from.equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(text).
+                                setFrom(from).
+                                setTimestamp(timestamp).
                                 setChannel(builder.getCurrentServerChannel());
                         if (messageViewController != null) {
                             Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+                    }
+                    // currentUser received
+                    else if (!from.equals(builder.getPersonalUser().getName())) {
+                        message = new Message().setMessage(text).
+                                setFrom(from).
+                                setTimestamp(timestamp).
+                                setChannel(builder.getCurrentServerChannel());
+                        if (messageViewController != null) {
+                            Platform.runLater(() -> messageViewController.clearMessageField());
+                        }
+
+                        for (Categories categories : server.getCategories()) {
+                            for (Channel channel : categories.getChannel()) {
+                                if (channel.getId().equals(channelId)) {
+                                    channel.withMessage(message);
+                                    if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
+                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                    }
+                                    categorySubControllerList.get(categories).refreshChannelList();
+                                    break;
+                                }
+                            }
                         }
                     }
                     if (messageViewController != null) {
@@ -204,6 +224,9 @@ public class ServerViewController {
         if (categorySubControllerList.size() == 0) {
             Platform.runLater(this::generateCategoriesChannelViews);
         }
+        if (builder.getCurrentServerChannel() != null) {
+            showMessageView();
+        }
     }
 
     /**
@@ -233,7 +256,7 @@ public class ServerViewController {
                                     builder.setCurrentServerChannel(null);
                                     setSelectedChat(null);
                                     messageViewController.stop();
-                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                    Platform.runLater(() -> chatBox.getChildren().clear());
                                 }
                                 break;
                             }
@@ -375,7 +398,7 @@ public class ServerViewController {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
         boolean status = jsonData.getBoolean("online");
-
+        //TODO check ob in test coverage
         builder.getCurrentServer().withUser(builder.buildServerUser(name, id, status));
         showOnlineOfflineUsers();
     }
@@ -397,13 +420,12 @@ public class ServerViewController {
                         channel.setPrivilege(channelPrivileged);
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
+                        //TODO geht es richtig?
                         for (int j = 0; j < jsonArray.size(); j++) {
                             memberId = jsonArray.getString(j);
                             for (User user : builder.getCurrentServer().getUser()) {
                                 if (user.getId().equals(memberId)) {
-                                    if (!channel.getPrivilegedUsers().contains(user)) {
-                                        channel.withPrivilegedUsers(user);
-                                    }
+                                    channel.withPrivilegedUsers(user);
                                 }
                             }
                         }
@@ -479,12 +501,13 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
+                    loadChannelMessages(channel);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
                     JSONArray jsonArray = json.getJSONArray("members");
-                    String memberId = "";
+                    String memberId;
 
                     for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
@@ -494,6 +517,25 @@ public class ServerViewController {
                             }
                         }
                     }
+                }
+            }
+        });
+    }
+
+    private void loadChannelMessages(Channel channel) {
+        System.out.println(new Date().getTime());
+        restClient.getChannelMessages(new Date().getTime(), builder.getCurrentServer().getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                JSONArray data = body.getObject().getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject jsonData = data.getJSONObject(i);
+                    String from = jsonData.getString("from");
+                    long timestamp = jsonData.getLong("timestamp");
+                    String text = jsonData.getString("text");
+                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
+                    channel.withMessage(message);
                 }
             }
         });

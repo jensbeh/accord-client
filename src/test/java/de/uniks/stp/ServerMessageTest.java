@@ -1,7 +1,9 @@
 package de.uniks.stp;
 
+import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -102,10 +104,13 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
 
-
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + serverId));
         Thread.sleep(2000);
+
+        Channel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channellist").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
 
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
@@ -121,7 +126,7 @@ public class ServerMessageTest extends ApplicationTest {
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
-        
+
         Thread.sleep(2000);
     }
 }

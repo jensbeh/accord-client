@@ -51,12 +51,12 @@
 <!-- Message -->
 <g id="node4" class="node">
 <title>Message</title>
-<polygon fill="none" stroke="black" points="43.5,-338 43.5,-360 138.5,-360 138.5,-338 43.5,-338"/>
-<text text-anchor="start" x="66.51" y="-344.4" font-family="Times,serif" font-size="14.00">Message</text>
-<polygon fill="none" stroke="black" points="43.5,-282 43.5,-338 138.5,-338 138.5,-282 43.5,-282"/>
-<text text-anchor="start" x="46.5" y="-322.4" font-family="Times,serif" font-size="14.00">from :String</text>
-<text text-anchor="start" x="46.5" y="-305.6" font-family="Times,serif" font-size="14.00">timestamp :int</text>
-<text text-anchor="start" x="46.5" y="-288.8" font-family="Times,serif" font-size="14.00">message :String</text>
+<polygon fill="none" stroke="black" points="42.5,-338 42.5,-360 138.5,-360 138.5,-338 42.5,-338"/>
+<text text-anchor="start" x="66.01" y="-344.4" font-family="Times,serif" font-size="14.00">Message</text>
+<polygon fill="none" stroke="black" points="42.5,-282 42.5,-338 138.5,-338 138.5,-282 42.5,-282"/>
+<text text-anchor="start" x="45.5" y="-322.4" font-family="Times,serif" font-size="14.00">from :String</text>
+<text text-anchor="start" x="45.5" y="-305.6" font-family="Times,serif" font-size="14.00">timestamp :long</text>
+<text text-anchor="start" x="45.5" y="-288.8" font-family="Times,serif" font-size="14.00">message :String</text>
 </g>
 <!-- Channel&#45;&gt;Message -->
 <g id="edge3" class="edge">
