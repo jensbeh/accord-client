@@ -158,7 +158,7 @@ public class PrivateMessageTest extends ApplicationTest {
         testUser2_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
     }
 
-    @Test
+    //@Test
     public void testSendAllMessage() throws DeploymentException, IOException, InterruptedException {
         // user 1
         restClient.loginTemp(response -> {
@@ -201,7 +201,7 @@ public class PrivateMessageTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void showLastPrivateChatMessage() throws DeploymentException, IOException, InterruptedException {
         // user 1
         restClient.loginTemp(response -> {
@@ -278,7 +278,7 @@ public class PrivateMessageTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void testSendPrivateMessage() throws InterruptedException, IOException, DeploymentException {
         // user 1
         restClient.loginTemp(response -> {

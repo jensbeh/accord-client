@@ -75,7 +75,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         });
     }
 
-    @Test
+    //@Test
     public void openServerChannelSettingsTest() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
