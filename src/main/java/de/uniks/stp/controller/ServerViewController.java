@@ -323,6 +323,9 @@ public class ServerViewController {
                             if (userAction.equals("channelCreated")) {
                                 createChannel(jsonData);
                             }
+                            if (userAction.equals("channelDeleted")) {
+                                deleteChannel(jsonData);
+                            }
 
                             if (userAction.equals("userJoined")) {
                                 builder.buildServerUser(userName, userId, true);
@@ -404,10 +407,7 @@ public class ServerViewController {
                                 server.withoutCategories(categories);
 
                                 if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
-                                    builder.setCurrentServerChannel(null);
-                                    setSelectedChat(null);
-                                    messageViewController.stop();
-                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
+                                    throwOutUserFromChatView();
                                 }
                                 break;
                             }
@@ -440,6 +440,8 @@ public class ServerViewController {
 
     /**
      * adds the new channel to category for the user
+     *
+     * @param jsonData the message data
      */
     private void createChannel(JsonObject jsonData) {
         String channelId = jsonData.getString("id");
@@ -455,6 +457,34 @@ public class ServerViewController {
                     cat.withChannel(newChannel);
                     Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
                     break;
+                }
+            }
+        }
+    }
+
+    /**
+     * deletes channel from category for the user and eventually
+     * get thrown out when users selected chat is the channel which will be deleted
+     *
+     * @param jsonData the message data
+     */
+    private void deleteChannel(JsonObject jsonData) {
+        String channelId = jsonData.getString("id");
+        String categoryId = jsonData.getString("category");
+
+        for (Server server : builder.getPersonalUser().getServer()) {
+            for (Categories cat : server.getCategories()) {
+                if (cat.getId().equals(categoryId)) {
+                    for (Channel channel : cat.getChannel()) {
+                        if (channel.getId().equals(channelId)) {
+                            cat.withoutChannel(channel);
+                            Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
+                            if (builder.getCurrentServerChannel().equals(channel)) {
+                                throwOutUserFromChatView();
+                            }
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -641,5 +671,12 @@ public class ServerViewController {
         if (!server.getOwner().equals(id)) {
             serverMenuButton.getItems().remove(1);
         }
+    }
+
+    private void throwOutUserFromChatView() {
+        builder.setCurrentServerChannel(null);
+        setSelectedChat(null);
+        messageViewController.stop();
+        Platform.runLater(() -> chatBox.getChildren().clear());
     }
 }

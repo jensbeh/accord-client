@@ -192,6 +192,14 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         clickOn(channelDeleteButton);
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(channelSize - 1, currentServer.getCategories().get(0).getChannel().size());
+        found = false;
+        for(Channel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
+            if(channel.getName().equals("ByeChannel")) {
+                found = true;
+                break;
+            }
+        }
+        Assert.assertFalse(found);
 
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
