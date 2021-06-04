@@ -67,8 +67,8 @@ public class ServerViewController {
      */
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
-        builder = modelBuilder;
-        ServerViewController.server = server;
+        this.builder = modelBuilder;
+        this.server = server;
         restClient = new RestClient();
     }
 
@@ -106,10 +106,13 @@ public class ServerViewController {
         categorySubControllerList = new HashMap<>();
 
         showCurrentUser();
-        loadServerInfos(status -> {
-            if (status.equals("success")) {
-                if (builder.getCurrentServer().getCategories().size() == 0) {
-                    loadCategories();
+        loadServerInfos(new ServerInfoCallback() {
+            @Override
+            public void onSuccess(String status) {
+                if (status.equals("success")) {
+                    if (builder.getCurrentServer().getCategories().size() == 0) {
+                        loadCategories();
+                    }
                 }
             }
         }); // members & (categories)
@@ -526,9 +529,10 @@ public class ServerViewController {
         ArrayList<User> onlineUsers = new ArrayList<>();
         ArrayList<User> offlineUsers = new ArrayList<>();
         for (User user : builder.getCurrentServer().getUser()) {
-            if (user.getName().equals(builder.getPersonalUser().getName())) {
-                Platform.runLater(() -> checkForOwnership(user.getId()));
-            } else if (user.isStatus()) {
+            if (user.isStatus()) {
+                if (user.getName().equals(builder.getPersonalUser().getName())) {
+                    checkForOwnership(user.getId());
+                }
                 onlineUsers.add(user);
             } else {
                 offlineUsers.add(user);
@@ -696,7 +700,7 @@ public class ServerViewController {
     }
 
     private void checkForOwnership(String id) {
-        if (!server.getOwner().equals(id) && serverMenuButton.getItems().size() > 1) {
+        if (!server.getOwner().equals(id)) {
             serverMenuButton.getItems().remove(1);
         }
     }
