@@ -57,7 +57,7 @@ public class ServerSettingsCategoryController extends SubSetting {
 
         for (Categories category : currentServer.getCategories()) {
             this.categoriesSelector.getItems().add(category);
-            categoriesSelector.setConverter(new StringConverter<Categories>() {
+            this.categoriesSelector.setConverter(new StringConverter<Categories>() {
                 @Override
                 public String toString(Categories categoryToString) {
                     return categoryToString.getName();
