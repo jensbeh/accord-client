@@ -28,7 +28,6 @@ import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
