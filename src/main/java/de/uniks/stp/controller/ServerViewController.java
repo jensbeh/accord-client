@@ -17,24 +17,22 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.JsonUtil;
 import util.SortUser;
-import java.beans.PropertyChangeEvent;
+
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static util.Constants.*;
 
@@ -93,6 +91,7 @@ public class ServerViewController {
     public WebSocketClient getServerWebSocket() {
         return SERVER_USER;
     }
+
     public WebSocketClient getServerChatWebSocket() {
         return serverChatWebSocketClient;
     }
@@ -252,7 +251,6 @@ public class ServerViewController {
         showServerUpdate.scheduleAtFixedRate
                 (() -> Platform.runLater(this::changeServerName), 0, 2, TimeUnit.SECONDS);
     }*/
-
     private void changeServerName() {
         serverMenuButton.setText(server.getName());
     }
@@ -397,14 +395,12 @@ public class ServerViewController {
                             if (userAction.equals("channelCreated")) {
                                 createChannel(jsonData);
                             }
-
                             if (userAction.equals("channelUpdated")) {
                                 updateChannel(jsonData);
                             }
                             if (userAction.equals("userArrived")) {
                                 userArrived(jsonData);
                             }
-
                             if (userAction.equals("userJoined")) {
                                 builder.buildServerUser(userName, userId, true);
                             }
@@ -413,36 +409,16 @@ public class ServerViewController {
                                     Platform.runLater(StageManager::showLoginScreen);
                                 }
                                 builder.buildServerUser(userName, userId, false);
-                            } else if (userAction.equals("serverDeleted")) {
-                                System.out.println("Server deleted!");
-                                if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
-                                    Platform.runLater(() -> {
-                                        StageManager.showHome();
-                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                                        alert.setTitle("Server deleted!");
-                                        alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
-                                        Optional<ButtonType> result = alert.showAndWait();
-                                        if (result.isPresent() && result.get() == ButtonType.OK) {
-                                            StageManager.showHome();
-                                        }
-                                    });
-                                }
-                            } else if (userAction.equals("serverUpdated")) {
-                                System.out.println("Server updated!");
-                                builder.getCurrentServer().setName(userName);
-                                changeServerName();
-                                homeViewController.showServers();
-                            } else if (userAction.equals("userExited")) {
-                                System.out.println("User exited!");
-                                User leaveUser = new User();
-                                for (User user : builder.getCurrentServer().getUser()) {
-                                    if (user.getName().equals(userName)) {
-                                        leaveUser = user;
-                                    }
-                                }
-                                builder.getCurrentServer().withoutUser(leaveUser);
                             }
-
+                            if (userAction.equals("serverDeleted")) {
+                                deleteServer();
+                            }
+                            if (userAction.equals("serverUpdated")) {
+                                updateServer(userName);
+                            }
+                            if (userAction.equals("userExited")) {
+                                userExited(jsonData);
+                            }
                             showOnlineOfflineUsers();
                         }
 
@@ -454,6 +430,31 @@ public class ServerViewController {
             e.printStackTrace();
         }
         showOnlineOfflineUsers();
+    }
+
+    /**
+     * update server
+     */
+    private void updateServer(String userName) {
+        builder.getCurrentServer().setName(userName);
+        Platform.runLater(this::changeServerName);
+        homeViewController.showServers();
+    }
+
+    /**
+     * deletes server
+     */
+    private void deleteServer() {
+        homeViewController.getServerHashList().remove(this);
+        if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
+            Platform.runLater(() -> {
+                StageManager.showHome();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                alert.setTitle("Server deleted!");
+                alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
+                Optional<ButtonType> result = alert.showAndWait();
+            });
+        }
     }
 
     /**
@@ -567,6 +568,16 @@ public class ServerViewController {
         boolean status = jsonData.getBoolean("online");
 
         builder.getCurrentServer().withUser(builder.buildServerUser(name, id, status));
+        showOnlineOfflineUsers();
+    }
+
+    /**
+     * update userList when a user exits the server
+     */
+    private void userExited(JsonObject jsonData) {
+        String id = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        builder.getCurrentServer().withoutUser(builder.buildServerUser(name, id, true));
         showOnlineOfflineUsers();
     }
 
@@ -739,7 +750,6 @@ public class ServerViewController {
         }
         serverSettings.setOnAction(null);
         inviteUsers.setOnAction(null);
-
         for (CategorySubController categorySubController : categorySubControllerList.values()) {
             categorySubController.stop();
         }
@@ -800,7 +810,9 @@ public class ServerViewController {
 
     private void checkForOwnership(String id) {
         if (!server.getOwner().equals(id)) {
-            serverMenuButton.getItems().remove(1);
+            if (serverMenuButton.getItems().size() >= 2) {
+                serverMenuButton.getItems().remove(1);
+            }
         }
     }
 }

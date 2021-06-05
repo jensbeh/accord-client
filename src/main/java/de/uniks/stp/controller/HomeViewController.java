@@ -31,7 +31,10 @@ import org.json.JSONObject;
 import util.Constants;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -88,31 +91,35 @@ public class HomeViewController {
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
-        //clear list and delete websockets
         if (!serverHashList.isEmpty()) {
             for (Map.Entry<ServerViewController, WebSocketClient> serverViewControllerWebSocketClientEntry : serverHashList.entrySet()) {
                 serverViewControllerWebSocketClientEntry.getKey().stop();
             }
         }
-        //HashMap with serverController and websocket
         for (Server server : builder.getPersonalUser().getServer()) {
             ServerViewController serverViewController = new ServerViewController(view, builder, server, this);
             serverHashList.put(serverViewController, serverViewController.getServerWebSocket());
         }
-
         showPrivateView();
         showServers();
-        //showServerUpdate();
+        showServerUpdate();
+    }
+
+    /**
+     * get hashMap
+     */
+    public HashMap<ServerViewController, WebSocketClient> getServerHashList() {
+        return serverHashList;
     }
 
     /**
      * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
      */
-    /*private void showServerUpdate() {
+    private void showServerUpdate() {
         showServerHomeviewUpdate = Executors.newSingleThreadScheduledExecutor();
         showServerHomeviewUpdate.scheduleAtFixedRate
                 (() -> Platform.runLater(this::showServers), 0, 2, TimeUnit.SECONDS);
-    }*/
+    }
 
     /**
      * Shows the private home view to have a private chat with other users.
@@ -149,7 +156,7 @@ public class HomeViewController {
             Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
             serverController = new ServerViewController(serverView, builder, builder.getCurrentServer(), this);
             serverController.init();
-            if(!serverHashList.containsKey(serverController)) {
+            if (!serverHashList.containsKey(serverController)) {
                 serverHashList.put(serverController, serverController.getServerWebSocket());
             }
             this.root.getChildren().clear();
@@ -338,13 +345,6 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-
-        //delete websockets and serverviewcontroller
-        for (Map.Entry<ServerViewController, WebSocketClient> serverViewControllerWebSocketClientEntry : serverHashList.entrySet()) {
-            //serverViewControllerWebSocketClientEntry.getKey().getServerWebSocket().stop();
-            //serverViewControllerWebSocketClientEntry.getKey().getServerChatWebSocket().stop();
-            serverViewControllerWebSocketClientEntry.getKey().stop();
         }
         cleanup();
     }
