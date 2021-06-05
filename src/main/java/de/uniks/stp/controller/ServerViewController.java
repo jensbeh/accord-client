@@ -234,56 +234,10 @@ public class ServerViewController {
         if (builder.getCurrentServerChannel() != null) {
             showMessageView();
         }
-
-        // load views when server is selected second time - no new channel & co via Rest are taken
-        if (categorySubControllerList.size() == 0) {
-            Platform.runLater(this::generateCategoriesChannelViews);
-        }
     }
 
     private void changeServerName() {
         serverMenuButton.setText(server.getName());
-    }
-
-
-    /**
-     * adds a new Controller for a new Category with new view, or deletes a category with controller and view
-     */
-    private void onCategoriesChanged(PropertyChangeEvent propertyChangeEvent) {
-        //Platform.runLater(this::generateCategoriesChannelViews);
-
-        if (server.getCategories() != null && categorySubControllerList != null) {
-            // category added
-            if (server.getCategories().size() >= categorySubControllerList.size()) {
-                for (Categories categories : server.getCategories()) {
-                    if (!categorySubControllerList.containsKey(categories)) {
-                        generateCategoryChannelView(categories);
-                    }
-                }
-                // category deleted
-            } else if (server.getCategories().size() < categorySubControllerList.size()) {
-                Categories toDelete = null;
-                for (Categories deletedCategory : categorySubControllerList.keySet()) {
-                    if (!server.getCategories().contains(deletedCategory)) {
-                        toDelete = deletedCategory;
-                        for (Node view : categoryBox.getChildren()) {
-                            if (view.getId().equals(deletedCategory.getId())) {
-                                Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
-                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel())) {
-                                    builder.setCurrentServerChannel(null);
-                                    setSelectedChat(null);
-                                    messageViewController.stop();
-                                    Platform.runLater(() -> this.chatBox.getChildren().clear());
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                categorySubControllerList.get(toDelete).stop();
-                categorySubControllerList.remove(toDelete);
-            }
-        }
     }
 
     /**
@@ -481,21 +435,19 @@ public class ServerViewController {
     private void deleteCategory(JsonObject jsonData) {
         String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
-        String name = jsonData.getString("name");
 
-        Categories deletedCategory = new Categories().setName(name).setId(categoryId);
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
                 for (Categories categories : server.getCategories()) {
-                    if (categories.getId().equals(deletedCategory.getId())) {
+                    if (categories.getId().equals(categoryId)) {
                         for (Node view : categoryBox.getChildren()) {
-                            if (view.getId().equals(deletedCategory.getId())) {
+                            if (view.getId().equals(categories.getId())) {
+                                server.withoutCategories(categories);
                                 Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                 categorySubControllerList.get(categories).stop();
                                 categorySubControllerList.remove(categories);
-                                server.withoutCategories(categories);
 
-                                if (deletedCategory.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
+                                if (categories.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
                                     throwOutUserFromChatView();
                                 }
                                 break;
