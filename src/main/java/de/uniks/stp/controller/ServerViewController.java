@@ -159,15 +159,15 @@ public class ServerViewController {
                             }
 
                             if (userAction.equals("userJoined")) {
-                                builder.buildServerUser(server, userName, userId, true);
+                                buildServerUser(userName, userId, true);
                             }
                             if (userAction.equals("userLeft")) {
-                                if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == server) {
+                                if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == getThisServer()) {
                                     Platform.runLater(StageManager::showLoginScreen);
                                 }
-                                builder.buildServerUser(server, userName, userId, false);
+                                buildServerUser(userName, userId, false);
                             }
-                            if (builder.getCurrentServer() == server) {
+                            if (builder.getCurrentServer() == getThisServer()) {
                                 showOnlineOfflineUsers();
                             }
                         }
@@ -192,6 +192,14 @@ public class ServerViewController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Server getThisServer() {
+        return this.server;
+    }
+
+    private void buildServerUser(String userName, String userId, boolean online) {
+        builder.buildServerUser(this.server, userName, userId, online);
     }
 
     private void buildChatWebSocket() {
@@ -224,7 +232,7 @@ public class ServerViewController {
                                         setFrom(from).
                                         setTimestamp(timestamp).
                                         setChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServer() == server) {
+                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
                             }
@@ -234,7 +242,7 @@ public class ServerViewController {
                                         setFrom(from).
                                         setTimestamp(timestamp).
                                         setChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServer() == server) {
+                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
 
@@ -245,7 +253,7 @@ public class ServerViewController {
                                             if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
                                                 channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                             }
-                                            if (builder.getCurrentServer() == server) {
+                                            if (builder.getCurrentServerChannel().getId().equals(channelId)) {
                                                 categorySubControllerList.get(categories).refreshChannelList();
                                             }
                                             break;
@@ -253,7 +261,7 @@ public class ServerViewController {
                                     }
                                 }
                             }
-                            if (messageViewController != null && builder.getCurrentServer() == server) {
+                            if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
                                 assert message != null;
                                 builder.getCurrentServerChannel().withMessage(message);
                                 ChatViewController.printMessage(message);
@@ -360,7 +368,7 @@ public class ServerViewController {
                     String id = member.getString("id");
                     String name = member.getString("name");
                     boolean online = member.getBoolean("online");
-                    builder.buildServerUser(server, name, id, online);
+                    builder.buildServerUser(this.server, name, id, online);
                 }
                 serverInfoCallback.onSuccess(status);
             } else if (status.equals("failure")) {
@@ -388,7 +396,7 @@ public class ServerViewController {
                 if (!found) {
                     Categories category = new Categories().setName(name).setId(categoryId);
                     server.withCategories(category);
-                    if (builder.getCurrentServer() == server) { //TODO vielleicht nicht ausreichend um Map zu erweitern
+                    if (builder.getCurrentServer() == this.server) { //TODO vielleicht nicht ausreichend um Map zu erweitern
                         generateCategoryChannelView(category);
                     }
                 }
