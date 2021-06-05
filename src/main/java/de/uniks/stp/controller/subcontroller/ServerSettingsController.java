@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class ServerSettingsController {
@@ -24,6 +25,7 @@ public class ServerSettingsController {
     private VBox serverSettingsContainer;
     private SubSetting subController;
     private VBox settingsContainer;
+
 
     public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
@@ -51,6 +53,8 @@ public class ServerSettingsController {
         channel.setOnAction(this::onChannelClicked);
         category.setOnAction(this::onCategoryClicked);
         privilege.setOnAction(this::onPrivilegeClicked);
+        ActionEvent actionEvent = new ActionEvent();
+        onOverViewClicked(actionEvent);
     }
 
 

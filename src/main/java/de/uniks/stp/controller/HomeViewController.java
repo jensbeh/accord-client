@@ -7,6 +7,7 @@ import de.uniks.stp.controller.subcontroller.CreateServerController;
 import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -31,7 +32,12 @@ import util.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -55,6 +61,8 @@ public class HomeViewController {
     private ServerViewController serverController;
     private Parent privateView;
     public static boolean inServerChat = false;
+    private static ScheduledExecutorService showServerHomeviewUpdate;
+    private HashMap<ServerViewController, WebSocketClient> serverHashList = new HashMap<>();
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -82,8 +90,38 @@ public class HomeViewController {
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+
+        //clear hashList
+        if (!serverHashList.isEmpty()) {
+            for (Map.Entry<ServerViewController, WebSocketClient> serverViewControllerWebSocketClientEntry : serverHashList.entrySet()) {
+                serverViewControllerWebSocketClientEntry.getKey().stop();
+            }
+            serverHashList.clear();
+        }
+        //fill hashList with all servers of the user
+        for (Server server : builder.getPersonalUser().getServer()) {
+            ServerViewController serverViewController = new ServerViewController(view, builder, server, this);
+            serverHashList.put(serverViewController, serverViewController.getServerWebSocket());
+        }
         showPrivateView();
         showServers();
+        showServerUpdate();
+    }
+
+    /**
+     * get hashMap
+     */
+    public HashMap<ServerViewController, WebSocketClient> getServerHashList() {
+        return serverHashList;
+    }
+
+    /**
+     * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
+     */
+    private void showServerUpdate() {
+        showServerHomeviewUpdate = Executors.newSingleThreadScheduledExecutor();
+        showServerHomeviewUpdate.scheduleAtFixedRate
+                (() -> Platform.runLater(this::showServers), 0, 2, TimeUnit.SECONDS);
     }
 
     /**
@@ -119,8 +157,11 @@ public class HomeViewController {
         inServerChat = true;
         try {
             Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-            serverController = new ServerViewController(serverView, builder, builder.getCurrentServer());
+            serverController = new ServerViewController(serverView, builder, builder.getCurrentServer(), this);
             serverController.init();
+            if (!serverHashList.containsKey(serverController)) {
+                serverHashList.put(serverController, serverController.getServerWebSocket());
+            }
             this.root.getChildren().clear();
             this.root.getChildren().add(serverView);
         } catch (IOException | InterruptedException e) {
@@ -147,6 +188,7 @@ public class HomeViewController {
             stage = new Stage();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
+
             setStageTitle("window_title_create_new_server");
             stage.setScene(scene);
             stage.show();
@@ -240,7 +282,7 @@ public class HomeViewController {
     /**
      * Get Servers and show Servers
      */
-    private void showServers() {
+    public void showServers() {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
@@ -373,6 +415,9 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (showServerHomeviewUpdate != null) {
+            showServerHomeviewUpdate.shutdown();
+        }
         JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
         JSONObject result = body.getObject();
         if (result.get("status").equals("success")) {
@@ -413,7 +458,9 @@ public class HomeViewController {
         if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
         }
-
+        if (showServerHomeviewUpdate != null) {
+            showServerHomeviewUpdate.shutdown();
+        }
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();

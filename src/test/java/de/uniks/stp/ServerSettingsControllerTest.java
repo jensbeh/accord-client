@@ -131,7 +131,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void clickOnOwnerOverview() throws InterruptedException {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
-        ;
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
@@ -175,7 +174,8 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         moveBy(0, 25);
         write("\n");
         Assert.assertNotEquals(1, this.listTargetWindows().size());
-        clickOn("#overview");
+        MenuButton menuButton = lookup("#serverMenuButton").query();
+        Assert.assertEquals("TestServer", menuButton.getText());
 
         //change ServerName
         TextField serverNameField = lookup("#nameText").query();
@@ -201,7 +201,14 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 break;
             }
         }
+
+        //check all changed Names
+        menuButton = lookup("#serverMenuButton").query();
+        Assert.assertEquals("Test2", menuButton.getText());
+
         //click on delete Button (Alert)
+        moveBy(-50, -105);
+        clickOn();
 
         //check if server doesn't exist anymore
         serverId = "";
