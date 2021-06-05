@@ -100,9 +100,9 @@ public class HomeViewController {
                 for (Server server : builder.getPersonalUser().getServer()) {
                     try {
                         Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                        serverViews.put(server, serverView);
                         serverController.put(server, new ServerViewController(serverView, builder, server));
                         serverController.get(server).startController();
-                        serverViews.put(server, serverView);
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -144,9 +144,9 @@ public class HomeViewController {
     public void showServerView() {
         inServerChat = true;
         try {
-            serverController.get(builder.getCurrentServer()).startShowServer();
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
+            serverController.get(builder.getCurrentServer()).startShowServer();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

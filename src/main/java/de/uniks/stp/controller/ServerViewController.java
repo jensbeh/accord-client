@@ -113,7 +113,7 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void startShowServer() throws InterruptedException {
-        serverMenuButton.setText(server.getName());
+        serverMenuButton.setText(builder.getCurrentServer().getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -328,6 +328,7 @@ public class ServerViewController {
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
             userProfileController.setOnline();
+            this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
         } catch (IOException e) {
@@ -603,7 +604,7 @@ public class ServerViewController {
      * generates new views for all categories of the server
      */
     private void generateCategoriesChannelViews() {
-        for (Categories categories : server.getCategories()) {
+        for (Categories categories : builder.getCurrentServer().getCategories()) {
             generateCategoryChannelView(categories);
         }
     }
