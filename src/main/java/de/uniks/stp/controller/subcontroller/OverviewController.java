@@ -9,7 +9,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
 
 public class OverviewController {
     private final Parent view;
@@ -37,14 +36,10 @@ public class OverviewController {
      */
     private void onLeaveServerClicked(ActionEvent actionEvent) {
         restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            System.out.println("body: " + body);
-            String status = body.getObject().getString("status");
-            System.out.println("status: " + status);
             builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
         });
         StageManager.showHome();
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             Stage stage = (Stage) serverName.getScene().getWindow();
             stage.close();
         });

@@ -6,7 +6,6 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
@@ -47,8 +46,7 @@ public class OverviewOwnerController {
         serverName.setText(nameText.getText());
         builder.getCurrentServer().setName(nameText.getText());
         restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            String status = body.getObject().getString("status");
+            builder.getCurrentServer().setName(nameText.getText());
         });
     }
 
@@ -85,7 +83,7 @@ public class OverviewOwnerController {
                 builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
             });
             StageManager.showHome();
-            Platform.runLater(()->{
+            Platform.runLater(() -> {
                 Stage stage = (Stage) serverName.getScene().getWindow();
                 stage.close();
             });

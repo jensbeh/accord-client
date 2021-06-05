@@ -91,11 +91,14 @@ public class HomeViewController {
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
 
+        //clear hashList
         if (!serverHashList.isEmpty()) {
             for (Map.Entry<ServerViewController, WebSocketClient> serverViewControllerWebSocketClientEntry : serverHashList.entrySet()) {
                 serverViewControllerWebSocketClientEntry.getKey().stop();
             }
+            serverHashList.clear();
         }
+        //fill hashList with all servers of the user
         for (Server server : builder.getPersonalUser().getServer()) {
             ServerViewController serverViewController = new ServerViewController(view, builder, server, this);
             serverHashList.put(serverViewController, serverViewController.getServerWebSocket());
