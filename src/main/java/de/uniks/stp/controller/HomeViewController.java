@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -29,15 +30,14 @@ import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Constants;
+import util.SortUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -56,14 +56,11 @@ public class HomeViewController {
     private static String stageTitleName;
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
-    private static Channel selectedChat;
     private PrivateViewController privateViewController;
     private Parent privateView;
     public static boolean inServerChat = false;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
-    private static ScheduledExecutorService showServerHomeviewUpdate;
-    private HashMap<ServerViewController, WebSocketClient> serverHashList = new HashMap<>();
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -110,16 +107,35 @@ public class HomeViewController {
                 }
             }
         });
-        showServerUpdate();
     }
 
     /**
      * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
      */
-    private void showServerUpdate() { // TODO
-//        showServerHomeviewUpdate = Executors.newSingleThreadScheduledExecutor();
-//        showServerHomeviewUpdate.scheduleAtFixedRate
-//                (() -> Platform.runLater(this::showServers), 0, 2, TimeUnit.SECONDS);
+    public void showServerUpdate() { // TODO
+        serverList.refresh();
+    }
+
+    public void showHome() { // TODO
+        try {
+            if (builder.getUSER_CLIENT() != null) {
+                if (builder.getUSER_CLIENT().getSession() != null) {
+                    builder.getUSER_CLIENT().stop();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.builder.setCurrentServer(null);
+        showPrivateView();
+        updateServerListColor();
+        Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
+    }
+
+    public void stopServer(Server server) {
+        serverViews.remove(server);
+        serverController.get(server).stop();
+        serverController.remove(server);
     }
 
     /**
@@ -296,6 +312,7 @@ public class HomeViewController {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
+
     public interface ServerLoadedCallback {
         void onSuccess();
     }
@@ -318,7 +335,7 @@ public class HomeViewController {
                 for (Server server : builder.getPersonalUser().getServer()) {
                     if (!onlineServers.contains(server)) {
                         builder.getPersonalUser().withoutServer(server);
-                        // TODO stop websockets here
+                        // TODO stop websockets here ???
                     }
                 }
                 Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
@@ -400,11 +417,6 @@ public class HomeViewController {
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
         try {
-            if (builder.getSERVER_USER() != null) {
-                if (builder.getSERVER_USER().getSession() != null) {
-                    builder.getSERVER_USER().stop();
-                }
-            }
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
                     builder.getUSER_CLIENT().stop();
@@ -437,9 +449,6 @@ public class HomeViewController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        if (showServerHomeviewUpdate != null) {
-            showServerHomeviewUpdate.shutdown();
         }
         JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
         JSONObject result = body.getObject();
@@ -482,9 +491,6 @@ public class HomeViewController {
 
         if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
-        }
-        if (showServerHomeviewUpdate != null) {
-            showServerHomeviewUpdate.shutdown();
         }
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();

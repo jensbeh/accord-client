@@ -2,6 +2,7 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import javafx.event.ActionEvent;
@@ -14,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class ServerSettingsController {
+    private final HomeViewController homeViewController;
     private Parent view;
     private ModelBuilder builder;
     private Server server;
@@ -27,10 +29,11 @@ public class ServerSettingsController {
     private VBox settingsContainer;
 
 
-    public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
+    public ServerSettingsController(Parent view, ModelBuilder modelBuilder, HomeViewController homeViewController, Server server) {
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
+        this.homeViewController = homeViewController;
     }
 
     public void init() {
@@ -75,7 +78,7 @@ public class ServerSettingsController {
             Parent root;
             if (builder.getCurrentServer().getOwner().equals(userId)) {
                 root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml"), StageManager.getLangBundle());
-                OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
+                OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder, homeViewController);
                 overviewOwnerController.init();
             } else {
                 root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/Overview.fxml"), StageManager.getLangBundle());

@@ -414,28 +414,31 @@ public class ServerViewController {
     /**
      * update server
      */
-    private void updateServer(String userName) {
-        builder.getCurrentServer().setName(userName);
-        Platform.runLater(this::changeServerName);
-        //homeViewController.showServers(); // TODO
+    private void updateServer(String serverName) {
+        this.server.setName(serverName);
+        if (builder.getCurrentServer() == this.server) {
+            Platform.runLater(this::changeServerName);
+        }
+        homeViewController.showServerUpdate();
     }
 
     /**
      * deletes server
      */
     private void deleteServer() {
-        //homeViewController.getServerHashList().remove(this); // TODO
-        if (!builder.getCurrentServer().getOwner().equals(builder.getPersonalUser().getUserKey())) {
-            Platform.runLater(() -> {
-                if (builder.getCurrentServer() == this.server) {
-                    StageManager.showHome();
-                }
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle("Server deleted!");
-                alert.setHeaderText("Server " + builder.getCurrentServer().getName() + " was deleted!");
-                Optional<ButtonType> result = alert.showAndWait();
-            });
-        }
+        builder.setCurrentServer(null);
+        builder.getPersonalUser().withoutServer(this.server);
+        Platform.runLater(() -> {
+            if (builder.getCurrentServer() == this.server) { // TODO currentServer nicht gesetzt
+                homeViewController.showHome();
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+            alert.setTitle("Server deleted!");
+            alert.setHeaderText("Server " + this.server.getName() + " was deleted!");
+            Optional<ButtonType> result = alert.showAndWait();
+        });
+
+        homeViewController.stopServer(this.server); // TODO
     }
 
     /**
