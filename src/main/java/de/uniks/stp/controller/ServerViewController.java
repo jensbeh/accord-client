@@ -51,8 +51,8 @@ public class ServerViewController {
     private VBox currentUserBox;
     private WebSocketClient systemWebSocketClient;
     private WebSocketClient chatWebSocketClient;
-    private static VBox chatBox;
-    private static ChatViewController messageViewController;
+    private VBox chatBox;
+    private ChatViewController messageViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
     private static Map<Categories, CategorySubController> categorySubControllerList;
@@ -119,6 +119,7 @@ public class ServerViewController {
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
         inviteUsers.setOnAction(this::onInviteUsersClicked);
+        builder.setServerChatWebSocketClient(this.chatWebSocketClient);
 
         showCurrentUser();
         showOnlineOfflineUsers();
@@ -303,10 +304,10 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
-            messageViewController = new ChatViewController(root, builder);
-            chatBox.getChildren().clear();
-            messageViewController.init();
-            chatBox.getChildren().add(root);
+            this.messageViewController = new ChatViewController(root, builder);
+            this.chatBox.getChildren().clear();
+            this.messageViewController.init();
+            this.chatBox.getChildren().add(root);
 
             if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
                 for (Message msg : builder.getCurrentServerChannel().getMessage()) {
@@ -620,7 +621,7 @@ public class ServerViewController {
         try {
             Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
             view.setId(categories.getId());
-            CategorySubController tempCategorySubController = new CategorySubController(view, categories);
+            CategorySubController tempCategorySubController = new CategorySubController(view, this, categories);
             tempCategorySubController.init();
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));
