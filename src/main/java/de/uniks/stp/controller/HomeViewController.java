@@ -57,9 +57,7 @@ public class HomeViewController {
     private PrivateViewController privateViewController;
     private Parent privateView;
     public static boolean inServerChat = false;
-    private static Map<Server, WebSocketClient> serverSystemWebSockets;
-    private static Map<Server, WebSocketClient> serverChatWebSockets;
-    private static Map<Server, Parent> serverViews;
+    private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
@@ -88,8 +86,6 @@ public class HomeViewController {
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
-        serverSystemWebSockets = new HashMap<>();
-        serverChatWebSockets = new HashMap<>();
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
 
@@ -103,7 +99,6 @@ public class HomeViewController {
                         serverViews.put(server, serverView);
                         serverController.put(server, new ServerViewController(serverView, builder, server));
                         serverController.get(server).startController();
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -313,11 +308,7 @@ public class HomeViewController {
                 for (Server server : builder.getPersonalUser().getServer()) {
                     if (!onlineServers.contains(server)) {
                         builder.getPersonalUser().withoutServer(server);
-                        try {
-                            serverSystemWebSockets.get(server).stop();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        // TODO stop websockets here
                     }
                 }
                 Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));

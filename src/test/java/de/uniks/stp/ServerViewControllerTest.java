@@ -246,8 +246,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn(serverList.lookup("#serverName_" + testServerId));
         Thread.sleep(2000);
 
-        app.getBuilder().buildServerUser("Test", "1234", false);
-        app.getBuilder().buildServerUser("Test1", "12234", true);
+        //app.getBuilder().buildServerUser("Test", "1234", false);
+        //app.getBuilder().buildServerUser("Test1", "12234", true);
 
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");

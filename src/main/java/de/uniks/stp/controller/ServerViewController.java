@@ -38,7 +38,7 @@ public class ServerViewController {
 
     private static ModelBuilder builder;
     private final RestClient restClient;
-    private static Server server;
+    private Server server;
     private final Parent view;
     private ScrollPane scrollPaneUserBox;
     private MenuButton serverMenuButton;
@@ -113,7 +113,8 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void startShowServer() throws InterruptedException {
-        serverMenuButton.setText(builder.getCurrentServer().getName());
+        System.out.println(this.server.getName());
+        serverMenuButton.setText(this.server.getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
         inviteUsers = serverMenuButton.getItems().get(1);
@@ -134,8 +135,9 @@ public class ServerViewController {
     private void buildSystemWebSocket() {
         try {
             systemWebSocketClient = new WebSocketClient(builder, URI.
-                    create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + server.getId()),
+                    create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()),
                     new WSCallback() {
+
                         @Override
                         public void handleMessage(JsonStructure msg) {
                             System.out.println("msg: " + msg);
@@ -156,13 +158,13 @@ public class ServerViewController {
                             }
 
                             if (userAction.equals("userJoined")) {
-                                builder.buildServerUser(userName, userId, true);
+                                builder.buildServerUser(server, userName, userId, true);
                             }
                             if (userAction.equals("userLeft")) {
                                 if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == server) {
                                     Platform.runLater(StageManager::showLoginScreen);
                                 }
-                                builder.buildServerUser(userName, userId, false);
+                                builder.buildServerUser(server, userName, userId, false);
                             }
                             if (builder.getCurrentServer() == server) {
                                 showOnlineOfflineUsers();
@@ -194,7 +196,7 @@ public class ServerViewController {
     private void buildChatWebSocket() {
         chatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
-                        getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + server.getId()),
+                        getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()),
                 new WSCallback() {
                     /**
                      * handles server response
@@ -298,7 +300,7 @@ public class ServerViewController {
     /**
      * Initial Chat View and load chat history which is saved in list
      */
-    public static void showMessageView() {
+    public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
@@ -344,10 +346,11 @@ public class ServerViewController {
     }
 
     public void loadServerInfos(ServerInfoCallback serverInfoCallback) {
-        restClient.getServerUsers(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
+        restClient.getServerUsers(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
-            server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
+            System.out.println(status);
+            this.server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             //builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
@@ -356,12 +359,12 @@ public class ServerViewController {
                     String id = member.getString("id");
                     String name = member.getString("name");
                     boolean online = member.getBoolean("online");
-                    builder.buildServerUser(name, id, online);
+                    builder.buildServerUser(server, name, id, online);
                 }
+                serverInfoCallback.onSuccess(status);
             } else if (status.equals("failure")) {
                 System.out.println(body.getObject().getString("message"));
             }
-            serverInfoCallback.onSuccess(status);
         });
     }
 
@@ -396,7 +399,7 @@ public class ServerViewController {
      * deletes a category with controller and view
      */
     private void deleteCategory(JsonObject jsonData) {
-        String serverId = jsonData.getString("server");
+        String serverId = jsonData.getString("this.server");
         String categoryId = jsonData.getString("id");
         String name = jsonData.getString("name");
 
@@ -406,7 +409,7 @@ public class ServerViewController {
                 for (Categories categories : server.getCategories()) {
                     if (categories.getId().equals(deletedCategory.getId())) {
                         server.withoutCategories(categories);
-                        if (builder.getCurrentServer() == server) { //TODO vllt nicht ausreichend wegen Map
+                        if (builder.getCurrentServer() == this.server) { //TODO vllt nicht ausreichend wegen Map
                             for (Node view : categoryBox.getChildren()) {
                                 if (view.getId().equals(deletedCategory.getId())) {
                                     Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
@@ -477,7 +480,7 @@ public class ServerViewController {
      * Gets categories from server and adds in list
      */
     public void loadCategories() {
-        restClient.getServerCategories(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
+        restClient.getServerCategories(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
@@ -487,7 +490,7 @@ public class ServerViewController {
                     Categories categories = new Categories();
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
-                    categories.setServer(server);
+                    this.server.withCategories(categories);
                     //builder.getCurrentServer().withCategories(categories);
                     loadChannels(categories);
                 }
@@ -501,7 +504,7 @@ public class ServerViewController {
      * @param cat the category to load the channels from it
      */
     public void loadChannels(Categories cat) {
-        restClient.getCategoryChannels(server.getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
+        restClient.getCategoryChannels(this.server.getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
@@ -523,7 +526,7 @@ public class ServerViewController {
 
                     for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
-                        for (User user : server.getUser()) {
+                        for (User user : this.server.getUser()) {
                             if (user.getId().equals(memberId)) {
                                 channel.withPrivilegedUsers(user);
                             }
@@ -536,7 +539,7 @@ public class ServerViewController {
 
     private void loadChannelMessages(Channel channel) {
         System.out.println(new Date().getTime());
-        restClient.getChannelMessages(new Date().getTime(), server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+        restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
@@ -604,6 +607,7 @@ public class ServerViewController {
      * generates new views for all categories of the server
      */
     private void generateCategoriesChannelViews() {
+        Platform.runLater(() -> this.categoryBox.getChildren().clear());
         for (Categories categories : builder.getCurrentServer().getCategories()) {
             generateCategoryChannelView(categories);
         }
@@ -627,7 +631,7 @@ public class ServerViewController {
     }
 
     private void checkForOwnership(String id) {
-        if (!server.getOwner().equals(id)) {
+        if (!this.server.getOwner().equals(id)) {
             serverMenuButton.getItems().remove(1);
         }
     }
