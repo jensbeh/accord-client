@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -59,6 +62,8 @@ public class HomeViewController {
     public static boolean inServerChat = false;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
+    private static ScheduledExecutorService showServerHomeviewUpdate;
+    private HashMap<ServerViewController, WebSocketClient> serverHashList = new HashMap<>();
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -105,6 +110,16 @@ public class HomeViewController {
                 }
             }
         });
+        showServerUpdate();
+    }
+
+    /**
+     * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
+     */
+    private void showServerUpdate() { // TODO
+//        showServerHomeviewUpdate = Executors.newSingleThreadScheduledExecutor();
+//        showServerHomeviewUpdate.scheduleAtFixedRate
+//                (() -> Platform.runLater(this::showServers), 0, 2, TimeUnit.SECONDS);
     }
 
     /**
@@ -178,7 +193,7 @@ public class HomeViewController {
     private void joinNewServer() {
         Platform.runLater(() -> {
             stage.close();
-            showServers(new ServerLoadedCallback() {
+            showServers(new ServerLoadedCallback() { // TODO vllt nicht alle neu laden!!
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
@@ -220,7 +235,7 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            showServers(new ServerLoadedCallback() {
+            showServers(new ServerLoadedCallback() { // TODO vllt nicht alle neu laden!!
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
@@ -248,11 +263,6 @@ public class HomeViewController {
      */
     private void onServerClicked(MouseEvent mouseEvent) {
         try {
-//            if (builder.getSERVER_USER() != null) {
-//                if (builder.getSERVER_USER().getSession() != null) {
-//                    builder.getSERVER_USER().stop();
-//                }
-//            }
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
                     builder.getUSER_CLIENT().stop();
@@ -293,7 +303,7 @@ public class HomeViewController {
     /**
      * Get Servers and show Servers
      */
-    private void showServers(ServerLoadedCallback serverLoadedCallback) {
+    public void showServers(ServerLoadedCallback serverLoadedCallback) {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
@@ -428,6 +438,9 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (showServerHomeviewUpdate != null) {
+            showServerHomeviewUpdate.shutdown();
+        }
         JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
         JSONObject result = body.getObject();
         if (result.get("status").equals("success")) {
@@ -470,7 +483,9 @@ public class HomeViewController {
         if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
             stage.setTitle(lang.getString(stageTitleName));
         }
-
+        if (showServerHomeviewUpdate != null) {
+            showServerHomeviewUpdate.shutdown();
+        }
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();
