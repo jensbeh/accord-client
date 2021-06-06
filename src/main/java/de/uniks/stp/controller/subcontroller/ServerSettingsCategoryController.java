@@ -71,6 +71,9 @@ public class ServerSettingsCategoryController extends SubSetting {
         }
     }
 
+    /**
+     * Sets the selected category when clicked on it in comboBox
+     */
     private void onCategoryClicked(Event event) {
         selectedCategory = this.categoriesSelector.getValue();
         System.out.println("Selected Category: " + selectedCategory);
@@ -119,7 +122,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     /**
      * deletes an existing and chosen category when button delete is clicked
      */
-
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
             restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {

@@ -109,6 +109,10 @@ public class HomeViewController {
             }
         });
     }
+
+    /**
+     * Returns the current HomeViewController.
+     */
     private HomeViewController getController() {
         return this;
     }
@@ -120,7 +124,10 @@ public class HomeViewController {
         serverList.refresh();
     }
 
-    public void serverDeleted() { // TODO
+    /**
+     * refreshed the serverList when a server was deleted.
+     */
+    public void serverDeleted() {
         try {
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
@@ -135,10 +142,16 @@ public class HomeViewController {
         updateServerListColor();
     }
 
+    /**
+     * Function to refresh the serverList.
+     */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
+    /**
+     * Stops the deleted server.
+     */
     public void stopServer(Server server) {
         serverController.get(server).stop();
         serverController.remove(server);
@@ -488,6 +501,9 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Returns the controller of the current Server.
+     */
     public ServerViewController getServerController() {
         return serverController.get(builder.getCurrentServer());
     }

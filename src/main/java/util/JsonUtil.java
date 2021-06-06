@@ -2,10 +2,9 @@ package util;
 
 import org.json.JSONObject;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JsonUtil {
     public static JsonObject parse(JSONObject hereticalJsonObject) {

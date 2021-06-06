@@ -82,6 +82,10 @@ public class ServerViewController {
         builder.setCurrentServerChannel(Chat);
     }
 
+
+    /**
+     * Callback, when all server information are loaded
+     */
     public interface ServerReadyCallback {
         void onSuccess(String status);
     }
@@ -143,7 +147,7 @@ public class ServerViewController {
     }
 
     /**
-     * Get Server Users and set them in Online User List
+     * WebSocket for system messages.
      */
     private void buildSystemWebSocket() {
         try {
@@ -231,14 +235,23 @@ public class ServerViewController {
         }
     }
 
+    /**
+     * Returns the instance of this server.
+     */
     private Server getThisServer() {
         return this.server;
     }
 
+    /**
+     * Build a serverUser with this instance of server.
+     */
     private User buildServerUser(String userName, String userId, boolean online) {
         return builder.buildServerUser(this.server, userName, userId, online);
     }
 
+    /**
+     * WebSocket for chat messages.
+     */
     private void buildChatWebSocket() {
         chatWebSocketClient = new WebSocketClient(builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -343,6 +356,9 @@ public class ServerViewController {
         //builder.setServerChatWebSocketClient(serverChatWebSocketClient);
     }
 
+    /**
+     * Method for changing the current serverName.
+     */
     private void changeServerName() {
         serverMenuButton.setText(server.getName());
     }
@@ -395,6 +411,9 @@ public class ServerViewController {
         void onSuccess(String status);
     }
 
+    /**
+     * Method to get Server information
+     */
     public void loadServerInfos(ServerInfoCallback serverInfoCallback) {
         restClient.getServerUsers(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();

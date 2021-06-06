@@ -54,7 +54,7 @@ public class OverviewOwnerController {
     }
 
     /**
-     * Deletes current server and shows homeview
+     * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
         ButtonType button = new ButtonType("Delete Server");

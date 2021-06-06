@@ -22,7 +22,7 @@ public class ModelBuilder {
     //  Setter
     /////////////////////////////////////////
 
-    public void buildPersonalUser(String name,String password, String userKey) {
+    public void buildPersonalUser(String name, String password, String userKey) {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
     }
 

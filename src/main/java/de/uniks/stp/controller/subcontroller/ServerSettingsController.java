@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class ServerSettingsController {

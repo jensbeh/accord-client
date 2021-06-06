@@ -166,7 +166,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            serverSettingsController = new ServerSettingsController(root,builder ,homeViewController ,builder.getCurrentServer());
+            serverSettingsController = new ServerSettingsController(root, builder, homeViewController, builder.getCurrentServer());
             serverSettingsController.init();
 
             //setting stage settings
@@ -198,7 +198,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            inviteUsersController = new InviteUsersController(root,builder,builder.getCurrentServer());
+            inviteUsersController = new InviteUsersController(root, builder, builder.getCurrentServer());
             inviteUsersController.init();
 
             subStage = new Stage();

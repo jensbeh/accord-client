@@ -63,7 +63,7 @@ public class InviteUsersTempSubController {
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (selectedLink != null) {
-            if(selectedLink.equals(linkTextField.getText())){
+            if (selectedLink.equals(linkTextField.getText())) {
                 linkTextField.setText("Links ...");
             }
             linkComboBox.getItems().remove(selectedLink);
