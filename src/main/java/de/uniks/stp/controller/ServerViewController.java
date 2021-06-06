@@ -290,7 +290,7 @@ public class ServerViewController {
                                             if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
                                                 channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                             }
-                                            if (builder.getCurrentServerChannel().getId().equals(channelId)) {
+                                            if (builder.getCurrentServer() == getThisServer()) {
                                                 categorySubControllerList.get(categories).refreshChannelList();
                                             }
                                             break;

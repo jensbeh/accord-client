@@ -109,7 +109,7 @@ public class ServerSubSettingsPrivilegeController {
                     removeUserMenu.getItems().add(user.getName());
                 }
             }
-            channelPrivilegedUserUpdate();
+            channelPrivilegedUserUpdate(); // TODO test fails here
         }
     }
 
@@ -124,7 +124,7 @@ public class ServerSubSettingsPrivilegeController {
                 members.add(user.getId());
             }
             String[] membersArray = members.toArray(new String[0]);
-            // send update to server
+            // send update to server TODO test fails here
             restClient.updateChannel(server.getId(), channel.getCategories().getId(), channel.getId(), userKey,
                     channel.getName(), channel.isPrivilege(), membersArray, response -> {
                     });

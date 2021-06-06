@@ -157,7 +157,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         }
         clickOn("#User_to_Privilege");
         Assert.assertEquals(currentServer.getUser().size() - 2, addMenu.getItems().size());
-        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size()); //TODO fails here
         Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 
         clickOn(removeMenu);
