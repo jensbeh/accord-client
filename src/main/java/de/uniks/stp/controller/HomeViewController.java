@@ -140,6 +140,7 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -147,6 +148,7 @@ public class HomeViewController {
      */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
