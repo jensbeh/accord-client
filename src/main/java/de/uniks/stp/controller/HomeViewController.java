@@ -4,10 +4,8 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.CreateServerController;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -18,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,14 +27,12 @@ import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Constants;
-import util.SortUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -100,7 +95,13 @@ public class HomeViewController {
                         Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
                         serverViews.put(server, serverView);
                         serverController.put(server, new ServerViewController(serverView, builder, server));
-                        serverController.get(server).startController();
+                        serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
+                            @Override
+                            public void onSuccess(String status) {
+                                // TODO start here homeView -> from loinView this!
+                                System.out.println("loaded Server " + server.getName());
+                            }
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -172,7 +173,7 @@ public class HomeViewController {
         try {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
-            serverController.get(builder.getCurrentServer()).startShowServer();
+            this.serverController.get(builder.getCurrentServer()).startShowServer();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -216,7 +217,12 @@ public class HomeViewController {
                         try {
                             Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
                             serverController.put(server, new ServerViewController(serverView, builder, server));
-                            serverController.get(server).startController();
+                            serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
+                                @Override
+                                public void onSuccess(String status) {
+
+                                }
+                            });
                             serverViews.put(server, serverView);
 
                         } catch (IOException e) {
@@ -238,11 +244,6 @@ public class HomeViewController {
         Platform.runLater(() -> {
             stage.close();
             try {
-                if (builder.getSERVER_USER() != null) {
-                    if (builder.getSERVER_USER().getSession() != null) {
-                        builder.getSERVER_USER().stop();
-                    }
-                }
                 if (builder.getUSER_CLIENT() != null) {
                     if (builder.getUSER_CLIENT().getSession() != null) {
                         builder.getUSER_CLIENT().stop();
@@ -251,24 +252,32 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            showServers(new ServerLoadedCallback() { // TODO vllt nicht alle neu laden!!
+            showServers(new ServerLoadedCallback() { // TODO nur neuen neu laden
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
                         try {
-                            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-                            serverController.put(server, new ServerViewController(serverView, builder, server));
-                            serverController.get(server).startController();
-                            serverViews.put(server, serverView);
-
+                            if (!serverController.containsKey(server)) {
+                                Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                                serverViews.put(server, serverView);
+                                serverController.put(server, new ServerViewController(serverView, builder, server));
+                                serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
+                                    @Override
+                                    public void onSuccess(String status) {
+                                        Platform.runLater(() -> {
+                                            updateServerListColor();
+                                            showServerView();
+                                        });
+                                    }
+                                });
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             });
-            updateServerListColor();
-            showServerView();
+
         });
     }
 
@@ -358,11 +367,6 @@ public class HomeViewController {
             stage = null;
         }
         try {
-            if (builder.getSERVER_USER() != null) {
-                if (builder.getSERVER_USER().getSession() != null) {
-                    builder.getSERVER_USER().stop();
-                }
-            }
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
                     builder.getUSER_CLIENT().stop();

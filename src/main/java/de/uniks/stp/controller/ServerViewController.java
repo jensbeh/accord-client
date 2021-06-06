@@ -81,10 +81,13 @@ public class ServerViewController {
         builder.setCurrentServerChannel(Chat);
     }
 
+    public interface ServerReadyCallback {
+        void onSuccess(String status);
+    }
     /**
      * Initialise all view parameters
      */
-    public void startController() {
+    public void startController(ServerReadyCallback serverReadyCallback) {
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
         categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
@@ -105,7 +108,7 @@ public class ServerViewController {
             public void onSuccess(String status) {
                 if (status.equals("success")) {
                     if (getThisServer().getCategories().size() == 0) {
-                        loadCategories();
+                        loadCategories(serverReadyCallback);
                     }
                 }
             }
@@ -674,7 +677,7 @@ public class ServerViewController {
     /**
      * Gets categories from server and adds in list
      */
-    public void loadCategories() {
+    public void loadCategories(ServerReadyCallback serverReadyCallback) {
         restClient.getServerCategories(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -687,7 +690,7 @@ public class ServerViewController {
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
                     //builder.getCurrentServer().withCategories(categories);
-                    loadChannels(categories);
+                    loadChannels(categories, serverReadyCallback);
                 }
             }
         });
@@ -698,7 +701,7 @@ public class ServerViewController {
      *
      * @param cat the category to load the channels from it
      */
-    public void loadChannels(Categories cat) {
+    public void loadChannels(Categories cat, ServerReadyCallback serverReadyCallback) {
         restClient.getCategoryChannels(this.server.getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -711,7 +714,7 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
-                    loadChannelMessages(channel);
+                    loadChannelMessages(channel, serverReadyCallback);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
 
@@ -732,7 +735,7 @@ public class ServerViewController {
         });
     }
 
-    private void loadChannelMessages(Channel channel) {
+    private void loadChannelMessages(Channel channel, ServerReadyCallback serverReadyCallback) {
         System.out.println(new Date().getTime());
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -747,6 +750,7 @@ public class ServerViewController {
                     Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
                     channel.withMessage(message);
                 }
+                serverReadyCallback.onSuccess(status);
             }
         });
     }
@@ -768,8 +772,12 @@ public class ServerViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.serverSettings.setOnAction(null);
-        this.inviteUsers.setOnAction(null);
+        if (this.serverSettings != null) {
+            this.serverSettings.setOnAction(null);
+        }
+        if (this.inviteUsers != null) {
+            this.inviteUsers.setOnAction(null);
+        }
 
         for (CategorySubController categorySubController : this.categorySubControllerList.values()) {
             categorySubController.stop();
