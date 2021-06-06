@@ -420,7 +420,6 @@ public class ServerViewController {
             String status = body.getObject().getString("status");
             System.out.println(status);
             this.server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
-            //builder.getCurrentServer().setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
                 for (int i = 0; i < members.length(); i++) {
@@ -517,7 +516,7 @@ public class ServerViewController {
                                     categorySubControllerList.get(categories).stop();
                                     categorySubControllerList.remove(categories);
 
-                                    if (categories.getChannel().contains(builder.getCurrentServerChannel()) || builder.getCurrentServer().getCategories().size() == 0) {
+                                    if (categories.getChannel().contains(builder.getCurrentServerChannel()) || this.server.getCategories().size() == 0) {
                                         throwOutUserFromChatView();
                                     }
                                     break;
@@ -614,7 +613,7 @@ public class ServerViewController {
         String name = jsonData.getString("name");
         boolean status = jsonData.getBoolean("online");
 
-        builder.getCurrentServer().withUser(buildServerUser(name, id, status));
+       this.server.withUser(buildServerUser(name, id, status));
         if (builder.getCurrentServer() == this.server) {
             showOnlineOfflineUsers();
         }
@@ -626,7 +625,7 @@ public class ServerViewController {
     private void userExited(JsonObject jsonData) {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
-        builder.getCurrentServer().withoutUser(buildServerUser(name, id, true));
+        this.server.withoutUser(buildServerUser(name, id, true));
         if (builder.getCurrentServer() == this.server) {
             showOnlineOfflineUsers();
         }
@@ -661,13 +660,13 @@ public class ServerViewController {
         ArrayList<User> member = new ArrayList<>();
         for (int j = 0; j < jsonArray.size(); j++) {
             memberId = jsonArray.getString(j);
-            for (User user : builder.getCurrentServer().getUser()) {
+            for (User user : this.server.getUser()) {
                 if (user.getId().equals(memberId)) {
                     member.add(user);
                 }
             }
         }
-        for (Categories category : builder.getCurrentServer().getCategories()) {
+        for (Categories category : this.server.getCategories()) {
             if (category.getId().equals(categoryId)) {
                 for (Channel channel : category.getChannel()) {
                     if (channel.getId().equals(channelId)) {
@@ -700,7 +699,7 @@ public class ServerViewController {
     public void showOnlineOfflineUsers() {
         ArrayList<User> onlineUsers = new ArrayList<>();
         ArrayList<User> offlineUsers = new ArrayList<>();
-        for (User user : builder.getCurrentServer().getUser()) {
+        for (User user : this.server.getUser()) {
             if (user.isStatus()) {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(() -> checkForOwnership(user.getId()));
@@ -733,7 +732,6 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    //builder.getCurrentServer().withCategories(categories);
                     loadChannels(categories, serverReadyCallback);
                 }
             }
