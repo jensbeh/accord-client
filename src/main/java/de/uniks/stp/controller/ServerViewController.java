@@ -40,7 +40,7 @@ public class ServerViewController {
 
     private static ModelBuilder builder;
     private final RestClient restClient;
-    private Server server;
+    private final Server server;
     private final Parent view;
     private ScrollPane scrollPaneUserBox;
     private MenuButton serverMenuButton;
@@ -66,11 +66,12 @@ public class ServerViewController {
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
      * It also creates a new restClient"
      */
-    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server) {
+    public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, HomeViewController homeViewController) {
         this.view = view;
-        this.builder = modelBuilder;
+        builder = modelBuilder;
         this.server = server;
         this.restClient = new RestClient();
+        this.homeViewController = homeViewController;
     }
 
     public static Channel getSelectedChat() {
@@ -84,6 +85,7 @@ public class ServerViewController {
     public interface ServerReadyCallback {
         void onSuccess(String status);
     }
+
     /**
      * Initialise all view parameters
      */
@@ -125,8 +127,10 @@ public class ServerViewController {
         serverMenuButton.setText(this.server.getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
-        inviteUsers = serverMenuButton.getItems().get(1);
-        inviteUsers.setOnAction(this::onInviteUsersClicked);
+        if (serverMenuButton.getItems().size() > 1) {
+            inviteUsers = serverMenuButton.getItems().get(1);
+            inviteUsers.setOnAction(this::onInviteUsersClicked);
+        }
         builder.setServerChatWebSocketClient(this.chatWebSocketClient);
 
         showCurrentUser();
@@ -429,11 +433,15 @@ public class ServerViewController {
      * deletes server
      */
     private void deleteServer() {
-        builder.setCurrentServer(null);
-        builder.getPersonalUser().withoutServer(this.server);
         Platform.runLater(() -> {
             if (builder.getCurrentServer() == this.server) { // TODO currentServer nicht gesetzt
-                homeViewController.showHome();
+                builder.getPersonalUser().withoutServer(this.server);
+                builder.setCurrentServer(null);
+                this.homeViewController.serverDeleted();
+            } else {
+                builder.getPersonalUser().withoutServer(this.server);
+                builder.setCurrentServer(null);
+                homeViewController.refreshServerList();
             }
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
             alert.setTitle("Server deleted!");
@@ -603,6 +611,20 @@ public class ServerViewController {
         if (builder.getCurrentServer() == this.server) {
             showOnlineOfflineUsers();
         }
+        if (name.equals(builder.getPersonalUser().getName())) {
+            Platform.runLater(() -> {
+                builder.getPersonalUser().withoutServer(this.server);
+                builder.setCurrentServer(null);
+                this.homeViewController.serverDeleted();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+                alert.setTitle("Server leaved!");
+                alert.setHeaderText("Server " + this.server.getName() + " was leaved!");
+                Optional<ButtonType> result = alert.showAndWait();
+            });
+
+            homeViewController.stopServer(this.server); // TODO
+        }
     }
 
     /**
@@ -756,8 +778,6 @@ public class ServerViewController {
     }
 
     public void stop() {
-        this.onlineUsersList.setItems(null);
-        this.offlineUsersList.setItems(null);
         try {
             if (this.systemWebSocketClient != null) {
                 if (this.systemWebSocketClient.getSession() != null) {
@@ -775,7 +795,7 @@ public class ServerViewController {
         if (this.serverSettings != null) {
             this.serverSettings.setOnAction(null);
         }
-        if (this.inviteUsers != null) {
+        if (serverMenuButton.getItems().size() > 1 && this.inviteUsers != null) {
             this.inviteUsers.setOnAction(null);
         }
 

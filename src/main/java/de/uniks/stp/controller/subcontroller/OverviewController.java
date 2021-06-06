@@ -38,7 +38,7 @@ public class OverviewController {
         restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
             builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
         });
-        StageManager.showHome();
+        //StageManager.showHome(); //TODO
         Platform.runLater(() -> {
             Stage stage = (Stage) serverName.getScene().getWindow();
             stage.close();

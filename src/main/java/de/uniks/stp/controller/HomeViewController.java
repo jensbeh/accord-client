@@ -94,7 +94,7 @@ public class HomeViewController {
                     try {
                         Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
                         serverViews.put(server, serverView);
-                        serverController.put(server, new ServerViewController(serverView, builder, server));
+                        serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                         serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
                             @Override
                             public void onSuccess(String status) {
@@ -109,6 +109,9 @@ public class HomeViewController {
             }
         });
     }
+    private HomeViewController getController() {
+        return this;
+    }
 
     /**
      * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
@@ -117,7 +120,7 @@ public class HomeViewController {
         serverList.refresh();
     }
 
-    public void showHome() { // TODO
+    public void serverDeleted() { // TODO
         try {
             if (builder.getUSER_CLIENT() != null) {
                 if (builder.getUSER_CLIENT().getSession() != null) {
@@ -130,13 +133,16 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
-        Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
+    }
+
+    public void refreshServerList() {
+        serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
     }
 
     public void stopServer(Server server) {
-        serverViews.remove(server);
         serverController.get(server).stop();
         serverController.remove(server);
+        serverViews.remove(server);
     }
 
     /**
@@ -210,29 +216,32 @@ public class HomeViewController {
     private void joinNewServer() {
         Platform.runLater(() -> {
             stage.close();
-            showServers(new ServerLoadedCallback() { // TODO vllt nicht alle neu laden!!
+            showServers(new ServerLoadedCallback() { // TODO nur neuen neu laden
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
                         try {
-                            Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-                            serverController.put(server, new ServerViewController(serverView, builder, server));
-                            serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
-                                @Override
-                                public void onSuccess(String status) {
-
-                                }
-                            });
-                            serverViews.put(server, serverView);
-
+                            if (!serverController.containsKey(server)) {
+                                builder.setCurrentServer(server);
+                                Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
+                                serverViews.put(server, serverView);
+                                serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
+                                serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
+                                    @Override
+                                    public void onSuccess(String status) {
+                                        Platform.runLater(() -> {
+                                            updateServerListColor();
+                                            showServerView();
+                                        });
+                                    }
+                                });
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             });
-            updateServerListColor();
-            showServerView();
         });
     }
 
@@ -258,9 +267,10 @@ public class HomeViewController {
                     for (Server server : builder.getPersonalUser().getServer()) {
                         try {
                             if (!serverController.containsKey(server)) {
+                                builder.setCurrentServer(server);
                                 Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
                                 serverViews.put(server, serverView);
-                                serverController.put(server, new ServerViewController(serverView, builder, server));
+                                serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                                 serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
                                     @Override
                                     public void onSuccess(String status) {
