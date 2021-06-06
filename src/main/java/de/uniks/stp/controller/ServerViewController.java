@@ -672,11 +672,14 @@ public class ServerViewController {
                 for (Channel channel : category.getChannel()) {
                     if (channel.getId().equals(channelId)) {
                         flag = true;
+                        category.withoutChannel(channel);
                         channel.setName(channelName);
                         channel.setPrivilege(channelPrivileged);
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
                         channel.withPrivilegedUsers(member);
+                        category.withChannel(channel);
+                        break;
                     }
                 }
                 if (!flag) {
