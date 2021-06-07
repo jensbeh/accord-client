@@ -20,6 +20,8 @@ import org.testfx.util.WaitForAsyncUtils;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -334,13 +336,15 @@ public class PrivateMessageTest extends ApplicationTest {
         Thread.sleep(500);
 
         clickOn("#sendButton");
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
+        String time = dtf2.format(LocalDateTime.now());
         Thread.sleep(500);
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
         Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
-        Assert.assertEquals(testUserMainName, userNameLabel.getText());
+        Assert.assertEquals(time + " " + testUserMainName, userNameLabel.getText());
 
         shutDownWebSocketClient();
         restClient.logout(testUserOne_UserKey, response -> {
