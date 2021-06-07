@@ -14,6 +14,9 @@ public class StartSnakeController {
     private Label youFound;
     private Button startGame;
 
+    /**
+     * Controller to control the start Snake view
+     */
     public StartSnakeController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
@@ -27,8 +30,11 @@ public class StartSnakeController {
         startGame.setOnAction(this::startGame);
     }
 
+    /**
+     * OnClick method -> the game will starts
+     */
     private void startGame(ActionEvent actionEvent) {
-        System.out.println("Starting Snake...");
+
     }
 
     public void stop() {
