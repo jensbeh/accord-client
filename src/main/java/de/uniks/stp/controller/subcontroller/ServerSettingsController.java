@@ -26,6 +26,7 @@ public class ServerSettingsController {
     private VBox serverSettingsContainer;
     private SubSetting subController;
     private VBox settingsContainer;
+    private String userId;
 
 
     public ServerSettingsController(Parent view, ModelBuilder modelBuilder, HomeViewController homeViewController, Server server) {
@@ -42,6 +43,19 @@ public class ServerSettingsController {
         category = (Button) view.lookup("#category");
         privilege = (Button) view.lookup("#privilege");
         settingsContainer = (VBox) view.lookup("#serverSettingsContainer");
+
+        // userId from currentUser
+        userId = "";
+        for (User user : builder.getCurrentServer().getUser()) {
+            if (user.getName().equals(builder.getPersonalUser().getName())) {
+                userId = user.getId();
+            }
+        }
+        if (!builder.getCurrentServer().getOwner().equals(userId)) {
+            channel.setVisible(false);
+            category.setVisible(false);
+            privilege.setVisible(false);
+        }
 
         //Highlight the OverviewButton
         newSelectedButton(overview);
@@ -66,12 +80,6 @@ public class ServerSettingsController {
     private void onOverViewClicked(ActionEvent actionEvent) {
         if (selectedButton != overview) {
             newSelectedButton(overview);
-        }
-        String userId = "";
-        for (User user : builder.getCurrentServer().getUser()) {
-            if (user.getName().equals(builder.getPersonalUser().getName())) {
-                userId = user.getId();
-            }
         }
         try {
             Parent root;
