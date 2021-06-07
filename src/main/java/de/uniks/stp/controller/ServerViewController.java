@@ -701,9 +701,13 @@ public class ServerViewController {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(() -> checkForOwnership(user.getId()));
                 }
-                onlineUsers.add(user);
+                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
+                    onlineUsers.add(user);
+                }
             } else {
-                offlineUsers.add(user);
+                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
+                    offlineUsers.add(user);
+                }
             }
         }
         Platform.runLater(() -> {
