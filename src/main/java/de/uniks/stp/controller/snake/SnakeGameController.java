@@ -35,13 +35,13 @@ public class SnakeGameController {
         GraphicsContext gc = gameField.getGraphicsContext2D();
 
         scene.setOnKeyPressed(key -> {
-            if (key.getCode() == KeyCode.RIGHT) {
+            if (key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) {
                 System.out.println("RIGHT");
-            } else if (key.getCode() == KeyCode.LEFT) {
+            } else if (key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) {
                 System.out.println("LEFT");
-            } else if (key.getCode() == KeyCode.UP) {
+            } else if (key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) {
                 System.out.println("UP");
-            } else if (key.getCode() == KeyCode.DOWN) {
+            } else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) {
                 System.out.println("DOWN");
             }
         });
