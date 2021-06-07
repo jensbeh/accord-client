@@ -4,9 +4,9 @@ import de.uniks.stp.AlternatePrivateChatListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WSCallback;
@@ -49,10 +49,10 @@ public class PrivateViewController {
     private VBox currentUserBox;
     private VBox chatBox;
     private HBox viewBox;
-    private ObservableList<Channel> privateChats;
-    private ListView<Channel> privateChatList;
+    private ObservableList<PrivateChat> privateChats;
+    private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
-    private static Channel selectedChat;
+    private static PrivateChat selectedChat;
     private WebSocketClient systemWebSocketClient;
     private WebSocketClient chatWebSocketClient;
     private TextField messageField;
@@ -71,7 +71,7 @@ public class PrivateViewController {
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
-        privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
+        privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
@@ -116,7 +116,7 @@ public class PrivateViewController {
                                     setFrom(jsonObject.getString("from")).
                                     setTimestamp(jsonObject.getInt("timestamp"));
                         }
-                        for (Channel channel : builder.getPersonalUser().getPrivateChat()) {
+                        for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
                                 if (selectedChat == null || channel != selectedChat) {
@@ -134,7 +134,7 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            Channel channel = new Channel().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
+                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }
@@ -314,12 +314,12 @@ public class PrivateViewController {
      * @param mouseEvent is called when clicked on an online User
      */
     private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
-        Channel currentChannel = selectedChat;
+        PrivateChat currentChannel = selectedChat;
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean chatExisting = false;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
-            for (Channel channel : builder.getPersonalUser().getPrivateChat()) {
+            for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(selectedUserName)) {
                     selectedChat = channel;
                     if (selectedChat.getUnreadMessagesCounter() > 0) {
@@ -331,7 +331,7 @@ public class PrivateViewController {
                 }
             }
             if (!chatExisting) {
-                selectedChat = new Channel().setName(selectedUserName).setId(selectUserId);
+                selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
                 builder.getPersonalUser().withPrivateChat(selectedChat);
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
                         getPrivateChat()));
@@ -346,11 +346,11 @@ public class PrivateViewController {
      *
      * @return current active Channel
      */
-    public static Channel getSelectedChat() {
+    public static PrivateChat getSelectedChat() {
         return selectedChat;
     }
 
-    public static void setSelectedChat(Channel channel) {
+    public static void setSelectedChat(PrivateChat channel) {
         selectedChat = channel;
     }
 

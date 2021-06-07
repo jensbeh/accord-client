@@ -1,8 +1,8 @@
 package de.uniks.stp;
 
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.*;
@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -109,7 +108,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         HBox privilegeOnView = lookup("#Privilege_On").query();
 
         ComboBox<Categories> categoryChoice = lookup("#Category").query();
-        ComboBox<Channel> channelChoice = lookup("#Channels").query();
+        ComboBox<ServerChannel> channelChoice = lookup("#Channels").query();
 
         Assert.assertEquals(categoryChoice.getItems(), currentServer.getCategories());
 

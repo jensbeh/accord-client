@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -86,7 +85,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
-        
+
         Thread.sleep(2000);
     }
 
@@ -121,7 +120,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
-        
+
         Thread.sleep(2000);
     }
 

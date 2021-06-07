@@ -21,7 +21,7 @@ public class User
    private List<Server> server;
    protected PropertyChangeSupport listeners;
    private CurrentUser currentUser;
-   private List<Channel> privileged;
+   private List<ServerChannel> privileged;
 
    public String getName()
    {
@@ -170,12 +170,12 @@ public class User
       return this;
    }
 
-   public List<Channel> getPrivileged()
+   public List<ServerChannel> getPrivileged()
    {
       return this.privileged != null ? Collections.unmodifiableList(this.privileged) : Collections.emptyList();
    }
 
-   public User withPrivileged(Channel value)
+   public User withPrivileged(ServerChannel value)
    {
       if (this.privileged == null)
       {
@@ -190,25 +190,25 @@ public class User
       return this;
    }
 
-   public User withPrivileged(Channel... value)
+   public User withPrivileged(ServerChannel... value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withPrivileged(item);
       }
       return this;
    }
 
-   public User withPrivileged(Collection<? extends Channel> value)
+   public User withPrivileged(Collection<? extends ServerChannel> value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withPrivileged(item);
       }
       return this;
    }
 
-   public User withoutPrivileged(Channel value)
+   public User withoutPrivileged(ServerChannel value)
    {
       if (this.privileged != null && this.privileged.remove(value))
       {
@@ -218,18 +218,18 @@ public class User
       return this;
    }
 
-   public User withoutPrivileged(Channel... value)
+   public User withoutPrivileged(ServerChannel... value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withoutPrivileged(item);
       }
       return this;
    }
 
-   public User withoutPrivileged(Collection<? extends Channel> value)
+   public User withoutPrivileged(Collection<? extends ServerChannel> value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withoutPrivileged(item);
       }

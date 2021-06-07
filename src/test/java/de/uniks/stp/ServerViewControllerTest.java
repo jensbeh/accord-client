@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -293,7 +292,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
 
         ListView channels = lookup("#channellist").queryListView();
-        app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new Channel().setName("PARTEY"));
+        app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY"));
         Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
 
 
@@ -361,7 +360,7 @@ public class ServerViewControllerTest extends ApplicationTest {
             }
         }
 
-        Channel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
 
         testUser1_CLIENT.sendMessage(new JSONObject().put("channel", channel.getId()).put("message", "Testing notification").toString());
         Thread.sleep(2000);

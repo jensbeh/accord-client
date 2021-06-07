@@ -1,8 +1,8 @@
 package de.uniks.stp.builder;
 
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.WebSocketClient;
 
@@ -12,7 +12,7 @@ import java.util.List;
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-    private Channel currentServerChannel;
+    private ServerChannel currentServerChannel;
 
     private WebSocketClient SERVER_USER;
     private WebSocketClient USER_CLIENT;
@@ -121,11 +121,11 @@ public class ModelBuilder {
         this.serverChatWebSocketClient = serverChatWebSocketClient;
     }
 
-    public Channel getCurrentServerChannel() {
+    public ServerChannel getCurrentServerChannel() {
         return currentServerChannel;
     }
 
-    public void setCurrentServerChannel(Channel currentServerChannel) {
+    public void setCurrentServerChannel(ServerChannel currentServerChannel) {
         this.currentServerChannel = currentServerChannel;
     }
 

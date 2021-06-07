@@ -2,8 +2,8 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
@@ -23,7 +23,7 @@ public class ServerSettingsChannelController extends SubSetting {
     private Label categoryLabel;
     private static ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
-    private static ComboBox<Channel> editChannelsSelector;
+    private static ComboBox<ServerChannel> editChannelsSelector;
     private TextField editChannelsTextField;
     private Button channelChangeButton;
     private Button channelDeleteButton;
@@ -34,7 +34,7 @@ public class ServerSettingsChannelController extends SubSetting {
     private Button channelCreateButton;
 
     private static Categories selectedCategory;
-    private static Channel selectedChannel;
+    private static ServerChannel selectedChannel;
     private String channelType;
 
 
@@ -50,7 +50,7 @@ public class ServerSettingsChannelController extends SubSetting {
         this.categoryLabel = (Label) view.lookup("#categoryLabel");
         categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
-        editChannelsSelector = (ComboBox<Channel>) view.lookup("#editChannelsSelector");
+        editChannelsSelector = (ComboBox<ServerChannel>) view.lookup("#editChannelsSelector");
         this.editChannelsTextField = (TextField) view.lookup("#editChannelsTextField");
         this.channelChangeButton = (Button) view.lookup("#channelChangeButton");
         this.channelDeleteButton = (Button) view.lookup("#channelDeleteButton");
@@ -93,7 +93,7 @@ public class ServerSettingsChannelController extends SubSetting {
 
         editChannelsSelector.setConverter(new StringConverter<>() {
             @Override
-            public String toString(Channel object) {
+            public String toString(ServerChannel object) {
                 if (object == null) {
                     return "Select channel...";
                 }
@@ -101,7 +101,7 @@ public class ServerSettingsChannelController extends SubSetting {
             }
 
             @Override
-            public Channel fromString(String string) {
+            public ServerChannel fromString(String string) {
                 return null;
             }
         });
@@ -158,7 +158,7 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    public static void loadChannels(Channel preSelectChannel) {
+    public static void loadChannels(ServerChannel preSelectChannel) {
         if (categorySelector == null || editChannelsSelector == null) {
             return;
         }
@@ -275,7 +275,7 @@ public class ServerSettingsChannelController extends SubSetting {
         return pUsers;
     }
 
-    public static Channel getSelectedChannel() {
+    public static ServerChannel getSelectedChannel() {
         return selectedChannel;
     }
 }

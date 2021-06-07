@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.Label;
@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -254,7 +253,7 @@ public class PrivateMessageTest extends ApplicationTest {
         Label message = lookup("#msg_" + testUserTwo_ID).query();
         Assert.assertEquals("This is a test message", message.getText());
 
-        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserTwo_ID));
         Thread.sleep(2000);
 
@@ -274,7 +273,7 @@ public class PrivateMessageTest extends ApplicationTest {
         restClient.logout(testUserTwo_UserKey, response -> {
         });
 
-        
+
         Thread.sleep(2000);
     }
 
@@ -349,7 +348,7 @@ public class PrivateMessageTest extends ApplicationTest {
         restClient.logout(testUserTwo_UserKey, response -> {
         });
 
-        
+
         Thread.sleep(2000);
     }
 }

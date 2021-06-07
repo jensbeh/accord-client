@@ -16,7 +16,6 @@ import net.harawata.appdirs.AppDirsFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -103,7 +102,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        
+
         Thread.sleep(2000);
 
         restMock.login("bla", "fasel", response -> {
@@ -270,7 +269,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        
+
         Thread.sleep(2000);
 
         restMock.loginTemp(response -> {
@@ -316,7 +315,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        
+
         Thread.sleep(2000);
 
         //Check if file with username and password is empty
@@ -353,7 +352,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
-        
+
         Thread.sleep(2000);
 
         //Check if file with username and password were saved

@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.PrivateViewController;
-import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.PrivateChat;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-public class AlternatePrivateChatListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.Channel>, javafx.scene.control.ListCell<de.uniks.stp.model.Channel>> {
+public class AlternatePrivateChatListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -25,13 +25,13 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
      * parameter value.
      */
     @Override
-    public ListCell<Channel> call(ListView<Channel> param) {
+    public ListCell<PrivateChat> call(ListView<PrivateChat> param) {
         return new ChannelListCell();
     }
 
-    private static class ChannelListCell extends ListCell<Channel> {
+    private static class ChannelListCell extends ListCell<PrivateChat> {
 
-        protected void updateItem(Channel item, boolean empty) {
+        protected void updateItem(PrivateChat item, boolean empty) {
             // creates a Hbox for each cell of the listView
             VBox cell = new VBox();
             HBox nameAndNotificationCell = new HBox();
