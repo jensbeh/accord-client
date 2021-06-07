@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -279,7 +280,7 @@ public class PrivateMessageTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void testSendPrivateMessage() throws InterruptedException, IOException, DeploymentException {
         // user 1
         restClient.loginTemp(response -> {
@@ -345,6 +346,12 @@ public class PrivateMessageTest extends ApplicationTest {
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
         Assert.assertEquals(time + " " + testUserMainName, userNameLabel.getText());
+
+
+        messageField.setText("Okay");
+        write("\n");
+        Assert.assertEquals(" Okay ", messageLabel.getText());
+
 
         shutDownWebSocketClient();
         restClient.logout(testUserOne_UserKey, response -> {

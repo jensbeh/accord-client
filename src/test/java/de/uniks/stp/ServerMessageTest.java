@@ -10,10 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -79,7 +81,7 @@ public class ServerMessageTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void testSendAllMessage() throws InterruptedException {
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
@@ -129,6 +131,11 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertEquals(time + " " + testUserOneName, userNameLabel.getText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
+
+
+        messageField.setText("Okay");
+        write("\n");
+        Assert.assertEquals(" Okay ", messageLabel.getText());
 
 
         Thread.sleep(2000);
