@@ -2,6 +2,7 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,16 +16,18 @@ import java.util.Optional;
 public class OverviewOwnerController {
     private final Parent view;
     private final ModelBuilder builder;
+    private final HomeViewController homeViewController;
     private Label serverName;
     private Button deleteServer;
     private Button changeName;
     private TextField nameText;
     private RestClient restClient;
 
-    public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
+    public OverviewOwnerController(Parent view, ModelBuilder modelBuilder, HomeViewController homeViewController) {
         this.view = view;
         this.builder = modelBuilder;
-        restClient = new RestClient();
+        this.homeViewController = homeViewController;
+        this.restClient = new RestClient();
     }
 
     public void init() {
@@ -51,7 +54,7 @@ public class OverviewOwnerController {
     }
 
     /**
-     * Deletes current server and shows homeview
+     * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
         ButtonType button = new ButtonType("Delete Server");
@@ -80,9 +83,7 @@ public class OverviewOwnerController {
                 System.out.println("Overview controller: " + body.toString());
                 String status = body.getObject().getString("status");
                 System.out.println("status: " + status);
-                builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
             });
-            StageManager.showHome();
             Platform.runLater(() -> {
                 Stage stage = (Stage) serverName.getScene().getWindow();
                 stage.close();
@@ -90,6 +91,4 @@ public class OverviewOwnerController {
 
         }
     }
-
-
 }

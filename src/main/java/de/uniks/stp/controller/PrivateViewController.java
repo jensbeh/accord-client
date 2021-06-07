@@ -53,8 +53,8 @@ public class PrivateViewController {
     private ListView<Channel> privateChatList;
     private ListView<User> onlineUsersList;
     private static Channel selectedChat;
-    private WebSocketClient USER_CLIENT;
-    private WebSocketClient privateChatWebSocketCLient;
+    private WebSocketClient systemWebSocketClient;
+    private WebSocketClient chatWebSocketClient;
     private TextField messageField;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
@@ -73,7 +73,7 @@ public class PrivateViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<Channel>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
-        this.privateChatList.setOnMouseReleased(this::onprivateChatListClicked);
+        this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
@@ -86,7 +86,7 @@ public class PrivateViewController {
         showUsers();
 
         if (builder.getPrivateChatWebSocketCLient() == null) {
-            privateChatWebSocketCLient = new WebSocketClient(builder, URI.
+            chatWebSocketClient = new WebSocketClient(builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
                 /**
@@ -182,15 +182,15 @@ public class PrivateViewController {
                     }
                 }
             });
-            builder.setPrivateChatWebSocketCLient(privateChatWebSocketCLient);
+            builder.setPrivateChatWebSocketCLient(chatWebSocketClient);
         } else {
-            privateChatWebSocketCLient = builder.getPrivateChatWebSocketCLient();
+            chatWebSocketClient = builder.getPrivateChatWebSocketCLient();
         }
     }
 
-    private void startWebsocketConnection() {
+    private void startWebSocketConnection() {
         try {
-            USER_CLIENT = new WebSocketClient(builder,
+            systemWebSocketClient = new WebSocketClient(builder,
                     new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
@@ -221,7 +221,7 @@ public class PrivateViewController {
                 public void onClose(Session session, CloseReason closeReason) {
                 }
             });
-            builder.setUSER_CLIENT(USER_CLIENT);
+            builder.setUSER_CLIENT(systemWebSocketClient);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -243,7 +243,7 @@ public class PrivateViewController {
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().
                     getUser()).sorted(new SortUser())));
         });
-        startWebsocketConnection();
+        startWebSocketConnection();
     }
 
     /**
@@ -271,7 +271,7 @@ public class PrivateViewController {
      *
      * @param mouseEvent is called when double clicked on an existing chat
      */
-    private void onprivateChatListClicked(MouseEvent mouseEvent) {
+    private void onPrivateChatListClicked(MouseEvent mouseEvent) {
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
@@ -361,9 +361,14 @@ public class PrivateViewController {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         try {
-            if (USER_CLIENT != null) {
-                if (USER_CLIENT.getSession() != null) {
-                    USER_CLIENT.stop();
+            if (systemWebSocketClient != null) {
+                if (systemWebSocketClient.getSession() != null) {
+                    systemWebSocketClient.stop();
+                }
+            }
+            if (chatWebSocketClient != null) {
+                if (chatWebSocketClient.getSession() != null) {
+                    chatWebSocketClient.stop();
                 }
             }
         } catch (IOException e) {

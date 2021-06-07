@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.subcontroller;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -32,13 +31,12 @@ public class OverviewController {
     }
 
     /**
-     * User leaves the current server
+     * User leaves the current server with webSocket
      */
     private void onLeaveServerClicked(ActionEvent actionEvent) {
         restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
             builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
         });
-        StageManager.showHome();
         Platform.runLater(() -> {
             Stage stage = (Stage) serverName.getScene().getWindow();
             stage.close();

@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import java.beans.PropertyChangeEvent;
 
 public class CategorySubController {
+    private final ServerViewController serverViewController;
     private Parent view;
     private Categories category;
     private Label categoryName;
@@ -20,9 +21,10 @@ public class CategorySubController {
     private AlternateServerChannelListCellFactory channelListCellFactory;
     private int ROW_HEIGHT = 30;
 
-    public CategorySubController(Parent view, Categories category) {
+    public CategorySubController(Parent view, ServerViewController serverViewController, Categories category) {
         this.view = view;
         this.category = category;
+        this.serverViewController = serverViewController;
     }
 
     public void init() {
@@ -48,13 +50,13 @@ public class CategorySubController {
      * sets the selectedChat new.
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
-        Channel channel = this.channelList.getSelectionModel().getSelectedItem(); //TODO message-counter reset
+        Channel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
             channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
             channelList.refresh();
-            ServerViewController.showMessageView();
+            serverViewController.showMessageView();
         }
     }
 

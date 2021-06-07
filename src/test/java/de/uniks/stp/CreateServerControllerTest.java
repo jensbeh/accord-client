@@ -163,7 +163,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         invLink.setText("https://ac.uniks.de/api/servers/60b7dafd026b3534ca5be36a/invites/60b7db05026b3534ca5be39b");
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(500);
+        Thread.sleep(2000);
         MenuButton serverMenuButton = lookup("#serverMenuButton").query();
         Assert.assertEquals("Hey Taeubchen Gurr Gurr", serverMenuButton.getText());
     }

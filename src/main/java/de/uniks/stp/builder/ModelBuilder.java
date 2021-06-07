@@ -22,7 +22,7 @@ public class ModelBuilder {
     //  Setter
     /////////////////////////////////////////
 
-    public void buildPersonalUser(String name,String password, String userKey) {
+    public void buildPersonalUser(String name, String password, String userKey) {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
     }
 
@@ -37,21 +37,21 @@ public class ModelBuilder {
         return newUser;
     }
 
-    public User buildServerUser(String name, String id, Boolean status) {
-        for (User user : currentServer.getUser()) {
+    public User buildServerUser(Server server, String name, String id, Boolean status) {
+        for (User user : server.getUser()) {
             if (user.getId().equals(id)) {
                 if (user.isStatus() == status) {
                     return user;
                 } else {
-                    currentServer.withoutUser(user);
+                    server.withoutUser(user);
                     User updatedUser = new User().setName(name).setId(id).setStatus(status);
-                    currentServer.withUser(updatedUser);
+                    server.withUser(updatedUser);
                     return updatedUser;
                 }
             }
         }
         User newUser = new User().setName(name).setId(id).setStatus(status);
-        currentServer.withUser(newUser);
+        server.withUser(newUser);
         return newUser;
     }
 

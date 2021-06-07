@@ -327,7 +327,7 @@ public class PrivateMessageTest extends ApplicationTest {
         Assert.assertEquals("Accord - Main", stage.getTitle());
 
         ListView<User> privateChatList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
-        doubleClickOn(privateChatList.lookup("#" + testUserTwo_ID));
+        doubleClickOn(privateChatList.lookup("#" + testUserTwo_ID)); // TODO fails when to many user online
         Thread.sleep(2000);
 
         TextField messageField = lookup("#messageTextField").query();
