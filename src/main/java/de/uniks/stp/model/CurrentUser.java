@@ -12,15 +12,17 @@ public class CurrentUser
    public static final String PROPERTY_USER_KEY = "userKey";
    public static final String PROPERTY_USER = "user";
    public static final String PROPERTY_SERVER = "server";
-   public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
    public static final String PROPERTY_PASSWORD = "password";
+   public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+   public static final String PROPERTY_CHANNEL = "channel";
    private String name;
    private String userKey;
    private List<User> user;
    protected PropertyChangeSupport listeners;
    private List<Server> server;
-   private List<Channel> privateChat;
    private String password;
+   private List<PrivateChat> privateChat;
+   private List<ServerChannel> channel;
 
    public String getName()
    {
@@ -190,72 +192,6 @@ public class CurrentUser
       return this;
    }
 
-   public List<Channel> getPrivateChat()
-   {
-      return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
-   }
-
-   public CurrentUser withPrivateChat(Channel value)
-   {
-      if (this.privateChat == null)
-      {
-         this.privateChat = new ArrayList<>();
-      }
-      if (!this.privateChat.contains(value))
-      {
-         this.privateChat.add(value);
-         value.setCurrentUser(this);
-         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, null, value);
-      }
-      return this;
-   }
-
-   public CurrentUser withPrivateChat(Channel... value)
-   {
-      for (final Channel item : value)
-      {
-         this.withPrivateChat(item);
-      }
-      return this;
-   }
-
-   public CurrentUser withPrivateChat(Collection<? extends Channel> value)
-   {
-      for (final Channel item : value)
-      {
-         this.withPrivateChat(item);
-      }
-      return this;
-   }
-
-   public CurrentUser withoutPrivateChat(Channel value)
-   {
-      if (this.privateChat != null && this.privateChat.remove(value))
-      {
-         value.setCurrentUser(null);
-         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, value, null);
-      }
-      return this;
-   }
-
-   public CurrentUser withoutPrivateChat(Channel... value)
-   {
-      for (final Channel item : value)
-      {
-         this.withoutPrivateChat(item);
-      }
-      return this;
-   }
-
-   public CurrentUser withoutPrivateChat(Collection<? extends Channel> value)
-   {
-      for (final Channel item : value)
-      {
-         this.withoutPrivateChat(item);
-      }
-      return this;
-   }
-
    public String getPassword()
    {
       return this.password;
@@ -271,6 +207,138 @@ public class CurrentUser
       final String oldValue = this.password;
       this.password = value;
       this.firePropertyChange(PROPERTY_PASSWORD, oldValue, value);
+      return this;
+   }
+
+   public List<PrivateChat> getPrivateChat()
+   {
+      return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
+   }
+
+   public CurrentUser withPrivateChat(PrivateChat value)
+   {
+      if (this.privateChat == null)
+      {
+         this.privateChat = new ArrayList<>();
+      }
+      if (!this.privateChat.contains(value))
+      {
+         this.privateChat.add(value);
+         value.setCurrentUser(this);
+         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, null, value);
+      }
+      return this;
+   }
+
+   public CurrentUser withPrivateChat(PrivateChat... value)
+   {
+      for (final PrivateChat item : value)
+      {
+         this.withPrivateChat(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withPrivateChat(Collection<? extends PrivateChat> value)
+   {
+      for (final PrivateChat item : value)
+      {
+         this.withPrivateChat(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutPrivateChat(PrivateChat value)
+   {
+      if (this.privateChat != null && this.privateChat.remove(value))
+      {
+         value.setCurrentUser(null);
+         this.firePropertyChange(PROPERTY_PRIVATE_CHAT, value, null);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutPrivateChat(PrivateChat... value)
+   {
+      for (final PrivateChat item : value)
+      {
+         this.withoutPrivateChat(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutPrivateChat(Collection<? extends PrivateChat> value)
+   {
+      for (final PrivateChat item : value)
+      {
+         this.withoutPrivateChat(item);
+      }
+      return this;
+   }
+
+   public List<ServerChannel> getChannel()
+   {
+      return this.channel != null ? Collections.unmodifiableList(this.channel) : Collections.emptyList();
+   }
+
+   public CurrentUser withChannel(ServerChannel value)
+   {
+      if (this.channel == null)
+      {
+         this.channel = new ArrayList<>();
+      }
+      if (!this.channel.contains(value))
+      {
+         this.channel.add(value);
+         value.setCurrentUser(this);
+         this.firePropertyChange(PROPERTY_CHANNEL, null, value);
+      }
+      return this;
+   }
+
+   public CurrentUser withChannel(ServerChannel... value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withChannel(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withChannel(Collection<? extends ServerChannel> value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withChannel(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutChannel(ServerChannel value)
+   {
+      if (this.channel != null && this.channel.remove(value))
+      {
+         value.setCurrentUser(null);
+         this.firePropertyChange(PROPERTY_CHANNEL, value, null);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutChannel(ServerChannel... value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withoutChannel(item);
+      }
+      return this;
+   }
+
+   public CurrentUser withoutChannel(Collection<? extends ServerChannel> value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withoutChannel(item);
+      }
       return this;
    }
 
@@ -308,5 +376,6 @@ public class CurrentUser
       this.withoutUser(new ArrayList<>(this.getUser()));
       this.withoutServer(new ArrayList<>(this.getServer()));
       this.withoutPrivateChat(new ArrayList<>(this.getPrivateChat()));
+      this.withoutChannel(new ArrayList<>(this.getChannel()));
    }
 }

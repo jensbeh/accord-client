@@ -1,8 +1,8 @@
 package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
@@ -21,12 +21,12 @@ public class ServerSubSettingsPrivilegeController {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
-    private final Channel channel;
+    private final ServerChannel channel;
     private final RestClient restClient;
     private User selectedRemoveUser;
     private User selectedAddUser;
 
-    public ServerSubSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server, Channel channel) {
+    public ServerSubSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server, ServerChannel channel) {
         this.view = view;
         this.builder = builder;
         this.server = server;

@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.ServerViewController;
-import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.ServerChannel;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
@@ -14,8 +14,8 @@ import javafx.scene.shape.Circle;
 
 import java.lang.reflect.Field;
 
-public class AlternateServerChannelListCellFactory implements javafx.util.Callback<ListView<Channel>, ListCell<Channel>> {
-    private static ListView<Channel> channelListView;
+public class AlternateServerChannelListCellFactory implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
+    private static ListView<ServerChannel> channelListView;
 
     /**
      * The <code>call</code> method is called when required, and is given a
@@ -28,16 +28,16 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
      * parameter value.
      */
     @Override
-    public ListCell<Channel> call(ListView<Channel> param) {
+    public ListCell<ServerChannel> call(ListView<ServerChannel> param) {
         this.channelListView = param;
         return new ChannelListCell();
     }
 
-    private static class ChannelListCell extends ListCell<Channel> {
+    private static class ChannelListCell extends ListCell<ServerChannel> {
 
         private boolean isScrollBarVisible;
 
-        protected void updateItem(Channel item, boolean empty) {
+        protected void updateItem(ServerChannel item, boolean empty) {
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             Label name = new Label();

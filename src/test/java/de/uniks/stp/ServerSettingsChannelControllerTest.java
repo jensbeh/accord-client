@@ -1,8 +1,8 @@
 package de.uniks.stp;
 
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.scene.control.*;
@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -125,7 +124,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Label categoryLabel = lookup("#categoryLabel").query();
         ComboBox<Categories> categorySelector = lookup("#categorySelector").query();
         Label editChannelsLabel = lookup("#editChannelsLabel").query();
-        ComboBox<Channel> editChannelsSelector = lookup("#editChannelsSelector").query();
+        ComboBox<ServerChannel> editChannelsSelector = lookup("#editChannelsSelector").query();
         TextField editChannelsTextField = lookup("#editChannelsTextField").query();
         Button channelChangeButton = lookup("#channelChangeButton").query();
         Button channelDeleteButton = lookup("#channelDeleteButton").query();
@@ -176,8 +175,8 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         Assert.assertEquals(channelSize + 1, currentServer.getCategories().get(0).getChannel().size());
         Assert.assertEquals("", createChannelTextField.getText());
         boolean found = false;
-        for(Channel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
-            if(channel.getName().equals("NewTestChannel")) {
+        for (ServerChannel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
+            if (channel.getName().equals("NewTestChannel")) {
                 found = true;
                 break;
             }
@@ -193,8 +192,8 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(channelSize - 1, currentServer.getCategories().get(0).getChannel().size());
         found = false;
-        for(Channel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
-            if(channel.getName().equals("ByeChannel")) {
+        for (ServerChannel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
+            if (channel.getName().equals("ByeChannel")) {
                 found = true;
                 break;
             }

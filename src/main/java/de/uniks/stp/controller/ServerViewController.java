@@ -74,11 +74,11 @@ public class ServerViewController {
         this.homeViewController = homeViewController;
     }
 
-    public static Channel getSelectedChat() {
+    public static ServerChannel getSelectedChat() {
         return builder.getCurrentServerChannel();
     }
 
-    public static void setSelectedChat(Channel Chat) {
+    public static void setSelectedChat(ServerChannel Chat) {
         builder.setCurrentServerChannel(Chat);
     }
 
@@ -296,7 +296,7 @@ public class ServerViewController {
                                 }
 
                                 for (Categories categories : server.getCategories()) {
-                                    for (Channel channel : categories.getChannel()) {
+                                    for (ServerChannel channel : categories.getChannel()) {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
                                             if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
@@ -562,7 +562,7 @@ public class ServerViewController {
         for (Server server : builder.getPersonalUser().getServer()) {
             for (Categories cat : server.getCategories()) {
                 if (cat.getId().equals(categoryId)) {
-                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
+                    ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
                     cat.withChannel(newChannel);
                     if (builder.getCurrentServer() == this.server) {
                         Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
@@ -586,7 +586,7 @@ public class ServerViewController {
         for (Server server : builder.getPersonalUser().getServer()) {
             for (Categories cat : server.getCategories()) {
                 if (cat.getId().equals(categoryId)) {
-                    for (Channel channel : cat.getChannel()) {
+                    for (ServerChannel channel : cat.getChannel()) {
                         if (channel.getId().equals(channelId)) {
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == this.server) {
@@ -665,7 +665,7 @@ public class ServerViewController {
         }
         for (Categories category : this.server.getCategories()) {
             if (category.getId().equals(categoryId)) {
-                for (Channel channel : category.getChannel()) {
+                for (ServerChannel channel : category.getChannel()) {
                     if (channel.getId().equals(channelId)) {
                         flag = true;
                         category.withoutChannel(channel);
@@ -679,7 +679,7 @@ public class ServerViewController {
                     }
                 }
                 if (!flag) {
-                    Channel newChannel = new Channel().setId(channelId).setType(channelType).setName(channelName)
+                    ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                             .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
                     category.withChannel(newChannel);
                     if (builder.getCurrentServer() == this.server) {
@@ -748,7 +748,7 @@ public class ServerViewController {
                 JSONArray data = body.getObject().getJSONArray("data");
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject channelInfo = data.getJSONObject(i);
-                    Channel channel = new Channel();
+                    ServerChannel channel = new ServerChannel();
                     channel.setCurrentUser(builder.getPersonalUser());
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
@@ -774,7 +774,7 @@ public class ServerViewController {
         });
     }
 
-    private void loadChannelMessages(Channel channel, ServerReadyCallback serverReadyCallback) {
+    private void loadChannelMessages(ServerChannel channel, ServerReadyCallback serverReadyCallback) {
         System.out.println(new Date().getTime());
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();

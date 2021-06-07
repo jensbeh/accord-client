@@ -1,6 +1,6 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -177,7 +176,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
             }
         }
 
-        
+
         Thread.sleep(2000);
     }
 
@@ -201,7 +200,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
         ws.stop();
 
-        
+
         Thread.sleep(2000);
     }
 
@@ -290,7 +289,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         Assert.assertTrue(backgroundSecondTime.isVisible());
         Assert.assertTrue(foregroundSecondTime.isVisible());
 
-        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUser1_ID));
         Thread.sleep(2000);
 
@@ -299,7 +298,6 @@ public class PrivateViewControllerTest extends ApplicationTest {
         Assert.assertFalse(lookup("#notificationCounterBackground_" + testUser1_ID).queryAll().contains(backgroundSecondTime));
         Assert.assertFalse(lookup("#notificationCounterForeground_" + testUser1_ID).queryAll().contains(foregroundSecondTime));
 
-        
 
         shutDownWebSocketClient();
         restClient.logout(testUser1_KEY, response -> {

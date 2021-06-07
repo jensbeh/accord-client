@@ -147,8 +147,8 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
-    public void getChannelMessages(long timestamp,String serverId,String catId,String channelId,String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.get(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId+ SERVER_CATEGORIES_PATH + "/" + catId+SERVER_CHANNELS_PATH+ "/" + channelId+SERVER_MESSAGES_PATH+timestamp).header("userKey", userKey);
+    public void getChannelMessages(long timestamp, String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.get(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGES_PATH + timestamp).header("userKey", userKey);
         sendRequest(request, callback);
     }
 }

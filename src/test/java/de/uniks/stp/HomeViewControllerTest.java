@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.PrivateViewController;
-import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
@@ -16,7 +16,6 @@ import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -227,7 +226,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         Thread.sleep(500);
-        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         Assert.assertEquals(testUserOne.getName(), privateChatList.getItems().get(0).getName());
 
         restClient.logout(userKey, response -> {
@@ -322,7 +321,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(testUserTwo.getName(), PrivateViewController.getSelectedChat().getName());
 
-        ListView<Channel> privateChatList = lookup("#privateChatList").query();
+        ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
         Thread.sleep(2000);
 

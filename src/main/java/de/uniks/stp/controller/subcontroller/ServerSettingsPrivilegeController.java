@@ -3,8 +3,8 @@ package de.uniks.stp.controller.subcontroller;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Channel;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -28,7 +28,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private final ModelBuilder builder;
     private final Server server;
     private ComboBox<Categories> categoryChoice;
-    private ComboBox<Channel> channelChoice;
+    private ComboBox<ServerChannel> channelChoice;
     private RadioButton privilegeOnButton;
     private RadioButton privilegeOffButton;
     private HBox privilegeOn;
@@ -37,7 +37,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private ToggleGroup group;
     private final RestClient restClient;
     private Categories selectedCategory;
-    private Channel selectedChannel;
+    private ServerChannel selectedChannel;
 
 
     public ServerSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server) {
@@ -49,7 +49,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
 
     public void init() {
         categoryChoice = (ComboBox<Categories>) view.lookup("#Category");
-        channelChoice = (ComboBox<Channel>) view.lookup("#Channels");
+        channelChoice = (ComboBox<ServerChannel>) view.lookup("#Channels");
         privilegeOnButton = (RadioButton) view.lookup("#Privilege_On_Button");
         privilegeOffButton = (RadioButton) view.lookup("#Privilege_Off_Button");
         privilegeOn = (HBox) view.lookup("#Privilege_On");
@@ -92,11 +92,11 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             }
             Platform.runLater(() -> channelChoice.getItems().clear());
             // load channel for this category
-            for (Channel channel : selectedCategory.getChannel()) {
+            for (ServerChannel channel : selectedCategory.getChannel()) {
                 Platform.runLater(() -> channelChoice.getItems().add(channel));
-                channelChoice.setConverter(new StringConverter<Channel>() {
+                channelChoice.setConverter(new StringConverter<ServerChannel>() {
                     @Override
-                    public String toString(Channel object) {
+                    public String toString(ServerChannel object) {
                         if (object == null) {
                             return "Select channel...";
                         }
@@ -104,7 +104,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                     }
 
                     @Override
-                    public Channel fromString(String string) {
+                    public ServerChannel fromString(String string) {
                         return null;
                     }
                 });
@@ -125,8 +125,8 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         });
         // start property change listener
         for (Categories cat : server.getCategories()) {
-            for (Channel channel : cat.getChannel()) {
-                channel.addPropertyChangeListener(Channel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
+            for (ServerChannel channel : cat.getChannel()) {
+                channel.addPropertyChangeListener(ServerChannel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
             }
         }
     }
@@ -223,7 +223,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             serverSubSettingsPrivilegeController = null;
         }
         for (Categories cat : server.getCategories()) {
-            for (Channel channel : cat.getChannel()) {
+            for (ServerChannel channel : cat.getChannel()) {
                 channel.removePropertyChangeListener(this::onPrivilegeChanged);
             }
         }

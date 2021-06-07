@@ -2,7 +2,7 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateServerChannelListCellFactory;
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Channel;
+import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.Parent;
@@ -17,7 +17,7 @@ public class CategorySubController {
     private Parent view;
     private Categories category;
     private Label categoryName;
-    private ListView<Channel> channelList;
+    private ListView<ServerChannel> channelList;
     private AlternateServerChannelListCellFactory channelListCellFactory;
     private int ROW_HEIGHT = 30;
 
@@ -30,7 +30,7 @@ public class CategorySubController {
     public void init() {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
-        channelList = (ListView<Channel>) view.lookup("#channellist");
+        channelList = (ListView<ServerChannel>) view.lookup("#channellist");
         channelListCellFactory = new AlternateServerChannelListCellFactory();
         channelList.setCellFactory(channelListCellFactory);
         channelList.setItems(FXCollections.observableList(category.getChannel()));
@@ -50,7 +50,7 @@ public class CategorySubController {
      * sets the selectedChat new.
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
-        Channel channel = this.channelList.getSelectionModel().getSelectedItem();
+        ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
             channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);

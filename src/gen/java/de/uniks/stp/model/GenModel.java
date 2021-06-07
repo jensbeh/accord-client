@@ -19,7 +19,7 @@ public class GenModel implements ClassModelDecorator {
 
         mm.associate(server, "categories", 3, categories, "server", 1);
 
-        Clazz channel = mm.haveClass("Channel");
+        Clazz channel = mm.haveClass("ServerChannel");
         mm.haveAttribute(channel, "name", Type.STRING);
         mm.haveAttribute(channel, "id", Type.STRING);
         mm.haveAttribute(channel, "unreadMessagesCounter", Type.INT);
@@ -27,6 +27,11 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(channel, "type", Type.STRING);
 
         mm.associate(categories, "channel", 3, channel, "categories", 1);
+
+        Clazz privateChat = mm.haveClass("PrivateChat");
+        mm.haveAttribute(privateChat, "name", Type.STRING);
+        mm.haveAttribute(privateChat, "id", Type.STRING);
+        mm.haveAttribute(privateChat, "unreadMessagesCounter", Type.INT);
 
         Clazz user = mm.haveClass("User");
         mm.haveAttribute(user, "name", Type.STRING);
@@ -39,12 +44,12 @@ public class GenModel implements ClassModelDecorator {
         Clazz currentUser = mm.haveClass("CurrentUser");
         mm.haveAttribute(currentUser, "name", Type.STRING);
         mm.haveAttribute(currentUser, "userKey", Type.STRING);
-        mm.haveAttribute(currentUser,"password",Type.STRING);
+        mm.haveAttribute(currentUser, "password", Type.STRING);
 
         mm.associate(currentUser, "user", 3, user, "currentUser", 1);
         mm.associate(currentUser, "server", 3, server, "currentUser", 1);
-        mm.associate(currentUser, "privateChat", 3, channel, "currentUser", 1);
-
+        mm.associate(currentUser, "privateChat", 3, privateChat, "currentUser", 1);
+        mm.associate(currentUser, "channel", 3, channel, "currentUser", 1);
 
         Clazz msg = mm.haveClass("Message");
         mm.haveAttribute(msg, "from", Type.STRING);
@@ -52,6 +57,7 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(msg, "message", Type.STRING);
 
         mm.associate(channel, "message", 3, msg, "channel", 1);
+        mm.associate(privateChat, "message", 3, msg, "privateChat", 1);
     }
 }
 

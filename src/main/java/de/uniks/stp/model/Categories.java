@@ -12,12 +12,12 @@ public class Categories {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_SERVER = "server";
-    public static final String PROPERTY_CHANNEL = "channel";
+   public static final String PROPERTY_CHANNEL = "channel";
     private String name;
     private String id;
     private Server server;
     protected PropertyChangeSupport listeners;
-    private List<Channel> channel;
+   private List<ServerChannel> channel;
 
     public String getName()
    {
@@ -82,12 +82,12 @@ public class Categories {
       return this;
    }
 
-    public List<Channel> getChannel()
+   public List<ServerChannel> getChannel()
    {
       return this.channel != null ? Collections.unmodifiableList(this.channel) : Collections.emptyList();
    }
 
-    public Categories withChannel(Channel value)
+   public Categories withChannel(ServerChannel value)
    {
       if (this.channel == null)
       {
@@ -102,25 +102,25 @@ public class Categories {
       return this;
    }
 
-    public Categories withChannel(Channel... value)
+   public Categories withChannel(ServerChannel... value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withChannel(item);
       }
       return this;
    }
 
-    public Categories withChannel(Collection<? extends Channel> value)
+   public Categories withChannel(Collection<? extends ServerChannel> value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withChannel(item);
       }
       return this;
    }
 
-    public Categories withoutChannel(Channel value)
+   public Categories withoutChannel(ServerChannel value)
    {
       if (this.channel != null && this.channel.remove(value))
       {
@@ -130,18 +130,18 @@ public class Categories {
       return this;
    }
 
-    public Categories withoutChannel(Channel... value)
+   public Categories withoutChannel(ServerChannel... value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withoutChannel(item);
       }
       return this;
    }
 
-    public Categories withoutChannel(Collection<? extends Channel> value)
+   public Categories withoutChannel(Collection<? extends ServerChannel> value)
    {
-      for (final Channel item : value)
+      for (final ServerChannel item : value)
       {
          this.withoutChannel(item);
       }
