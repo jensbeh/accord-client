@@ -135,7 +135,7 @@ public class ServerViewController {
             inviteUsers = serverMenuButton.getItems().get(1);
             inviteUsers.setOnAction(this::onInviteUsersClicked);
         }
-        builder.setServerChatWebSocketClient(this.chatWebSocketClient);
+        builder.setServerChatWebSocketClient(this.chatWebSocketClient); // TODO because of message view
 
         showCurrentUser();
         showOnlineOfflineUsers();
@@ -229,7 +229,6 @@ public class ServerViewController {
                             }
                         }
                     });
-            //builder.setSERVER_USER(systemWebSocketClient);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -353,7 +352,6 @@ public class ServerViewController {
                         }
                     }
                 });
-        //builder.setServerChatWebSocketClient(serverChatWebSocketClient);
     }
 
     /**
@@ -452,7 +450,7 @@ public class ServerViewController {
      */
     private void deleteServer() {
         Platform.runLater(() -> {
-            if (builder.getCurrentServer() == this.server) { // TODO currentServer nicht gesetzt
+            if (builder.getCurrentServer() == this.server) {
                 builder.getPersonalUser().withoutServer(this.server);
                 builder.setCurrentServer(null);
                 this.homeViewController.serverDeleted();
@@ -467,7 +465,7 @@ public class ServerViewController {
             Optional<ButtonType> result = alert.showAndWait();
         });
 
-        homeViewController.stopServer(this.server); // TODO
+        homeViewController.stopServer(this.server);
     }
 
     /**
@@ -489,7 +487,7 @@ public class ServerViewController {
                 if (!found) {
                     Categories category = new Categories().setName(name).setId(categoryId);
                     server.withCategories(category);
-                    if (builder.getCurrentServer() == this.server) { //TODO vielleicht nicht ausreichend um Map zu erweitern
+                    if (builder.getCurrentServer() == this.server) {
                         generateCategoryChannelView(category);
                     }
                 }
@@ -508,10 +506,10 @@ public class ServerViewController {
             if (server.getId().equals(serverId)) {
                 for (Categories categories : server.getCategories()) {
                     if (categories.getId().equals(categoryId)) {
-                        if (builder.getCurrentServer() == this.server) { //TODO vllt nicht ausreichend wegen Map
+                        server.withoutCategories(categories);
+                        if (builder.getCurrentServer() == this.server) {
                             for (Node view : categoryBox.getChildren()) {
                                 if (view.getId().equals(categories.getId())) {
-                                    server.withoutCategories(categories);
                                     Platform.runLater(() -> this.categoryBox.getChildren().remove(view));
                                     categorySubControllerList.get(categories).stop();
                                     categorySubControllerList.remove(categories);
@@ -613,7 +611,7 @@ public class ServerViewController {
         String name = jsonData.getString("name");
         boolean status = jsonData.getBoolean("online");
 
-       this.server.withUser(buildServerUser(name, id, status));
+        this.server.withUser(buildServerUser(name, id, status));
         if (builder.getCurrentServer() == this.server) {
             showOnlineOfflineUsers();
         }
@@ -640,8 +638,7 @@ public class ServerViewController {
                 alert.setHeaderText("Server " + this.server.getName() + " was leaved!");
                 Optional<ButtonType> result = alert.showAndWait();
             });
-
-            homeViewController.stopServer(this.server); // TODO
+            homeViewController.stopServer(this.server);
         }
     }
 

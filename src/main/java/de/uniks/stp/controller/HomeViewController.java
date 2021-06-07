@@ -98,7 +98,7 @@ public class HomeViewController {
                         serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
                             @Override
                             public void onSuccess(String status) {
-                                // TODO start here homeView -> from loinView this!
+                                // TODO start here homeView -> from loginView this!
                                 System.out.println("loaded Server " + server.getName());
                             }
                         });
@@ -118,9 +118,9 @@ public class HomeViewController {
     }
 
     /**
-     * Updates Servers in case a server was deleted while you are on the homeScreen receive a message
+     * Updates Servers name if case the handle massage calls the changeServerName method.
      */
-    public void showServerUpdate() { // TODO
+    public void showServerUpdate() {
         serverList.refresh();
     }
 
@@ -140,7 +140,6 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
-        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -148,14 +147,17 @@ public class HomeViewController {
      */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
-        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
      * Stops the deleted server.
      */
     public void stopServer(Server server) {
-        serverController.get(server).stop();
+        if (builder.getUSER_CLIENT() != null) {
+            if (builder.getUSER_CLIENT().getSession() != null) {
+                serverController.get(server).stop();
+            }
+        }
         serverController.remove(server);
         serverViews.remove(server);
     }
@@ -231,7 +233,7 @@ public class HomeViewController {
     private void joinNewServer() {
         Platform.runLater(() -> {
             stage.close();
-            showServers(new ServerLoadedCallback() { // TODO nur neuen neu laden
+            showServers(new ServerLoadedCallback() {
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
@@ -276,7 +278,7 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            showServers(new ServerLoadedCallback() { // TODO nur neuen neu laden
+            showServers(new ServerLoadedCallback() {
                 @Override
                 public void onSuccess() {
                     for (Server server : builder.getPersonalUser().getServer()) {
@@ -358,19 +360,10 @@ public class HomeViewController {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
             restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
                 JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
-                //List to track the online users in order to remove old users that are now offline
-                ArrayList<Server> onlineServers = new ArrayList<>();
                 for (int i = 0; i < jsonResponse.length(); i++) {
                     String serverName = jsonResponse.getJSONObject(i).get("name").toString();
                     String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                    Server server = builder.buildServer(serverName, serverId);
-                    onlineServers.add(server);
-                }
-                for (Server server : builder.getPersonalUser().getServer()) {
-                    if (!onlineServers.contains(server)) {
-                        builder.getPersonalUser().withoutServer(server);
-                        // TODO stop websockets here ???
-                    }
+                    builder.buildServer(serverName, serverId);
                 }
                 Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
                 serverLoadedCallback.onSuccess();
@@ -404,15 +397,6 @@ public class HomeViewController {
             try {
                 if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
                     builder.getPrivateChatWebSocketCLient().stop();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (builder.getServerChatWebSocketClient() != null) {
-            try {
-                if (builder.getServerChatWebSocketClient().getSession() != null) {
-                    builder.getServerChatWebSocketClient().stop();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -496,10 +480,12 @@ public class HomeViewController {
             privateViewController = null;
         }
         for (Server server : builder.getServers()) {
-            if (serverController.get(server) != null) {
-                serverController.get(server).stop();
-                serverController.remove(server);
+            if (builder.getUSER_CLIENT() != null) {
+                if (builder.getUSER_CLIENT().getSession() != null) {
+                    serverController.get(server).stop();
+                }
             }
+            serverController.remove(server);
         }
     }
 

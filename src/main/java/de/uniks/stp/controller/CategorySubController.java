@@ -50,7 +50,7 @@ public class CategorySubController {
      * sets the selectedChat new.
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
-        Channel channel = this.channelList.getSelectionModel().getSelectedItem(); //TODO message-counter reset
+        Channel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
             channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);
