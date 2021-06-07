@@ -1,11 +1,14 @@
 package de.uniks.stp.controller.snake;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.snake.model.Food;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+
+import static de.uniks.stp.controller.snake.Constants.*;
 
 public class SnakeGameController {
 
@@ -15,25 +18,26 @@ public class SnakeGameController {
     private Label highScoreLabel;
     private Canvas gameField;
 
-    private static final int HEIGHT = 800;
-    private static final int WIGHT = 800;
-    private static final int ROW = 20;
-    private static final int COLUMN = 20;
-    private static final int FIELD_SIZE = HEIGHT / ROW;
-
-
     public SnakeGameController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
     }
 
-    public void init() {
+    public void init() throws InterruptedException {
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext gc = gameField.getGraphicsContext2D();
 
         drawFieldMap(gc);
+
+        spawnFood(gc);
+    }
+
+    private void spawnFood(GraphicsContext gc) {
+        Food food = new Food();
+        gc.setFill(Color.web("FFFFFF"));
+        gc.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
     }
 
     private void drawFieldMap(GraphicsContext gc) {
