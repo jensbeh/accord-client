@@ -2,10 +2,13 @@ package de.uniks.stp.controller.snake;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
+import de.uniks.stp.controller.snake.model.Snake;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
 import static de.uniks.stp.controller.snake.Constants.*;
@@ -14,11 +17,13 @@ public class SnakeGameController {
 
     private Parent view;
     private ModelBuilder builder;
+    private Scene scene;
     private Label scoreLabel;
     private Label highScoreLabel;
     private Canvas gameField;
 
-    public SnakeGameController(Parent view, ModelBuilder builder) {
+    public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
+        this.scene = scene;
         this.view = view;
         this.builder = builder;
     }
@@ -29,9 +34,31 @@ public class SnakeGameController {
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext gc = gameField.getGraphicsContext2D();
 
+        scene.setOnKeyPressed(key -> {
+            if (key.getCode() == KeyCode.RIGHT) {
+                System.out.println("RIGHT");
+            } else if (key.getCode() == KeyCode.LEFT) {
+                System.out.println("LEFT");
+            } else if (key.getCode() == KeyCode.UP) {
+                System.out.println("UP");
+            } else if (key.getCode() == KeyCode.DOWN) {
+                System.out.println("DOWN");
+            }
+        });
+
         drawFieldMap(gc);
 
         spawnFood(gc);
+
+        spawnSnake(gc);
+
+
+    }
+
+    private void spawnSnake(GraphicsContext gc) {
+        Snake snake = new Snake();
+        gc.setFill(Color.web("000000"));
+        gc.fillRect(snake.getPosX() * FIELD_SIZE, snake.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
     }
 
     private void spawnFood(GraphicsContext gc) {

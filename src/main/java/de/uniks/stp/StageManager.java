@@ -269,7 +269,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            snakeGameController = new SnakeGameController(root, builder);
+            snakeGameController = new SnakeGameController(scene, root, builder);
             snakeGameController.init();
 
             //start snake game stage
