@@ -17,6 +17,9 @@ import org.junit.BeforeClass;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class ServerMessageTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
@@ -115,13 +118,15 @@ public class ServerMessageTest extends ApplicationTest {
         messageField.setText("Okay!");
         Thread.sleep(2000);
         clickOn("#sendButton");
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
+        String time = dtf2.format(LocalDateTime.now());
         Thread.sleep(2000);
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
         Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
-        Assert.assertEquals(testUserOneName, userNameLabel.getText());
+        Assert.assertEquals(time + " " + testUserOneName, userNameLabel.getText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
