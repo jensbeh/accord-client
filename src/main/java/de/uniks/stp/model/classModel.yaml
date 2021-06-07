@@ -61,7 +61,7 @@
   modified: 	false
   name: 	Message
   propertyStyle: 	Bean
-  roles: 	message_channel 	message_privateChat
+  roles: 	message_serverChannel 	message_privateChat
 
 - c1: 	org.fulib.classmodel.CollectionType
   implClass: 	class java.util.ArrayList
@@ -256,7 +256,7 @@
   id: 	ServerChannel_message
   modified: 	false
   name: 	message
-  other: 	message_channel
+  other: 	message_serverChannel
   propertyStyle: 	Bean
   roleType: 	"java.util.ArrayList<%s>"
 
@@ -472,13 +472,13 @@
   type: 	String
   typeSignature: 	String
 
-- message_channel: 	org.fulib.classmodel.AssocRole
+- message_serverChannel: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	1
   clazz: 	message
-  id: 	Message_channel
+  id: 	Message_serverChannel
   modified: 	false
-  name: 	channel
+  name: 	serverChannel
   other: 	serverChannel_message
   propertyStyle: 	Bean
 

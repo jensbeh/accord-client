@@ -26,8 +26,8 @@ public class ServerChannel
    private Categories categories;
    private List<User> privilegedUsers;
    private CurrentUser currentUser;
-   private List<Message> message;
    protected PropertyChangeSupport listeners;
+   private List<Message> message;
 
    public String getName()
    {
@@ -253,7 +253,7 @@ public class ServerChannel
       if (!this.message.contains(value))
       {
          this.message.add(value);
-         value.setChannel(this);
+         value.setServerChannel(this);
          this.firePropertyChange(PROPERTY_MESSAGE, null, value);
       }
       return this;
@@ -281,7 +281,7 @@ public class ServerChannel
    {
       if (this.message != null && this.message.remove(value))
       {
-         value.setChannel(null);
+         value.setServerChannel(null);
          this.firePropertyChange(PROPERTY_MESSAGE, value, null);
       }
       return this;

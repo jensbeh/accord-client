@@ -7,14 +7,14 @@ public class Message
    public static final String PROPERTY_FROM = "from";
    public static final String PROPERTY_MESSAGE = "message";
    public static final String PROPERTY_TIMESTAMP = "timestamp";
-   public static final String PROPERTY_CHANNEL = "channel";
    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+   public static final String PROPERTY_SERVER_CHANNEL = "serverChannel";
    private String from;
    private String message;
    protected PropertyChangeSupport listeners;
    private long timestamp;
-   private ServerChannel channel;
    private PrivateChat privateChat;
+   private ServerChannel serverChannel;
 
    public String getFrom()
    {
@@ -70,33 +70,6 @@ public class Message
       return this;
    }
 
-   public ServerChannel getChannel()
-   {
-      return this.channel;
-   }
-
-   public Message setChannel(ServerChannel value)
-   {
-      if (this.channel == value)
-      {
-         return this;
-      }
-
-      final ServerChannel oldValue = this.channel;
-      if (this.channel != null)
-      {
-         this.channel = null;
-         oldValue.withoutMessage(this);
-      }
-      this.channel = value;
-      if (value != null)
-      {
-         value.withMessage(this);
-      }
-      this.firePropertyChange(PROPERTY_CHANNEL, oldValue, value);
-      return this;
-   }
-
    public PrivateChat getPrivateChat()
    {
       return this.privateChat;
@@ -121,6 +94,33 @@ public class Message
          value.withMessage(this);
       }
       this.firePropertyChange(PROPERTY_PRIVATE_CHAT, oldValue, value);
+      return this;
+   }
+
+   public ServerChannel getServerChannel()
+   {
+      return this.serverChannel;
+   }
+
+   public Message setServerChannel(ServerChannel value)
+   {
+      if (this.serverChannel == value)
+      {
+         return this;
+      }
+
+      final ServerChannel oldValue = this.serverChannel;
+      if (this.serverChannel != null)
+      {
+         this.serverChannel = null;
+         oldValue.withoutMessage(this);
+      }
+      this.serverChannel = value;
+      if (value != null)
+      {
+         value.withMessage(this);
+      }
+      this.firePropertyChange(PROPERTY_SERVER_CHANNEL, oldValue, value);
       return this;
    }
 
@@ -154,7 +154,7 @@ public class Message
 
    public void removeYou()
    {
-      this.setChannel(null);
+      this.setServerChannel(null);
       this.setPrivateChat(null);
    }
 }

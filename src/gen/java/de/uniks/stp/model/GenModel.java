@@ -56,7 +56,7 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(msg, "timestamp", Type.LONG);
         mm.haveAttribute(msg, "message", Type.STRING);
 
-        mm.associate(channel, "message", 3, msg, "channel", 1);
+        mm.associate(channel, "message", 3, msg, "serverChannel", 1);
         mm.associate(privateChat, "message", 3, msg, "privateChat", 1);
     }
 }

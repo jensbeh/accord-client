@@ -280,7 +280,7 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setChannel(builder.getCurrentServerChannel());
+                                        setServerChannel(builder.getCurrentServerChannel());
                                 if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
@@ -290,7 +290,7 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setChannel(builder.getCurrentServerChannel());
+                                        setServerChannel(builder.getCurrentServerChannel());
                                 if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }

@@ -84,11 +84,11 @@ public class ChatViewController {
      */
     public static void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getChannel().getName())) { // only print message when user is on correct chat channel
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if (builder.getCurrentServerChannel().getId().equals(msg.getChannel().getId()))
+            if (builder.getCurrentServerChannel().getId().equals(msg.getServerChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
     }
