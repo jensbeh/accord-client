@@ -11,8 +11,8 @@ public class StartSnakeController {
 
     private Parent view;
     private ModelBuilder builder;
-    private Label congrats;
-    private Label youFound;
+    private Label congratsLabel;
+    private Label easterEggFoundLabel;
     private Button startGame;
 
     /**
@@ -24,8 +24,8 @@ public class StartSnakeController {
     }
 
     public void init() {
-        congrats = (Label) view.lookup("#label_congrats");
-        youFound = (Label) view.lookup("#label_you-found");
+        congratsLabel = (Label) view.lookup("#label_congrats");
+        easterEggFoundLabel = (Label) view.lookup("#label_you-found");
         startGame = (Button) view.lookup("#button_start");
 
         startGame.setOnAction(this::startGame);

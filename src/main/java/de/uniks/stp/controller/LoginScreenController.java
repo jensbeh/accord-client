@@ -67,7 +67,8 @@ public class LoginScreenController {
     }
 
     private void settingsButtonOnClick(ActionEvent actionEvent) {
-        StageManager.showSettingsScreen();
+//        StageManager.showSettingsScreen();
+        StageManager.showStartSnakeScreen();
     }
 
     /**
