@@ -86,9 +86,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         getServerId();
         loginInit(testUserOneName, testUserOnePw);
 
-
-
-
+        //WaitForAsyncUtils.waitForFxEvents();
+        //Thread.sleep(1000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
 
@@ -100,6 +99,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
+        //Thread.sleep(1000);
         clickOn("#serverMenuButton");
         clickOn("#ServerSettings");
         clickOn("#privilege");
@@ -159,7 +159,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         System.out.println(currentServer.getCategories().get(0).getChannel());
         Assert.assertEquals(currentServer.getUser().size() - 2, addMenu.getItems().size());
-        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size()); //TODO fails here
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
         Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 
         clickOn(removeMenu);
