@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.snake;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -34,7 +35,9 @@ public class StartSnakeController {
      * OnClick method -> the game will starts
      */
     private void startGame(ActionEvent actionEvent) {
+        System.out.println("Starting Snake...");
 
+        StageManager.snakeScreen();
     }
 
     public void stop() {
