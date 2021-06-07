@@ -70,8 +70,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setTextFill(Color.BLACK);
                     userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
                 }
-                //userName.setText(item.getFrom());
-
                 //new Line after 50 Characters
                 String str = item.getMessage();
                 int point = 0;
