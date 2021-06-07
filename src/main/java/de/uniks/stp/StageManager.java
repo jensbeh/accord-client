@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.controller.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsController;
@@ -34,6 +35,7 @@ public class StageManager extends Application {
     private static String subStageTitleName;
     private static ServerSettingsController serverSettingsController;
     private static InviteUsersController inviteUsersController;
+    private static StartSnakeController startSnakeController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -217,6 +219,37 @@ public class StageManager extends Application {
             subStage.show();
         } catch (Exception e) {
             System.err.println("Error on showing Setting Screen");
+            e.printStackTrace();
+        }
+    }
+
+    public static void showStartSnakeScreen() {
+        try {
+            // load view
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/snake/startSnakeView.fxml"), getLangBundle());
+            Scene scene = new Scene(root);
+
+            // init controller
+            startSnakeController = new StartSnakeController(root, builder);
+            startSnakeController.init();
+
+            //start snake stage
+            subStage = new Stage();
+            subStage.setTitle("Snake");
+            subStage.setResizable(false);
+            subStage.setScene(scene);
+            subStage.centerOnScreen();
+            subStage.initOwner(stage);
+            subStage.initModality(Modality.WINDOW_MODAL);
+            subStage.setOnCloseRequest(event -> {
+                if (startSnakeController != null) {
+                    startSnakeController.stop();
+                    startSnakeController = null;
+                }
+            });
+            subStage.show();
+        } catch (Exception e) {
+            System.err.println("Error on showing Start Snake Screen");
             e.printStackTrace();
         }
     }
