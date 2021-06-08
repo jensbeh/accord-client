@@ -41,8 +41,8 @@
                                 <Line startX="-180.0" stroke="#9e9e9e" />
                             </children>
                         </VBox>
-                        <ListView id="onlineUsers" fixedCellSize="36.0" prefHeight="28.0" prefWidth="185.0" style="-fx-background-color: #23272a;" stylesheets="@styles/ListViewStyle.css" />
-                        <Line startX="-187.0" stroke="#9e9e9e" />
+                        <ListView id="onlineUsers" fixedCellSize="36.0" prefWidth="185.0" style="-fx-background-color: #23272a;" stylesheets="@styles/ListViewStyle.css" />
+                        <Line id="dividerline_online_offline_user" startX="-187.0" stroke="#9e9e9e" />
                         <ListView id="offlineUsers" fixedCellSize="36.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="86.0" prefWidth="185.0" style="-fx-background-color: #23272a;" stylesheets="@styles/ListViewStyle.css" VBox.vgrow="ALWAYS" />
                     </children>
                 </VBox>
