@@ -55,7 +55,7 @@ public class CategorySubController {
             channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
-            channelList.refresh();
+            serverViewController.refreshAllChannelLists();
             serverViewController.showMessageView();
         }
     }

@@ -883,10 +883,22 @@ public class ServerViewController {
         }
     }
 
+    /**
+     * reset current channel and throw user out from chat view
+     */
     private void throwOutUserFromChatView() {
         builder.setCurrentServerChannel(null);
         setSelectedChat(null);
         this.messageViewController.stop();
         Platform.runLater(() -> this.chatBox.getChildren().clear());
+    }
+
+    /**
+     * refresh all channels to avoid multiple visual selected channels
+     */
+    public void refreshAllChannelLists() {
+        for(Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
+            entry.getValue().refreshChannelList();
+        }
     }
 }
