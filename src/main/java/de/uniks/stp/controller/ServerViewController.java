@@ -64,6 +64,8 @@ public class ServerViewController {
     private HomeViewController homeViewController;
     private Line dividerLineUser;
     private VBox userBox;
+    private int loadedCategories;
+    private int loadedChannel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -119,7 +121,12 @@ public class ServerViewController {
             public void onSuccess(String status) {
                 if (status.equals("success")) {
                     if (getThisServer().getCategories().size() == 0) {
-                        loadCategories(serverReadyCallback);
+                        loadCategories(new CategoriesLoadedCallback() {
+                            @Override
+                            public void onSuccess(String status) {
+                                serverReadyCallback.onSuccess(status);
+                            }
+                        });
                     }
                 }
             }
@@ -132,7 +139,7 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void startShowServer() throws InterruptedException {
-        System.out.println(this.server.getName());
+        System.out.println("show: " + this.server.getName());
         serverMenuButton.setText(this.server.getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
@@ -421,7 +428,6 @@ public class ServerViewController {
         restClient.getServerUsers(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
-            System.out.println(status);
             this.server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
@@ -737,9 +743,15 @@ public class ServerViewController {
     }
 
     /**
+     * Callback, when all category information are loaded
+     */
+    public interface CategoriesLoadedCallback {
+        void onSuccess(String status);
+    }
+    /**
      * Gets categories from server and adds in list
      */
-    public void loadCategories(ServerReadyCallback serverReadyCallback) {
+    public void loadCategories(CategoriesLoadedCallback categoriesLoadedCallback) {
         restClient.getServerCategories(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -751,18 +763,33 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    loadChannels(categories, serverReadyCallback);
+                    loadChannels(categories, new ChannelLoadedCallback() {
+                        @Override
+                        public void onSuccess(String status) {
+                            loadedCategories++;
+                            if (loadedCategories == data.length()) {
+                                loadedCategories = 0;
+                                categoriesLoadedCallback.onSuccess(status);
+                            }
+                        }
+                    });
                 }
             }
         });
     }
 
     /**
+     * Callback, when all channel information are loaded
+     */
+    public interface ChannelLoadedCallback {
+        void onSuccess(String status);
+    }
+    /**
      * Gets all channels for a category and adds in list
      *
      * @param cat the category to load the channels from it
      */
-    public void loadChannels(Categories cat, ServerReadyCallback serverReadyCallback) {
+    public void loadChannels(Categories cat, ChannelLoadedCallback channelLoadedCallback) {
         restClient.getCategoryChannels(this.server.getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -775,7 +802,6 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
-                    loadChannelMessages(channel, serverReadyCallback);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
 
@@ -791,13 +817,28 @@ public class ServerViewController {
                             }
                         }
                     }
+                    loadChannelMessages(channel, new MessagesLoadedCallback() {
+                        @Override
+                        public void onSuccess(String status) {
+                            loadedChannel++;
+                            if (loadedChannel == data.length()) {
+                                loadedChannel = 0;
+                                channelLoadedCallback.onSuccess(status);
+                            }
+                        }
+                    });
                 }
             }
         });
     }
 
-    private void loadChannelMessages(ServerChannel channel, ServerReadyCallback serverReadyCallback) {
-        System.out.println(new Date().getTime());
+    /**
+     * Callback, when all message information are loaded
+     */
+    public interface MessagesLoadedCallback {
+        void onSuccess(String status);
+    }
+    private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -811,7 +852,7 @@ public class ServerViewController {
                     Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
                     channel.withMessage(message);
                 }
-                serverReadyCallback.onSuccess(status);
+                messagesLoadedCallback.onSuccess(status);
             }
         });
     }
