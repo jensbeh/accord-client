@@ -41,7 +41,7 @@ public class SnakeGameController {
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
-        GraphicsContext gc = gameField.getGraphicsContext2D();
+        GraphicsContext brush = gameField.getGraphicsContext2D();
         scoreLabel.setText("Score:");
 
         game = new Game(0,0);
@@ -62,30 +62,30 @@ public class SnakeGameController {
             }
         });
 
-        drawFieldMap(gc);
-        spawnFood(gc);
-        spawnSnake(gc);
+        drawFieldMap(brush);
+        spawnFood(brush);
+        spawnSnake(brush);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), run -> main(gc)));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), run -> main(brush)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
 
-    private void main(GraphicsContext gc) {
+    private void main(GraphicsContext brush) {
         System.out.println("RUN");
-        drawFieldMap(gc);
-        drawFood(gc);
-        moveSnake(gc);
+        drawFieldMap(brush);
+        drawFood(brush);
+        moveSnake(brush);
     }
 
 
-    private void spawnSnake(GraphicsContext gc) {
+    private void spawnSnake(GraphicsContext brush) {
         snake = new Snake();
-        gc.setFill(Color.web("000000"));
-        gc.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        brush.setFill(Color.web("000000"));
+        brush.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void moveSnake(GraphicsContext gc) {
+    private void moveSnake(GraphicsContext brush) {
         switch (game.getCurrentDirection()) {
             case UP:
                 snake.addPosY(-FIELD_SIZE);
@@ -103,38 +103,38 @@ public class SnakeGameController {
                 snake.addPosX(FIELD_SIZE);
                 break;
         }
-        gc.setFill(Color.web("000000"));
-        gc.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        brush.setFill(Color.web("000000"));
+        brush.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void spawnFood(GraphicsContext gc) {
+    private void spawnFood(GraphicsContext brush) {
         food = new Food();
-        gc.setFill(Color.web("FFFFFF"));
-        gc.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+        brush.setFill(Color.web("FFFFFF"));
+        brush.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void drawFood(GraphicsContext gc) {
-        gc.setFill(Color.web("FFFFFF"));
-        gc.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+    private void drawFood(GraphicsContext brush) {
+        brush.setFill(Color.web("FFFFFF"));
+        brush.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void drawFieldMap(GraphicsContext gc) {
+    private void drawFieldMap(GraphicsContext brush) {
         for (int row = 0; row < ROW; row++) {
             for (int column = 0; column < COLUMN; column++) {
                 if (row % 2 == 0) {
                     if (column % 2 == 0) {
-                        gc.setFill(Color.web("8FDD37"));
+                        brush.setFill(Color.web("8FDD37"));
                     } else {
-                        gc.setFill(Color.web("6DCC01"));
+                        brush.setFill(Color.web("6DCC01"));
                     }
                 } else {
                     if (column % 2 == 1) {
-                        gc.setFill(Color.web("8FDD37"));
+                        brush.setFill(Color.web("8FDD37"));
                     } else {
-                        gc.setFill(Color.web("6DCC01"));
+                        brush.setFill(Color.web("6DCC01"));
                     }
                 }
-                gc.fillRect(column * FIELD_SIZE, row * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+                brush.fillRect(column * FIELD_SIZE, row * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
             }
         }
     }
