@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 
 public class ChatViewController {
     private static ModelBuilder builder;
-    private ServerChannel currentChannel;
+    private static ServerChannel currentChannel;
     private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
@@ -103,7 +103,8 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            Platform.runLater(() -> ob.add(msg));
+            if (currentChannel.getId().equals(msg.getServerChannel().getId()))
+                Platform.runLater(() -> ob.add(msg));
         }
     }
 
