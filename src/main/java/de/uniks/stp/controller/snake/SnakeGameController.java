@@ -2,6 +2,7 @@ package de.uniks.stp.controller.snake;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
+import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.controller.snake.model.Snake;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -25,15 +26,10 @@ public class SnakeGameController {
     private Label scoreLabel;
     private Label highScoreLabel;
     private Canvas gameField;
-    private Direction currentDirection;
+    private Game game;
     private Snake snake;
+    private Food food;
 
-    private enum Direction {
-        RIGHT,
-        LEFT,
-        UP,
-        DOWN
-    }
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
         this.scene = scene;
@@ -46,28 +42,30 @@ public class SnakeGameController {
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext gc = gameField.getGraphicsContext2D();
-        currentDirection = Direction.RIGHT; // TODO
+        scoreLabel.setText("Score:");
 
+        game = new Game(0,0);
 
         scene.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) {
                 System.out.println("RIGHT");
-                this.currentDirection = Direction.RIGHT;
+                game.setCurrentDirection(Game.Direction.RIGHT);
             } else if (key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) {
                 System.out.println("LEFT");
-                this.currentDirection = Direction.LEFT;
+                game.setCurrentDirection(Game.Direction.LEFT);
             } else if (key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) {
                 System.out.println("UP");
-                this.currentDirection = Direction.UP;
+                game.setCurrentDirection(Game.Direction.UP);
             } else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) {
                 System.out.println("DOWN");
-                this.currentDirection = Direction.DOWN;
+                game.setCurrentDirection(Game.Direction.DOWN);
             }
         });
 
         drawFieldMap(gc);
         spawnFood(gc);
         spawnSnake(gc);
+
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), run -> main(gc)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
@@ -76,6 +74,7 @@ public class SnakeGameController {
     private void main(GraphicsContext gc) {
         System.out.println("RUN");
         drawFieldMap(gc);
+        drawFood(gc);
         moveSnake(gc);
     }
 
@@ -87,7 +86,7 @@ public class SnakeGameController {
     }
 
     private void moveSnake(GraphicsContext gc) {
-        switch (currentDirection) {
+        switch (game.getCurrentDirection()) {
             case UP:
                 snake.addPosY(-FIELD_SIZE);
                 break;
@@ -109,7 +108,12 @@ public class SnakeGameController {
     }
 
     private void spawnFood(GraphicsContext gc) {
-        Food food = new Food();
+        food = new Food();
+        gc.setFill(Color.web("FFFFFF"));
+        gc.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+    }
+
+    private void drawFood(GraphicsContext gc) {
         gc.setFill(Color.web("FFFFFF"));
         gc.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
     }
