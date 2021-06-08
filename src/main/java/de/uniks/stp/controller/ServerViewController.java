@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,6 +62,8 @@ public class ServerViewController {
     private VBox categoryBox;
     private ScrollPane scrollPaneCategories;
     private HomeViewController homeViewController;
+    private Line dividerLineUser;
+    private VBox userBox;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -106,6 +109,8 @@ public class ServerViewController {
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new AlternateUserListCellFactory());
+        dividerLineUser = (Line) scrollPaneUserBox.getContent().lookup("#dividerline_online_offline_user");
+        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
 
@@ -653,7 +658,7 @@ public class ServerViewController {
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
         String memberId = "";
-        boolean flag = false;
+        boolean hasChannel = false;
         ArrayList<User> member = new ArrayList<>();
         for (int j = 0; j < jsonArray.size(); j++) {
             memberId = jsonArray.getString(j);
@@ -667,18 +672,19 @@ public class ServerViewController {
             if (category.getId().equals(categoryId)) {
                 for (ServerChannel channel : category.getChannel()) {
                     if (channel.getId().equals(channelId)) {
-                        flag = true;
-                        category.withoutChannel(channel);
+                        hasChannel = true;
                         channel.setName(channelName);
                         channel.setPrivilege(channelPrivileged);
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
                         channel.withPrivilegedUsers(member);
-                        category.withChannel(channel);
+                        if (builder.getCurrentServer() == this.server) {
+                            Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                        }
                         break;
                     }
                 }
-                if (!flag) {
+                if (!hasChannel) {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                             .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
                     category.withChannel(newChannel);
@@ -701,16 +707,32 @@ public class ServerViewController {
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(() -> checkForOwnership(user.getId()));
                 }
-                onlineUsers.add(user);
+                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
+                    onlineUsers.add(user);
+                }
             } else {
-                offlineUsers.add(user);
+                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
+                    offlineUsers.add(user);
+                }
             }
         }
+
         Platform.runLater(() -> {
-            onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
-            offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
-            onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
-            offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+            this.dividerLineUser.setVisible(onlineUsers.size() > 0 && offlineUsers.size() > 0);
+            if (onlineUsers.size() == 0) {
+                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
+                offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+                onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+                offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+                userBox.setSpacing(0);
+                //onlineUsersList.setPrefHeight(0);
+            } else {
+                userBox.setSpacing(8);
+                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
+                offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+                onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+                offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+            }
         });
     }
 
@@ -883,10 +905,22 @@ public class ServerViewController {
         }
     }
 
+    /**
+     * reset current channel and throw user out from chat view
+     */
     private void throwOutUserFromChatView() {
         builder.setCurrentServerChannel(null);
         setSelectedChat(null);
         this.messageViewController.stop();
         Platform.runLater(() -> this.chatBox.getChildren().clear());
+    }
+
+    /**
+     * refresh all channels to avoid multiple visual selected channels
+     */
+    public void refreshAllChannelLists() {
+        for(Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
+            entry.getValue().refreshChannelList();
+        }
     }
 }

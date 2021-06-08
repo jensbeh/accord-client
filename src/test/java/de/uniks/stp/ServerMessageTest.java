@@ -10,10 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -129,6 +131,17 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertEquals(time + " " + testUserOneName, userNameLabel.getText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
+
+
+        messageField.setText("Okay");
+        write("\n");
+        boolean msgArrived = false;
+        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
+            if (privateChatMessageList.getItems().get(i).getMessage().equals("Okay")) {
+                msgArrived = true;
+            }
+        }
+        Assert.assertTrue(msgArrived);
 
 
         Thread.sleep(2000);

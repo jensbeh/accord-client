@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.json.JSONObject;
@@ -48,6 +49,12 @@ public class ChatViewController {
         ob = FXCollections.observableArrayList();
         this.messageList.setItems(ob);
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+
+        messageTextField.setOnKeyReleased(key -> {
+            if (key.getCode() == KeyCode.ENTER) {
+                sendButton.fire();
+            }
+        });
     }
 
     /**
