@@ -346,6 +346,18 @@ public class PrivateMessageTest extends ApplicationTest {
         Assert.assertEquals(" Okay! ", messageLabel.getText());
         Assert.assertEquals(time + " " + testUserMainName, userNameLabel.getText());
 
+
+        messageField.setText("Okay");
+        write("\n");
+        boolean msgArrived = false;
+        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
+            if (privateChatMessageList.getItems().get(i).getMessage().equals("Okay")) {
+                msgArrived = true;
+            }
+        }
+        Assert.assertTrue(msgArrived);
+
+
         shutDownWebSocketClient();
         restClient.logout(testUserOne_UserKey, response -> {
         });

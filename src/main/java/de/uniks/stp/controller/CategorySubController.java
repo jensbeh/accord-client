@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class CategorySubController {
     private final ServerViewController serverViewController;
@@ -20,6 +21,7 @@ public class CategorySubController {
     private ListView<ServerChannel> channelList;
     private AlternateServerChannelListCellFactory channelListCellFactory;
     private int ROW_HEIGHT = 30;
+    private PropertyChangeListener channelListPCL = this::onChannelNameChanged;
 
     public CategorySubController(Parent view, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -39,6 +41,10 @@ public class CategorySubController {
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.addPropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
 
+        for (ServerChannel channel : category.getChannel()) {
+            channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
+        }
+
         if (category.getChannel().size() > 0) {
             channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT);
         } else {
@@ -55,7 +61,7 @@ public class CategorySubController {
             channel.setUnreadMessagesCounter(0);
             ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
-            channelList.refresh();
+            serverViewController.refreshAllChannelLists();
             serverViewController.showMessageView();
         }
     }
@@ -64,6 +70,11 @@ public class CategorySubController {
         Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
         if (category.getChannel().size() > 0) {
             channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT);
+            for (ServerChannel channel : category.getChannel()) {
+                ServerChannel theChannel = (ServerChannel) propertyChangeEvent.getNewValue(); // if newValue not null -> add PCL, else if null -> removePCL
+                channel.removePropertyChangeListener(this.channelListPCL);
+                channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
+            }
         } else {
             channelList.setPrefHeight(ROW_HEIGHT);
         }
@@ -76,6 +87,10 @@ public class CategorySubController {
         Platform.runLater(() -> categoryName.setText(category.getName()));
     }
 
+    private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
+        channelList.refresh();
+    }
+
     public Categories getCategories() {
         return category;
     }
@@ -84,6 +99,10 @@ public class CategorySubController {
         channelList.setOnMouseReleased(null);
         category.removePropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.removePropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
+
+        for (ServerChannel channel : category.getChannel()) {
+            channel.removePropertyChangeListener(this.channelListPCL);
+        }
     }
 
     public void refreshChannelList() {
