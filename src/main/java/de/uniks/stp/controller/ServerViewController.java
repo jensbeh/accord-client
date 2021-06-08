@@ -748,6 +748,7 @@ public class ServerViewController {
     public interface CategoriesLoadedCallback {
         void onSuccess(String status);
     }
+
     /**
      * Gets categories from server and adds in list
      */
@@ -784,6 +785,7 @@ public class ServerViewController {
     public interface ChannelLoadedCallback {
         void onSuccess(String status);
     }
+
     /**
      * Gets all channels for a category and adds in list
      *
@@ -838,6 +840,7 @@ public class ServerViewController {
     public interface MessagesLoadedCallback {
         void onSuccess(String status);
     }
+
     private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -960,7 +963,7 @@ public class ServerViewController {
      * refresh all channels to avoid multiple visual selected channels
      */
     public void refreshAllChannelLists() {
-        for(Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
+        for (Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
             entry.getValue().refreshChannelList();
         }
     }
