@@ -69,13 +69,12 @@ public class ServerViewController {
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
-     * It also creates a new restClient"
      */
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, HomeViewController homeViewController) {
         this.view = view;
         builder = modelBuilder;
         this.server = server;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
         this.homeViewController = homeViewController;
     }
 

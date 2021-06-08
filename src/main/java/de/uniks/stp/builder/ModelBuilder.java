@@ -4,6 +4,7 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
 
 import java.util.Collections;
@@ -18,6 +19,8 @@ public class ModelBuilder {
     private WebSocketClient USER_CLIENT;
     private WebSocketClient privateChatWebSocketCLient;
     private WebSocketClient serverChatWebSocketClient;
+
+    private RestClient restClient;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -68,6 +71,10 @@ public class ModelBuilder {
 
     public void setCurrentServer(Server currentServer) {
         this.currentServer = currentServer;
+    }
+
+    public void setRestClient(RestClient restClient) {
+        this.restClient = restClient;
     }
 
 
@@ -129,4 +136,7 @@ public class ModelBuilder {
         this.currentServerChannel = currentServerChannel;
     }
 
+    public RestClient getRestClient() {
+        return this.restClient;
+    }
 }

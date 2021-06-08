@@ -29,7 +29,7 @@ public class InviteUsersUserLimitSubController {
     private List<String> selectedList;
 
     public InviteUsersUserLimitSubController(Parent view, ModelBuilder builder, Server server) {
-        this.restClient = new RestClient();
+        this.restClient = builder.getRestClient();
         this.view = view;
         this.builder = builder;
         this.server = server;
