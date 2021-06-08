@@ -42,6 +42,9 @@ public class InviteUsersTempSubController {
         loadLinks();
     }
 
+    /**
+     * Load old links
+     */
     private void loadLinks() {
         restClient.getInvLinks(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
@@ -56,7 +59,6 @@ public class InviteUsersTempSubController {
             }
         });
     }
-
 
     /**
      * OnCreate clicked send restclient request to the server and handles the response accordingly.
