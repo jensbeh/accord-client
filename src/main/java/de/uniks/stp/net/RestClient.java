@@ -121,6 +121,12 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void getInvLinks(String serverId, String userKey, Callback<JsonNode> callback) {
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES;
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        sendRequest(postRequest, callback);
+    }
+
     public void joinServer(String serverId, String inviteId, String username, String password, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
         String body = JSONObject.valueToString(jsonObj);
