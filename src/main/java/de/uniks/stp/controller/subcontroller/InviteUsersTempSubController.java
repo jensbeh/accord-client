@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.subcontroller;
 
-import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -14,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class InviteUsersTempSubController {
     private final Parent view;

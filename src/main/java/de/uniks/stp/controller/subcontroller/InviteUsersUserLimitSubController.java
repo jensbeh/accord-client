@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.subcontroller;
 
-import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -78,7 +77,7 @@ public class InviteUsersUserLimitSubController {
                 String link = inv.getString("link");
                 String type = inv.getString("type");
                 String maxUsers = String.valueOf(inv.getInt("max"));
-                String id = String.valueOf(inv.getInt("id"));
+                String id = inv.getString("id");
                 if (type.equals("count")) {
                     linkComboBox.getItems().add(List.of(link, maxUsers));
                     links.put(link, id);
@@ -106,7 +105,7 @@ public class InviteUsersUserLimitSubController {
                     if (status.equals("success")) {
                         String link = body.getObject().getJSONObject("data").getString("link");
                         String maxUsers = String.valueOf(body.getObject().getJSONObject("data").getInt("max"));
-                        String id = String.valueOf(body.getObject().getJSONObject("data").getInt("id"));
+                        String id = body.getObject().getJSONObject("data").getString("id");
                         linkTextField.setText(link);
                         linkComboBox.getItems().add(List.of(link, maxUsers));
                         links.put(link, id);
