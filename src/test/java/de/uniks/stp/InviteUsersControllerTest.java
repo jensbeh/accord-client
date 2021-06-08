@@ -8,8 +8,11 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+
+import java.util.List;
 
 public class InviteUsersControllerTest extends ApplicationTest {
 
@@ -89,7 +92,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void changeInviteUsersSubViewTest() throws InterruptedException {
         loginInitWithTempUser();
 
@@ -111,8 +114,27 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertTrue(temp.isSelected());
         clickOn("#userLimitSelected");
         Assert.assertFalse(temp.isSelected());
+        // check create and delete userLimitLink
         Label label = lookup("#userLimit").query();
         Assert.assertEquals("User Limit", label.getText());
+        TextField userLimit = lookup("#maxUsers").query();
+        userLimit.setText("1");
+        int count = 0;
+        count = Integer.parseInt(userLimit.getText());
+        Assert.assertEquals(count, 1);
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+        TextField link = lookup("#linkTextField").query();
+        ComboBox<List<String>> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (String s : links.getItems().get(0)) {
+            if (s.equals(link.getText())) {
+                certainLink = s;
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+
         for (Object object : this.listTargetWindows()) {
             if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 Platform.runLater(((Stage) object)::close);
@@ -120,7 +142,32 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 break;
             }
         }
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#userLimitSelected");
+        Platform.runLater(() -> links.getSelectionModel().select(0));
 
+        clickOn(links);
+        moveBy(0, 25);
+        write("\n");
+        clickOn("#deleteLink");
+        String checkDel = "";
+        for (List<String> s : links.getItems()) {
+            if (s.get(0).equals(link.getText())) {
+                checkDel = s.get(0);
+                break;
+            }
+        }
+        Assert.assertEquals("", checkDel);
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
         Thread.sleep(2000);
     }
 
