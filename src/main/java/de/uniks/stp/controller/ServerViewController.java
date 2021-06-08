@@ -653,7 +653,7 @@ public class ServerViewController {
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
         String memberId = "";
-        boolean flag = false;
+        boolean hasChannel = false;
         ArrayList<User> member = new ArrayList<>();
         for (int j = 0; j < jsonArray.size(); j++) {
             memberId = jsonArray.getString(j);
@@ -667,18 +667,19 @@ public class ServerViewController {
             if (category.getId().equals(categoryId)) {
                 for (ServerChannel channel : category.getChannel()) {
                     if (channel.getId().equals(channelId)) {
-                        flag = true;
-                        category.withoutChannel(channel);
+                        hasChannel = true;
                         channel.setName(channelName);
                         channel.setPrivilege(channelPrivileged);
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
                         channel.withPrivilegedUsers(member);
-                        category.withChannel(channel);
+                        if (builder.getCurrentServer() == this.server) {
+                            Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
+                        }
                         break;
                     }
                 }
-                if (!flag) {
+                if (!hasChannel) {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                             .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
                     category.withChannel(newChannel);
