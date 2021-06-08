@@ -8,6 +8,7 @@ import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.controller.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsController;
+import de.uniks.stp.net.RestClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,7 @@ import java.util.ResourceBundle;
 
 
 public class StageManager extends Application {
+    private static RestClient restClient;
     private static ModelBuilder builder;
     private static Stage stage;
     private static Stage subStage;
@@ -39,6 +41,10 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        if (restClient == null) {
+            restClient = new RestClient();
+        }
+
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
         SettingsController.setup();
 
@@ -56,6 +62,7 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
             scene = new Scene(root);
             builder = new ModelBuilder();
+            builder.setRestClient(restClient);
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
             setStageTitle("window_title_login");
@@ -254,6 +261,9 @@ public class StageManager extends Application {
         }
     }
 
+    public static void setRestClient(RestClient rest) {
+        restClient = rest;
+    }
 
     public ModelBuilder getBuilder() {
         return builder;

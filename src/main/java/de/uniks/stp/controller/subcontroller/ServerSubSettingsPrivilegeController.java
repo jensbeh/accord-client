@@ -31,7 +31,7 @@ public class ServerSubSettingsPrivilegeController {
         this.builder = builder;
         this.server = server;
         this.channel = channel;
-        restClient = new RestClient();
+        restClient = builder.getRestClient();
     }
 
     public void init() {

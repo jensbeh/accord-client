@@ -35,12 +35,11 @@ public class CreateServerController {
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
-     * It also creates a new restClient"
      */
     public CreateServerController(Parent view, ModelBuilder builder) {
         this.builder = builder;
         this.view = view;
-        restClient = new RestClient();
+        restClient = builder.getRestClient();
     }
 
     /**

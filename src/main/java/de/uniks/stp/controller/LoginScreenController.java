@@ -40,7 +40,7 @@ public class LoginScreenController {
     public static boolean noConnectionTest;
 
     public LoginScreenController(Parent root, ModelBuilder builder) {
-        this.restClient = new RestClient();
+        this.restClient = builder.getRestClient();
         this.root = root;
         this.builder = builder;
     }

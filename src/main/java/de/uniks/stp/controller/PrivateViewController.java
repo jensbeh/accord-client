@@ -62,7 +62,7 @@ public class PrivateViewController {
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        restClient = new RestClient();
+        restClient = modelBuilder.getRestClient();
     }
 
     public void init() {

@@ -19,7 +19,7 @@ public class OverviewController {
     public OverviewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
     }
 
     public void init() {

@@ -59,7 +59,7 @@ public class HomeViewController {
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
     }
 
     @SuppressWarnings("unchecked")
