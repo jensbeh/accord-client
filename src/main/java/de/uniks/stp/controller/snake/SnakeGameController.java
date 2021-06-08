@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import util.ResourceManager;
 
 import static de.uniks.stp.controller.snake.Constants.*;
 
@@ -44,20 +45,19 @@ public class SnakeGameController {
         GraphicsContext brush = gameField.getGraphicsContext2D();
         scoreLabel.setText("Score:");
 
-        game = new Game(0,0);
+        game = new Game(0, ResourceManager.loadHighScore());
 
         scene.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) {
-                System.out.println("RIGHT");
                 game.setCurrentDirection(Game.Direction.RIGHT);
+
             } else if (key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) {
-                System.out.println("LEFT");
                 game.setCurrentDirection(Game.Direction.LEFT);
+
             } else if (key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) {
-                System.out.println("UP");
                 game.setCurrentDirection(Game.Direction.UP);
+
             } else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) {
-                System.out.println("DOWN");
                 game.setCurrentDirection(Game.Direction.DOWN);
             }
         });
@@ -140,6 +140,6 @@ public class SnakeGameController {
     }
 
     public void stop() {
-
+        ResourceManager.saveHighScore(game.getHighScore());
     }
 }
