@@ -13,8 +13,20 @@ public class Snake {
     public Snake() {
         this.snakeSize = 1;
         Random rand = new Random();
-        this.posX = rand.nextInt(COLUMN);
-        this.posY = rand.nextInt(ROW);
+        this.posX = rand.nextInt(COLUMN) * FIELD_SIZE;
+        this.posY = rand.nextInt(ROW) * FIELD_SIZE;
+    }
+
+    public void setSnakeSize(int snakeSize) {
+        this.snakeSize = snakeSize;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 
     public int getSnakeSize() {
@@ -27,5 +39,13 @@ public class Snake {
 
     public int getPosY() {
         return this.posY;
+    }
+
+    public void addPosY(int addY) {
+        this.posY += addY;
+    }
+
+    public void addPosX(int addX) {
+        this.posX += addX;
     }
 }
