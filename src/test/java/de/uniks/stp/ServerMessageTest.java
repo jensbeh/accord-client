@@ -81,7 +81,7 @@ public class ServerMessageTest extends ApplicationTest {
         Thread.sleep(2000);
     }
 
-    @Test
+    //@Test
     public void testSendAllMessage() throws InterruptedException {
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
@@ -135,7 +135,13 @@ public class ServerMessageTest extends ApplicationTest {
 
         messageField.setText("Okay");
         write("\n");
-        Assert.assertEquals(" Okay ", messageLabel.getText());
+        boolean msgArrived = false;
+        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
+            if (privateChatMessageList.getItems().get(i).getMessage().equals("Okay")) {
+                msgArrived = true;
+            }
+        }
+        Assert.assertTrue(msgArrived);
 
 
         Thread.sleep(2000);
