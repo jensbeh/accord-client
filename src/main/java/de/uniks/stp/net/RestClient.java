@@ -128,7 +128,7 @@ public class RestClient {
     }
 
     public void deleteInvLink(String serverId, String invId, String userKey, Callback<JsonNode> callback) {
-        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES + invId;
+        String url = REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + invId;
         HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
         sendRequest(postRequest, callback);
     }

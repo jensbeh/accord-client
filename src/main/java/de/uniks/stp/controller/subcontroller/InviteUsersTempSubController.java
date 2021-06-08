@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -25,7 +26,8 @@ public class InviteUsersTempSubController {
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
-    private HashMap<String, String> listLinks;
+    private HashMap<String, String> links;
+
 
     public InviteUsersTempSubController(Parent view, ModelBuilder builder, Server server) {
         this.restClient = new RestClient();
@@ -40,6 +42,7 @@ public class InviteUsersTempSubController {
         linkTextField = (TextField) view.lookup("#linkTextField");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
+        links = new HashMap<String, String>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -60,7 +63,7 @@ public class InviteUsersTempSubController {
                 String id = inv.getString("id");
                 if (type.equals("temporal")) {
                     linkComboBox.getItems().add(link);
-                    listLinks.put(link, id);
+                    links.put(link, id);
                 }
             }
         });
@@ -79,7 +82,7 @@ public class InviteUsersTempSubController {
                 String id = body.getObject().getJSONObject("data").getString("id");
                 linkTextField.setText(link);
                 linkComboBox.getItems().add(link);
-                listLinks.put(link, id);
+                links.put(link, id);
             } else if (status.equals("failure")) {
                 System.out.println(body);
             }
@@ -94,8 +97,9 @@ public class InviteUsersTempSubController {
             if (selectedLink.equals(linkTextField.getText())) {
                 linkTextField.setText("Links ...");
             }
-            String invId = listLinks.get(selectedLink);
-            restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {});
+            String invId = links.get(selectedLink);
+            restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {
+            });
             linkComboBox.getItems().remove(selectedLink);
         }
     }

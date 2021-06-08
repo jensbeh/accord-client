@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -13,6 +14,7 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class InviteUsersUserLimitSubController {
@@ -27,6 +29,7 @@ public class InviteUsersUserLimitSubController {
     private TextField userLimit;
     private ComboBox<List<String>> linkComboBox;
     private List<String> selectedList;
+    private HashMap<String, String> links;
 
     public InviteUsersUserLimitSubController(Parent view, ModelBuilder builder, Server server) {
         this.restClient = new RestClient();
@@ -42,6 +45,7 @@ public class InviteUsersUserLimitSubController {
         userLimit = (TextField) view.lookup("#maxUsers");
         linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
 
+        links = new HashMap<String, String>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -74,8 +78,10 @@ public class InviteUsersUserLimitSubController {
                 String link = inv.getString("link");
                 String type = inv.getString("type");
                 String maxUsers = String.valueOf(inv.getInt("max"));
+                String id = String.valueOf(inv.getInt("id"));
                 if (type.equals("count")) {
                     linkComboBox.getItems().add(List.of(link, maxUsers));
+                    links.put(link, id);
                 }
             }
         });
@@ -100,8 +106,10 @@ public class InviteUsersUserLimitSubController {
                     if (status.equals("success")) {
                         String link = body.getObject().getJSONObject("data").getString("link");
                         String maxUsers = String.valueOf(body.getObject().getJSONObject("data").getInt("max"));
+                        String id = String.valueOf(body.getObject().getJSONObject("data").getInt("id"));
                         linkTextField.setText(link);
                         linkComboBox.getItems().add(List.of(link, maxUsers));
+                        links.put(link, id);
                     } else if (status.equals("failure")) {
                         System.out.println(body);
                     }
@@ -119,6 +127,9 @@ public class InviteUsersUserLimitSubController {
             if (link.equals(link2)) {
                 linkTextField.setText("Links ...");
             }
+            String invId = links.get(selectedList.get(0));
+            restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {
+            });
             linkComboBox.getItems().remove(selectedList);
         }
     }
