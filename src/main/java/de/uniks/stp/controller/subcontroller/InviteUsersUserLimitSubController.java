@@ -10,6 +10,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -55,6 +57,26 @@ public class InviteUsersUserLimitSubController {
             @Override
             public List<String> fromString(String string) {
                 return null;
+            }
+        });
+        loadLinks();
+    }
+
+    /**
+     * Load old links
+     */
+    private void loadLinks() {
+        restClient.getInvLinks(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            JSONArray data = body.getObject().getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject inv = data.getJSONObject(i);
+                String link = inv.getString("link");
+                String type = inv.getString("type");
+                String maxUsers = String.valueOf(inv.getInt("max"));
+                if (type.equals("count")) {
+                    linkComboBox.getItems().add(List.of(link, maxUsers));
+                }
             }
         });
     }

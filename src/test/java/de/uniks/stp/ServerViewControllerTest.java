@@ -255,8 +255,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
 
-        Assert.assertNotEquals(0, onlineUserList.getItems().size());
-        Assert.assertNotEquals(0, offlineUserList.getItems().size());
+        Assert.assertEquals(1, onlineUserList.getItems().size());
+        Assert.assertEquals(1, offlineUserList.getItems().size());
 
 
         Thread.sleep(2000);

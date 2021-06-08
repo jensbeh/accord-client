@@ -440,6 +440,9 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        if (mouseEvent.getClickCount() == 15) {
+            StageManager.showStartSnakeScreen();
+        }
     }
 
     /**
