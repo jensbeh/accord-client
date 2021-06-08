@@ -156,7 +156,7 @@ public class ServerViewController {
      */
     private void buildSystemWebSocket() {
         try {
-            systemWebSocketClient = new WebSocketClient(builder, URI.
+            systemWebSocketClient = new WebSocketClient("System " + this.server.getName() , builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()),
                     new WSCallback() {
 
@@ -257,7 +257,7 @@ public class ServerViewController {
      * WebSocket for chat messages.
      */
     private void buildChatWebSocket() {
-        chatWebSocketClient = new WebSocketClient(builder, URI.
+        chatWebSocketClient = new WebSocketClient("Chat " + this.server.getName(), builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                         getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()),
                 new WSCallback() {
