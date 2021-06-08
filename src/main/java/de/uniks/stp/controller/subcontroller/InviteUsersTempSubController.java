@@ -12,6 +12,9 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class InviteUsersTempSubController {
     private final Parent view;
     private final ModelBuilder builder;
@@ -22,6 +25,7 @@ public class InviteUsersTempSubController {
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
+    private HashMap<String, String> listLinks;
 
     public InviteUsersTempSubController(Parent view, ModelBuilder builder, Server server) {
         this.restClient = new RestClient();
@@ -53,8 +57,10 @@ public class InviteUsersTempSubController {
                 JSONObject inv = data.getJSONObject(i);
                 String link = inv.getString("link");
                 String type = inv.getString("type");
+                String id = inv.getString("id");
                 if (type.equals("temporal")) {
                     linkComboBox.getItems().add(link);
+                    listLinks.put(link, id);
                 }
             }
         });
@@ -70,8 +76,10 @@ public class InviteUsersTempSubController {
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 String link = body.getObject().getJSONObject("data").getString("link");
+                String id = body.getObject().getJSONObject("data").getString("id");
                 linkTextField.setText(link);
                 linkComboBox.getItems().add(link);
+                listLinks.put(link, id);
             } else if (status.equals("failure")) {
                 System.out.println(body);
             }
@@ -86,6 +94,8 @@ public class InviteUsersTempSubController {
             if (selectedLink.equals(linkTextField.getText())) {
                 linkTextField.setText("Links ...");
             }
+            String invId = listLinks.get(selectedLink);
+            restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {});
             linkComboBox.getItems().remove(selectedLink);
         }
     }
