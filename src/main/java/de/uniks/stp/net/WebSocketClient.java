@@ -5,7 +5,6 @@ import org.glassfish.json.JsonUtil;
 
 import javax.json.JsonObject;
 import javax.websocket.*;
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Timer;
@@ -50,7 +49,7 @@ public class WebSocketClient extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM "+ name + " #####");
+                System.out.println("##### NOOP MESSAGE FROM " + name + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {

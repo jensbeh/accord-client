@@ -86,7 +86,7 @@ public class PrivateViewController {
         showUsers();
 
         if (builder.getPrivateChatWebSocketCLient() == null) {
-            chatWebSocketClient = new WebSocketClient("Chat " + "privateChat" ,builder, URI.
+            chatWebSocketClient = new WebSocketClient("Chat " + "privateChat", builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
                 /**
@@ -190,7 +190,7 @@ public class PrivateViewController {
 
     private void startWebSocketConnection() {
         try {
-            systemWebSocketClient = new WebSocketClient("System " + "privateChat" , builder,
+            systemWebSocketClient = new WebSocketClient("System " + "privateChat", builder,
                     new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
