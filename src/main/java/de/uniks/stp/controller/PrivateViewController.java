@@ -219,6 +219,7 @@ public class PrivateViewController {
                 }
 
                 public void onClose(Session session, CloseReason closeReason) {
+
                 }
             });
             builder.setUSER_CLIENT(systemWebSocketClient);
