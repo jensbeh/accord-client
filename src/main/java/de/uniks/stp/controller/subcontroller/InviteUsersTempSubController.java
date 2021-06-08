@@ -9,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class InviteUsersTempSubController {
     private final Parent view;
@@ -37,8 +39,26 @@ public class InviteUsersTempSubController {
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
+        loadLinks();
     }
 
+    /**
+     * Load old links
+     */
+    private void loadLinks() {
+        restClient.getInvLinks(server.getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            JSONArray data = body.getObject().getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject inv = data.getJSONObject(i);
+                String link = inv.getString("link");
+                String type = inv.getString("type");
+                if (type.equals("temporal")) {
+                    linkComboBox.getItems().add(link);
+                }
+            }
+        });
+    }
 
     /**
      * OnCreate clicked send restclient request to the server and handles the response accordingly.
