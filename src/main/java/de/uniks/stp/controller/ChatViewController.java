@@ -4,6 +4,7 @@ import de.uniks.stp.AlternateMessageListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,6 +23,7 @@ import java.util.ResourceBundle;
 
 public class ChatViewController {
     private static ModelBuilder builder;
+    private ServerChannel currentChannel;
     private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
@@ -33,6 +35,12 @@ public class ChatViewController {
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
+    }
+
+    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel currentChannel) {
+        this.view = view;
+        this.builder = builder;
+        this.currentChannel = currentChannel;
     }
 
     public void init() {
@@ -76,8 +84,8 @@ public class ChatViewController {
                 } else {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getServerChatWebSocketClient() != null && builder.getCurrentServerChannel() != null)
-                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", builder.getCurrentServerChannel().getId()).put("message", textMessage).toString());
+                        if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
+                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -95,8 +103,7 @@ public class ChatViewController {
                 Platform.runLater(() -> ob.add(msg));
             }
         } else {
-            if (builder.getCurrentServerChannel().getId().equals(msg.getServerChannel().getId()))
-                Platform.runLater(() -> ob.add(msg));
+            Platform.runLater(() -> ob.add(msg));
         }
     }
 

@@ -16,6 +16,11 @@ import java.lang.reflect.Field;
 
 public class AlternateServerChannelListCellFactory implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private static ListView<ServerChannel> channelListView;
+    private static ServerViewController serverViewController;
+
+    public AlternateServerChannelListCellFactory(ServerViewController serverViewController) {
+        this.serverViewController = serverViewController;
+    }
 
     /**
      * The <code>call</code> method is called when required, and is given a
@@ -64,10 +69,10 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
             super.updateItem(item, empty);
             this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
-                if (item == ServerViewController.getSelectedChat() && isScrollBarVisible) {
+                if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
                     this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
                 }
-                if (item == ServerViewController.getSelectedChat() && !isScrollBarVisible) {
+                if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
                     this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
                 }
 

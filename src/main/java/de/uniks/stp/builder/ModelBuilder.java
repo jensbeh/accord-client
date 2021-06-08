@@ -128,14 +128,6 @@ public class ModelBuilder {
         this.serverChatWebSocketClient = serverChatWebSocketClient;
     }
 
-    public ServerChannel getCurrentServerChannel() {
-        return currentServerChannel;
-    }
-
-    public void setCurrentServerChannel(ServerChannel currentServerChannel) {
-        this.currentServerChannel = currentServerChannel;
-    }
-
     public RestClient getRestClient() {
         return this.restClient;
     }

@@ -61,12 +61,12 @@ public class WebSocketClient extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
         this.callback.onClose(session, closeReason);
+        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
