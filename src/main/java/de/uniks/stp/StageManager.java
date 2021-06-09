@@ -261,7 +261,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void setRestClient(RestClient rest) {
+    public void setRestClient(RestClient rest) {
         restClient = rest;
     }
 

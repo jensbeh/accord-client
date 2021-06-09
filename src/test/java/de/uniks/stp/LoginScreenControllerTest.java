@@ -13,13 +13,16 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
+import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 import util.Constants;
@@ -29,24 +32,35 @@ import java.util.Base64;
 import java.util.Scanner;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
+@RunWith(MockitoJUnitRunner.class)
 public class LoginScreenControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private RestClient restClient;
-    private String testUserName;
-    private String testUserPw;
+    // main user
+    private final String testUserName = "Hendry Bracken";
+    private final String testUserPw = "stp2021pw";
+    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+    // optional user
     private String testUserOneName;
     private String testUserOnePw;
+
+    @Mock
+    private RestClient restClient;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -54,76 +68,98 @@ public class LoginScreenControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         //start application
         this.stage = stage;
-        app = new StageManager();
+        app = mockApp;
+        app.setRestClient(restClient);
         app.start(stage);
         this.stage.centerOnScreen();
-        restClient = new RestClient();
     }
 
-    @Mock
-    private RestClient restMock;
+    @InjectMocks
+    StageManager mockApp = new StageManager();
 
-    @Mock
-    private HttpResponse<JsonNode> res;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(LoginScreenController.class);
     }
 
-    public void loginInit(boolean rememberMe) throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserName = body.getObject().getJSONObject("data").getString("name");
-            testUserPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
+    public void masterInitLogin() throws InterruptedException {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+    }
 
+    public void masterInitTempLogin() throws InterruptedException {
+        JSONObject jsonString2 = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("name", "Hendry Bracken").put("password", "stp2021pw"));
+        String jsonNode2 = new JsonNode(jsonString2.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode2));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).loginTemp(callbackCaptor.capture());
+    }
+
+    public void masterInitLoginFailure() throws InterruptedException {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "failure")
+                .put("message", "Invalid credentials")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+    }
+
+    @Test()
+    public void logInTest() throws InterruptedException {
+        masterInitLogin();
+        Assert.assertEquals("success", response.getBody().getObject().getString("status"));
+        Assert.assertEquals("", response.getBody().getObject().getString("message"));
+        Assert.assertEquals(userKey, response.getBody().getObject().getJSONObject("data").getString("userKey"));
+
+        // Actual Test
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserName);
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText(testUserPw);
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
-        rememberBox.setSelected(rememberMe);
-
+        rememberBox.setSelected(true);
         clickOn("#loginButton");
-
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-    }
-
-    //@Test()
-    public void logInTest() throws InterruptedException {
-        loginInit(true);
-
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
-        Thread.sleep(2000);
-
-        restMock.login("bla", "fasel", response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).login(anyString(), anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test()
+    @Test()
     public void logInFailTest() throws InterruptedException {
+        masterInitTempLogin();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
             testUserOneName = body.getObject().getJSONObject("data").getString("name");
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
-        Thread.sleep(2000);
 
+        masterInitLoginFailure();
         //wrong password
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserOneName);
@@ -135,7 +171,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         rememberBox.setSelected(true);
 
         clickOn("#loginButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
+
 
         Label errorLabel = lookup("#errorLabel").query();
         Assert.assertEquals("Invalid credentials", errorLabel.getText());
@@ -145,7 +182,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         passwordField.setText(testUserOnePw);
 
         clickOn("#loginButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Invalid credentials", errorLabel.getText());
 
@@ -154,20 +191,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
         passwordField.setText(wrongPassword);
 
         clickOn("#loginButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Invalid credentials", errorLabel.getText());
-
-
-        restMock.login("bla", "fasel", response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).login(anyString(), anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
     }
-
+    /*
     //@Test
     public void signInTest() throws InterruptedException {
         restClient.loginTemp(response -> {
@@ -410,7 +438,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         LoginScreenController.noConnectionTest = false;
 
     }
-
+    */
     /**
      * decode password
      */
