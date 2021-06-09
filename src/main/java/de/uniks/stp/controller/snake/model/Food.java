@@ -13,8 +13,8 @@ public class Food {
     public Food() {
         this.foodSize = FIELD_SIZE;
         Random rand = new Random();
-        this.posX = rand.nextInt(COLUMN);
-        this.posY = rand.nextInt(ROW);
+        this.posX = rand.nextInt(COLUMN) * FIELD_SIZE;
+        this.posY = rand.nextInt(ROW) * FIELD_SIZE;
     }
 
     public int getFoodSize() {

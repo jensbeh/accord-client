@@ -17,19 +17,24 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import util.ResourceManager;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import static de.uniks.stp.controller.snake.Constants.*;
 
 public class SnakeGameController {
 
-    private Parent view;
-    private ModelBuilder builder;
+    private final Parent view;
+    private final ModelBuilder builder;
     private Scene scene;
     private Label scoreLabel;
     private Label highScoreLabel;
     private Canvas gameField;
     private Game game;
-    private Snake snake;
+    private ArrayList<Snake> snake;
     private Food food;
+    private int snakeHead = 0;
+    private ArrayList<Snake> addNewBodyQueue;
 
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
@@ -46,6 +51,8 @@ public class SnakeGameController {
         scoreLabel.setText("Score:");
 
         game = new Game(0, ResourceManager.loadHighScore());
+        snake = new ArrayList<>();
+        addNewBodyQueue = new ArrayList<>();
 
         scene.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) {
@@ -62,63 +69,100 @@ public class SnakeGameController {
             }
         });
 
-        drawFieldMap(brush);
+        drawMap(brush);
         spawnFood(brush);
         spawnSnake(brush);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), run -> main(brush)));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop(brush)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
 
-    private void main(GraphicsContext brush) {
+    private void loop(GraphicsContext brush) {
         System.out.println("RUN");
-        drawFieldMap(brush);
+        drawMap(brush);
         drawFood(brush);
         moveSnake(brush);
     }
 
-
+    ////////////////////////////////////////////////
+    //// Snake
+    ////////////////////////////////////////////////
     private void spawnSnake(GraphicsContext brush) {
-        snake = new Snake();
+        Random rand = new Random();
+        snake.add(snakeHead, new Snake().setPosX(rand.nextInt(COLUMN) * FIELD_SIZE).setPosY(rand.nextInt(ROW) * FIELD_SIZE));
+        snake.add(1, new Snake().setPosX(snake.get(snakeHead).getPosX() - FIELD_SIZE).setPosY(snake.get(snakeHead).getPosY()));
+        snake.add(2, new Snake().setPosX(snake.get(1).getPosX() - FIELD_SIZE).setPosY(snake.get(1).getPosY()));
+
         brush.setFill(Color.web("000000"));
-        brush.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        for (int i = 0; i < snake.size(); i++) {
+            brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
+        }
     }
 
     private void moveSnake(GraphicsContext brush) {
+        for (int i = snake.size() - 1; i > snakeHead; i--) {
+            snake.get(i).setPosX(snake.get(i - 1).getPosX()).setPosY(snake.get(i - 1).getPosY());
+        }
         switch (game.getCurrentDirection()) {
             case UP:
-                snake.addPosY(-FIELD_SIZE);
+                snake.get(snakeHead).addPosY(-FIELD_SIZE);
                 break;
 
             case DOWN:
-                snake.addPosY(FIELD_SIZE);
+                snake.get(snakeHead).addPosY(FIELD_SIZE);
                 break;
 
             case LEFT:
-                snake.addPosX(-FIELD_SIZE);
+                snake.get(snakeHead).addPosX(-FIELD_SIZE);
                 break;
 
             case RIGHT:
-                snake.addPosX(FIELD_SIZE);
+                snake.get(snakeHead).addPosX(FIELD_SIZE);
                 break;
         }
         brush.setFill(Color.web("000000"));
-        brush.fillRect(snake.getPosX(), snake.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        for (int i = 0; i < snake.size(); i++) {
+            brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
+        }
+        eatFoot(brush);
+        addNewBody();
     }
 
+    private void addNewBody() {
+        if (addNewBodyQueue.size() > 0) {
+            if (addNewBodyQueue.get(0).getPosX() == snake.get(snake.size() - 1).getPosX() && addNewBodyQueue.get(0).getPosY() == snake.get(snake.size() - 1).getPosY()) {
+                snake.add(addNewBodyQueue.remove(0));
+            }
+        }
+    }
+
+
+    ////////////////////////////////////////////////
+    //// Food
+    ////////////////////////////////////////////////
     private void spawnFood(GraphicsContext brush) {
         food = new Food();
         brush.setFill(Color.web("FFFFFF"));
-        brush.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+        brush.fillRect(food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
     private void drawFood(GraphicsContext brush) {
         brush.setFill(Color.web("FFFFFF"));
-        brush.fillRect(food.getPosX() * FIELD_SIZE, food.getPosY() * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
+        brush.fillRect(food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void drawFieldMap(GraphicsContext brush) {
+    private void eatFoot(GraphicsContext brush) {
+        if (snake.get(snakeHead).getPosX() == food.getPosX() && snake.get(snakeHead).getPosY() == food.getPosY()) {
+            addNewBodyQueue.add(new Snake().setPosX(food.getPosX()).setPosY(food.getPosY()));
+            spawnFood(brush);
+        }
+    }
+
+    ////////////////////////////////////////////////
+    //// Map
+    ////////////////////////////////////////////////
+    private void drawMap(GraphicsContext brush) {
         for (int row = 0; row < ROW; row++) {
             for (int column = 0; column < COLUMN; column++) {
                 if (row % 2 == 0) {
@@ -141,5 +185,6 @@ public class SnakeGameController {
 
     public void stop() {
         ResourceManager.saveHighScore(game.getHighScore());
+        scene.setOnKeyPressed(null);
     }
 }

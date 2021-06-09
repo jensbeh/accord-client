@@ -1,9 +1,5 @@
 package de.uniks.stp.controller.snake.model;
 
-import java.util.Random;
-
-import static de.uniks.stp.controller.snake.Constants.*;
-
 public class Snake {
 
     private int snakeSize;
@@ -11,22 +7,24 @@ public class Snake {
     private int posY;
 
     public Snake() {
-        this.snakeSize = 1;
-        Random rand = new Random();
-        this.posX = rand.nextInt(COLUMN) * FIELD_SIZE;
-        this.posY = rand.nextInt(ROW) * FIELD_SIZE;
+        //this.snakeSize = 1;
+        //Random rand = new Random();
+        //this.posX = rand.nextInt(COLUMN) * FIELD_SIZE;
+        //this.posY = rand.nextInt(ROW) * FIELD_SIZE;
     }
 
     public void setSnakeSize(int snakeSize) {
         this.snakeSize = snakeSize;
     }
 
-    public void setPosX(int posX) {
+    public Snake setPosX(int posX) {
         this.posX = posX;
+        return this;
     }
 
-    public void setPosY(int posY) {
+    public Snake setPosY(int posY) {
         this.posY = posY;
+        return this;
     }
 
     public int getSnakeSize() {
