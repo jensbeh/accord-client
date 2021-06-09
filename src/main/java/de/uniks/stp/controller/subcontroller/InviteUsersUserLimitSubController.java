@@ -120,7 +120,7 @@ public class InviteUsersUserLimitSubController {
      * OnDelete clicked removes selected Link from the Combobox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
-        if (selectedList != null) {
+        if (this.selectedList != null) {
             String link = selectedList.get(0);
             String link2 = linkTextField.getText();
             if (link.equals(link2)) {
@@ -138,7 +138,7 @@ public class InviteUsersUserLimitSubController {
      * updates the selectedLink and the textfield
      */
     private void onLinkChanged(ActionEvent actionEvent) {
-        selectedList = this.linkComboBox.getSelectionModel().getSelectedItem();
+        this.selectedList = this.linkComboBox.getSelectionModel().getSelectedItem();
         String selectedLink, maxUsers;
         if (selectedList != null) {
             selectedLink = selectedList.get(0);
