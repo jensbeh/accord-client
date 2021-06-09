@@ -135,6 +135,7 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
+                            builder.playSound();
                             PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
