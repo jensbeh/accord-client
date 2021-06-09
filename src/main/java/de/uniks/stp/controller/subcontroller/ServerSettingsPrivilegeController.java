@@ -44,7 +44,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         this.view = view;
         this.builder = builder;
         this.server = server;
-        restClient = new RestClient();
+        restClient = builder.getRestClient();
     }
 
     public void init() {

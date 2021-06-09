@@ -64,27 +64,28 @@ public class ServerViewController {
     private HomeViewController homeViewController;
     private Line dividerLineUser;
     private VBox userBox;
+    private int loadedCategories;
+    private int loadedChannel;
+    private ServerChannel currentChannel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
-     * It also creates a new restClient"
      */
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, HomeViewController homeViewController) {
         this.view = view;
         builder = modelBuilder;
         this.server = server;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
         this.homeViewController = homeViewController;
     }
 
-    public static ServerChannel getSelectedChat() {
-        return builder.getCurrentServerChannel();
+    public ServerChannel getCurrentChannel() {
+        return this.currentChannel;
     }
 
-    public static void setSelectedChat(ServerChannel Chat) {
-        builder.setCurrentServerChannel(Chat);
+    public void setCurrentChannel(ServerChannel channel) {
+        this.currentChannel = channel;
     }
-
 
     /**
      * Callback, when all server information are loaded
@@ -113,13 +114,19 @@ public class ServerViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
+        currentChannel = null;
 
         loadServerInfos(new ServerInfoCallback() {
             @Override
             public void onSuccess(String status) {
                 if (status.equals("success")) {
                     if (getThisServer().getCategories().size() == 0) {
-                        loadCategories(serverReadyCallback);
+                        loadCategories(new CategoriesLoadedCallback() {
+                            @Override
+                            public void onSuccess(String status) {
+                                serverReadyCallback.onSuccess(status);
+                            }
+                        });
                     }
                 }
             }
@@ -132,7 +139,7 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void startShowServer() throws InterruptedException {
-        System.out.println(this.server.getName());
+        System.out.println("show: " + this.server.getName());
         serverMenuButton.setText(this.server.getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
@@ -146,7 +153,7 @@ public class ServerViewController {
         showOnlineOfflineUsers();
 
         Platform.runLater(this::generateCategoriesChannelViews);
-        if (builder.getCurrentServerChannel() != null) {
+        if (currentChannel != null) {
             showMessageView();
         }
     }
@@ -156,7 +163,7 @@ public class ServerViewController {
      */
     private void buildSystemWebSocket() {
         try {
-            systemWebSocketClient = new WebSocketClient(builder, URI.
+            systemWebSocketClient = new WebSocketClient("System " + this.server.getName(), builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()),
                     new WSCallback() {
 
@@ -257,7 +264,7 @@ public class ServerViewController {
      * WebSocket for chat messages.
      */
     private void buildChatWebSocket() {
-        chatWebSocketClient = new WebSocketClient(builder, URI.
+        chatWebSocketClient = new WebSocketClient("Chat " + this.server.getName(), builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                         getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()),
                 new WSCallback() {
@@ -285,8 +292,8 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setServerChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                                        setServerChannel(currentChannel);
+                                if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
                             }
@@ -295,8 +302,8 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setServerChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                                        setServerChannel(currentChannel);
+                                if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
 
@@ -304,7 +311,7 @@ public class ServerViewController {
                                     for (ServerChannel channel : categories.getChannel()) {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
-                                            if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
+                                            if (currentChannel == null || channel != currentChannel) {
                                                 channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                             }
                                             if (builder.getCurrentServer() == getThisServer()) {
@@ -315,9 +322,9 @@ public class ServerViewController {
                                     }
                                 }
                             }
-                            if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                            if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                 assert message != null;
-                                builder.getCurrentServerChannel().withMessage(message);
+                                currentChannel.withMessage(message);
                                 ChatViewController.printMessage(message);
                             }
                         }
@@ -372,13 +379,12 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
-            this.messageViewController = new ChatViewController(root, builder);
+            this.messageViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
             this.chatBox.getChildren().add(root);
-
-            if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
-                for (Message msg : builder.getCurrentServerChannel().getMessage()) {
+            if (this.server != null && currentChannel != null) {
+                for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
                     ChatViewController.printMessage(msg);
                 }
@@ -421,7 +427,6 @@ public class ServerViewController {
         restClient.getServerUsers(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
-            System.out.println(status);
             this.server.setOwner(body.getObject().getJSONObject("data").getString("owner"));
             if (status.equals("success")) {
                 JSONArray members = body.getObject().getJSONObject("data").getJSONArray("members");
@@ -519,7 +524,7 @@ public class ServerViewController {
                                     categorySubControllerList.get(categories).stop();
                                     categorySubControllerList.remove(categories);
 
-                                    if (categories.getChannel().contains(builder.getCurrentServerChannel()) || this.server.getCategories().size() == 0) {
+                                    if (categories.getChannel().contains(currentChannel) || this.server.getCategories().size() == 0) {
                                         throwOutUserFromChatView();
                                     }
                                     break;
@@ -596,7 +601,7 @@ public class ServerViewController {
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == this.server) {
                                 Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
-                                if (builder.getCurrentServerChannel().equals(channel)) {
+                                if (currentChannel.equals(channel)) {
                                     throwOutUserFromChatView();
                                 }
                             }
@@ -737,9 +742,16 @@ public class ServerViewController {
     }
 
     /**
+     * Callback, when all category information are loaded
+     */
+    public interface CategoriesLoadedCallback {
+        void onSuccess(String status);
+    }
+
+    /**
      * Gets categories from server and adds in list
      */
-    public void loadCategories(ServerReadyCallback serverReadyCallback) {
+    public void loadCategories(CategoriesLoadedCallback categoriesLoadedCallback) {
         restClient.getServerCategories(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -751,10 +763,26 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    loadChannels(categories, serverReadyCallback);
+                    loadChannels(categories, new ChannelLoadedCallback() {
+                        @Override
+                        public void onSuccess(String status) {
+                            loadedCategories++;
+                            if (loadedCategories == data.length()) {
+                                loadedCategories = 0;
+                                categoriesLoadedCallback.onSuccess(status);
+                            }
+                        }
+                    });
                 }
             }
         });
+    }
+
+    /**
+     * Callback, when all channel information are loaded
+     */
+    public interface ChannelLoadedCallback {
+        void onSuccess(String status);
     }
 
     /**
@@ -762,7 +790,7 @@ public class ServerViewController {
      *
      * @param cat the category to load the channels from it
      */
-    public void loadChannels(Categories cat, ServerReadyCallback serverReadyCallback) {
+    public void loadChannels(Categories cat, ChannelLoadedCallback channelLoadedCallback) {
         restClient.getCategoryChannels(this.server.getId(), cat.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -775,7 +803,6 @@ public class ServerViewController {
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
                     channel.setCategories(cat);
-                    loadChannelMessages(channel, serverReadyCallback);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
 
@@ -791,13 +818,29 @@ public class ServerViewController {
                             }
                         }
                     }
+                    loadChannelMessages(channel, new MessagesLoadedCallback() {
+                        @Override
+                        public void onSuccess(String status) {
+                            loadedChannel++;
+                            if (loadedChannel == data.length()) {
+                                loadedChannel = 0;
+                                channelLoadedCallback.onSuccess(status);
+                            }
+                        }
+                    });
                 }
             }
         });
     }
 
-    private void loadChannelMessages(ServerChannel channel, ServerReadyCallback serverReadyCallback) {
-        System.out.println(new Date().getTime());
+    /**
+     * Callback, when all message information are loaded
+     */
+    public interface MessagesLoadedCallback {
+        void onSuccess(String status);
+    }
+
+    private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -811,7 +854,7 @@ public class ServerViewController {
                     Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
                     channel.withMessage(message);
                 }
-                serverReadyCallback.onSuccess(status);
+                messagesLoadedCallback.onSuccess(status);
             }
         });
     }
@@ -909,8 +952,7 @@ public class ServerViewController {
      * reset current channel and throw user out from chat view
      */
     private void throwOutUserFromChatView() {
-        builder.setCurrentServerChannel(null);
-        setSelectedChat(null);
+        setCurrentChannel(null);
         this.messageViewController.stop();
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }
@@ -919,7 +961,7 @@ public class ServerViewController {
      * refresh all channels to avoid multiple visual selected channels
      */
     public void refreshAllChannelLists() {
-        for(Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
+        for (Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
             entry.getValue().refreshChannelList();
         }
     }

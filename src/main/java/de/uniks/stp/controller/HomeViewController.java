@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Constants;
 
+import javax.websocket.CloseReason;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class HomeViewController {
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
     }
 
     @SuppressWarnings("unchecked")
@@ -322,7 +323,6 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -331,7 +331,6 @@ public class HomeViewController {
                 showServerView();
             }
         }
-        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
     }
 
     /**

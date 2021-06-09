@@ -27,7 +27,7 @@ public class OverviewOwnerController {
         this.view = view;
         this.builder = modelBuilder;
         this.homeViewController = homeViewController;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
     }
 
     public void init() {

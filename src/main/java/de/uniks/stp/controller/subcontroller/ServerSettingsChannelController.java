@@ -42,7 +42,7 @@ public class ServerSettingsChannelController extends SubSetting {
         this.view = view;
         this.builder = builder;
         this.server = server;
-        this.restClient = new RestClient();
+        this.restClient = builder.getRestClient();
     }
 
     public void init() {

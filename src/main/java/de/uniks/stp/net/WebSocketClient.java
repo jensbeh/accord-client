@@ -12,6 +12,7 @@ import java.util.TimerTask;
 
 
 public class WebSocketClient extends Endpoint {
+    private String name;
     private Session session;
     private Timer noopTimer;
     private final ModelBuilder builder;
@@ -19,7 +20,8 @@ public class WebSocketClient extends Endpoint {
 
     private WSCallback callback;
 
-    public WebSocketClient(ModelBuilder builder, URI endpoint, WSCallback callback) {
+    public WebSocketClient(String name, ModelBuilder builder, URI endpoint, WSCallback callback) {
+        this.name = name;
         this.builder = builder;
         this.noopTimer = new Timer();
 
@@ -47,7 +49,7 @@ public class WebSocketClient extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE #####");
+                System.out.println("##### NOOP MESSAGE FROM " + name + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
@@ -59,12 +61,12 @@ public class WebSocketClient extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
         this.callback.onClose(session, closeReason);
+        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
