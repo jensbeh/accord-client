@@ -15,6 +15,7 @@ public class CurrentUser
    public static final String PROPERTY_PASSWORD = "password";
    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
    public static final String PROPERTY_CHANNEL = "channel";
+   public static final String PROPERTY_DO_NOT_DISTURB = "doNotDisturb";
    private String name;
    private String userKey;
    private List<User> user;
@@ -23,6 +24,7 @@ public class CurrentUser
    private String password;
    private List<PrivateChat> privateChat;
    private List<ServerChannel> channel;
+   private boolean doNotDisturb;
 
    public String getName()
    {
@@ -339,6 +341,24 @@ public class CurrentUser
       {
          this.withoutChannel(item);
       }
+      return this;
+   }
+
+   public boolean isDoNotDisturb()
+   {
+      return this.doNotDisturb;
+   }
+
+   public CurrentUser setDoNotDisturb(boolean value)
+   {
+      if (value == this.doNotDisturb)
+      {
+         return this;
+      }
+
+      final boolean oldValue = this.doNotDisturb;
+      this.doNotDisturb = value;
+      this.firePropertyChange(PROPERTY_DO_NOT_DISTURB, oldValue, value);
       return this;
    }
 

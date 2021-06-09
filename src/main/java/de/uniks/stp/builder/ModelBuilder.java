@@ -25,8 +25,8 @@ public class ModelBuilder {
     //  Setter
     /////////////////////////////////////////
 
-    public void buildPersonalUser(String name, String password, String userKey) {
-        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
+    public void buildPersonalUser(String name, String password, String userKey,Boolean doNotDisturb) {
+        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password).setDoNotDisturb(doNotDisturb);
     }
 
     public User buildUser(String name, String id) {

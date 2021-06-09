@@ -48,7 +48,7 @@
   roles: 	user_privileged 	user_server 	user_currentUser
 
 - currentUser: 	org.fulib.classmodel.Clazz
-  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password
+  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password 	currentUser_doNotDisturb
   model: 	c
   modified: 	false
   name: 	CurrentUser
@@ -396,6 +396,15 @@
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String
+
+- currentUser_doNotDisturb: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_doNotDisturb
+  modified: 	false
+  name: 	doNotDisturb
+  propertyStyle: 	Bean
+  type: 	boolean
+  typeSignature: 	boolean
 
 - currentUser_user: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
