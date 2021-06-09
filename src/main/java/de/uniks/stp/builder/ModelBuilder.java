@@ -7,6 +7,10 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +25,7 @@ public class ModelBuilder {
     private WebSocketClient serverChatWebSocketClient;
 
     private RestClient restClient;
+    private Clip clip;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -130,5 +135,21 @@ public class ModelBuilder {
 
     public RestClient getRestClient() {
         return this.restClient;
+    }
+
+    public void playSound() {
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/notification-sound.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // If you want to stop the sound, then use clip.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

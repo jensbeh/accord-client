@@ -120,6 +120,7 @@ public class PrivateViewController {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
                                 if (selectedChat == null || channel != selectedChat) {
+                                    builder.playSound();
                                     channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                 }
                                 privateChatList.refresh();
