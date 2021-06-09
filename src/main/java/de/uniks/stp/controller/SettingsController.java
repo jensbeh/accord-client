@@ -1,6 +1,8 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.StageManager;
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.SubSetting;
 import javafx.event.ActionEvent;
@@ -24,6 +26,7 @@ import java.util.ResourceBundle;
  * The class SettingsController controls the view in Settings
  */
 public class SettingsController {
+    private final ModelBuilder builder;
     private Parent view;
     private VBox settingsItems;
     private VBox settingsContainer;
@@ -31,6 +34,7 @@ public class SettingsController {
     private static Button languageButton;
 
     private SubSetting subController;
+    private Button DoNotDisturbButton;
 
     /**
      * First check if there is a settings file already in user local directory - if not, create
@@ -61,7 +65,8 @@ public class SettingsController {
         LanguageController.setup();
     }
 
-    public SettingsController(Parent view) {
+    public SettingsController(ModelBuilder builder, Parent view) {
+        this.builder = builder;
         this.view = view;
     }
 
@@ -77,6 +82,11 @@ public class SettingsController {
         // add categories
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
+        if (builder.getPersonalUser() != null) {
+            DoNotDisturbButton = addItem("Do Not Disturb");
+            DoNotDisturbButton.setText("Do Not Disturb");
+            addAction(DoNotDisturbButton, "DoNotDisturb");
+        }
 
         onLanguageChanged(); // needs to be called because new buttons added
     }
@@ -149,6 +159,9 @@ public class SettingsController {
                     subController = new LanguageController(settingsField);
                     subController.init();
                     break;
+                case "DoNotDisturb":
+                    subController = new DoNotDisturbController();
+                    subController.init();
             }
 
             this.settingsContainer.getChildren().add(settingsField);

@@ -9,7 +9,6 @@
       <VBox id="settingsItems" prefHeight="230.0" prefWidth="199.0" style="-fx-background-color: #333333;">
          <children>
             <Button mnemonicParsing="false" prefHeight="32.0" prefWidth="198.0" style="-fx-background-color: #737373; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: center-left; -fx-background-radius: 0; -fx-border-color: #555555;" text="Button" />
-            <Button id="doNotDisturb" mnemonicParsing="false" prefHeight="32.0" prefWidth="198.0" style="-fx-background-color: #737373; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: center-left; -fx-background-radius: 0; -fx-border-color: #555555;" text="Do not Disturb" />
          </children>
       </VBox>
       <VBox id="settingsContainer" layoutX="198.0" prefHeight="230.0" prefWidth="199.0" style="-fx-background-color: #737373;">
