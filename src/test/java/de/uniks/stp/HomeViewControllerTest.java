@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
@@ -13,29 +14,34 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class HomeViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private RestClient restClient;
-    private String userKey;
-    private String testUserName;
-    private String testUserPw;
+    private final String testServerName = "TestServer Team Bit Shift";
+    // main user
+    private String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+    private String testUserName = "Hendry Bracken";
+    private String testUserPw = "stp2021pw";
+    // optional user
     private String testUserOneName;
     private String testUserOnePw;
     private String testUserKeyOne;
@@ -43,10 +49,22 @@ public class HomeViewControllerTest extends ApplicationTest {
     private String testUserTwoPw;
     private String testUserKeyTwo;
 
+    @Mock
+    private RestClient restClient;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @InjectMocks
+    StageManager mockApp = new StageManager();
+
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -54,56 +72,117 @@ public class HomeViewControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         //start application
         this.stage = stage;
-        app = new StageManager();
+        app = mockApp;
+        app.setRestClient(restClient);
         app.start(stage);
         this.stage.centerOnScreen();
-        restClient = new RestClient();
     }
 
-    @Mock
-    private RestClient restMock;
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(HomeViewController.class);
+    }
 
-    @Mock
-    private HttpResponse<JsonNode> res;
+    public void mockLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+    }
 
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+    public void mockTempLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("name", "Test User").put("password", "testPassword"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).loginTemp(callbackCaptor.capture());
+    }
 
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    public void mockLogout() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Logged out")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).logout(anyString(), callbackCaptor.capture());
+    }
+
+    public void mockPostServer() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "5e2ffbd8770dd077d03df505").put("name", testServerName));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).postServer(anyString(), anyString(), callbackCaptor.capture());
+    }
+
+    public void mockUser(String id, String name) {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", id).put("name", name)));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).getUsers(anyString(), callbackCaptor.capture());
     }
 
     public void loginInit() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserName = body.getObject().getJSONObject("data").getString("name");
-            testUserPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
+        mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserName);
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText(testUserPw);
         clickOn("#loginButton");
-
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void personalUserTest() throws InterruptedException {
         loginInit();
 
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
         Assert.assertEquals(testUserName, personalUserName.getText());
-
-
     }
 
+    /*TODO: activate when WebSocket is being mocked*/
     //@Test
     public void serverBoxTest() throws InterruptedException {
         loginInit();
@@ -114,6 +193,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
         serverNameInput.setText("TestServer Team Bit Shift");
+        mockPostServer();
         clickOn(createServer);
 
         WaitForAsyncUtils.waitForFxEvents();
@@ -130,28 +210,27 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("TestServer Team Bit Shift", serverName);
-
-
     }
-
+    /*
     //@Test
     public void userBoxTest() throws InterruptedException {
-        loginInit();
-
+        mockTempLogin();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
             testUserOneName = body.getObject().getJSONObject("data").getString("name");
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        mockUser(testUserOneName, "5e2ffbdabg75dd077d03df505");
+        loginInit();
+        //WaitForAsyncUtils.waitForFxEvents();
+        //Thread.sleep(2000);
 
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        //restClient.login(testUserOneName, testUserOnePw, response -> {
+        //    this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
+        //});
+        //WaitForAsyncUtils.waitForFxEvents();
+        //Thread.sleep(2000);
 
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
@@ -164,6 +243,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals(testUserOneName, userName);
 
+        mockLogout();
         restClient.logout(userKey, response -> {
         });
         Thread.sleep(2000);
@@ -345,5 +425,5 @@ public class HomeViewControllerTest extends ApplicationTest {
         });
 
 
-    }
+    }*/
 }

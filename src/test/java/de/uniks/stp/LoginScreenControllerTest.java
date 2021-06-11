@@ -102,7 +102,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "Hendry Bracken").put("password", "stp2021pw"));
+                .put("data", new JSONObject().put("name", "Test User").put("password", "testPassword"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer(new Answer<Void>() {
