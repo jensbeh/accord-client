@@ -162,7 +162,6 @@ public class LoginScreenController {
                             }
                         });
                     }
-                    //noConnection();
                 }
             } else if (tempUserCheckBox.isSelected()) {
                 saveRememberMe("", "");
