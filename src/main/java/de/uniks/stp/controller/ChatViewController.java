@@ -9,13 +9,14 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -30,6 +31,10 @@ public class ChatViewController {
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
     private HBox messageBox;
+    private ImageView imageView;
+    private Button emojiButton;
+    private VBox container;
+    private StackPane stack;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -49,7 +54,10 @@ public class ChatViewController {
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         sendButton.setOnAction(this::sendButtonClicked);
         this.messageBox = (HBox) view.lookup("#messageBox");
+        imageView = (ImageView) view.lookup("#imageView");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
+        container = (VBox) view.lookup("#container");
+        stack = (StackPane) view.lookup("#stack");
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setStyle("-fx-background-color: grey;");
@@ -63,12 +71,27 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
+
+        emojiButton = (Button) view.lookup("#emojiButton");
+        emojiButton.setOnAction(this::emojiButtonClicked);
+    }
+
+    private void emojiButtonClicked(ActionEvent actionEvent) {
+        // All Child components of StackPane
+        ObservableList<Node> childs = stack.getChildren();
+
+        if (childs.size() > 1) {
+            // Top Component
+            Node topNode = childs.get(childs.size()-1);
+            topNode.toBack();
+        }
     }
 
     /**
      * get Text from TextField and build message
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
+        System.out.println("hallo1");
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
         if (textMessage.length() <= 700) {
