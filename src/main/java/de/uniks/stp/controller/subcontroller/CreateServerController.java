@@ -137,13 +137,13 @@ public class CreateServerController {
                         findNewServer(serverId);
                     }
                 });
-                for(Server server : builder.getServers()){
+                for (Server server : builder.getServers()) {
                     if (server.getId().equals(serverId)) {
                         serverIdTrue = true;
                         break;
                     }
                 }
-                if(!serverIdTrue){
+                if (!serverIdTrue) {
                     error = "error.wrong_server_id";
                 }
             } else {
@@ -152,7 +152,7 @@ public class CreateServerController {
         } else {
             error = "error.insert_invite_link_first";
         }
-        if(!error.equals("")){
+        if (!error.equals("")) {
             String finalError = error;
             Platform.runLater(() -> setError(finalError));
         }

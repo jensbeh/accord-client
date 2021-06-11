@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Constants;
 
-import javax.websocket.CloseReason;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
