@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -32,6 +33,7 @@ public class CreateServerController {
     private TextField linkTextField;
     private Button joinServer;
     private Runnable join;
+    private Boolean serverIdTrue = false;
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
@@ -114,19 +116,45 @@ public class CreateServerController {
     }
 
     private void onServerJoinClicked(ActionEvent actionEvent) {
+        Platform.runLater(() -> errorLabel.setText(""));
+        serverIdTrue = false;
+        String error = "";
         CurrentUser currentUser = builder.getPersonalUser();
+        String link = linkTextField.getText();
         if (!linkTextField.getText().equals("")) {
-            String link = linkTextField.getText();
-            String[] splitLink = link.split("/");
-            String serverId = splitLink[splitLink.length - 3];
-            String inviteId = splitLink[splitLink.length - 1];
-            restClient.joinServer(serverId, inviteId, currentUser.getName(), currentUser.getPassword(), currentUser.getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    findNewServer(serverId);
+            Character lastChar = link.charAt(link.length() - 1);
+            if (link.indexOf("/") != link.lastIndexOf("/") && !lastChar.equals('/')) {
+                String[] splitLink = link.split("/");
+                String serverId = splitLink[splitLink.length - 3];
+                String inviteId = splitLink[splitLink.length - 1];
+                restClient.joinServer(serverId, inviteId, currentUser.getName(), currentUser.getPassword(), currentUser.getUserKey(), response -> {
+                    serverIdTrue = true;
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    String message = body.getObject().getString("message");
+                    Platform.runLater(() -> errorLabel.setText(message));
+                    if (status.equals("success")) {
+                        findNewServer(serverId);
+                    }
+                });
+                for(Server server : builder.getServers()){
+                    if (server.getId().equals(serverId)) {
+                        serverIdTrue = true;
+                        break;
+                    }
                 }
-            });
+                if(!serverIdTrue){
+                    error = "error.wrong_server_id";
+                }
+            } else {
+                error = "error.invalid_invite_link";
+            }
+        } else {
+            error = "error.insert_invite_link_first";
+        }
+        if(!error.equals("")){
+            String finalError = error;
+            Platform.runLater(() -> setError(finalError));
         }
     }
 
