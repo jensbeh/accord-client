@@ -60,7 +60,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -82,7 +82,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(LoginScreenController.class);
     }
 
-    public void masterInitLogin() throws InterruptedException {
+    public void mockLogin() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -98,13 +98,13 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
-    public void masterInitTempLogin() throws InterruptedException {
-        JSONObject jsonString2 = new JSONObject()
+    public void mockTempLogin() {
+        JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONObject().put("name", "Hendry Bracken").put("password", "stp2021pw"));
-        String jsonNode2 = new JsonNode(jsonString2.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode2));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Callback<JsonNode> callback = callbackCaptor.getValue();
@@ -114,7 +114,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }).when(restClient).loginTemp(callbackCaptor.capture());
     }
 
-    public void masterInitLoginFailure() throws InterruptedException {
+    public void mockLoginFailure() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "failure")
                 .put("message", "Invalid credentials")
@@ -130,9 +130,37 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
+    public void mockSignInFailure() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "failure")
+                .put("message", "Name already taken")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).signIn(anyString(), anyString(), callbackCaptor.capture());
+    }
+
+    public void loginInit(boolean rememberMe) {
+        mockLogin();
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText(testUserPw);
+        CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
+        rememberBox.setSelected(rememberMe);
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
     @Test()
     public void logInTest() throws InterruptedException {
-        masterInitLogin();
+        mockLogin();
         Assert.assertEquals("success", response.getBody().getObject().getString("status"));
         Assert.assertEquals("", response.getBody().getObject().getString("message"));
         Assert.assertEquals(userKey, response.getBody().getObject().getJSONObject("data").getString("userKey"));
@@ -150,8 +178,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
     }
 
     @Test()
-    public void logInFailTest() throws InterruptedException {
-        masterInitTempLogin();
+    public void logInFailTest() {
+        mockTempLogin();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
@@ -159,7 +187,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
 
-        masterInitLoginFailure();
+        mockLoginFailure();
         //wrong password
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserOneName);
@@ -195,17 +223,18 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Invalid credentials", errorLabel.getText());
     }
-    /*
-    //@Test
-    public void signInTest() throws InterruptedException {
+
+    @Test
+    public void signInTest() {
+        mockTempLogin();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
             testUserOneName = body.getObject().getJSONObject("data").getString("name");
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
-        Thread.sleep(2000);
 
+        mockSignInFailure();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserOneName);
         PasswordField passwordField = lookup("#passwordTextField").query();
@@ -215,22 +244,14 @@ public class LoginScreenControllerTest extends ApplicationTest {
         rememberBox.setSelected(true);
 
         clickOn("#signinButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Label errorLabel = lookup("#errorLabel").query();
         Assert.assertEquals("Name already taken", errorLabel.getText());
-
-        restMock.signIn("bla", "fasel", response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).signIn(anyString(), anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test
-    public void emptyFieldTest() throws InterruptedException {
+    @Test
+    public void emptyFieldTest() {
         //usernameField and passwordField are both empty
         Label errorLabel = lookup("#errorLabel").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
@@ -244,12 +265,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
         rememberBox.setSelected(true);
 
         clickOn("#signinButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
         clickOn("#loginButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
@@ -257,11 +278,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
         passwordField.setText("123");
         rememberBox.setSelected(true);
         clickOn("#signinButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
         clickOn("#loginButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
         //only passwordField is empty
@@ -269,17 +290,18 @@ public class LoginScreenControllerTest extends ApplicationTest {
         passwordField.setText("");
         rememberBox.setSelected(true);
         clickOn("#signinButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Field is empty!", errorLabel.getText());
 
         clickOn("#loginButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Field is empty!", errorLabel.getText());
     }
 
-    //@Test
-    public void tempLoginTest() throws InterruptedException {
+    @Test
+    public void tempLoginTest() {
+        mockTempLogin();
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         Platform.runLater(() -> {
@@ -293,24 +315,20 @@ public class LoginScreenControllerTest extends ApplicationTest {
         tempBox.setSelected(true);
 
         clickOn("#loginButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        /*TODO: this is needed because two rest request will be done, but only the first will success,
+        *  the second one needs to be done after the first one*/
+        /*TODO: if two "when(response.getBody())" are open, the last one is valid*/
+        mockLogin();
+        clickOn("#loginButton");
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
-        Thread.sleep(2000);
-
-        restMock.loginTemp(response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).loginTemp(callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test
-    public void tempSignInTest() throws InterruptedException {
+    @Test
+    public void tempSignInTest() {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         Platform.runLater(() -> {
@@ -323,28 +341,18 @@ public class LoginScreenControllerTest extends ApplicationTest {
         tempBox.setSelected(true);
 
         clickOn("#signinButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Label errorLabel = lookup("#errorLabel").query();
         Assert.assertEquals("Click on Login", errorLabel.getText());
-
-        restMock.loginTemp(response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).loginTemp(callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test
-    public void rememberMeNotTest() throws InterruptedException {
+    @Test
+    public void rememberMeNotTest() {
         loginInit(false);
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         //Check if file with username and password is empty
         AppDirs appDirs = AppDirsFactory.getInstance();
@@ -374,14 +382,12 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }
     }
 
-    //@Test
-    public void rememberMeTest() throws InterruptedException {
+    @Test
+    public void rememberMeTest() {
         loginInit(true);
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         //Check if file with username and password were saved
         AppDirs appDirs = AppDirsFactory.getInstance();
@@ -411,8 +417,8 @@ public class LoginScreenControllerTest extends ApplicationTest {
         }
     }
 
-    //@Test
-    public void noConnectionTest() throws InterruptedException {
+    @Test
+    public void noConnectionTest() {
         PasswordField passwordField = lookup("#passwordTextField").query();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         Platform.runLater(() -> passwordField.setText("123"));
@@ -422,23 +428,22 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
         LoginScreenController.noConnectionTest = true;
         clickOn("#signinButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
         Label noConnectionTest = lookup("#connectionLabel").query();
         Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
 
         clickOn("#loginButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
 
         CheckBox tempBox = lookup("#loginAsTempUser").query();
         tempBox.setSelected(true);
         clickOn("#loginButton");
-        Thread.sleep(500);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
         LoginScreenController.noConnectionTest = false;
-
     }
-    */
+
     /**
      * decode password
      */
