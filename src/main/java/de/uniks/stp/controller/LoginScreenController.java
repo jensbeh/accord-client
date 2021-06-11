@@ -55,6 +55,8 @@ public class LoginScreenController {
         errorLabel = (Label) root.lookup("#errorLabel");
         connectionLabel = (Label) root.lookup("#connectionLabel");
         connectionLabel.setWrapText(true);
+        //clear error message
+        error ="";
 
         //Get last username and password that wanted to be remembered in file
         setup();
