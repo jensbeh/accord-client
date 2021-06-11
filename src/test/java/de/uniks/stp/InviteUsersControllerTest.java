@@ -273,4 +273,69 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#logoutButton");
         Thread.sleep(2000);
     }
+
+    //@Test
+    public void inviteUsersErrorMessagesTest() throws InterruptedException {
+        loginInitWithTempUser();
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+
+        TextField serverName = lookup("#serverName").query();
+        Button createServer = lookup("#createServer").query();
+        serverName.setText("TestServer Team Bit Shift");
+        clickOn(createServer);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Thread.sleep(2000);
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals(2, this.listTargetWindows().size());
+
+        clickOn("#createLink");
+        Thread.sleep(1000);
+        TextField linkField = lookup("#linkTextField").query();
+        String inviteLink = linkField.getText();
+
+        String serverSettingsTitle = "";
+        for (Object object : this.listTargetWindows()) {
+            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+                serverSettingsTitle = ((Stage) object).getTitle();
+                Assert.assertNotEquals("", serverSettingsTitle);
+                Platform.runLater(((Stage) object)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        clickOn(addServer);
+        TextField insertInviteLink = lookup("#inviteLink").query();
+        insertInviteLink.setText(inviteLink);
+        clickOn("#joinServer");
+        Label errorLabel = lookup("#errorLabel").query();
+        Thread.sleep(1000);
+        Assert.assertEquals(errorLabel.getText(), "You already joined the server");
+
+        StringBuilder sb = new StringBuilder(inviteLink);
+        sb.deleteCharAt(45);
+        insertInviteLink.setText(sb.toString());
+        clickOn("#joinServer");
+        Thread.sleep(1000);
+        Assert.assertEquals(errorLabel.getText(), "Wrong server id or Invalid link");
+
+        insertInviteLink.setText("rgasdgydfg");
+        clickOn("#joinServer");
+        Thread.sleep(1000);
+        Assert.assertEquals(errorLabel.getText(), "Invalid link");
+
+        insertInviteLink.setText("");
+        clickOn("#joinServer");
+        Thread.sleep(1000);
+        Assert.assertEquals(errorLabel.getText(), "Insert invite link first");
+
+        clickOn("#logoutButton");
+        Thread.sleep(2000);
+    }
 }
