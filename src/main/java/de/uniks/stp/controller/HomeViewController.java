@@ -59,7 +59,7 @@ public class HomeViewController {
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
     }
 
     @SuppressWarnings("unchecked")
@@ -139,6 +139,8 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        //prevent scrolling down of scrollPane
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -146,6 +148,8 @@ public class HomeViewController {
      */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
+        //prevent scrolling down of scrollPane
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -322,7 +326,6 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -331,7 +334,6 @@ public class HomeViewController {
                 showServerView();
             }
         }
-        System.out.println("onServerClicked Channel: " + builder.getCurrentServerChannel());
     }
 
     /**

@@ -66,27 +66,26 @@ public class ServerViewController {
     private VBox userBox;
     private int loadedCategories;
     private int loadedChannel;
+    private ServerChannel currentChannel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
-     * It also creates a new restClient"
      */
     public ServerViewController(Parent view, ModelBuilder modelBuilder, Server server, HomeViewController homeViewController) {
         this.view = view;
         builder = modelBuilder;
         this.server = server;
-        this.restClient = new RestClient();
+        this.restClient = modelBuilder.getRestClient();
         this.homeViewController = homeViewController;
     }
 
-    public static ServerChannel getSelectedChat() {
-        return builder.getCurrentServerChannel();
+    public ServerChannel getCurrentChannel() {
+        return this.currentChannel;
     }
 
-    public static void setSelectedChat(ServerChannel Chat) {
-        builder.setCurrentServerChannel(Chat);
+    public void setCurrentChannel(ServerChannel channel) {
+        this.currentChannel = channel;
     }
-
 
     /**
      * Callback, when all server information are loaded
@@ -115,6 +114,7 @@ public class ServerViewController {
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
+        currentChannel = null;
 
         loadServerInfos(new ServerInfoCallback() {
             @Override
@@ -153,7 +153,7 @@ public class ServerViewController {
         showOnlineOfflineUsers();
 
         Platform.runLater(this::generateCategoriesChannelViews);
-        if (builder.getCurrentServerChannel() != null) {
+        if (currentChannel != null) {
             showMessageView();
         }
     }
@@ -163,7 +163,7 @@ public class ServerViewController {
      */
     private void buildSystemWebSocket() {
         try {
-            systemWebSocketClient = new WebSocketClient(builder, URI.
+            systemWebSocketClient = new WebSocketClient("System " + this.server.getName(), builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()),
                     new WSCallback() {
 
@@ -264,7 +264,7 @@ public class ServerViewController {
      * WebSocket for chat messages.
      */
     private void buildChatWebSocket() {
-        chatWebSocketClient = new WebSocketClient(builder, URI.
+        chatWebSocketClient = new WebSocketClient("Chat " + this.server.getName(), builder, URI.
                 create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                         getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()),
                 new WSCallback() {
@@ -292,8 +292,8 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setServerChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                                        setServerChannel(currentChannel);
+                                if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
                             }
@@ -302,8 +302,8 @@ public class ServerViewController {
                                 message = new Message().setMessage(text).
                                         setFrom(from).
                                         setTimestamp(timestamp).
-                                        setServerChannel(builder.getCurrentServerChannel());
-                                if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                                        setServerChannel(currentChannel);
+                                if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                     Platform.runLater(() -> messageViewController.clearMessageField());
                                 }
 
@@ -311,7 +311,7 @@ public class ServerViewController {
                                     for (ServerChannel channel : categories.getChannel()) {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
-                                            if (builder.getCurrentServerChannel() == null || channel != builder.getCurrentServerChannel()) {
+                                            if (currentChannel == null || channel != currentChannel) {
                                                 channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                             }
                                             if (builder.getCurrentServer() == getThisServer()) {
@@ -322,9 +322,9 @@ public class ServerViewController {
                                     }
                                 }
                             }
-                            if (messageViewController != null && builder.getCurrentServerChannel().getId().equals(channelId)) {
+                            if (messageViewController != null && currentChannel.getId().equals(channelId)) {
                                 assert message != null;
-                                builder.getCurrentServerChannel().withMessage(message);
+                                currentChannel.withMessage(message);
                                 ChatViewController.printMessage(message);
                             }
                         }
@@ -379,13 +379,12 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
-            this.messageViewController = new ChatViewController(root, builder);
+            this.messageViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
             this.chatBox.getChildren().add(root);
-
-            if (builder.getCurrentServer() != null && builder.getCurrentServerChannel() != null) {
-                for (Message msg : builder.getCurrentServerChannel().getMessage()) {
+            if (this.server != null && currentChannel != null) {
+                for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
                     ChatViewController.printMessage(msg);
                 }
@@ -525,7 +524,7 @@ public class ServerViewController {
                                     categorySubControllerList.get(categories).stop();
                                     categorySubControllerList.remove(categories);
 
-                                    if (categories.getChannel().contains(builder.getCurrentServerChannel()) || this.server.getCategories().size() == 0) {
+                                    if (categories.getChannel().contains(currentChannel) || this.server.getCategories().size() == 0) {
                                         throwOutUserFromChatView();
                                     }
                                     break;
@@ -602,7 +601,7 @@ public class ServerViewController {
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == this.server) {
                                 Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
-                                if (builder.getCurrentServerChannel().equals(channel)) {
+                                if (currentChannel.equals(channel)) {
                                     throwOutUserFromChatView();
                                 }
                             }
@@ -953,8 +952,7 @@ public class ServerViewController {
      * reset current channel and throw user out from chat view
      */
     private void throwOutUserFromChatView() {
-        builder.setCurrentServerChannel(null);
-        setSelectedChat(null);
+        setCurrentChannel(null);
         this.messageViewController.stop();
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }

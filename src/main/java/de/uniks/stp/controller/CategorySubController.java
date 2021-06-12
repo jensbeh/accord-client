@@ -33,7 +33,7 @@ public class CategorySubController {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channellist");
-        channelListCellFactory = new AlternateServerChannelListCellFactory();
+        channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
         channelList.setCellFactory(channelListCellFactory);
         channelList.setItems(FXCollections.observableList(category.getChannel()));
         channelList.setOnMouseClicked(this::onChannelListClicked);
@@ -57,11 +57,11 @@ public class CategorySubController {
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
         ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
-        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && ServerViewController.getSelectedChat() != channel) {
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel) {
             channel.setUnreadMessagesCounter(0);
-            ServerViewController.setSelectedChat(channel);
             System.out.println(channel.getName());
             serverViewController.refreshAllChannelLists();
+            serverViewController.setCurrentChannel(channel);
             serverViewController.showMessageView();
         }
     }

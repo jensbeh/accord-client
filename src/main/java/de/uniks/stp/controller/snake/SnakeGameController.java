@@ -49,6 +49,7 @@ public class SnakeGameController {
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext brush = gameField.getGraphicsContext2D();
         scoreLabel.setText("Score:");
+        highScoreLabel.setText("Highscore:");
 
         game = new Game(0, ResourceManager.loadHighScore());
         snake = new ArrayList<>();

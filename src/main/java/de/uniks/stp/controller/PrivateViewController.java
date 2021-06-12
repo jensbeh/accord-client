@@ -62,7 +62,7 @@ public class PrivateViewController {
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        restClient = new RestClient();
+        restClient = modelBuilder.getRestClient();
     }
 
     public void init() {
@@ -86,7 +86,7 @@ public class PrivateViewController {
         showUsers();
 
         if (builder.getPrivateChatWebSocketCLient() == null) {
-            chatWebSocketClient = new WebSocketClient(builder, URI.
+            chatWebSocketClient = new WebSocketClient("Chat " + "privateChat", builder, URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
                 /**
@@ -190,7 +190,7 @@ public class PrivateViewController {
 
     private void startWebSocketConnection() {
         try {
-            systemWebSocketClient = new WebSocketClient(builder,
+            systemWebSocketClient = new WebSocketClient("System " + "privateChat", builder,
                     new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
                 @Override
                 public void handleMessage(JsonStructure msg) {
@@ -219,6 +219,7 @@ public class PrivateViewController {
                 }
 
                 public void onClose(Session session, CloseReason closeReason) {
+
                 }
             });
             builder.setUSER_CLIENT(systemWebSocketClient);
