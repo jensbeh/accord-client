@@ -64,7 +64,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -135,7 +135,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("id", "5e2ffbd8770dd077d03df505").put("name", testServerName));
+                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer(new Answer<Void>() {
@@ -147,7 +147,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }).when(restClient).postServer(anyString(), anyString(), callbackCaptor.capture());
     }
 
-    public void mockUser(String id, String name) {
+    public void mockGetUsers(String id, String name) {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -161,6 +161,22 @@ public class HomeViewControllerTest extends ApplicationTest {
                 return null;
             }
         }).when(restClient).getUsers(anyString(), callbackCaptor.capture());
+    }
+
+    public void mockGetServers() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer")));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).getServers(anyString(), callbackCaptor.capture());
     }
 
     public void loginInit() throws InterruptedException {
@@ -211,7 +227,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("TestServer Team Bit Shift", serverName);
     }
-    /*
+
+    /*TODO: activate when WebSocket is being mocked AND fix test*/
     //@Test
     public void userBoxTest() throws InterruptedException {
         mockTempLogin();
@@ -221,8 +238,9 @@ public class HomeViewControllerTest extends ApplicationTest {
             testUserOneName = body.getObject().getJSONObject("data").getString("name");
             testUserOnePw = body.getObject().getJSONObject("data").getString("password");
         });
-        mockUser(testUserOneName, "5e2ffbdabg75dd077d03df505");
         loginInit();
+        //mockGetUsers(testUserOneName, "5e2ffg75dd077d03df505");
+
         //WaitForAsyncUtils.waitForFxEvents();
         //Thread.sleep(2000);
 
@@ -257,36 +275,30 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("", userName);
-
-
     }
 
-    //@Test
+    @Test
     public void getServersTest() {
-        restMock.getServers("bla", response -> {
+        mockGetServers();
+        restClient.getServers(userKey, response -> {
         });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).getServers(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertNotEquals(0, response.getBody().getObject().getJSONArray("data").length());
     }
 
-    //@Test
+    @Test
     public void getUsersTest() {
-        restMock.getUsers("bla", response -> {
+        mockGetUsers("Test User", "5e2ffg75dd077d03df505");
+        restClient.getUsers(userKey, response -> {
         });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).getUsers(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertNotEquals(0, response.getBody().getObject().getJSONArray("data").length());
     }
 
+    /*TODO: activate when WebSocket is being mocked AND fix test*/
     //@Test
     public void privateChatTest() throws InterruptedException {
         loginInit();
 
+        mockTempLogin();
         restClient.loginTemp(response -> {
             JsonNode body = response.getBody();
             //get name and password from server
@@ -295,6 +307,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         });
         WaitForAsyncUtils.waitForFxEvents();
         Thread.sleep(2000);
+
 
         restClient.login(testUserOneName, testUserOnePw, response -> {
             this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
@@ -311,38 +324,28 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         restClient.logout(userKey, response -> {
         });
-
-
     }
 
-    //@Test()
+    @Test()
     public void logout() throws InterruptedException {
         loginInit();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
         // Clicking logout...
+        mockLogout();
+        clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
-        // TODO: enable Assert when logout click is back
-        //Assert.assertEquals("Accord - Login", stage.getTitle());
-
-        restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).logout(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertEquals("Accord - Login", stage.getTitle());
     }
 
+    /*TODO: activate when WebSocket is being mocked AND fix test*/
     //@Test
     public void logoutMultiLogin() throws InterruptedException {
         loginInit();
 
-        restClient.login(testUserName, testUserPw, response -> {
+        mockLogin();
+        restClient.login("AAA", "123", response -> {
             this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
         });
 
@@ -350,10 +353,12 @@ public class HomeViewControllerTest extends ApplicationTest {
         Thread.sleep(2000);
 
         Assert.assertEquals("Accord - Login", stage.getTitle());
+        mockLogout();
         restClient.logout(userKey, response -> {
         });
     }
 
+    /*TODO: activate when WebSocket is being mocked AND fix test*/
     //@Test
     public void openExistingChat() throws InterruptedException {
         restClient.loginTemp(response -> {
@@ -423,7 +428,5 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         restClient.logout(testUserKeyTwo, response -> {
         });
-
-
-    }*/
+    }
 }

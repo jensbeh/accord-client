@@ -464,15 +464,16 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        JsonNode body = Unirest.post(Constants.REST_SERVER_URL + Constants.API_PREFIX + Constants.LOGOUT_PATH).header(Constants.COM_USERKEY, builder.getPersonalUser().getUserKey()).asJson().getBody();
-        JSONObject result = body.getObject();
-        if (result.get("status").equals("success")) {
-            System.out.println(result.get("message"));
-            if (PrivateViewController.getSelectedChat() != null) {
-                PrivateViewController.setSelectedChat(null);
+        restClient.logout(builder.getPersonalUser().getUserKey(), response -> {
+            JSONObject result = response.getBody().getObject();
+            if (result.get("status").equals("success")) {
+                System.out.println(result.get("message"));
+                if (PrivateViewController.getSelectedChat() != null) {
+                    PrivateViewController.setSelectedChat(null);
+                }
+                Platform.runLater(StageManager::showLoginScreen);
             }
-            Platform.runLater(StageManager::showLoginScreen);
-        }
+        });
     }
 
     private void cleanup() {
