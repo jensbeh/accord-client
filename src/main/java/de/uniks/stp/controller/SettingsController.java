@@ -160,7 +160,7 @@ public class SettingsController {
                     subController.init();
                     break;
                 case "DoNotDisturb":
-                    subController = new DoNotDisturbController(settingsField,builder);
+                    subController = new DoNotDisturbController(settingsField, builder);
                     subController.init();
             }
 
