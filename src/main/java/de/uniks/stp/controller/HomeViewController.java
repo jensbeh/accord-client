@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Constants;
 
-import javax.websocket.CloseReason;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,6 +139,8 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        //prevent scrolling down of scrollPane
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -147,6 +148,8 @@ public class HomeViewController {
      */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
+        //prevent scrolling down of scrollPane
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
