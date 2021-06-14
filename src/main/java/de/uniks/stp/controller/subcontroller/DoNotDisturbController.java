@@ -51,4 +51,12 @@ public class DoNotDisturbController extends SubSetting {
         builder.setPlaySound(playSound.isSelected());
         builder.saveSettings();
     }
+
+    @Override
+    public void stop() {
+        super.stop();
+        doNotDisturbSelected.setOnAction(null);
+        showNotifications.setOnAction(null);
+        playSound.setOnAction(null);
+    }
 }

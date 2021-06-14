@@ -4,7 +4,6 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
