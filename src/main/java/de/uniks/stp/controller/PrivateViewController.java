@@ -122,6 +122,7 @@ public class PrivateViewController {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
                                 if (selectedChat == null || channel != selectedChat) {
+                                    builder.playSound();
                                     channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                 }
                                 privateChatList.refresh();
@@ -136,6 +137,7 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
+                            builder.playSound();
                             PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));

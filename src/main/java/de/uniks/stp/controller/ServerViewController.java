@@ -311,6 +311,7 @@ public class ServerViewController {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
                                             if (currentChannel == null || channel != currentChannel) {
+                                                builder.playSound();
                                                 channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
                                             }
                                             if (builder.getCurrentServer() == getThisServer()) {
