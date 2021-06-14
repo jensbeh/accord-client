@@ -10,8 +10,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -58,17 +59,18 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 Label message = new Label();
                 message.setId("messageLabel");
                 //right alignment if User is currentUser else left
-                DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
+                Date date = new Date(item.getTimestamp());
+                DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                     message.setTextFill(Color.WHITE);
-                    userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
+                    userName.setText(formatterTime.format(date) + " " + item.getFrom());
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                     message.setTextFill(Color.BLACK);
-                    userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
+                    userName.setText(item.getFrom() + " " + formatterTime.format(date));
                 }
                 //new Line after 50 Characters
                 String str = item.getMessage();
