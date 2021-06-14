@@ -1,5 +1,1 @@
-{
-    "doNotDisturb":false,
-    "showNotifications":true,
-    "playSound":true
-}
+{"doNotDisturb":false,"playSound":true,"showNotifications":true}

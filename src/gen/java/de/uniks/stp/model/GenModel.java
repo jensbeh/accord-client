@@ -45,7 +45,6 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(currentUser, "name", Type.STRING);
         mm.haveAttribute(currentUser, "userKey", Type.STRING);
         mm.haveAttribute(currentUser, "password", Type.STRING);
-        mm.haveAttribute(currentUser,"doNotDisturb",Type.BOOLEAN);
 
         mm.associate(currentUser, "user", 3, user, "currentUser", 1);
         mm.associate(currentUser, "server", 3, server, "currentUser", 1);

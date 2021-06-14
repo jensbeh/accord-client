@@ -5,8 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
 
-import java.awt.event.MouseEvent;
-
 public class DoNotDisturbController extends SubSetting {
 
     private final Parent view;
@@ -24,30 +22,30 @@ public class DoNotDisturbController extends SubSetting {
     @Override
     public void init() {
         doNotDisturbSelected = (CheckBox) view.lookup("#doNotDisturbSelected");
+        doNotDisturbSelected.setSelected(builder.isDoNotDisturb());
         showNotifications = (CheckBox) view.lookup("#ShowNotifications");
+        showNotifications.setSelected(builder.isShowNotifications());
         playSound = (CheckBox) view.lookup("#playSound");
-        checkIfDoNotDisturbIsSelected();
+        playSound.setSelected(builder.isPlaySound());
+        checkIfDoNotDisturbIsSelected(null);
 
-        doNotDisturbSelected.setOnAction(this::updateDoNotDisturbIsSelected);
+        doNotDisturbSelected.setOnAction(this::checkIfDoNotDisturbIsSelected);
+        showNotifications.setOnAction(this::updateSettings);
+        playSound.setOnAction(this::updateSettings);
     }
 
-    private void updateDoNotDisturbIsSelected(ActionEvent actionEvent) {
-        builder.getPersonalUser().setDoNotDisturb(doNotDisturbSelected.isSelected());
-        checkIfDoNotDisturbIsSelected();
-    }
-
-    private void checkIfDoNotDisturbIsSelected() {
-        if (builder.getPersonalUser().isDoNotDisturb()) {
+    private void checkIfDoNotDisturbIsSelected(ActionEvent actionEvent) {
+        if (!doNotDisturbSelected.isSelected()) {
             showNotifications.setDisable(false);
             playSound.setDisable(false);
         } else {
             showNotifications.setDisable(true);
             playSound.setDisable(true);
         }
-        updateSettings();
+        updateSettings(null);
     }
 
-    private void updateSettings() {
+    private void updateSettings(ActionEvent actionEvent) {
         builder.setDoNotDisturb(doNotDisturbSelected.isSelected());
         builder.setShowNotifications(showNotifications.isSelected());
         builder.setPlaySound(playSound.isSelected());

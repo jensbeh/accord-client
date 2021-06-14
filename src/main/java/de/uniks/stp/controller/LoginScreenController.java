@@ -170,16 +170,16 @@ public class LoginScreenController {
                         JsonNode body = response.getBody();
                         String status = body.getObject().getString("status");
                         if (status.equals("success")) {
-                            //build user with key
-                            String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                            builder.buildPersonalUser(username, password, userkey);
+                            //get name and password from server
+                            String name = body.getObject().getJSONObject("data").getString("name");
+                            String passw = body.getObject().getJSONObject("data").getString("password");
                             //show message on screen
                             this.message = body.getObject().getString("status");
                             //fill in username and password and login of tempUser
                             Platform.runLater(() -> {
                                 setError("error.login_success");
-                                usernameTextField.setText(username);
-                                passwordTextField.setText(password);
+                                usernameTextField.setText(name);
+                                passwordTextField.setText(passw);
                                 tempUserCheckBox.setSelected(false);
                                 loginButtonOnClick(actionEvent);
                             });
