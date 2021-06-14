@@ -83,7 +83,7 @@ public class SettingsController {
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
         if (builder.getPersonalUser() != null) {
-            DoNotDisturbButton = addItem("Do Not Disturb");
+            DoNotDisturbButton = addItem("DnD");
             DoNotDisturbButton.setText("Do Not Disturb");
             addAction(DoNotDisturbButton, "DoNotDisturb");
         }

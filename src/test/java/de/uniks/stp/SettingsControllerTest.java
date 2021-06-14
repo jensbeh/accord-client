@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -105,5 +106,28 @@ public class SettingsControllerTest extends ApplicationTest {
 
 
         Thread.sleep(2000);
+    }
+
+    //@Test
+    public void doNotDisturbTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_DnD");
+
+        CheckBox doNotDisturb = lookup("#doNotDisturbSelected").query();
+        CheckBox showNotifications = lookup("#ShowNotifications").query();
+        CheckBox playSound = lookup("#playSound").query();
+
+        Assert.assertEquals(app.getBuilder().isDoNotDisturb(), doNotDisturb.isSelected());
+        if (doNotDisturb.isSelected()) {
+            clickOn(doNotDisturb);
+        }
+        clickOn(showNotifications);
+        Assert.assertEquals(app.getBuilder().isShowNotifications(), showNotifications.isSelected());
+        clickOn(playSound);
+        Assert.assertEquals(app.getBuilder().isPlaySound(), playSound.isSelected());
+        clickOn(doNotDisturb);
+        Assert.assertTrue(showNotifications.isDisabled());
+        Assert.assertTrue(playSound.isDisabled());
     }
 }
