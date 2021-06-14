@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class LoginScreenController {
-    private Parent root;
+    private final Parent root;
     private static TextField usernameTextField;
     private static PasswordField passwordTextField;
     private static CheckBox rememberCheckBox;
@@ -32,9 +32,8 @@ public class LoginScreenController {
     private static Label errorLabel;
     private String message;
     private final RestClient restClient;
-    private Boolean netConnection = false;
     private static Label connectionLabel;
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private static String error;
     private static String connectionError;
     public static boolean noConnectionTest;
@@ -56,13 +55,15 @@ public class LoginScreenController {
         errorLabel = (Label) root.lookup("#errorLabel");
         connectionLabel = (Label) root.lookup("#connectionLabel");
         connectionLabel.setWrapText(true);
+        //clear error message
+        error = "";
 
         //Get last username and password that wanted to be remembered in file
         setup();
 
         //Buttons
-        this.loginButton.setOnAction(this::loginButtonOnClick);
-        this.signInButton.setOnAction(this::signInButtonOnClick);
+        loginButton.setOnAction(this::loginButtonOnClick);
+        signInButton.setOnAction(this::signInButtonOnClick);
         this.settingsButton.setOnAction(this::settingsButtonOnClick);
     }
 
@@ -76,42 +77,47 @@ public class LoginScreenController {
     private void signInButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-        //check if username or password is missing
-        if (!tempUserCheckBox.isSelected()) {
-            if (username.isEmpty() || password.isEmpty()) {
-                setError("error.field_is_empty");
-            } else {
-                //if remember me selected then username and password is saved in a user.txt
-                if (rememberCheckBox.isSelected()) {
-                    saveRememberMe(username, password);
+        try {
+            //check if username or password is missing
+            if (!tempUserCheckBox.isSelected()) {
+                if (username.isEmpty() || password.isEmpty()) {
+                    setError("error.field_is_empty");
                 } else {
-                    saveRememberMe("", "");
-                }
-                //signIn Post
-                if (!noConnectionTest) {
-                    restClient.signIn(username, password, response -> {
-                        netConnection = true;
-                        JsonNode body = response.getBody();
-                        String status = body.getObject().getString("status");
-                        if (status.equals("success")) {
-                            //show message on screen
-                            this.message = body.getObject().getString("message");
-                            Platform.runLater(() -> setError("error.sign_in_success"));
-                        } else if (status.equals("failure")) {
-                            //show message on screen
-                            this.message = body.getObject().getString("message");
-                            if (message.equals("Name already taken")) {
-                                Platform.runLater(() -> setError("error.name_already_taken"));
-                            } else {
-                                Platform.runLater(() -> setError("error.sign_in_failure"));
+                    //if remember me selected then username and password is saved in a user.txt
+                    if (rememberCheckBox.isSelected()) {
+                        saveRememberMe(username, password);
+                    } else {
+                        saveRememberMe("", "");
+                    }
+                    //signIn Post
+                    if (!noConnectionTest) {
+                        restClient.signIn(username, password, response -> {
+                            JsonNode body = response.getBody();
+                            String status = body.getObject().getString("status");
+                            if (status.equals("success")) {
+                                //show message on screen
+                                this.message = body.getObject().getString("message");
+                                Platform.runLater(() -> setError("error.sign_in_success"));
+                            } else if (status.equals("failure")) {
+                                //show message on screen
+                                this.message = body.getObject().getString("message");
+                                if (message.equals("Name already taken")) {
+                                    Platform.runLater(() -> setError("error.name_already_taken"));
+                                } else {
+                                    Platform.runLater(() -> setError("error.sign_in_failure"));
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-                noConnection();
+            } else if (tempUserCheckBox.isSelected()) {
+                setError("error.click_on_login");
             }
-        } else if (tempUserCheckBox.isSelected()) {
-            setError("error.click_on_login");
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
+                setConnectionError("error.create_server_no_connection");
+            }
         }
     }
 
@@ -121,94 +127,81 @@ public class LoginScreenController {
     private void loginButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-        if (!tempUserCheckBox.isSelected()) {
-            //if remember me selected then username and password is saved in a user.txt
-            if (username.isEmpty() || password.isEmpty()) {
-                setError("error.field_is_empty");
-            } else {
-                if (rememberCheckBox.isSelected()) {
-                    saveRememberMe(username, password);
+        try {
+            if (!tempUserCheckBox.isSelected()) {
+                //if remember me selected then username and password is saved in a user.txt
+                if (username.isEmpty() || password.isEmpty()) {
+                    setError("error.field_is_empty");
                 } else {
-                    saveRememberMe("", "");
+                    if (rememberCheckBox.isSelected()) {
+                        saveRememberMe(username, password);
+                    } else {
+                        saveRememberMe("", "");
+                    }
+                    //login Post
+                    if (!noConnectionTest) {
+                        restClient.login(username, password, response -> {
+                            JsonNode body = response.getBody();
+                            String status = body.getObject().getString("status");
+                            if (status.equals("success")) {
+                                //build user with key
+                                String userkey = body.getObject().getJSONObject("data").getString("userKey");
+                                builder.buildPersonalUser(username, password, userkey);
+                                //show message on screen
+                                this.message = body.getObject().getString("status");
+                                Platform.runLater(() -> setError("error.login_success"));
+                                Platform.runLater(StageManager::showHome); //TODO load here server, then showHome
+                            } else if (status.equals("failure")) {
+                                //show message on screen
+                                this.message = body.getObject().getString("message");
+                                if (message.equals("Invalid credentials")) {
+                                    Platform.runLater(() -> setError("error.invalid_credentials"));
+                                } else {
+                                    Platform.runLater(() -> setError("error.login_failure"));
+                                }
+                            }
+                        });
+                    }
                 }
-                //login Post
+            } else if (tempUserCheckBox.isSelected()) {
+                saveRememberMe("", "");
                 if (!noConnectionTest) {
-                    restClient.login(username, password, response -> {
-                        netConnection = true;
+                    restClient.loginTemp(response -> {
                         JsonNode body = response.getBody();
                         String status = body.getObject().getString("status");
                         if (status.equals("success")) {
-                            //build user with key
-                            String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                            builder.buildPersonalUser(username, password, userkey);
+                            //get name and password from server
+                            String name = body.getObject().getJSONObject("data").getString("name");
+                            String passw = body.getObject().getJSONObject("data").getString("password");
                             //show message on screen
                             this.message = body.getObject().getString("status");
-                            Platform.runLater(() -> setError("error.login_success"));
-                            Platform.runLater(StageManager::showHome); //TODO load here server, then showHome
+                            //fill in username and password and login of tempUser
+                            Platform.runLater(() -> {
+                                setError("error.login_success");
+                                usernameTextField.setText(name);
+                                passwordTextField.setText(passw);
+                                tempUserCheckBox.setSelected(false);
+                                loginButtonOnClick(actionEvent);
+                            });
                         } else if (status.equals("failure")) {
                             //show message on screen
-                            this.message = body.getObject().getString("message");
-                            if (message.equals("Invalid credentials")) {
-                                Platform.runLater(() -> setError("error.invalid_credentials"));
-                            } else {
-                                Platform.runLater(() -> setError("error.login_failure"));
-                            }
+                            this.message = body.getObject().getString("status");
+                            Platform.runLater(() -> setError("error.login_failure"));
                         }
                     });
                 }
-                noConnection();
             }
-        } else if (tempUserCheckBox.isSelected()) {
-            saveRememberMe("", "");
-            if (!noConnectionTest) {
-                restClient.loginTemp(response -> {
-                    netConnection = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        //get name and password from server
-                        String name = body.getObject().getJSONObject("data").getString("name");
-                        String passw = body.getObject().getJSONObject("data").getString("password");
-                        //show message on screen
-                        this.message = body.getObject().getString("status");
-                        //fill in username and password and login of tempUser
-                        Platform.runLater(() -> {
-                            setError("error.login_success");
-                            usernameTextField.setText(name);
-                            passwordTextField.setText(passw);
-                            tempUserCheckBox.setSelected(false);
-                            loginButtonOnClick(actionEvent);
-                        });
-                    } else if (status.equals("failure")) {
-                        //show message on screen
-                        this.message = body.getObject().getString("status");
-                        Platform.runLater(() -> setError("error.login_failure"));
-                    }
-                });
-            }
-            noConnection();
-        }
-    }
-
-    /**
-     * Change Text on no connection Label
-     */
-    public void noConnection() {
-        //no internet connection
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
+                setConnectionError("error.login_no_connection");
+            }
         }
-        if (!netConnection) {
-            Platform.runLater(() -> setConnectionError("error.login_no_connection"));
-        }
-        netConnection = false;
     }
 
     public void stop() {
-        this.signInButton.setOnAction(null);
-        this.loginButton.setOnAction(null);
+        signInButton.setOnAction(null);
+        loginButton.setOnAction(null);
         this.settingsButton.setOnAction(null);
     }
 

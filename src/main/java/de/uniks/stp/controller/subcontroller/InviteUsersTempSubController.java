@@ -12,6 +12,8 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class InviteUsersTempSubController {
     private final Parent view;
     private final ModelBuilder builder;
@@ -22,6 +24,8 @@ public class InviteUsersTempSubController {
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
+    private HashMap<String, String> links;
+
 
     public InviteUsersTempSubController(Parent view, ModelBuilder builder, Server server) {
         this.restClient = builder.getRestClient();
@@ -36,6 +40,7 @@ public class InviteUsersTempSubController {
         linkTextField = (TextField) view.lookup("#linkTextField");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
+        links = new HashMap<String, String>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -53,8 +58,10 @@ public class InviteUsersTempSubController {
                 JSONObject inv = data.getJSONObject(i);
                 String link = inv.getString("link");
                 String type = inv.getString("type");
+                String id = inv.getString("id");
                 if (type.equals("temporal")) {
                     linkComboBox.getItems().add(link);
+                    links.put(link, id);
                 }
             }
         });
@@ -70,8 +77,10 @@ public class InviteUsersTempSubController {
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 String link = body.getObject().getJSONObject("data").getString("link");
+                String id = body.getObject().getJSONObject("data").getString("id");
                 linkTextField.setText(link);
                 linkComboBox.getItems().add(link);
+                links.put(link, id);
             } else if (status.equals("failure")) {
                 System.out.println(body);
             }
@@ -86,6 +95,9 @@ public class InviteUsersTempSubController {
             if (selectedLink.equals(linkTextField.getText())) {
                 linkTextField.setText("Links ...");
             }
+            String invId = links.get(selectedLink);
+            restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {
+            });
             linkComboBox.getItems().remove(selectedLink);
         }
     }
