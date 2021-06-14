@@ -1,8 +1,9 @@
 package de.uniks.stp.builder;
 
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
@@ -10,14 +11,17 @@ import de.uniks.stp.net.WebSocketClient;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-    private ServerChannel currentServerChannel;
 
     private WebSocketClient SERVER_USER;
     private WebSocketClient USER_CLIENT;
@@ -26,6 +30,10 @@ public class ModelBuilder {
 
     private RestClient restClient;
     private Clip clip;
+
+    private boolean doNotDisturb;
+    private boolean showNotifications;
+    private boolean playSound;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -151,5 +159,61 @@ public class ModelBuilder {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void saveSettings() {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            JsonObject settings = new JsonObject();
+            settings.put("doNotDisturb", doNotDisturb);
+            settings.put("showNotifications", showNotifications);
+            settings.put("playSound", playSound);
+
+            Jsoner.serialize(settings, writer);
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Error in saveSettings");
+            e.printStackTrace();
+        }
+    }
+
+    public void loadSettings() {
+        try {
+            Reader reader = Files.newBufferedReader(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+            doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
+            showNotifications = (boolean) parsedSettings.get("showNotifications");
+            playSound = (boolean) parsedSettings.get("playSound");
+
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("Error in loadSettings");
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isDoNotDisturb() {
+        return doNotDisturb;
+    }
+
+    public boolean isPlaySound() {
+        return playSound;
+    }
+
+    public boolean isShowNotifications() {
+        return showNotifications;
+    }
+
+    public void setDoNotDisturb(boolean doNotDisturb) {
+        this.doNotDisturb = doNotDisturb;
+    }
+
+    public void setPlaySound(boolean playSound) {
+        this.playSound = playSound;
+    }
+
+    public void setShowNotifications(boolean showNotifications) {
+        this.showNotifications = showNotifications;
     }
 }

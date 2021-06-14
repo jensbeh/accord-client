@@ -310,9 +310,13 @@ public class ServerViewController {
                                     for (ServerChannel channel : categories.getChannel()) {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
-                                            if (currentChannel == null || channel != currentChannel) {
-                                                builder.playSound();
-                                                channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                            if (!builder.isDoNotDisturb() && (currentChannel == null || channel != currentChannel)) {
+                                                if (builder.isPlaySound()) {
+                                                    builder.playSound();
+                                                }
+                                                if (builder.isShowNotifications()) {
+                                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                                }
                                             }
                                             if (builder.getCurrentServer() == getThisServer()) {
                                                 categorySubControllerList.get(categories).refreshChannelList();
