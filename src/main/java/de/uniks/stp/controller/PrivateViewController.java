@@ -31,6 +31,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -104,17 +105,18 @@ public class PrivateViewController {
                         String channelName;
                         Boolean newChat = true;
                         // currentUser send
+                        long timestamp = new Date().getTime();
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                             messageViewController.clearMessageField();
                         } else { // currentUser received
                             channelName = jsonObject.getString("from");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                         }
                         for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                             if (channel.getName().equals(channelName)) {
