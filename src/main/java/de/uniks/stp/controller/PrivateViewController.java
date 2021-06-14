@@ -119,9 +119,13 @@ public class PrivateViewController {
                         for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
-                                if (selectedChat == null || channel != selectedChat) {
-                                    builder.playSound();
-                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                if (!builder.isDoNotDisturb() && (selectedChat == null || channel != selectedChat)) {
+                                    if (builder.isPlaySound()) {
+                                        builder.playSound();
+                                    }
+                                    if (builder.isShowNotifications()) {
+                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                    }
                                 }
                                 privateChatList.refresh();
                                 newChat = false;
@@ -135,8 +139,15 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            builder.playSound();
-                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
+                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
+                            if (!builder.isDoNotDisturb()) {
+                                if (builder.isPlaySound()) {
+                                    builder.playSound();
+                                }
+                                if (builder.isShowNotifications()) {
+                                    channel.setUnreadMessagesCounter(1);
+                                }
+                            }
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }

@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="TOP_RIGHT" prefHeight="161.0" prefWidth="196.0" spacing="5.0" style="-fx-background-color: #737373;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <RadioButton id="doNotDisturbSelected" alignment="CENTER_RIGHT" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" style="-fx-text-fill: #FFFFFF; -fx-font-size: 16;" text="Do not disturb :" />
+      <CheckBox id="doNotDisturbSelected" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Do not disturb :" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </CheckBox>
       <Pane prefHeight="25.0" prefWidth="169.0" />
-      <RadioButton id="ShowNotifications" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" style="-fx-text-fill: #FFFFFF; -fx-font-size: 16;" text="Show Notifications:" />
-      <RadioButton id="playSound" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" style="-fx-text-fill: #FFFFFF; -fx-font-size: 16;" text="Play Sound :" />
+      <CheckBox id="ShowNotifications" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Show Notifications:" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </CheckBox>
+      <CheckBox id="playSound" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Play Sound :" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </CheckBox>
    </children>
    <opaqueInsets>
       <Insets />

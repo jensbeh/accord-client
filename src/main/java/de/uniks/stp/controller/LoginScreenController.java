@@ -172,14 +172,14 @@ public class LoginScreenController {
                         if (status.equals("success")) {
                             //build user with key
                             String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                            builder.buildPersonalUser(username, password, userkey,false);
+                            builder.buildPersonalUser(username, password, userkey);
                             //show message on screen
                             this.message = body.getObject().getString("status");
                             //fill in username and password and login of tempUser
                             Platform.runLater(() -> {
                                 setError("error.login_success");
-                                usernameTextField.setText(name);
-                                passwordTextField.setText(passw);
+                                usernameTextField.setText(username);
+                                passwordTextField.setText(password);
                                 tempUserCheckBox.setSelected(false);
                                 loginButtonOnClick(actionEvent);
                             });
