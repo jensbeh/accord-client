@@ -142,7 +142,7 @@ public class ModelBuilder {
             clip.stop();
         }
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/notification-sound.wav"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/open-ended.wav"));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
