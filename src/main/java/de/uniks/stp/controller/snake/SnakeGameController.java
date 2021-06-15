@@ -56,16 +56,16 @@ public class SnakeGameController {
         addNewBodyQueue = new ArrayList<>();
 
         scene.setOnKeyPressed(key -> {
-            if (key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) {
+            if ((key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) && game.getCurrentDirection() != Game.Direction.LEFT) {
                 game.setCurrentDirection(Game.Direction.RIGHT);
 
-            } else if (key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) {
+            } else if ((key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) && game.getCurrentDirection() != Game.Direction.RIGHT) {
                 game.setCurrentDirection(Game.Direction.LEFT);
 
-            } else if (key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) {
+            } else if ((key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) && game.getCurrentDirection() != Game.Direction.DOWN) {
                 game.setCurrentDirection(Game.Direction.UP);
 
-            } else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) {
+            } else if ((key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) && game.getCurrentDirection() != Game.Direction.UP) {
                 game.setCurrentDirection(Game.Direction.DOWN);
             }
         });
@@ -95,8 +95,20 @@ public class SnakeGameController {
         snake.add(1, new Snake().setPosX(snake.get(snakeHead).getPosX() - FIELD_SIZE).setPosY(snake.get(snakeHead).getPosY()));
         snake.add(2, new Snake().setPosX(snake.get(1).getPosX() - FIELD_SIZE).setPosY(snake.get(1).getPosY()));
 
-        brush.setFill(Color.web("000000"));
+        // draw snake
         for (int i = 0; i < snake.size(); i++) {
+            // head
+            if (i == 0) {
+                brush.setFill(Color.web("FF0000"));
+            }
+            // tail
+            else if (i == snake.size() - 1) {
+                brush.setFill(Color.web("0000FF"));
+            }
+            // body
+            else {
+                brush.setFill(Color.web("000000"));
+            }
             brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
         }
     }
@@ -122,10 +134,24 @@ public class SnakeGameController {
                 snake.get(snakeHead).addPosX(FIELD_SIZE);
                 break;
         }
-        brush.setFill(Color.web("000000"));
+
+        // draw snake
         for (int i = 0; i < snake.size(); i++) {
+            // head
+            if (i == 0) {
+                brush.setFill(Color.web("FF0000"));
+            }
+            // tail
+            else if (i == snake.size() - 1) {
+                brush.setFill(Color.web("0000FF"));
+            }
+            // body
+            else {
+                brush.setFill(Color.web("000000"));
+            }
             brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
         }
+
         eatFoot(brush);
         addNewBody();
     }
