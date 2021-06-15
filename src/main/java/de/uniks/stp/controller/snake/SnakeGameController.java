@@ -144,13 +144,11 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     private void spawnFood(GraphicsContext brush) {
         food = new Food();
-        brush.setFill(Color.web("FFFFFF"));
-        brush.fillRect(food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        drawFood(brush);
     }
 
     private void drawFood(GraphicsContext brush) {
-        brush.setFill(Color.web("FFFFFF"));
-        brush.fillRect(food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
+        brush.drawImage(food.getFoodPic(), food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
     private void eatFoot(GraphicsContext brush) {
