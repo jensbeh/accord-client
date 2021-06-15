@@ -81,7 +81,6 @@ public class SnakeGameController {
     }
 
     private void loop(GraphicsContext brush) {
-        System.out.println("RUN");
         drawMap(brush);
         drawFood(brush);
         moveSnake(brush);
@@ -120,19 +119,37 @@ public class SnakeGameController {
         }
         switch (game.getCurrentDirection()) {
             case UP:
-                snake.get(snakeHead).addPosY(-FIELD_SIZE);
+                System.out.println("UP: " + snake.get(snakeHead).getPosY());
+                if (snake.get(snakeHead).getPosY() == 0) {
+                    snake.get(snakeHead).setPosY(HEIGHT-FIELD_SIZE);
+                } else {
+                    snake.get(snakeHead).addPosY(-FIELD_SIZE);
+                }
                 break;
 
             case DOWN:
-                snake.get(snakeHead).addPosY(FIELD_SIZE);
+                System.out.println("DOWN: " + snake.get(snakeHead).getPosY());
+                if (snake.get(snakeHead).getPosY() == HEIGHT-FIELD_SIZE) {
+                    snake.get(snakeHead).setPosY(0);
+                } else {
+                    snake.get(snakeHead).addPosY(FIELD_SIZE);
+                }
                 break;
 
             case LEFT:
-                snake.get(snakeHead).addPosX(-FIELD_SIZE);
+                if (snake.get(snakeHead).getPosX() == 0) {
+                    snake.get(snakeHead).setPosX(WIGHT- FIELD_SIZE);
+                } else {
+                    snake.get(snakeHead).addPosX(-FIELD_SIZE);
+                }
                 break;
 
             case RIGHT:
-                snake.get(snakeHead).addPosX(FIELD_SIZE);
+                if (snake.get(snakeHead).getPosX() == WIGHT - FIELD_SIZE) {
+                    snake.get(snakeHead).setPosX(0);
+                } else {
+                    snake.get(snakeHead).addPosX(FIELD_SIZE);
+                }
                 break;
         }
 
