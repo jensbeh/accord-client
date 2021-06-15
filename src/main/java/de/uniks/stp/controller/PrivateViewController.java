@@ -31,6 +31,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -104,23 +105,29 @@ public class PrivateViewController {
                         String channelName;
                         Boolean newChat = true;
                         // currentUser send
+                        long timestamp = new Date().getTime();
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                             messageViewController.clearMessageField();
                         } else { // currentUser received
                             channelName = jsonObject.getString("from");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                         }
                         for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
-                                if (selectedChat == null || channel != selectedChat) {
-                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                if (!builder.isDoNotDisturb() && (selectedChat == null || channel != selectedChat)) {
+                                    if (builder.isPlaySound()) {
+                                        builder.playSound();
+                                    }
+                                    if (builder.isShowNotifications()) {
+                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                    }
                                 }
                                 privateChatList.refresh();
                                 newChat = false;
@@ -134,7 +141,15 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
+                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
+                            if (!builder.isDoNotDisturb()) {
+                                if (builder.isPlaySound()) {
+                                    builder.playSound();
+                                }
+                                if (builder.isShowNotifications()) {
+                                    channel.setUnreadMessagesCounter(1);
+                                }
+                            }
                             builder.getPersonalUser().withPrivateChat(channel);
                             Platform.runLater(() -> privateChatList.getItems().add(channel));
                         }

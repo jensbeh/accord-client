@@ -283,10 +283,9 @@ public class ServerViewController {
                             Message message = null;
                             String id = jsonObject.getString("id");
                             String channelId = jsonObject.getString("channel");
-                            int timestamp = jsonObject.getInt("timestamp");
                             String from = jsonObject.getString("from");
                             String text = jsonObject.getString("text");
-
+                            long timestamp = new Date().getTime();
                             // currentUser send
                             if (from.equals(builder.getPersonalUser().getName())) {
                                 message = new Message().setMessage(text).
@@ -311,8 +310,13 @@ public class ServerViewController {
                                     for (ServerChannel channel : categories.getChannel()) {
                                         if (channel.getId().equals(channelId)) {
                                             channel.withMessage(message);
-                                            if (currentChannel == null || channel != currentChannel) {
-                                                channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                            if (!builder.isDoNotDisturb() && (currentChannel == null || channel != currentChannel)) {
+                                                if (builder.isPlaySound()) {
+                                                    builder.playSound();
+                                                }
+                                                if (builder.isShowNotifications()) {
+                                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                                }
                                             }
                                             if (builder.getCurrentServer() == getThisServer()) {
                                                 categorySubControllerList.get(categories).refreshChannelList();
