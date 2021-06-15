@@ -48,12 +48,13 @@ public class SnakeGameController {
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext brush = gameField.getGraphicsContext2D();
-        scoreLabel.setText("Score:");
-        highScoreLabel.setText("Highscore:");
 
         game = new Game(0, ResourceManager.loadHighScore());
         snake = new ArrayList<>();
         addNewBodyQueue = new ArrayList<>();
+
+        scoreLabel.setText("Score: " + game.getScore());
+        highScoreLabel.setText("Highscore: " + game.getHighScore());
 
         scene.setOnKeyPressed(key -> {
             if ((key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) && game.getCurrentDirection() != Game.Direction.LEFT) {
@@ -181,6 +182,7 @@ public class SnakeGameController {
         if (snake.get(snakeHead).getPosX() == food.getPosX() && snake.get(snakeHead).getPosY() == food.getPosY()) {
             addNewBodyQueue.add(new Snake().setPosX(food.getPosX()).setPosY(food.getPosY()));
             spawnFood(brush);
+            addScore();
         }
     }
 
@@ -206,6 +208,14 @@ public class SnakeGameController {
                 brush.fillRect(column * FIELD_SIZE, row * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
             }
         }
+    }
+
+    ////////////////////////////////////////////////
+    //// Additional methods
+    ////////////////////////////////////////////////
+    private void addScore() {
+        game.setScore(game.getScore() + 100);
+        scoreLabel.setText("Score: " + game.getScore());
     }
 
     public void stop() {
