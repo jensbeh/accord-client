@@ -4,16 +4,21 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
 import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.controller.snake.model.Snake;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import util.ResourceManager;
 
@@ -37,7 +42,10 @@ public class SnakeGameController {
     private ArrayList<Snake> addNewBodyQueue;
     private Timeline timeline;
     private boolean gameOver;
-
+    private Pane gameOverBox;
+    private Text gameOverScoreText;
+    private Button restartButton;
+    private VBox gameBox;
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
         this.scene = scene;
@@ -46,10 +54,19 @@ public class SnakeGameController {
     }
 
     public void init() throws InterruptedException {
+        gameBox = (VBox) view.lookup("#gameBox");
+        gameOverBox = (Pane) view.lookup("#gameOverBox");
+        gameOverScoreText = (Text) view.lookup("#gameOverScoreText");
+        restartButton = (Button) view.lookup("#restartButton");
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
         GraphicsContext brush = gameField.getGraphicsContext2D();
+
+        gameOverBox.setVisible(false);
+        gameOverBox.setOpacity(0.0);
+
+        restartButton.setOnAction(this::restartGame);
 
         game = new Game(0, ResourceManager.loadHighScore());
         snake = new ArrayList<>();
@@ -88,13 +105,14 @@ public class SnakeGameController {
             drawMap(brush);
             drawFood(brush);
             moveSnake(brush);
-            
+
             if (isGameOver()) {
                 gameOver = true;
             }
         }
 
         if (gameOver) {
+            timeline.stop();
             showGameOverScreen();
             drawMap(brush);
             System.out.println("GAME OVER !!");
@@ -257,7 +275,32 @@ public class SnakeGameController {
     }
 
     private void showGameOverScreen() {
+        GaussianBlur blur = new GaussianBlur(0.0);
+        gameBox.setEffect(blur);
 
+        Timeline blurTimeline = new Timeline();
+        KeyValue keyValue = new KeyValue(blur.radiusProperty(), 10.0);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000), keyValue);
+        blurTimeline.getKeyFrames().add(keyFrame);
+        blurTimeline.play();
+
+        if (game.getScore() > game.getHighScore()) {
+            gameOverScoreText.setText("New Highscore!!! " + game.getScore());
+            game.setHighScore(game.getScore());
+        } else {
+            gameOverScoreText.setText("Your Score is: " + game.getScore());
+        }
+
+        gameOverBox.setVisible(true);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(2000), gameOverBox);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    private void restartGame(ActionEvent actionEvent) {
+        System.out.println("RESTART GAME...");
     }
 
     private void addScore() {
@@ -268,5 +311,6 @@ public class SnakeGameController {
     public void stop() {
         ResourceManager.saveHighScore(game.getHighScore());
         scene.setOnKeyPressed(null);
+        restartButton.setOnAction(null);
     }
 }

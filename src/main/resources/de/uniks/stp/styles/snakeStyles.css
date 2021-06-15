@@ -1,0 +1,22 @@
+.restartButton{
+    -fx-text-fill: black;
+    -fx-background-color: #F5A9BC;
+    -fx-background-radius: 20;
+}
+
+.restartButton:hover{
+    -fx-text-fill: black;
+    -fx-background-color: #F7819F;
+    -fx-background-radius: 20;
+}
+
+.restartButton:pressed{
+    -fx-text-fill: black;
+    -fx-background-color: #F5A9BC;
+    -fx-background-radius: 20;
+}
+
+.bodybg{
+ -fx-background-image: url('../snake/fog.png');
+ -fx-background-size: 100% 100%;
+}

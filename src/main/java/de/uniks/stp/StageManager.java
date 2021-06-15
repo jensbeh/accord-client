@@ -147,7 +147,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            settingsController = new SettingsController(builder,root);
+            settingsController = new SettingsController(builder, root);
             settingsController.init();
 
             subStage = new Stage();
