@@ -35,6 +35,8 @@ public class SnakeGameController {
     private Food food;
     private int snakeHead = 0;
     private ArrayList<Snake> addNewBodyQueue;
+    private Timeline timeline;
+    private boolean gameOver;
 
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
@@ -52,6 +54,7 @@ public class SnakeGameController {
         game = new Game(0, ResourceManager.loadHighScore());
         snake = new ArrayList<>();
         addNewBodyQueue = new ArrayList<>();
+        gameOver = false;
 
         scoreLabel.setText("Score: " + game.getScore());
         highScoreLabel.setText("Highscore: " + game.getHighScore());
@@ -75,15 +78,27 @@ public class SnakeGameController {
         spawnFood(brush);
         spawnSnake(brush);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop(brush)));
+        timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop(brush)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
     }
 
     private void loop(GraphicsContext brush) {
-        drawMap(brush);
-        drawFood(brush);
-        moveSnake(brush);
+        if (!gameOver) {
+            drawMap(brush);
+            drawFood(brush);
+            moveSnake(brush);
+            
+            if (isGameOver()) {
+                gameOver = true;
+            }
+        }
+
+        if (gameOver) {
+            showGameOverScreen();
+            drawMap(brush);
+            System.out.println("GAME OVER !!");
+        }
     }
 
     ////////////////////////////////////////////////
@@ -121,7 +136,7 @@ public class SnakeGameController {
             case UP:
                 System.out.println("UP: " + snake.get(snakeHead).getPosY());
                 if (snake.get(snakeHead).getPosY() == 0) {
-                    snake.get(snakeHead).setPosY(HEIGHT-FIELD_SIZE);
+                    snake.get(snakeHead).setPosY(HEIGHT - FIELD_SIZE);
                 } else {
                     snake.get(snakeHead).addPosY(-FIELD_SIZE);
                 }
@@ -129,7 +144,7 @@ public class SnakeGameController {
 
             case DOWN:
                 System.out.println("DOWN: " + snake.get(snakeHead).getPosY());
-                if (snake.get(snakeHead).getPosY() == HEIGHT-FIELD_SIZE) {
+                if (snake.get(snakeHead).getPosY() == HEIGHT - FIELD_SIZE) {
                     snake.get(snakeHead).setPosY(0);
                 } else {
                     snake.get(snakeHead).addPosY(FIELD_SIZE);
@@ -138,7 +153,7 @@ public class SnakeGameController {
 
             case LEFT:
                 if (snake.get(snakeHead).getPosX() == 0) {
-                    snake.get(snakeHead).setPosX(WIGHT- FIELD_SIZE);
+                    snake.get(snakeHead).setPosX(WIGHT - FIELD_SIZE);
                 } else {
                     snake.get(snakeHead).addPosX(-FIELD_SIZE);
                 }
@@ -230,6 +245,21 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Additional methods
     ////////////////////////////////////////////////
+    private boolean isGameOver() {
+        // snake eats its itself
+        for (int i = 1; i < snake.size(); i++) {
+            if (snake.get(snakeHead).getPosX() == snake.get(i).getPosX() && snake.get(snakeHead).getPosY() == snake.get(i).getPosY()) {
+                gameOver = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showGameOverScreen() {
+
+    }
+
     private void addScore() {
         game.setScore(game.getScore() + 100);
         scoreLabel.setText("Score: " + game.getScore());
