@@ -16,11 +16,18 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import util.ResourceManager;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -48,6 +55,8 @@ public class SnakeGameController {
     private VBox gameBox;
     private Pane countDownBox;
     private Text countdownText;
+    private Clip clip;
+    private MediaPlayer backgroundMusic;
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
         this.scene = scene;
@@ -56,6 +65,15 @@ public class SnakeGameController {
     }
 
     public void init() throws InterruptedException {
+        try {
+            Media media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav").toURI().toString());
+            backgroundMusic = new MediaPlayer(media);
+            backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
+            backgroundMusic.play();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         gameBox = (VBox) view.lookup("#gameBox");
         countDownBox = (Pane) view.lookup("#countDownBox");
         countdownText = (Text) view.lookup("#countdownText");
@@ -255,6 +273,7 @@ public class SnakeGameController {
 
     private void eatFoot() {
         if (snake.get(snakeHead).getPosX() == food.getPosX() && snake.get(snakeHead).getPosY() == food.getPosY()) {
+            eatingSound();
             addNewBodyQueue.add(new Snake().setPosX(food.getPosX()).setPosY(food.getPosY()));
             spawnFood();
             addScore();
@@ -322,6 +341,7 @@ public class SnakeGameController {
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
+        gameOverSound();
     }
 
     private void restartGame(ActionEvent actionEvent) {
@@ -427,6 +447,38 @@ public class SnakeGameController {
         }
     }
 
+    public void gameOverSound() {
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/snake/gameOver.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // If you want to stop the sound, then use clip.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void eatingSound() {
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/snake/eating.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // If you want to stop the sound, then use clip.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void stop() {
         ResourceManager.saveHighScore(builder.getPersonalUser().getName(), game.getHighScore());
         scene.setOnKeyPressed(null);
@@ -435,6 +487,8 @@ public class SnakeGameController {
         if (gameTimeline != null) {
             gameTimeline.stop();
         }
+
+        backgroundMusic.stop();
     }
 
 
