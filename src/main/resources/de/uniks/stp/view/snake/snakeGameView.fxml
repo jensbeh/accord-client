@@ -22,8 +22,20 @@
                   <Insets top="25.0" />
                </VBox.margin>
             </Canvas>
-            <HBox alignment="CENTER" prefHeight="75.0" prefWidth="800.0" spacing="200.0" style="-fx-background-color: #292929;">
+            <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="800.0" style="-fx-background-color: #292929;">
                <children>
+                  <HBox prefHeight="40.0" prefWidth="40.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" top="5.0" />
+                     </HBox.margin>
+                     <children>
+                        <Button id="muteButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="muteButton" stylesheets="@../../styles/snakeStyles.css" text="🔊">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <Label id="label_score" text="score" textFill="WHITE">
@@ -33,7 +45,7 @@
                         </Label>
                      </children>
                      <HBox.margin>
-                        <Insets left="100.0" />
+                        <Insets left="128.0" />
                      </HBox.margin>
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
@@ -44,6 +56,9 @@
                            </font>
                         </Label>
                      </children>
+                     <HBox.margin>
+                        <Insets left="156.0" />
+                     </HBox.margin>
                   </HBox>
                </children>
             </HBox>

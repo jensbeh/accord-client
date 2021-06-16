@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
+import util.ResourceManager;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +104,8 @@ public class SnakeControllerTest extends ApplicationTest {
     public void SnakeGameTest() throws InterruptedException {
         loginInit();
 
+        ResourceManager.saveMuteGameState(true, app.getBuilder().getPersonalUser().getName());
+
         // clicks 15 times on home
         Circle homeButton = lookup("#homeButton").query();
         for (int i = 0; i < 10; i++) {
@@ -116,6 +119,7 @@ public class SnakeControllerTest extends ApplicationTest {
         Label highScoreLabel = lookup("#label_highscore").query();
         Pane gameOverBox = lookup("#gameOverBox").query();
         Button restartButton = lookup("#restartButton").query();
+        Button muteButton = lookup("#muteButton").query();
 
         // set snake to center of the field
         SnakeGameController snakeGameController = app.getSnakeGameController();
@@ -192,6 +196,14 @@ public class SnakeControllerTest extends ApplicationTest {
         // now score == 0 && Highscore == 200?
         Assert.assertEquals("Score: 0", scoreLabel.getText());
         Assert.assertEquals("Highscore: 200", highScoreLabel.getText());
+
+        // unMute
+        clickOn(muteButton);
+        Assert.assertEquals("\uD83D\uDD0A", muteButton.getText());
+
+        // mute
+        clickOn(muteButton);
+        Assert.assertEquals("\uD83D\uDD08", muteButton.getText());
 
         // close game
         for (Object object : this.listTargetWindows()) {

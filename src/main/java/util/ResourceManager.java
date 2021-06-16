@@ -55,7 +55,6 @@ public class ResourceManager {
 
 
     public static void saveHighScore(String currentUserName, int highScore) {
-
         try {
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
             JsonObject obj = new JsonObject();
@@ -70,5 +69,51 @@ public class ResourceManager {
 
     public static Image loadSnakeGameIcon(String image) {
         return new Image(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png").toString());
+    }
+
+    public static boolean loadMuteGameState(String currentUserName) {
+        // if file not exists - create and put highScore = 0
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
+            }
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
+                BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
+                JsonObject obj = new JsonObject();
+                obj.put("isGameMute", false);
+                Jsoner.serialize(obj, writer);
+                writer.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // load file and highScore
+        boolean isGameMute = false;
+        try {
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
+            JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+            isGameMute = (boolean) parser.get("isGameMute");
+            reader.close();
+
+        } catch (JsonException |
+                IOException e) {
+            e.printStackTrace();
+        }
+        return isGameMute;
+    }
+
+    public static void saveMuteGameState(boolean isGameMute, String currentUserName) {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
+            JsonObject obj = new JsonObject();
+            obj.put("isGameMute", isGameMute);
+
+            Jsoner.serialize(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
