@@ -1,18 +1,17 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import javafx.collections.ObservableList;
-import javafx.scene.control.*;
-import javafx.scene.shape.Circle;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -28,9 +27,7 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-import javax.websocket.Session;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -140,7 +137,7 @@ public class MockingTest extends ApplicationTest {
         JSONArray members = new JSONArray();
         JSONArray categories = new JSONArray();
         categories.put("60b77ba0026b3534ca5a61ae");
-        JSONObject member =  new JSONObject();
+        JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter Lustig")
                 .put("online", true);
@@ -215,7 +212,6 @@ public class MockingTest extends ApplicationTest {
             }
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
     }
-
 
 
     public void loginInit() throws InterruptedException {

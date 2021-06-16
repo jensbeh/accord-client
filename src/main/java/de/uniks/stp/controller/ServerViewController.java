@@ -109,6 +109,14 @@ public class ServerViewController {
         this.currentChannel = channel;
     }
 
+    public ServerSystemWebSocket getServerSystemWebSocket() {
+        return serverSystemWebSocket;
+    }
+
+    public ServerChatWebSocket getChatWebSocketClient() {
+        return chatWebSocketClient;
+    }
+
     /**
      * Callback, when all server information are loaded
      */
