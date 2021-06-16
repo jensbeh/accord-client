@@ -340,6 +340,8 @@ public class SnakeGameController {
 
     private void showCountDown(CountDownCallback countDownCallback) {
         countDownBox.setVisible(true);
+        countdownText.setText("3");
+
         GaussianBlur blur = new GaussianBlur(10.0);
         gameBox.setEffect(blur);
 
