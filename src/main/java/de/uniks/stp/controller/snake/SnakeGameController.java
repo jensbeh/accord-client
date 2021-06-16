@@ -39,7 +39,7 @@ public class SnakeGameController {
     private Food food;
     private final int snakeHead = 0;
     private ArrayList<Snake> addNewBodyQueue;
-    private Timeline timeline;
+    private Timeline gameTimeline;
     private boolean gameOver;
     private Pane gameOverBox;
     private Text gameOverScoreText;
@@ -101,9 +101,9 @@ public class SnakeGameController {
         spawnSnake();
 
         showCountDown(() -> {
-            timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
-            timeline.setCycleCount(Animation.INDEFINITE);
-            timeline.play();
+            gameTimeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
+            gameTimeline.setCycleCount(Animation.INDEFINITE);
+            gameTimeline.play();
         });
 
     }
@@ -120,7 +120,7 @@ public class SnakeGameController {
         }
 
         if (gameOver) {
-            timeline.stop();
+            gameTimeline.stop();
             showGameOverScreen();
             drawMap();
             System.out.println("GAME OVER !!");
@@ -331,7 +331,7 @@ public class SnakeGameController {
         spawnFood();
         spawnSnake();
 
-        showCountDown(() -> timeline.play());
+        showCountDown(() -> gameTimeline.play());
     }
 
     public interface CountDownCallback {
@@ -402,5 +402,6 @@ public class SnakeGameController {
         ResourceManager.saveHighScore(game.getHighScore());
         scene.setOnKeyPressed(null);
         restartButton.setOnAction(null);
+        gameTimeline.stop();
     }
 }
