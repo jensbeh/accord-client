@@ -293,10 +293,10 @@ public class SnakeGameController {
         blurTimeline.play();
 
         if (game.getScore() > game.getHighScore()) {
-            gameOverScoreText.setText("New Highscore!!! " + game.getScore());
+            gameOverScoreText.setText(builder.getPersonalUser().getName() + ", your new highscore is " + game.getScore() + " !!!");
             game.setHighScore(game.getScore());
         } else {
-            gameOverScoreText.setText("Your Score is: " + game.getScore());
+            gameOverScoreText.setText(builder.getPersonalUser().getName() + ", your score is: " + game.getScore() + " !");
         }
 
         gameOverBox.setVisible(true);
