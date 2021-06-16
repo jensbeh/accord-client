@@ -488,6 +488,7 @@ public class SnakeGameController {
             gameTimeline.stop();
         }
 
+        clip.stop();
         backgroundMusic.stop();
     }
 
