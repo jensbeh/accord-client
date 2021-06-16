@@ -300,6 +300,10 @@ public class StageManager extends Application {
         }
     }
 
+    public SnakeGameController getSnakeGameController() {
+        return snakeGameController;
+    }
+
     public static void setRestClient(RestClient rest) {
         restClient = rest;
     }

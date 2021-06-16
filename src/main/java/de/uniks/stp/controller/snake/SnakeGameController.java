@@ -436,4 +436,21 @@ public class SnakeGameController {
             gameTimeline.stop();
         }
     }
+
+
+    ////////////////////////////////////////////////
+    //// for testing
+    ////////////////////////////////////////////////
+    public ArrayList<Snake> getSnake() {
+        return snake;
+    }
+
+    public void setFood(Food food) {
+        this.food = food;
+    }
+
+    public void setSnakeHeadPos(int x, int y) {
+        this.snake.get(snakeHead).setPosX(x);
+        this.snake.get(snakeHead).setPosY(y);
+    }
 }

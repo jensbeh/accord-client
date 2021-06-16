@@ -33,11 +33,13 @@ public class Food {
         return this.posY;
     }
 
-    public void setPosX(int posX) {
+    public Food setPosX(int posX) {
         this.posX = posX;
+        return this;
     }
 
-    public void setPosY(int posY) {
+    public Food setPosY(int posY) {
         this.posY = posY;
+        return this;
     }
 }
