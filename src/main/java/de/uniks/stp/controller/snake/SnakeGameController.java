@@ -421,7 +421,7 @@ public class SnakeGameController {
         game.setScore(game.getScore() + 100);
         scoreLabel.setText("Score: " + game.getScore());
 
-        if (game.getScore() % 200 == 0 && speed > 150) {
+        if (game.getScore() % 200 == 0 && speed > 200) {
             speed = speed - 10;
             gameTimeline.stop();
             gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
