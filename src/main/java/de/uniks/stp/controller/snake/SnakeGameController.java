@@ -141,30 +141,9 @@ public class SnakeGameController {
 
     }
 
-    private void loadAllSounds() {
-        try {
-            Media media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav").toURI().toString());
-            backgroundMusic = new MediaPlayer(media);
-            backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
-            backgroundMusic.play();
-
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/gameOver.wav").toURI().toString());
-            gameOverSound = new MediaPlayer(media);
-
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/eating.wav").toURI().toString());
-            eatingSound = new MediaPlayer(media);
-
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdown321.wav").toURI().toString());
-            countDown321Sound = new MediaPlayer(media);
-
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdownGO.wav").toURI().toString());
-            countDownGoSound = new MediaPlayer(media);
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * main loop function which draw every Speed "tick" new
+     */
     private void loop() {
         if (!gameOver) {
             drawMap();
@@ -186,6 +165,10 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Snake
     ////////////////////////////////////////////////
+
+    /**
+     * spawn new snake with length 3 at random position
+     */
     private void spawnSnake() {
         Random rand = new Random();
         snake.add(snakeHead, new Snake().setPosX(rand.nextInt(COLUMN) * FIELD_SIZE).setPosY(rand.nextInt(ROW) * FIELD_SIZE));
@@ -210,6 +193,9 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * function to move snake aka calculate next position and check if food was eaten + add new body
+     */
     private void moveSnake() {
         for (int i = snake.size() - 1; i > snakeHead; i--) {
             snake.get(i).setPosX(snake.get(i - 1).getPosX()).setPosY(snake.get(i - 1).getPosY());
@@ -269,6 +255,9 @@ public class SnakeGameController {
         addNewBody();
     }
 
+    /**
+     * when a food was eaten then the new body is adding when tail is on the "eaten food"
+     */
     private void addNewBody() {
         if (addNewBodyQueue.size() > 0) {
             if (addNewBodyQueue.get(0).getPosX() == snake.get(snake.size() - 1).getPosX() && addNewBodyQueue.get(0).getPosY() == snake.get(snake.size() - 1).getPosY()) {
@@ -281,6 +270,10 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Food
     ////////////////////////////////////////////////
+
+    /**
+     * spawn new food at random position and random pic
+     */
     private void spawnFood() {
         food = new Food();
 
@@ -305,10 +298,16 @@ public class SnakeGameController {
         drawFood();
     }
 
+    /**
+     * draws the food on the gameField
+     */
     private void drawFood() {
         brush.drawImage(food.getFoodPic(), food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
+    /**
+     * "eats" the food when head is at the same pos as the food is
+     */
     private void eatFoot() {
         if (snake.get(snakeHead).getPosX() == food.getPosX() && snake.get(snakeHead).getPosY() == food.getPosY()) {
             eatingSound();
@@ -321,6 +320,10 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Map
     ////////////////////////////////////////////////
+
+    /**
+     * draws the map with this special karo-paint
+     */
     private void drawMap() {
         for (int row = 0; row < ROW; row++) {
             for (int column = 0; column < COLUMN; column++) {
@@ -345,6 +348,10 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Additional methods
     ////////////////////////////////////////////////
+
+    /**
+     * function to check if the snake eats itself
+     */
     private boolean isGameOver() {
         // snake eats its itself
         for (int i = 1; i < snake.size(); i++) {
@@ -356,6 +363,9 @@ public class SnakeGameController {
         return false;
     }
 
+    /**
+     * show gameOverScreen when snake gets killed
+     */
     private void showGameOverScreen() {
         GaussianBlur blur = new GaussianBlur(0.0);
         gameBox.setEffect(blur);
@@ -382,6 +392,9 @@ public class SnakeGameController {
         gameOverSound();
     }
 
+    /**
+     * restart the game when clicks on the restart button and set the most back to beginning
+     */
     private void restartGame(ActionEvent actionEvent) {
         gameOver = false;
 
@@ -413,10 +426,16 @@ public class SnakeGameController {
         });
     }
 
+    /**
+     * interface to check if the countDown animation is ready
+     */
     public interface CountDownCallback {
         void onFinished();
     }
 
+    /**
+     * shows the countDown animation on screen
+     */
     private void showCountDown(CountDownCallback countDownCallback) {
         countDownBox.setVisible(true);
         countdownText.setText("3");
@@ -477,6 +496,9 @@ public class SnakeGameController {
         });
     }
 
+    /**
+     * calculates the score when eating the food AND made game faster every second food
+     */
     private void addScore() {
         game.setScore(game.getScore() + 100);
         scoreLabel.setText("Score: " + game.getScore());
@@ -490,6 +512,36 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * starts all mediaPlayer with sounds
+     */
+    private void loadAllSounds() {
+        try {
+            Media media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav").toURI().toString());
+            backgroundMusic = new MediaPlayer(media);
+            backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
+            backgroundMusic.play();
+
+            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/gameOver.wav").toURI().toString());
+            gameOverSound = new MediaPlayer(media);
+
+            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/eating.wav").toURI().toString());
+            eatingSound = new MediaPlayer(media);
+
+            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdown321.wav").toURI().toString());
+            countDown321Sound = new MediaPlayer(media);
+
+            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdownGO.wav").toURI().toString());
+            countDownGoSound = new MediaPlayer(media);
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * plays the gameOverSound
+     */
     public void gameOverSound() {
         gameOverSound.stop();
 
@@ -500,6 +552,9 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * plays the eatingSound
+     */
     public void eatingSound() {
         eatingSound.stop();
 
@@ -510,6 +565,9 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * plays the countDownSound for 3, 2, 1
+     */
     public void countDown321Sound() {
         countDown321Sound.stop();
 
@@ -520,6 +578,9 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * plays the countDownSound for GO
+     */
     public void countDownGoSound() {
         countDownGoSound.stop();
 
@@ -530,6 +591,9 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * mutes all sounds when muteButton was clicked
+     */
     private void muteSound(ActionEvent actionEvent) {
         if (!isGameMute) {
             backgroundMusic.setMute(true);
@@ -556,7 +620,6 @@ public class SnakeGameController {
         }
     }
 
-
     public void stop() {
         ResourceManager.saveHighScore(builder.getPersonalUser().getName(), game.getHighScore());
         scene.setOnKeyPressed(null);
@@ -577,7 +640,7 @@ public class SnakeGameController {
 
 
     ////////////////////////////////////////////////
-    //// for testing
+    //// only for testing
     ////////////////////////////////////////////////
     public ArrayList<Snake> getSnake() {
         return snake;
