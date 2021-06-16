@@ -30,15 +30,14 @@ public class SnakeGameController {
 
     private final Parent view;
     private final ModelBuilder builder;
-    private Scene scene;
+    private final Scene scene;
     private Label scoreLabel;
     private Label highScoreLabel;
-    private Canvas gameField;
     private GraphicsContext brush;
     private Game game;
     private ArrayList<Snake> snake;
     private Food food;
-    private int snakeHead = 0;
+    private final int snakeHead = 0;
     private ArrayList<Snake> addNewBodyQueue;
     private Timeline timeline;
     private boolean gameOver;
@@ -64,7 +63,7 @@ public class SnakeGameController {
         restartButton = (Button) view.lookup("#restartButton");
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
-        gameField = (Canvas) view.lookup("#gameField");
+        Canvas gameField = (Canvas) view.lookup("#gameField");
         brush = gameField.getGraphicsContext2D();
 
         gameOverBox.setVisible(false);
@@ -101,13 +100,10 @@ public class SnakeGameController {
         spawnFood();
         spawnSnake();
 
-        showCountDown(new CountDownCallback() {
-            @Override
-            public void onFinished() {
-                timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
-                timeline.setCycleCount(Animation.INDEFINITE);
-                timeline.play();
-            }
+        showCountDown(() -> {
+            timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
         });
 
     }
@@ -335,12 +331,7 @@ public class SnakeGameController {
         spawnFood();
         spawnSnake();
 
-        showCountDown(new CountDownCallback() {
-            @Override
-            public void onFinished() {
-                timeline.play();
-            }
-        });
+        showCountDown(() -> timeline.play());
     }
 
     public interface CountDownCallback {
