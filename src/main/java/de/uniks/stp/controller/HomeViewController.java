@@ -446,7 +446,7 @@ public class HomeViewController {
         updateServerListColor();
 
         // start EasterEgg - Snake
-        if (mouseEvent.getClickCount() == 5) {
+        if (mouseEvent.getClickCount() == 10) {
             StageManager.showStartSnakeScreen();
         }
     }

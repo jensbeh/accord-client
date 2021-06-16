@@ -1,13 +1,16 @@
 package util;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import javafx.scene.image.Image;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static util.Constants.*;
 
@@ -17,31 +20,46 @@ public class ResourceManager {
 
     public static int loadHighScore() {
         int highScore = 0;
-        JSONParser jsonParser = new JSONParser();
-        try {
-            Object obj = jsonParser.parse(new FileReader(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
-            JSONObject jsonObject = (JSONObject) obj;
-            String str = jsonObject.get("highScore").toString();
-            highScore = Integer.parseInt(str);
 
-        } catch (IOException | ParseException e) {
+        // if file not exists - create and put highScore = 0
+        try {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+                BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+                JsonObject obj = new JsonObject();
+                obj.put("highScore", highScore);
+                Jsoner.serialize(obj, writer);
+                writer.close();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
+        // load file and highScore
+        try {
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+            JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+            BigDecimal value = (BigDecimal) parser.get("highScore");
+            highScore = value.intValue();
+            reader.close();
+        } catch (JsonException |
+                IOException e) {
+            e.printStackTrace();
+        }
 
         return highScore;
     }
 
 
     public static void saveHighScore(int highScore) {
-        try (FileWriter file = new FileWriter(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json")) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("highScore", highScore);
 
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+            JsonObject obj = new JsonObject();
+            obj.put("highScore", highScore);
 
-            file.write(jsonObject.toJSONString());
-            file.flush();
-
+            Jsoner.serialize(obj, writer);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
