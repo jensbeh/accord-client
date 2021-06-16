@@ -13,7 +13,10 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.json.JSONObject;
@@ -57,12 +60,20 @@ public class ChatViewController {
         ob = FXCollections.observableArrayList();
         this.messageList.setItems(ob);
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+        messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 sendButton.fire();
             }
         });
+    }
+
+    private void chatClicked(MouseEvent mouseEvent) {
+        final ClipboardContent clipboardContent = new ClipboardContent();
+        String text = messageList.getSelectionModel().getSelectedItem().getMessage();
+        clipboardContent.putString(text);
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
 
     /**
