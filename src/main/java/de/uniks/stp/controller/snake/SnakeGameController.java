@@ -98,8 +98,8 @@ public class SnakeGameController {
         });
 
         drawMap();
-        spawnFood();
         spawnSnake();
+        spawnFood();
 
         showCountDown(() -> {
             gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
@@ -161,7 +161,6 @@ public class SnakeGameController {
         }
         switch (game.getCurrentDirection()) {
             case UP:
-                System.out.println("UP: " + snake.get(snakeHead).getPosY());
                 if (snake.get(snakeHead).getPosY() == 0) {
                     snake.get(snakeHead).setPosY(HEIGHT - FIELD_SIZE);
                 } else {
@@ -170,7 +169,6 @@ public class SnakeGameController {
                 break;
 
             case DOWN:
-                System.out.println("DOWN: " + snake.get(snakeHead).getPosY());
                 if (snake.get(snakeHead).getPosY() == HEIGHT - FIELD_SIZE) {
                     snake.get(snakeHead).setPosY(0);
                 } else {
@@ -230,6 +228,26 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     private void spawnFood() {
         food = new Food();
+
+        // set position but not inside the snake
+        Random rand = new Random();
+        boolean spawned = false;
+        while (!spawned) {
+            int posX = rand.nextInt(COLUMN) * FIELD_SIZE;
+            int posY = rand.nextInt(ROW) * FIELD_SIZE;
+            spawned = true;
+            for (int i = 0; i < snake.size(); i++) {
+                if (snake.get(i).getPosX() == posX && snake.get(i).getPosY() == posY) {
+                    spawned = false;
+                    System.out.println("INSIDE SNAKE...");
+                }
+            }
+            if (spawned) {
+                food.setPosX(posX);
+                food.setPosY(posY);
+            }
+        }
+
         drawFood();
     }
 
@@ -333,7 +351,11 @@ public class SnakeGameController {
         spawnFood();
         spawnSnake();
 
-        showCountDown(() -> gameTimeline.play());
+        showCountDown(() -> {
+            gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
+            gameTimeline.setCycleCount(Animation.INDEFINITE);
+            gameTimeline.play();
+        });
     }
 
     public interface CountDownCallback {
@@ -399,7 +421,7 @@ public class SnakeGameController {
         game.setScore(game.getScore() + 100);
         scoreLabel.setText("Score: " + game.getScore());
 
-        if (game.getScore() % 200 == 0 && speed > 100) {
+        if (game.getScore() % 200 == 0 && speed > 150) {
             speed = speed - 10;
             gameTimeline.stop();
             gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));

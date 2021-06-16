@@ -20,8 +20,6 @@ public class Food {
     public Food() {
         this.foodSize = FIELD_SIZE;
         Random rand = new Random();
-        this.posX = rand.nextInt(COLUMN) * FIELD_SIZE;
-        this.posY = rand.nextInt(ROW) * FIELD_SIZE;
         foodPic = ResourceManager.loadSnakeGameIcon(foodList[rand.nextInt(4)]);
     }
 
@@ -39,5 +37,13 @@ public class Food {
 
     public int getPosY() {
         return this.posY;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 }
