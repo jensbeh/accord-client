@@ -10,15 +10,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.WindowEvent;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -69,13 +68,31 @@ public class ChatViewController {
         });
     }
 
+    /**
+     *
+     * build menu with chat options
+     */
     private void chatClicked(MouseEvent mouseEvent) {
+        final ContextMenu contextMenu = new ContextMenu();
+        contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
+        final MenuItem item1 = new MenuItem("copy");
+        item1.setStyle("-fx-text-fill: #FFFFFF");
+        contextMenu.getItems().addAll(item1);
+        messageList.setContextMenu(contextMenu);
+        contextMenu.setOnAction(this::copy);
+    }
+
+    /**
+     *
+     * copied the selected text
+     */
+    private void copy(ActionEvent actionEvent) {
         final ClipboardContent clipboardContent = new ClipboardContent();
         String text = messageList.getSelectionModel().getSelectedItem().getMessage();
         clipboardContent.putString(text);
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
-
+    
     /**
      * get Text from TextField and build message
      */
