@@ -17,7 +17,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.stage.WindowEvent;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -69,7 +68,6 @@ public class ChatViewController {
     }
 
     /**
-     *
      * build menu with chat options
      */
     private void chatClicked(MouseEvent mouseEvent) {
@@ -83,7 +81,6 @@ public class ChatViewController {
     }
 
     /**
-     *
      * copied the selected text
      */
     private void copy(ActionEvent actionEvent) {
@@ -92,7 +89,7 @@ public class ChatViewController {
         clipboardContent.putString(text);
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
-    
+
     /**
      * get Text from TextField and build message
      */
