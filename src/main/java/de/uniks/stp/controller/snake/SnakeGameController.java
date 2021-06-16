@@ -5,7 +5,6 @@ import de.uniks.stp.controller.snake.model.Food;
 import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.controller.snake.model.Snake;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,6 +34,7 @@ public class SnakeGameController {
     private Label scoreLabel;
     private Label highScoreLabel;
     private Canvas gameField;
+    private GraphicsContext brush;
     private Game game;
     private ArrayList<Snake> snake;
     private Food food;
@@ -46,6 +46,8 @@ public class SnakeGameController {
     private Text gameOverScoreText;
     private Button restartButton;
     private VBox gameBox;
+    private Pane countDownBox;
+    private Text countdownText;
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
         this.scene = scene;
@@ -55,16 +57,20 @@ public class SnakeGameController {
 
     public void init() throws InterruptedException {
         gameBox = (VBox) view.lookup("#gameBox");
+        countDownBox = (Pane) view.lookup("#countDownBox");
+        countdownText = (Text) view.lookup("#countdownText");
         gameOverBox = (Pane) view.lookup("#gameOverBox");
         gameOverScoreText = (Text) view.lookup("#gameOverScoreText");
         restartButton = (Button) view.lookup("#restartButton");
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
         gameField = (Canvas) view.lookup("#gameField");
-        GraphicsContext brush = gameField.getGraphicsContext2D();
+        brush = gameField.getGraphicsContext2D();
 
         gameOverBox.setVisible(false);
         gameOverBox.setOpacity(0.0);
+        countDownBox.setVisible(false);
+        countdownText.setOpacity(0.0);
 
         restartButton.setOnAction(this::restartGame);
 
@@ -91,20 +97,26 @@ public class SnakeGameController {
             }
         });
 
-        drawMap(brush);
-        spawnFood(brush);
-        spawnSnake(brush);
+        drawMap();
+        spawnFood();
+        spawnSnake();
 
-        timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop(brush)));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        showCountDown(new CountDownCallback() {
+            @Override
+            public void onFinished() {
+                timeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
+                timeline.setCycleCount(Animation.INDEFINITE);
+                timeline.play();
+            }
+        });
+
     }
 
-    private void loop(GraphicsContext brush) {
+    private void loop() {
         if (!gameOver) {
-            drawMap(brush);
-            drawFood(brush);
-            moveSnake(brush);
+            drawMap();
+            drawFood();
+            moveSnake();
 
             if (isGameOver()) {
                 gameOver = true;
@@ -114,7 +126,7 @@ public class SnakeGameController {
         if (gameOver) {
             timeline.stop();
             showGameOverScreen();
-            drawMap(brush);
+            drawMap();
             System.out.println("GAME OVER !!");
         }
     }
@@ -122,7 +134,7 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Snake
     ////////////////////////////////////////////////
-    private void spawnSnake(GraphicsContext brush) {
+    private void spawnSnake() {
         Random rand = new Random();
         snake.add(snakeHead, new Snake().setPosX(rand.nextInt(COLUMN) * FIELD_SIZE).setPosY(rand.nextInt(ROW) * FIELD_SIZE));
         snake.add(1, new Snake().setPosX(snake.get(snakeHead).getPosX() - FIELD_SIZE).setPosY(snake.get(snakeHead).getPosY()));
@@ -146,7 +158,7 @@ public class SnakeGameController {
         }
     }
 
-    private void moveSnake(GraphicsContext brush) {
+    private void moveSnake() {
         for (int i = snake.size() - 1; i > snakeHead; i--) {
             snake.get(i).setPosX(snake.get(i - 1).getPosX()).setPosY(snake.get(i - 1).getPosY());
         }
@@ -203,7 +215,7 @@ public class SnakeGameController {
             brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
         }
 
-        eatFoot(brush);
+        eatFoot();
         addNewBody();
     }
 
@@ -219,19 +231,19 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Food
     ////////////////////////////////////////////////
-    private void spawnFood(GraphicsContext brush) {
+    private void spawnFood() {
         food = new Food();
-        drawFood(brush);
+        drawFood();
     }
 
-    private void drawFood(GraphicsContext brush) {
+    private void drawFood() {
         brush.drawImage(food.getFoodPic(), food.getPosX(), food.getPosY(), FIELD_SIZE, FIELD_SIZE);
     }
 
-    private void eatFoot(GraphicsContext brush) {
+    private void eatFoot() {
         if (snake.get(snakeHead).getPosX() == food.getPosX() && snake.get(snakeHead).getPosY() == food.getPosY()) {
             addNewBodyQueue.add(new Snake().setPosX(food.getPosX()).setPosY(food.getPosY()));
-            spawnFood(brush);
+            spawnFood();
             addScore();
         }
     }
@@ -239,7 +251,7 @@ public class SnakeGameController {
     ////////////////////////////////////////////////
     //// Map
     ////////////////////////////////////////////////
-    private void drawMap(GraphicsContext brush) {
+    private void drawMap() {
         for (int row = 0; row < ROW; row++) {
             for (int column = 0; column < COLUMN; column++) {
                 if (row % 2 == 0) {
@@ -301,6 +313,91 @@ public class SnakeGameController {
 
     private void restartGame(ActionEvent actionEvent) {
         System.out.println("RESTART GAME...");
+        gameOver = false;
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), gameOverBox);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.play();
+        fadeOut.setOnFinished((ae) -> gameOverBox.setVisible(false));
+
+        snake.clear();
+        addNewBodyQueue.clear();
+        food = null;
+        game.setCurrentDirection(Game.Direction.RIGHT);
+
+        game.setScore(0);
+        scoreLabel.setText("Score: " + game.getScore());
+        highScoreLabel.setText("Highscore: " + game.getHighScore());
+
+
+        drawMap();
+        spawnFood();
+        spawnSnake();
+
+        showCountDown(new CountDownCallback() {
+            @Override
+            public void onFinished() {
+                timeline.play();
+            }
+        });
+    }
+
+    public interface CountDownCallback {
+        void onFinished();
+    }
+
+    private void showCountDown(CountDownCallback countDownCallback) {
+        countDownBox.setVisible(true);
+        GaussianBlur blur = new GaussianBlur(10.0);
+        gameBox.setEffect(blur);
+
+        Timeline blurTimeline = new Timeline();
+        KeyValue keyValue = new KeyValue(blur.radiusProperty(), 00.0);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(200), keyValue);
+        blurTimeline.getKeyFrames().add(keyFrame);
+
+        FadeTransition fadeIn1 = new FadeTransition(Duration.millis(200), countdownText);
+        fadeIn1.setFromValue(0.0);
+        fadeIn1.setToValue(1.0);
+
+        FadeTransition fadeOut1 = new FadeTransition(Duration.millis(800), countdownText);
+        fadeOut1.setFromValue(1.0);
+        fadeOut1.setToValue(0.0);
+        fadeOut1.setOnFinished((ae) -> countdownText.setText("2"));
+
+        FadeTransition fadeIn2 = new FadeTransition(Duration.millis(200), countdownText);
+        fadeIn2.setFromValue(0.0);
+        fadeIn2.setToValue(1.0);
+
+        FadeTransition fadeOut2 = new FadeTransition(Duration.millis(800), countdownText);
+        fadeOut2.setFromValue(1.0);
+        fadeOut2.setToValue(0.0);
+        fadeOut2.setOnFinished((ae) -> countdownText.setText("1"));
+
+        FadeTransition fadeIn3 = new FadeTransition(Duration.millis(200), countdownText);
+        fadeIn3.setFromValue(0.0);
+        fadeIn3.setToValue(1.0);
+
+        FadeTransition fadeOut3 = new FadeTransition(Duration.millis(800), countdownText);
+        fadeOut3.setFromValue(1.0);
+        fadeOut3.setToValue(0.0);
+        fadeOut3.setOnFinished((ae) -> countdownText.setText("GO!"));
+
+        FadeTransition fadeInGO = new FadeTransition(Duration.millis(200), countdownText);
+        fadeInGO.setFromValue(0.0);
+        fadeInGO.setToValue(1.0);
+
+        FadeTransition fadeOutGO = new FadeTransition(Duration.millis(1200), countdownText);
+        fadeOutGO.setFromValue(1.0);
+        fadeOutGO.setToValue(0.0);
+
+        SequentialTransition seqT = new SequentialTransition(fadeIn1, fadeOut1, fadeIn2, fadeOut2, fadeIn3, fadeOut3, fadeInGO, fadeOutGO, blurTimeline);
+        seqT.play();
+        seqT.setOnFinished((ae) -> {
+            countDownCallback.onFinished();
+            countDownBox.setVisible(false);
+        });
     }
 
     private void addScore() {

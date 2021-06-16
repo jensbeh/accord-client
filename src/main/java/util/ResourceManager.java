@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class ResourceManager {
         JSONParser jsonParser = new JSONParser();
         try {
             Object obj = jsonParser.parse(new FileReader(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
-            JSONObject jsonObject = (JSONObject)obj;
+            JSONObject jsonObject = (JSONObject) obj;
             String str = jsonObject.get("highScore").toString();
             highScore = Integer.parseInt(str);
 
@@ -36,7 +35,6 @@ public class ResourceManager {
 
     public static void saveHighScore(int highScore) {
         try (FileWriter file = new FileWriter(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json")) {
-            //JSONObject jsonObject = (JSONObject) new JSONObject().put("highScore", highScore);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("highScore", highScore);
 
