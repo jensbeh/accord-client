@@ -63,7 +63,7 @@
       <HBox id="messageBox" alignment="CENTER" maxHeight="35.0" prefHeight="35.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: grey;">
          <children>
             <HBox prefHeight="35.0" prefWidth="4.0" />
-            <EmojiTextFlow fx:id="messageTextField" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6; -fx-font-size: 4px;" />
+            <TextField fx:id="messageTextField" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6;" />
             <Button id="emojiButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0" style="-fx-background-radius: 20; -fx-background-color: grey;">
                <graphic>
                   <ImageView id="imageView" fitHeight="19.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">

@@ -1,5 +1,7 @@
 package de.uniks.stp;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
+import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import javafx.geometry.Pos;
@@ -9,6 +11,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,21 +60,45 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 Label userName = new Label();
                 userName.setId("userNameLabel");
                 userName.setTextFill(Color.WHITE);
-                Label message = new Label();
-                message.setId("messageLabel");
+                EmojiTextFlow message;
+
                 //right alignment if User is currentUser else left
                 DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
-                    message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.WHITE);
+                    /*message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
+                    message.setTextFill(Color.WHITE);*/
                     userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
+                    EmojiTextFlowParameters emojiTextFlowParameters;
+                    {
+                        emojiTextFlowParameters = new EmojiTextFlowParameters();
+                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                        emojiTextFlowParameters.setTextColor(Color.WHITE);
+                    }
+                     message = new EmojiTextFlow(emojiTextFlowParameters);
+                    message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
-                    message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.BLACK);
+                    /*message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
+                    message.setTextFill(Color.BLACK);*/
                     userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
+                    EmojiTextFlowParameters emojiTextFlowParameters;
+                    {
+                        emojiTextFlowParameters = new EmojiTextFlowParameters();
+                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                        emojiTextFlowParameters.setTextColor(Color.BLACK);
+                    }
+                    message = new EmojiTextFlow(emojiTextFlowParameters);
+                    message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
+                message.setId("messageLabel");
+                //message.setPrefWidth(50);
+                message.setMaxWidth(320);
+
                 //new Line after 50 Characters
                 String str = item.getMessage();
                 int point = 0;
@@ -96,7 +125,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     found = false;
                     counter = 25;
                 }
-                message.setText(" " + str + " ");
+                message.parseAndAppend(" " + str + " ");
                 vbox.getChildren().addAll(userName, message);
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);

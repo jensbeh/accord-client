@@ -36,7 +36,7 @@ public class ChatViewController {
     private static ServerChannel currentChannel;
     private Parent view;
     private static Button sendButton;
-    private EmojiTextFlow messageTextField;
+    private TextField messageTextField;
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
     private HBox messageBox;
@@ -70,7 +70,7 @@ public class ChatViewController {
 
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
-        this.messageTextField = ((EmojiTextFlow) view.lookup("#messageTextField"));
+        this.messageTextField = (TextField) view.lookup("#messageTextField");
         sendButton.setOnAction(this::sendButtonClicked);
         this.messageBox = (HBox) view.lookup("#messageBox");
         imageView = (ImageView) view.lookup("#imageView");
@@ -132,11 +132,11 @@ public class ChatViewController {
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
 
-        messageTextField.parseAndAppend(":wink: hjasgddzasfuzt");
+        //messageTextField.parseAndAppend(":wink: hjasgddzasfuzt");
         //get Text from TextField and clear TextField after
-        //String textMessage = messageTextField.getAccessibleText();
+        String textMessage = messageTextField.getText();
         //String textMessage = EmojiParser.parseToUnicode(result);
-        /*if (textMessage.length() <= 700) {
+        if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
@@ -156,7 +156,7 @@ public class ChatViewController {
                     }
                 }
             }
-        }*/
+        }
     }
 
     /**
