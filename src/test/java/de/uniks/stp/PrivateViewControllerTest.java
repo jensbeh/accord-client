@@ -1,6 +1,8 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
+import de.uniks.stp.net.PrivateChatWebSocket;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
@@ -152,7 +154,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     public void noConnectionOnWebSocketTest() throws InterruptedException {
         loginInit();
 
-        WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
+        PrivateChatWebSocket ws = app.getBuilder().getPrivateChatWebSocketCLient();
         ws.onClose(ws.getSession(), new CloseReason(new CloseReason.CloseCode() {
             /**
              * Returns the code number, for example the integer '1000' for normal closure.
@@ -184,7 +186,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     public void chatPartnerIsOffline() throws InterruptedException, IOException {
         loginInit();
 
-        WebSocketClient ws = app.getBuilder().getPrivateChatWebSocketCLient();
+        PrivateChatWebSocket ws = app.getBuilder().getPrivateChatWebSocketCLient();
         ws.sendMessage(new JSONObject().put("channel", "private").put("to", "-").put("message", "Test").toString());
         Thread.sleep(2000);
         String result = "";

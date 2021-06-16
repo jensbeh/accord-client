@@ -41,6 +41,10 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        if (builder == null) {
+            builder = new ModelBuilder();
+        }
         if (restClient == null) {
             restClient = new RestClient();
         }
@@ -54,6 +58,10 @@ public class StageManager extends Application {
         primaryStage.show();
     }
 
+    public static void setBuilder(ModelBuilder builder) {
+        StageManager.builder = builder;
+    }
+
     public static void showLoginScreen() {
         cleanup();
 
@@ -61,7 +69,6 @@ public class StageManager extends Application {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
             scene = new Scene(root);
-            builder = new ModelBuilder();
             builder.setRestClient(restClient);
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
@@ -145,7 +152,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            settingsController = new SettingsController(builder,root);
+            settingsController = new SettingsController(root);
             settingsController.init();
 
             subStage = new Stage();
@@ -261,7 +268,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void setRestClient(RestClient rest) {
+    public void setRestClient(RestClient rest) {
         restClient = rest;
     }
 

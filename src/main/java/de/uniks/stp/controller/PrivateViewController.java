@@ -8,9 +8,7 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.WSCallback;
-import de.uniks.stp.net.WebSocketClient;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +29,6 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -59,11 +56,19 @@ public class PrivateViewController {
     private TextField messageField;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    private PrivateChatWebSocket privateChatWebSocket;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
         restClient = modelBuilder.getRestClient();
+        this.privateSystemWebSocketClient = modelBuilder.getUSER_CLIENT();
+        this.privateChatWebSocket = modelBuilder.getPrivateChatWebSocketCLient();
+    }
+
+    public ChatViewController getMessageViewController() {
+        return messageViewController;
     }
 
     public void init() {
@@ -86,162 +91,33 @@ public class PrivateViewController {
         showCurrentUser();
         showUsers();
 
-        if (builder.getPrivateChatWebSocketCLient() == null) {
-            chatWebSocketClient = new WebSocketClient("Chat " + "privateChat", builder, URI.
-                    create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
-                            getPersonalUser().getName().replace(" ", "+")), new WSCallback() {
-                /**
-                 * handles server response
-                 *
-                 * @param msg is the response from the server as a JsonStructure
-                 */
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    JsonObject jsonObject = JsonUtil.parse(msg.toString());
-                    System.out.println("privateChatWebSocketClient");
-                    System.out.println(msg);
-                    if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
-                        Message message;
-                        String channelName;
-                        Boolean newChat = true;
-                        // currentUser send
-                        long timestamp = new Date().getTime();
-                        if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                            channelName = jsonObject.getString("to");
-                            message = new Message().setMessage(jsonObject.getString("message")).
-                                    setFrom(jsonObject.getString("from")).
-                                    setTimestamp(timestamp);
-                            messageViewController.clearMessageField();
-                        } else { // currentUser received
-                            channelName = jsonObject.getString("from");
-                            message = new Message().setMessage(jsonObject.getString("message")).
-                                    setFrom(jsonObject.getString("from")).
-                                    setTimestamp(timestamp);
-                        }
-                        for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
-                            if (channel.getName().equals(channelName)) {
-                                channel.withMessage(message);
-                                if (!builder.isDoNotDisturb() && (selectedChat == null || channel != selectedChat)) {
-                                    if (builder.isPlaySound()) {
-                                        builder.playSound();
-                                    }
-                                    if (builder.isShowNotifications()) {
-                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-                                    }
-                                }
-                                privateChatList.refresh();
-                                newChat = false;
-                                break;
-                            }
-                        }
-                        if (newChat) {
-                            String userId = "";
-                            for (User user : onlineUsersList.getItems()) {
-                                if (user.getName().equals(channelName)) {
-                                    userId = user.getId();
-                                }
-                            }
-                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-                            if (!builder.isDoNotDisturb()) {
-                                if (builder.isPlaySound()) {
-                                    builder.playSound();
-                                }
-                                if (builder.isShowNotifications()) {
-                                    channel.setUnreadMessagesCounter(1);
-                                }
-                            }
-                            builder.getPersonalUser().withPrivateChat(channel);
-                            Platform.runLater(() -> privateChatList.getItems().add(channel));
-                        }
-                        if (messageViewController != null) {
-                            ChatViewController.printMessage(message);
-                        }
-                    }
-                    if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
-                        String errorTitle;
-                        String serverMessage = jsonObject.getJsonObject("data").getString("message");
-                        if (serverMessage.equals("This is not your username.")) {
-                            errorTitle = StageManager.getLangBundle().getString("error.username");
-                        } else {
-                            errorTitle = StageManager.getLangBundle().getString("error.chat");
-                        }
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                            alert.setTitle(errorTitle);
-                            if (serverMessage.equals("This is not your username.")) {
-                                alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
-                            } else {
-                                alert.setHeaderText(serverMessage);
-                            }
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                showUsers();
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onClose(Session session, CloseReason closeReason) {
-                    System.out.println(closeReason.getCloseCode().toString());
-                    if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-                        Platform.runLater(() -> {
-                            Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-                            alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
-                            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                showUsers();
-                            }
-                        });
-                    }
-                }
-            });
-            builder.setPrivateChatWebSocketCLient(chatWebSocketClient);
-        } else {
-            chatWebSocketClient = builder.getPrivateChatWebSocketCLient();
+        if (privateChatWebSocket == null) {
+            privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+                    getPersonalUser().getName().replace(" ", "+")), builder.getPersonalUser().getUserKey());
         }
+        privateChatWebSocket.setBuilder(builder);
+        privateChatWebSocket.setPrivateViewController(this);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
     }
+
+
 
     private void startWebSocketConnection() {
-        try {
-            systemWebSocketClient = new WebSocketClient("System " + "privateChat", builder,
-                    new URI(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), new WSCallback() {
-                @Override
-                public void handleMessage(JsonStructure msg) {
-                    System.out.println("msg: " + msg);
-                    JsonObject jsonMsg = JsonUtil.parse(msg.toString());
-                    String userAction = jsonMsg.getString("action");
-                    JsonObject jsonData = jsonMsg.getJsonObject("data");
-                    String userName = jsonData.getString("name");
-                    String userId = jsonData.getString("id");
-
-                    if (userAction.equals("userJoined")) {
-                        builder.buildUser(userName, userId);
-                    }
-                    if (userAction.equals("userLeft")) {
-                        if (userName.equals(builder.getPersonalUser().getName())) {
-                            Platform.runLater(StageManager::showLoginScreen);
-                        }
-                        List<User> userList = builder.getPersonalUser().getUser();
-                        User removeUser = builder.buildUser(userName, userId);
-                        if (userList.contains(removeUser)) {
-                            builder.getPersonalUser().withoutUser(removeUser);
-                        }
-                    }
-                    Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.
-                            getPersonalUser().getUser()).sorted(new SortUser())));
-                }
-
-                public void onClose(Session session, CloseReason closeReason) {
-
-                }
-            });
-            builder.setUSER_CLIENT(systemWebSocketClient);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        if (privateSystemWebSocketClient == null) {
+            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH+ SYSTEM_WEBSOCKET_PATH),builder.getPersonalUser().getUserKey());
+            privateSystemWebSocketClient.setBuilder(builder);
+            privateSystemWebSocketClient.setPrivateViewController(this);
         }
+        privateSystemWebSocketClient.setPrivateViewController(this);
+        privateSystemWebSocketClient.setBuilder(builder);
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
     }
+
+
+    public ListView<PrivateChat> getPrivateChatList() {
+        return privateChatList;
+    }
+
 
     /**
      * Get the Online Users and reset old Online User List with new Online Users
@@ -391,6 +267,11 @@ public class PrivateViewController {
             e.printStackTrace();
         }
     }
+
+    public ListView<User> getOnlineUsersList() {
+        return onlineUsersList;
+    }
+
 
     /**
      * when language changed reset labels and texts with correct language
