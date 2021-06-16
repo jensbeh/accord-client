@@ -35,6 +35,7 @@ public class SnakeGameController {
     private Label highScoreLabel;
     private GraphicsContext brush;
     private Game game;
+    private int speed = 300;
     private ArrayList<Snake> snake;
     private Food food;
     private final int snakeHead = 0;
@@ -101,7 +102,7 @@ public class SnakeGameController {
         spawnSnake();
 
         showCountDown(() -> {
-            gameTimeline = new Timeline(new KeyFrame(Duration.millis(SPEED), run -> loop()));
+            gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
             gameTimeline.setCycleCount(Animation.INDEFINITE);
             gameTimeline.play();
         });
@@ -317,6 +318,7 @@ public class SnakeGameController {
         fadeOut.play();
         fadeOut.setOnFinished((ae) -> gameOverBox.setVisible(false));
 
+        speed = 300;
         snake.clear();
         addNewBodyQueue.clear();
         food = null;
@@ -396,6 +398,14 @@ public class SnakeGameController {
     private void addScore() {
         game.setScore(game.getScore() + 100);
         scoreLabel.setText("Score: " + game.getScore());
+
+        if (game.getScore() % 200 == 0 && speed > 100) {
+            speed = speed -10;
+            gameTimeline.stop();
+            gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
+            gameTimeline.setCycleCount(Animation.INDEFINITE);
+            gameTimeline.play();
+        }
     }
 
     public void stop() {
