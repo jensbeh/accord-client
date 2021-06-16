@@ -115,16 +115,16 @@ public class SnakeGameController {
         highScoreLabel.setText("Highscore: " + game.getHighScore());
 
         scene.setOnKeyPressed(key -> {
-            if ((key.getCode() == KeyCode.RIGHT || key.getCode() == KeyCode.D) && game.getCurrentDirection() != Game.Direction.LEFT) {
+            if (key.getCode() == KeyCode.D && game.getCurrentDirection() != Game.Direction.LEFT) {
                 game.setCurrentDirection(Game.Direction.RIGHT);
 
-            } else if ((key.getCode() == KeyCode.LEFT || key.getCode() == KeyCode.A) && game.getCurrentDirection() != Game.Direction.RIGHT) {
+            } else if (key.getCode() == KeyCode.A && game.getCurrentDirection() != Game.Direction.RIGHT) {
                 game.setCurrentDirection(Game.Direction.LEFT);
 
-            } else if ((key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W) && game.getCurrentDirection() != Game.Direction.DOWN) {
+            } else if (key.getCode() == KeyCode.W && game.getCurrentDirection() != Game.Direction.DOWN) {
                 game.setCurrentDirection(Game.Direction.UP);
 
-            } else if ((key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S) && game.getCurrentDirection() != Game.Direction.UP) {
+            } else if (key.getCode() == KeyCode.S && game.getCurrentDirection() != Game.Direction.UP) {
                 game.setCurrentDirection(Game.Direction.DOWN);
             }
         });

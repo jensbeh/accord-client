@@ -18,6 +18,9 @@ public class ResourceManager {
 
     private static final String ROOT_PATH = "/de/uniks/stp";
 
+    /**
+     * load highScore from file
+     */
     public static int loadHighScore(String currentUserName) {
         int highScore = 0;
 
@@ -54,6 +57,9 @@ public class ResourceManager {
     }
 
 
+    /**
+     * save highScore to file
+     */
     public static void saveHighScore(String currentUserName, int highScore) {
         try {
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
@@ -67,10 +73,16 @@ public class ResourceManager {
         }
     }
 
+    /**
+     * load snakeGameIcons from file
+     */
     public static Image loadSnakeGameIcon(String image) {
         return new Image(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png").toString());
     }
 
+    /**
+     * load muteGame state from file
+     */
     public static boolean loadMuteGameState(String currentUserName) {
         // if file not exists - create and put highScore = 0
         try {
@@ -104,6 +116,9 @@ public class ResourceManager {
         return isGameMute;
     }
 
+    /**
+     * save muteGame state to file
+     */
     public static void saveMuteGameState(boolean isGameMute, String currentUserName) {
         try {
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
