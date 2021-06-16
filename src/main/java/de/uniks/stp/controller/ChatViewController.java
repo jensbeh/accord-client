@@ -1,5 +1,8 @@
 package de.uniks.stp.controller;
 
+import com.pavlobu.emojitextflow.EmojiParser;
+import com.pavlobu.emojitextflow.EmojiTextFlow;
+import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.AlternateMessageListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -13,13 +16,19 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ChatViewController {
@@ -27,7 +36,7 @@ public class ChatViewController {
     private static ServerChannel currentChannel;
     private Parent view;
     private static Button sendButton;
-    private TextField messageTextField;
+    private EmojiTextFlow messageTextField;
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
     private HBox messageBox;
@@ -35,6 +44,7 @@ public class ChatViewController {
     private Button emojiButton;
     private VBox container;
     private StackPane stack;
+    private TableView<String> emojiTable;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -49,9 +59,18 @@ public class ChatViewController {
     }
 
     public void init() {
+        EmojiTextFlowParameters emojiTextFlowParameters;
+        {
+            emojiTextFlowParameters = new EmojiTextFlowParameters();
+            emojiTextFlowParameters.setEmojiScaleFactor(1D);
+            emojiTextFlowParameters.setTextAlignment(TextAlignment.CENTER);
+            emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 5));
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
+        }
+
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
-        this.messageTextField = (TextField) view.lookup("#messageTextField");
+        this.messageTextField = ((EmojiTextFlow) view.lookup("#messageTextField"));
         sendButton.setOnAction(this::sendButtonClicked);
         this.messageBox = (HBox) view.lookup("#messageBox");
         imageView = (ImageView) view.lookup("#imageView");
@@ -72,11 +91,30 @@ public class ChatViewController {
             }
         });
 
+        /*messageTextField.textProperty().addListener((observable, oldText, newText)->{
+            String changedText = EmojiParser.getInstance().asciiToUnicode(messageTextField.getText());
+            try {
+                messageTextField.setText(changedText);
+            }catch(Exception e){
+                //e.printStackTrace();
+            }
+        });*/
+
+
         emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
+        emojiTable = (TableView) view.lookup("#emojiTable");
     }
 
     private void emojiButtonClicked(ActionEvent actionEvent) {
+        ObservableList<String> emojisString = FXCollections.observableArrayList();
+        /*ArrayList<Emoji> emojis = new ArrayList<>(EmojiManager.getAll());
+        for(Emoji emoj : emojis){
+            emojisString.add(emoj.getUnicode());
+        }*/
+        //emojiTable.getItems().addAll(emojisString);
+        //emojiTable.getItems().add("Hallo");
+        emojiTable.setItems(emojisString);
         // All Child components of StackPane
         ObservableList<Node> childs = stack.getChildren();
 
@@ -85,16 +123,20 @@ public class ChatViewController {
             Node topNode = childs.get(childs.size()-1);
             topNode.toBack();
         }
+
+
     }
 
     /**
      * get Text from TextField and build message
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
-        System.out.println("hallo1");
+
+        messageTextField.parseAndAppend(":wink: hjasgddzasfuzt");
         //get Text from TextField and clear TextField after
-        String textMessage = messageTextField.getText();
-        if (textMessage.length() <= 700) {
+        //String textMessage = messageTextField.getAccessibleText();
+        //String textMessage = EmojiParser.parseToUnicode(result);
+        /*if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
@@ -114,7 +156,7 @@ public class ChatViewController {
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -132,7 +174,7 @@ public class ChatViewController {
     }
 
     public void clearMessageField() {
-        this.messageTextField.setText("");
+        //this.messageTextField.setText("");
     }
 
     /**
