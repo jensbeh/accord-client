@@ -11,24 +11,18 @@ import java.util.Random;
 import static de.uniks.stp.controller.snake.Constants.*;
 
 public class Food {
-    private int foodSize;
     private int posX;
     private int posY;
     private Image foodPic;
     private String[] foodList = {"apple", "berry", "cherry", "orange"};
 
     public Food() {
-        this.foodSize = FIELD_SIZE;
         Random rand = new Random();
         foodPic = ResourceManager.loadSnakeGameIcon(foodList[rand.nextInt(4)]);
     }
 
     public Image getFoodPic() {
         return foodPic;
-    }
-
-    public int getFoodSize() {
-        return this.foodSize;
     }
 
     public int getPosX() {

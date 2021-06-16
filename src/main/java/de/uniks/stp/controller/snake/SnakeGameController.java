@@ -74,7 +74,7 @@ public class SnakeGameController {
 
         restartButton.setOnAction(this::restartGame);
 
-        game = new Game(0, ResourceManager.loadHighScore());
+        game = new Game(0, ResourceManager.loadHighScore(builder.getPersonalUser().getName()));
         snake = new ArrayList<>();
         addNewBodyQueue = new ArrayList<>();
         gameOver = false;
@@ -124,7 +124,6 @@ public class SnakeGameController {
             gameTimeline.stop();
             showGameOverScreen();
             drawMap();
-            System.out.println("GAME OVER !!");
         }
     }
 
@@ -239,7 +238,6 @@ public class SnakeGameController {
             for (int i = 0; i < snake.size(); i++) {
                 if (snake.get(i).getPosX() == posX && snake.get(i).getPosY() == posY) {
                     spawned = false;
-                    System.out.println("INSIDE SNAKE...");
                 }
             }
             if (spawned) {
@@ -327,7 +325,6 @@ public class SnakeGameController {
     }
 
     private void restartGame(ActionEvent actionEvent) {
-        System.out.println("RESTART GAME...");
         gameOver = false;
 
         FadeTransition fadeOut = new FadeTransition(Duration.millis(500), gameOverBox);
@@ -431,9 +428,12 @@ public class SnakeGameController {
     }
 
     public void stop() {
-        ResourceManager.saveHighScore(game.getHighScore());
+        ResourceManager.saveHighScore(builder.getPersonalUser().getName(), game.getHighScore());
         scene.setOnKeyPressed(null);
         restartButton.setOnAction(null);
-        gameTimeline.stop();
+
+        if (gameTimeline != null) {
+            gameTimeline.stop();
+        }
     }
 }

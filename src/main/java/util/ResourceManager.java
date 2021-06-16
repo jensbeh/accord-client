@@ -18,7 +18,7 @@ public class ResourceManager {
 
     private static final String ROOT_PATH = "/de/uniks/stp";
 
-    public static int loadHighScore() {
+    public static int loadHighScore(String currentUserName) {
         int highScore = 0;
 
         // if file not exists - create and put highScore = 0
@@ -26,9 +26,9 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
             }
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"))) {
-                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
-                BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
+                BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
                 JsonObject obj = new JsonObject();
                 obj.put("highScore", highScore);
                 Jsoner.serialize(obj, writer);
@@ -40,7 +40,7 @@ public class ResourceManager {
 
         // load file and highScore
         try {
-            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
             JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
             BigDecimal value = (BigDecimal) parser.get("highScore");
             highScore = value.intValue();
@@ -54,10 +54,10 @@ public class ResourceManager {
     }
 
 
-    public static void saveHighScore(int highScore) {
+    public static void saveHighScore(String currentUserName, int highScore) {
 
         try {
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore.json"));
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/highscore_" + currentUserName + ".json"));
             JsonObject obj = new JsonObject();
             obj.put("highScore", highScore);
 
