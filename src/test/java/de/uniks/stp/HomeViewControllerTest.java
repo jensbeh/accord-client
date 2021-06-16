@@ -64,7 +64,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -94,6 +94,7 @@ public class HomeViewControllerTest extends ApplicationTest {
             public Void answer(InvocationOnMock invocation) {
                 Callback<JsonNode> callback = callbackCaptor.getValue();
                 callback.completed(response);
+                mockGetUsers("5e2ffg75dd077d03df505", "Test User");
                 return null;
             }
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
@@ -131,7 +132,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }).when(restClient).logout(anyString(), callbackCaptor.capture());
     }
 
-    public void mockPostServer() {
+    public void mockPostServerGetServers() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -142,6 +143,7 @@ public class HomeViewControllerTest extends ApplicationTest {
             public Void answer(InvocationOnMock invocation) {
                 Callback<JsonNode> callback = callbackCaptor.getValue();
                 callback.completed(response);
+                mockGetServers(); // Mock Get Servers after Server created
                 return null;
             }
         }).when(restClient).postServer(anyString(), anyString(), callbackCaptor.capture());
@@ -198,8 +200,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals(testUserName, personalUserName.getText());
     }
 
-    /*TODO: activate when WebSocket is being mocked*/
-    //@Test
+    @Test
     public void serverBoxTest() throws InterruptedException {
         loginInit();
 
@@ -209,11 +210,10 @@ public class HomeViewControllerTest extends ApplicationTest {
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
         serverNameInput.setText("TestServer Team Bit Shift");
-        mockPostServer();
+        mockPostServerGetServers();
         clickOn(createServer);
 
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
 
@@ -229,7 +229,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     }
 
     /*TODO: activate when WebSocket is being mocked AND fix test*/
-    //@Test
+    @Test
     public void userBoxTest() throws InterruptedException {
         mockTempLogin();
         restClient.loginTemp(response -> {
