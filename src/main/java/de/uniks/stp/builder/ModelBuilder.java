@@ -1,11 +1,21 @@
 package de.uniks.stp.builder;
 
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +30,10 @@ public class ModelBuilder {
     private ServerChatWebSocket serverChatWebSocketClient;
 
     private RestClient restClient;
+    private boolean playSound;
+    private boolean doNotDisturb;
+    private boolean showNotifications;
+    private Clip clip;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -129,5 +143,77 @@ public class ModelBuilder {
 
     public RestClient getRestClient() {
         return this.restClient;
+    }
+
+    public void playSound() {
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/open-ended.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // If you want to stop the sound, then use clip.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void saveSettings() {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            JsonObject settings = new JsonObject();
+            settings.put("doNotDisturb", doNotDisturb);
+            settings.put("showNotifications", showNotifications);
+            settings.put("playSound", playSound);
+
+            Jsoner.serialize(settings, writer);
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Error in saveSettings");
+            e.printStackTrace();
+        }
+    }
+
+    public void loadSettings() {
+        try {
+            Reader reader = Files.newBufferedReader(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+            doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
+            showNotifications = (boolean) parsedSettings.get("showNotifications");
+            playSound = (boolean) parsedSettings.get("playSound");
+
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("Error in loadSettings");
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isDoNotDisturb() {
+        return doNotDisturb;
+    }
+
+    public boolean isPlaySound() {
+        return playSound;
+    }
+
+    public boolean isShowNotifications() {
+        return showNotifications;
+    }
+
+    public void setDoNotDisturb(boolean doNotDisturb) {
+        this.doNotDisturb = doNotDisturb;
+    }
+
+    public void setPlaySound(boolean playSound) {
+        this.playSound = playSound;
+    }
+
+    public void setShowNotifications(boolean showNotifications) {
+        this.showNotifications = showNotifications;
     }
 }
