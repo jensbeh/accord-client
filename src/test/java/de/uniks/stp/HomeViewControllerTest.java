@@ -23,30 +23,24 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doCallRealMethod;
 
 @RunWith(MockitoJUnitRunner.Silent.class)           // TODO important
 public class HomeViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private final String testServerName = "TestServer Team Bit Shift";
     // main user
     private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
-    private final String testUserName = "Hendry Bracken";
-    private final String testUserPw = "stp2021pw";
 
     @Mock
     private RestClient restClient;
@@ -76,25 +70,10 @@ public class HomeViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response2;
 
     @Mock
-    private HttpResponse<JsonNode> response3;
-
-    @Mock
-    private HttpResponse<JsonNode> response4;
-
-    @Mock
     private HttpResponse<JsonNode> response5;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
 
     private ModelBuilder builder;
@@ -128,23 +107,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(HomeViewController.class);
     }
 
-    public void mockLogin() {
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject().put("userKey", userKey));
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                mockGetServers();
-                return null;
-            }
-        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
-    }
-
     public void mockLogout() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -152,30 +114,11 @@ public class HomeViewControllerTest extends ApplicationTest {
                 .put("data", new JSONObject());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).logout(anyString(), callbackCaptor.capture());
-    }
-
-    public void mockPostServerGetServers() {
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                mockGetServers(); // Mock Get Servers after Server created
-                return null;
-            }
-        }).when(restClient).postServer(anyString(), anyString(), callbackCaptor.capture());
     }
 
     public void mockGetUsers(String id, String name) {
@@ -185,12 +128,10 @@ public class HomeViewControllerTest extends ApplicationTest {
                 .put("data", new JSONArray().put(new JSONObject().put("id", id).put("name", name)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).getUsers(anyString(), callbackCaptor.capture());
     }
 
@@ -201,13 +142,11 @@ public class HomeViewControllerTest extends ApplicationTest {
                 .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer Team Bit Shift")));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor2.getValue();
-                callback.completed(response2);
-                //mockGetServerUser();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            //mockGetServerUser();
+            return null;
         }).when(restClient).getServers(anyString(), callbackCaptor2.capture());
     }
 
@@ -259,7 +198,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
-        Random random = new Random();
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"" + id + "\",\"name\":\"" + name + "\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
