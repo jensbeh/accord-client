@@ -1,23 +1,51 @@
 package de.uniks.stp;
 
+import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import kong.unirest.Callback;
+import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class SettingsControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private final String testUserMainName = "Hendry Bracken";
+    private final String testUserMainPw = "stp2021pw";
+    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+
+    @Mock
     private RestClient restClient;
-    private static String testUserMainName;
-    private static String testUserMainPw;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @InjectMocks
+    StageManager mockApp = new StageManager();
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -29,33 +57,44 @@ public class SettingsControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        app = new StageManager();
+        app = mockApp;
+        app.setRestClient(restClient);
         app.start(stage);
         this.stage.centerOnScreen();
-        this.restClient = new RestClient();
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(LoginScreenController.class);
+    }
+
+    public void mockLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
     public void loginInit() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserMainName = body.getObject().getJSONObject("data").getString("name");
-            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
+        mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText(testUserMainPw);
-
         clickOn("#loginButton");
-
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void changeLanguageLogin() {
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
@@ -75,7 +114,7 @@ public class SettingsControllerTest extends ApplicationTest {
         Assert.assertEquals("Select Language:", label_langSelect.getText());
     }
 
-    //@Test
+    @Test
     public void changeLanguageHomeScreen() throws InterruptedException {
         loginInit();
 
@@ -99,13 +138,10 @@ public class SettingsControllerTest extends ApplicationTest {
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 Platform.runLater(((Stage) s)::close);
-                Thread.sleep(2000);
+                WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
-
-
-        Thread.sleep(2000);
     }
 
     //@Test

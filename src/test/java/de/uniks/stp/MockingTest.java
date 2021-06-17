@@ -261,7 +261,6 @@ public class MockingTest extends ApplicationTest {
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
-        Thread.sleep(1000);
 
     }
 
@@ -306,7 +305,6 @@ public class MockingTest extends ApplicationTest {
         String message = "{\"id\":\"60b77ba0026b3534ca5a61ae\",\"channel\":\"60b77ba0026b3534ca5a61af\",\"timestamp\":1623867064619,\"from\":\"Geordi La Forge\",\"text\":\"asdfasdf\"}\"";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverChatWebSocket.handleMessage(jsonObject);
-        Thread.sleep(6000);
     }
 
 

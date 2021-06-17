@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
@@ -29,22 +30,35 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HomeViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
+    private final String testServerName = "TestServer Team Bit Shift";
+    // main user
+    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+    private final String testUserName = "Hendry Bracken";
+    private final String testUserPw = "stp2021pw";
 
     @Mock
     private RestClient restClient;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @InjectMocks
+    StageManager mockApp = new StageManager();
 
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
@@ -59,9 +73,6 @@ public class HomeViewControllerTest extends ApplicationTest {
     private ServerChatWebSocket serverChatWebSocket;
 
     @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
     private HttpResponse<JsonNode> response2;
 
     @Mock
@@ -72,9 +83,6 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Mock
     private HttpResponse<JsonNode> response5;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
@@ -88,6 +96,9 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
+
+    private ModelBuilder builder;
+
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
@@ -98,7 +109,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         //start application
-        ModelBuilder builder = new ModelBuilder();
+        builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
@@ -112,14 +123,76 @@ public class HomeViewControllerTest extends ApplicationTest {
         this.stage.centerOnScreen();
     }
 
-    @InjectMocks
-    StageManager mockApp = new StageManager();
-
     @BeforeAll
-    static void setup() throws IOException {
-        MockitoAnnotations.openMocks(MockingTest.class);
+    static void setup() {
+        MockitoAnnotations.openMocks(HomeViewController.class);
     }
 
+    public void mockLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                mockGetServers();
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+    }
+
+    public void mockLogout() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Logged out")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).logout(anyString(), callbackCaptor.capture());
+    }
+
+    public void mockPostServerGetServers() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                mockGetServers(); // Mock Get Servers after Server created
+                return null;
+            }
+        }).when(restClient).postServer(anyString(), anyString(), callbackCaptor.capture());
+    }
+
+    public void mockGetUsers(String id, String name) {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", id).put("name", name)));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).getUsers(anyString(), callbackCaptor.capture());
+    }
 
     public void mockGetServers() {
         JSONObject jsonString = new JSONObject()
@@ -132,92 +205,11 @@ public class HomeViewControllerTest extends ApplicationTest {
             public Void answer(InvocationOnMock invocation) {
                 Callback<JsonNode> callback = callbackCaptor2.getValue();
                 callback.completed(response2);
-                mockGetServerUser();
+                //mockGetServerUser();
                 return null;
             }
         }).when(restClient).getServers(anyString(), callbackCaptor2.capture());
     }
-
-    public void mockGetServerUser() {
-        JSONArray members = new JSONArray();
-        JSONArray categories = new JSONArray();
-        categories.put("60b77ba0026b3534ca5a61ae");
-        JSONObject member = new JSONObject();
-        member.put("id", "60ad230ac77d3f78988b3e5b")
-                .put("name", "Peter Lustig")
-                .put("online", true);
-        members.put(member);
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject()
-                        .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
-                        .put("owner", "60ad230ac77d3f78988b3e5b")
-                        .put("categories", categories)
-                        .put("members", members)
-                );
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor3.getValue();
-                callback.completed(response3);
-                mockGetCategories();
-                return null;
-            }
-        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor3.capture());
-    }
-
-    public void mockGetCategories() {
-        JSONArray channels = new JSONArray();
-        channels.put("60b77ba0026b3534ca5a61af");
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61ae")
-                .put("name", "default")
-                .put("server", "5e2fbd8770dd077d03df505")
-                .put("channels", channels));
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", data);
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor4.getValue();
-                callback.completed(response4);
-                return null;
-            }
-        }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor4.capture());
-    }
-
-    public void mockGetChannels() {
-        JSONArray members = new JSONArray();
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61af")
-                .put("name", "testChannel")
-                .put("type", "text")
-                .put("privileged", false)
-                .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members));
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", data);
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor5.getValue();
-                callback.completed(response5);
-                return null;
-            }
-        }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
-    }
-
 
     public void loginInit() throws InterruptedException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
@@ -230,9 +222,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         mockGetServers();
-        mockGetServerUser();
-        mockGetCategories();
-        mockGetChannels();
 
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -264,44 +253,26 @@ public class HomeViewControllerTest extends ApplicationTest {
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
-        Thread.sleep(1000);
-
     }
 
-    public void loginTestUser(String name) {
+    public void loginTestUser(String name,String id) {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
         Random random = new Random();
-        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"" + name + "\"}}";
+        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\""+id+"\",\"name\":\"" + name + "\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
     }
 
-    public void logoutTestUser(String name) {
+    public void logoutTestUser(String name,String id) {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
-        String message = "{\"action\":\"userLeft\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"" + name + "\"}}";
+        String message = "{\"action\":\"userLeft\",\"data\":{\"id\":\""+id+"\",\"name\":\"" + name + "\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
     }
-
-    private String userKey;
-    private String testUserName;
-    private String testUserPw;
-    private String testUserOneName;
-    private String testUserOnePw;
-    private String testUserKeyOne;
-    private String testUserTwoName;
-    private String testUserTwoPw;
-    private String testUserKeyTwo;
-
-    @Mock
-    private RestClient restMock;
-
-    @Mock
-    private HttpResponse<JsonNode> res;
 
     @Test
     public void personalUserTest() throws InterruptedException {
@@ -309,9 +280,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
-        Assert.assertEquals("Peter", personalUserName.getText());
-
-
+        Assert.assertEquals(testUserName, personalUserName.getText());
     }
 
     @Test
@@ -323,16 +292,8 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
-        serverNameInput.setText("TestServer2");
-        doAnswer(invocation -> {
-            JSONObject j = new JSONObject();
-            JSONObject k = new JSONObject();
-            j.put("status", "success");
-            k.put("id", "5e2ffbd8770dd077d03df505");
-            k.put("name", "TestServer2");
-            j.put("data", k);
-            return new JsonNode(j.toString());
-        }).when(restClient).postServer(anyString(), anyString());
+        serverNameInput.setText("TestServer Team Bit Shift");
+        mockPostServerGetServers();
         clickOn(createServer);
 
         WaitForAsyncUtils.waitForFxEvents();
@@ -347,13 +308,14 @@ public class HomeViewControllerTest extends ApplicationTest {
                 break;
             }
         }
-        Assert.assertEquals("TestServer2", serverName);
+        Assert.assertEquals("TestServer Team Bit Shift", serverName);
     }
 
     @Test
     public void userBoxTest() throws InterruptedException {
         loginInit();
-        loginTestUser("Gustav");
+        loginTestUser("Gustav","60c8b3fb44453702009c07b3");
+        WaitForAsyncUtils.waitForFxEvents();
 
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
@@ -365,7 +327,9 @@ public class HomeViewControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Gustav", userName);
-        logoutTestUser("Gustav");
+
+
+        logoutTestUser("Gustav","60c8b3fb44453702009c07b3");
         WaitForAsyncUtils.waitForFxEvents();
         itemList = userList.getItems();
         userName = "";
@@ -380,42 +344,32 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void getServersTest() {
-        restMock.getServers("bla", response -> {
+        mockGetServers();
+        restClient.getServers(userKey, response -> {
         });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).getServers(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertNotEquals(0, response2.getBody().getObject().getJSONArray("data").length());
     }
 
     @Test
     public void getUsersTest() {
-        restMock.getUsers("bla", response -> {
+        mockGetUsers("Test User", "5e2ffg75dd077d03df505");
+        restClient.getUsers(userKey, response -> {
         });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).getUsers(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertNotEquals(0, response.getBody().getObject().getJSONArray("data").length());
     }
 
     @Test
     public void privateChatTest() throws InterruptedException {
         loginInit();
+        /*TODO: WebSocket test user join with name Test User (and ID 5e2ffg75dd077d03df505)*/
+        WaitForAsyncUtils.waitForFxEvents();
 
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
+        WaitForAsyncUtils.waitForFxEvents();
         ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
-        boolean res = false;
-        for (PrivateChat chat : privateChatList.getItems()) {
-            if (chat.getName().equals("Gustav")) {
-                res = true;
-                break;
-            }
-        }
-        Assert.assertTrue(res);
+        Assert.assertEquals(testUserOne.getName(), privateChatList.getItems().get(0).getName());
     }
 
     @Test()
@@ -423,90 +377,51 @@ public class HomeViewControllerTest extends ApplicationTest {
         loginInit();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
-
-
         // Clicking logout...
+        mockLogout();
+        clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
-        // TODO: enable Assert when logout click is back
-        //Assert.assertEquals("Accord - Login", stage.getTitle());
-
-        restMock.logout("c653b568-d987-4331-8d62-26ae617847bf", response -> {
-        });
-        when(res.getBody()).thenReturn(new JsonNode("{}"));
-        verify(restMock).logout(anyString(), callbackCaptor.capture());
-        Callback<JsonNode> callback = callbackCaptor.getValue();
-        callback.completed(res);
-        Assert.assertEquals("{}", res.getBody().toString());
+        Assert.assertEquals("Accord - Login", stage.getTitle());
     }
 
     //@Test
     public void logoutMultiLogin() throws InterruptedException {
         loginInit();
-
-        restClient.login(testUserName, testUserPw, response -> {
-            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
-        });
-
+        /*TODO: WebSocket user left with name testUserName (own User)*/
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         Assert.assertEquals("Accord - Login", stage.getTitle());
+        mockLogout();
         restClient.logout(userKey, response -> {
         });
     }
 
     //@Test
     public void openExistingChat() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            JsonNode body = response.getBody();
-            this.testUserKeyOne = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        Thread.sleep(2000);
-
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserTwoName = body.getObject().getJSONObject("data").getString("name");
-            testUserTwoPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
-        restClient.login(testUserTwoName, testUserTwoPw, response -> {
-            JsonNode body = response.getBody();
-            this.testUserKeyTwo = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        Thread.sleep(2000);
-
         loginInit();
 
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        /*TODO: WebSocket test user join with name Test User (and ID 5e2ffg75dd077d03df505)*/
+        /*TODO: WebSocket test user join with name Test User 2 (and ID 5940kf93ued390ir3ud84)*/
+        WaitForAsyncUtils.waitForFxEvents();
 
-        Thread.sleep(500);
+        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
 
         // Use the first two Users in Online-User-List as test Users
         User testUserOne = userList.getItems().get(0);
         User testUserTwo = userList.getItems().get(1);
 
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         doubleClickOn(userList.lookup("#" + testUserTwo.getId()));
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(testUserTwo.getName(), PrivateViewController.getSelectedChat().getName());
 
         ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
 
@@ -517,16 +432,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         Assert.assertEquals("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
-
-        restClient.logout(testUserKeyOne, response -> {
-        });
-
-        restClient.logout(testUserKeyTwo, response -> {
-        });
-
-
     }
 }
