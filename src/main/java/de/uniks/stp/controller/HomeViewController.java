@@ -65,6 +65,7 @@ public class HomeViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        builder.loadSettings();
         // Load all view references
         root = (HBox) view.lookup("#root");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");

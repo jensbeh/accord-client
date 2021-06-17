@@ -26,7 +26,6 @@ import static util.Constants.*;
 
 public class PrivateChatWebSocket extends Endpoint {
 
-    private String name;
     private Session session;
     private Timer noopTimer;
     private ModelBuilder builder;
@@ -88,9 +87,25 @@ public class PrivateChatWebSocket extends Endpoint {
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         // cancel timer
-        this.noopTimer.cancel();
+        try {
+            this.noopTimer.cancel();
+        } catch (Exception e) {
+            e.addSuppressed(new NullPointerException());
+        }
         // set session null
         this.session = null;
+        System.out.println(closeReason.getCloseCode().toString());
+        if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
+                alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    StageManager.showLoginScreen();
+                }
+            });
+        }
         super.onClose(session, closeReason);
     }
 
@@ -146,14 +161,14 @@ public class PrivateChatWebSocket extends Endpoint {
             for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(channelName)) {
                     channel.withMessage(message);
-//                    if (!builder.isDoNotDisturb() && (PrivateViewController.getSelectedChat() == null || channel != PrivateViewController.getSelectedChat())) {
-//                        if (builder.isPlaySound()) {
-//                            builder.playSound();
-//                        }
-//                        if (builder.isShowNotifications()) {
-//                            channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-//                        }
-//                    }
+                    if (!builder.isDoNotDisturb() && (PrivateViewController.getSelectedChat() == null || channel != PrivateViewController.getSelectedChat())) {
+                        if (builder.isPlaySound()) {
+                            builder.playSound();
+                        }
+                        if (builder.isShowNotifications()) {
+                            channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                        }
+                    }
                     privateViewController.getPrivateChatList().refresh();
                     newChat = false;
                     break;
@@ -167,14 +182,14 @@ public class PrivateChatWebSocket extends Endpoint {
                     }
                 }
                 PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-//                if (!builder.isDoNotDisturb()) {
-//                    if (builder.isPlaySound()) {
-//                        builder.playSound();
-//                    }
-//                    if (builder.isShowNotifications()) {
-//                        channel.setUnreadMessagesCounter(1);
-//                    }
-//                }
+                if (!builder.isDoNotDisturb()) {
+                    if (builder.isPlaySound()) {
+                        builder.playSound();
+                    }
+                    if (builder.isShowNotifications()) {
+                        channel.setUnreadMessagesCounter(1);
+                    }
+                }
                 builder.getPersonalUser().withPrivateChat(channel);
                 Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
             }
