@@ -30,6 +30,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 import java.io.IOException;
+import java.nio.channels.Channel;
 import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -240,16 +241,14 @@ public class HomeViewControllerTest extends ApplicationTest {
                 .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                String name = (String) invocation.getArguments()[0];
-                String password = (String) invocation.getArguments()[1];
-                System.out.println(name);
-                System.out.println(password);
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            String name = (String) invocation.getArguments()[0];
+            String password = (String) invocation.getArguments()[1];
+            System.out.println(name);
+            System.out.println(password);
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("Peter");
@@ -304,7 +303,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> res;
 
-    //@Test
+    @Test
     public void personalUserTest() throws InterruptedException {
         loginInit();
 
@@ -324,75 +323,62 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
-        serverNameInput.setText("TestServer Team Bit Shift");
+        serverNameInput.setText("TestServer2");
+        doAnswer(invocation -> {
+            JSONObject j = new JSONObject();
+            JSONObject k = new JSONObject();
+            j.put("status", "success");
+            k.put("id", "5e2ffbd8770dd077d03df505");
+            k.put("name", "TestServer2");
+            j.put("data", k);
+            return new JsonNode(j.toString());
+        }).when(restClient).postServer(anyString(), anyString());
         clickOn(createServer);
 
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
 
         ObservableList<Server> itemList = serverListView.getItems();
         String serverName = "";
         for (Server server : itemList) {
-            if (server.getName().equals("TestServer Team Bit Shift")) {
-                serverName = "TestServer Team Bit Shift";
+            if (server.getName().equals("TestServer2")) {
+                serverName = "TestServer2";
                 break;
             }
         }
-        Assert.assertEquals("TestServer Team Bit Shift", serverName);
-
-
+        Assert.assertEquals("TestServer2", serverName);
     }
 
-    //@Test
+    @Test
     public void userBoxTest() throws InterruptedException {
         loginInit();
-
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        loginTestUser("Gustav");
 
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
         String userName = "";
         for (User user : itemList) {
-            if (user.getName().equals(testUserOneName)) {
+            if (user.getName().equals("Gustav")) {
                 userName = user.getName();
                 break;
             }
         }
-        Assert.assertEquals(testUserOneName, userName);
-
-        restClient.logout(userKey, response -> {
-        });
-        Thread.sleep(2000);
-
+        Assert.assertEquals("Gustav", userName);
+        logoutTestUser("Gustav");
+        WaitForAsyncUtils.waitForFxEvents();
         itemList = userList.getItems();
         userName = "";
         for (User user : itemList) {
-            if (user.getName().equals(testUserOneName)) {
+            if (user.getName().equals("Gustav")) {
                 userName = user.getName();
                 break;
             }
         }
         Assert.assertEquals("", userName);
-
-
     }
 
-    //@Test
+    @Test
     public void getServersTest() {
         restMock.getServers("bla", response -> {
         });
@@ -403,7 +389,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test
+    @Test
     public void getUsersTest() {
         restMock.getUsers("bla", response -> {
         });
@@ -414,39 +400,25 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("{}", res.getBody().toString());
     }
 
-    //@Test
+    @Test
     public void privateChatTest() throws InterruptedException {
         loginInit();
-
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            this.userKey = response.getBody().getObject().getJSONObject("data").getString("userKey");
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
         ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
-        Thread.sleep(500);
         ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
-        Assert.assertEquals(testUserOne.getName(), privateChatList.getItems().get(0).getName());
-
-        restClient.logout(userKey, response -> {
-        });
-
-
+        boolean res = false;
+        for (PrivateChat chat : privateChatList.getItems()) {
+            if (chat.getName().equals("Gustav")) {
+                res = true;
+                break;
+            }
+        }
+        Assert.assertTrue(res);
     }
 
-    //@Test()
+    @Test()
     public void logout() throws InterruptedException {
         loginInit();
 
