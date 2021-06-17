@@ -8,21 +8,19 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import util.JsonUtil;
-import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import static util.Constants.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PrivateChatWebSocket extends Endpoint {
 
@@ -51,7 +49,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public PrivateChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.privateViewController = privateViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
@@ -87,11 +84,11 @@ public class PrivateChatWebSocket extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
-        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
@@ -114,7 +111,7 @@ public class PrivateChatWebSocket extends Endpoint {
         // cancel timer
         this.noopTimer.cancel();
         // close session
-        this.session.close();
+        this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL_CLOSURE"));
     }
 
     public Session getSession() {

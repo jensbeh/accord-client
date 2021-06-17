@@ -8,29 +8,26 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.PrivateChatWebSocket;
+import de.uniks.stp.net.PrivateSystemWebSocketClient;
+import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
-import util.JsonUtil;
 import util.SortUser;
 
-import javax.json.JsonObject;
-import javax.json.JsonStructure;
-import javax.websocket.CloseReason;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static util.Constants.*;
@@ -51,8 +48,6 @@ public class PrivateViewController {
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
     private static PrivateChat selectedChat;
-    private WebSocketClient systemWebSocketClient;
-    private WebSocketClient chatWebSocketClient;
     private TextField messageField;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
@@ -101,10 +96,9 @@ public class PrivateViewController {
     }
 
 
-
     private void startWebSocketConnection() {
         if (privateSystemWebSocketClient == null) {
-            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH+ SYSTEM_WEBSOCKET_PATH),builder.getPersonalUser().getUserKey());
+            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), builder.getPersonalUser().getUserKey());
             privateSystemWebSocketClient.setBuilder(builder);
             privateSystemWebSocketClient.setPrivateViewController(this);
         }
@@ -253,14 +247,14 @@ public class PrivateViewController {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         try {
-            if (systemWebSocketClient != null) {
-                if (systemWebSocketClient.getSession() != null) {
-                    systemWebSocketClient.stop();
+            if (privateSystemWebSocketClient != null) {
+                if (privateSystemWebSocketClient.getSession() != null) {
+                    privateSystemWebSocketClient.stop();
                 }
             }
-            if (chatWebSocketClient != null) {
-                if (chatWebSocketClient.getSession() != null) {
-                    chatWebSocketClient.stop();
+            if (privateChatWebSocket != null) {
+                if (privateChatWebSocket.getSession() != null) {
+                    privateChatWebSocket.stop();
                 }
             }
         } catch (IOException e) {

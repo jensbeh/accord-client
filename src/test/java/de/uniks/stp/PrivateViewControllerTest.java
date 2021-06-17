@@ -1,10 +1,8 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.net.PrivateChatWebSocket;
 import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
