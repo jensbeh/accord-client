@@ -66,8 +66,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
-                    /*message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.WHITE);*/
                     userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
@@ -77,12 +75,10 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
                         emojiTextFlowParameters.setTextColor(Color.WHITE);
                     }
-                     message = new EmojiTextFlow(emojiTextFlowParameters);
+                    message = new EmojiTextFlow(emojiTextFlowParameters);
                     message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
-                    /*message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.BLACK);*/
                     userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
@@ -96,7 +92,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
                 message.setId("messageLabel");
-                //message.setPrefWidth(50);
                 message.setMaxWidth(320);
 
                 //new Line after 50 Characters
