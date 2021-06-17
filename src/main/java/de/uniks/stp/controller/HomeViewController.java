@@ -65,6 +65,7 @@ public class HomeViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        builder.loadSettings();
         // Load all view references
         root = (HBox) view.lookup("#root");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
@@ -128,15 +129,6 @@ public class HomeViewController {
      * refreshed the serverList when a server was deleted.
      */
     public void serverDeleted() {
-        try {
-            if (builder.getUSER_CLIENT() != null) {
-                if (builder.getUSER_CLIENT().getSession() != null) {
-                    builder.getUSER_CLIENT().stop();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
@@ -269,15 +261,6 @@ public class HomeViewController {
     public void onServerCreated() {
         Platform.runLater(() -> {
             stage.close();
-            try {
-                if (builder.getUSER_CLIENT() != null) {
-                    if (builder.getUSER_CLIENT().getSession() != null) {
-                        builder.getUSER_CLIENT().stop();
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             showServers(new ServerLoadedCallback() {
                 @Override
                 public void onSuccess() {
@@ -314,19 +297,12 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
-        try {
-            if (builder.getUSER_CLIENT() != null) {
-                if (builder.getUSER_CLIENT().getSession() != null) {
-                    builder.getUSER_CLIENT().stop();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
                 this.builder.setCurrentServer(selectedServer);
+                builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
+                builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
                 updateServerListColor();
                 showServerView();
             }
@@ -427,19 +403,12 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the Home Button
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
-        try {
-            if (builder.getUSER_CLIENT() != null) {
-                if (builder.getUSER_CLIENT().getSession() != null) {
-                    builder.getUSER_CLIENT().stop();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
-        if (mouseEvent.getClickCount() == 15) {
+
+        // start EasterEgg - Snake
+        if (mouseEvent.getClickCount() == 10) {
             StageManager.showStartSnakeScreen();
         }
     }
@@ -451,9 +420,9 @@ public class HomeViewController {
      */
     private void logoutButtonOnClicked(ActionEvent actionEvent) {
         try {
-            if (builder.getSERVER_USER() != null) {
-                if (builder.getSERVER_USER().getSession() != null) {
-                    builder.getSERVER_USER().stop();
+            if (builder.getServerSystemWebSocket() != null) {
+                if (builder.getServerSystemWebSocket().getSession() != null) {
+                    builder.getServerSystemWebSocket().stop();
                 }
             }
             if (builder.getUSER_CLIENT() != null) {
