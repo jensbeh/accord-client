@@ -1,6 +1,8 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
@@ -27,12 +29,18 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-import javax.websocket.CloseReason;
+import javax.websocket.*;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PrivateViewControllerTest extends ApplicationTest {
@@ -113,7 +121,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(MockingTest.class);
+        MockitoAnnotations.openMocks(PrivateViewControllerTest.class);
     }
 
 
@@ -334,7 +342,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         String partnerId = privateChat.getItems().get(1).getId();
 
-        Label counter = lookup("#notificationCounter_" + partnerId).query();
+        Label counter = lookup("#notificationCounter_"+ partnerId).query();
         Circle background = lookup("#notificationCounterBackground_" + partnerId).query();
         Circle foreground = lookup("#notificationCounterForeground_" + partnerId).query();
 

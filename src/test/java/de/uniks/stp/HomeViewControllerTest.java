@@ -74,9 +74,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-
-    private ModelBuilder builder;
+    
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -87,8 +85,9 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        Mockito.reset();
         //start application
-        builder = new ModelBuilder();
+        ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
@@ -331,6 +330,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test()
     public void logout() throws InterruptedException {
         loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
         // Clicking logout...

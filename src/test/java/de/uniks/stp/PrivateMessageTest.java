@@ -92,6 +92,7 @@ public class PrivateMessageTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        Mockito.reset();
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
@@ -112,7 +113,7 @@ public class PrivateMessageTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(MockingTest.class);
+        MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 
 
@@ -251,7 +252,6 @@ public class PrivateMessageTest extends ApplicationTest {
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
-
     }
 
     @Test
