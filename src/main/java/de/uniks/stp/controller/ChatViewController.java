@@ -29,10 +29,7 @@ import javafx.util.Duration;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ChatViewController {
     private static ModelBuilder builder;
@@ -112,9 +109,9 @@ public class ChatViewController {
             Node topNode = childs.get(childs.size()-1);
             topNode.toBack();
         }
-        if(!SHOW_MISC) {
+        /*if(!SHOW_MISC) {
             tabPane.getTabs().remove(tabPane.getTabs().size()-2, tabPane.getTabs().size());
-        }
+        }*/
         ObservableList<Image> tonesList = FXCollections.observableArrayList();
 
         for(int i = 1; i <= 5; i++) {
@@ -125,17 +122,20 @@ public class ChatViewController {
         Emoji em = EmojiParser.getInstance().getEmoji(":thumbsup:"); //default tone
         Image image = EmojiImageCache.getInstance().getImage(getEmojiImagePath(em.getHex()));
         tonesList.add(image);
+        boxTone = (ComboBox<Image>) view.lookup("#boxTone");
         boxTone.setItems(tonesList);
         boxTone.setCellFactory(e->new ToneCell());
         boxTone.setButtonCell(new ToneCell());
         boxTone.getSelectionModel().selectedItemProperty().addListener(e->refreshTabs());
 
-
+        searchScrollPane = (ScrollPane) view.lookup("#searchScrollPane");
+        searchFlowPane = (FlowPane) view.lookup("#searchFlowPane");
         searchScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         searchFlowPane.prefWidthProperty().bind(searchScrollPane.widthProperty().subtract(5));
         searchFlowPane.setHgap(5);
         searchFlowPane.setVgap(5);
 
+        txtSearch = (TextField) view.lookup("#txtSearch");
         txtSearch.textProperty().addListener(x-> {
             String text = txtSearch.getText();
             if(text.isEmpty() || text.length() < 2) {
@@ -150,6 +150,7 @@ public class ChatViewController {
         });
 
 
+        tabPane = (TabPane) view.lookup("#tabPane");
         for(Tab tab : tabPane.getTabs()) {
             ScrollPane scrollPane = (ScrollPane) tab.getContent();
             FlowPane pane = (FlowPane) scrollPane.getContent();
@@ -267,7 +268,7 @@ public class ChatViewController {
     }
 
     private String getEmojiImagePath(String hexStr) throws NullPointerException {
-        return this.getClass().getResource("emoji_images/" + hexStr + ".png").toExternalForm();
+        return Objects.requireNonNull(StageManager.class.getResource("twemoji/" + hexStr + ".png")).toExternalForm();
     }
 
     class ToneCell extends ListCell<Image> {
