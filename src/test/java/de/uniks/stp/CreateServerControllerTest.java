@@ -2,7 +2,6 @@ package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
-import de.uniks.stp.model.Server;
 import de.uniks.stp.net.PrivateChatWebSocket;
 import de.uniks.stp.net.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.RestClient;
@@ -17,7 +16,6 @@ import kong.unirest.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,8 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-
-import javax.json.JsonObject;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -295,117 +291,10 @@ public class CreateServerControllerTest extends ApplicationTest {
             }
         }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
-    /*public void mockGetServers() {
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer Team Bit Shift")));
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor3.getValue();
-                callback.completed(response3);
-                mockGetServerUser();
-                return null;
-            }
-        }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
-    }
-
-    public void mockGetServerUser() {
-        JSONArray members = new JSONArray();
-        JSONArray categories = new JSONArray();
-        categories.put("60b77ba0026b3534ca5a61ae");
-        JSONObject member = new JSONObject();
-        member.put("id", "60ad230ac77d3f78988b3e5b")
-                .put("name", "Peter Lustig")
-                .put("online", true);
-        members.put(member);
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject()
-                        .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
-                        .put("owner", "60ad230ac77d3f78988b3e5b")
-                        .put("categories", categories)
-                        .put("members", members)
-                );
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor4.getValue();
-                callback.completed(response4);
-                mockGetCategories();
-                return null;
-            }
-        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor4.capture());
-    }
-
-    public void mockGetCategories() {
-        JSONArray channels = new JSONArray();
-        channels.put("60b77ba0026b3534ca5a61af");
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61ae")
-                .put("name", "default")
-                .put("server", "5e2fbd8770dd077d03df505")
-                .put("channels", channels));
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", data);
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor5.getValue();
-                callback.completed(response5);
-                return null;
-            }
-        }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor5.capture());
-    }
-
-    public void mockGetChannels() {
-        JSONArray members = new JSONArray();
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61af")
-                .put("name", "testChannel")
-                .put("type", "text")
-                .put("privileged", false)
-                .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members));
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", data);
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor6.getValue();
-                callback.completed(response6);
-                return null;
-            }
-        }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor6.capture());
-    }*/
 
     public void loginInit(boolean emptyServers) throws InterruptedException {
-
-        /*doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
-        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
-        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
-        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
-        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
-        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
-        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());*/
-
         mockPostServer();
-        if(!emptyServers)
+        if (!emptyServers)
             mockGetServers();
         else
             mockGetServersEmpty();
@@ -478,7 +367,8 @@ public class CreateServerControllerTest extends ApplicationTest {
         String message = "";
         when(restClient.postServer(anyString(), anyString(), any())).thenThrow(new UnirestException("No route to host: connect"));
         try {
-            restClient.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer", response -> {});
+            restClient.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer", response -> {
+            });
         } catch (Exception e) {
             if (e.getMessage().equals("No route to host: connect")) {
                 message = "No Connection - Please check your connection and try again";

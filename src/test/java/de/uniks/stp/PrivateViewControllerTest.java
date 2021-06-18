@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
@@ -113,7 +114,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(MockingTest.class);
+        MockitoAnnotations.openMocks(PrivateViewController.class);
     }
 
 

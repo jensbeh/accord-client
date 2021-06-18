@@ -112,9 +112,8 @@ public class PrivateMessageTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(MockingTest.class);
+        MockitoAnnotations.openMocks(PrivateChat.class);
     }
-
 
     public void mockGetServers() {
         JSONObject jsonString = new JSONObject()
