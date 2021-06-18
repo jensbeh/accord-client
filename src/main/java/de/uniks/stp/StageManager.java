@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.controller.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
@@ -38,6 +39,7 @@ public class StageManager extends Application {
     private static ServerSettingsController serverSettingsController;
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
+    private static SnakeGameController snakeGameController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -268,7 +270,48 @@ public class StageManager extends Application {
         }
     }
 
-    public void setRestClient(RestClient rest) {
+    public static void snakeScreen() {
+        try {
+            subStage.close();
+            if (startSnakeController != null) {
+                startSnakeController.stop();
+                startSnakeController = null;
+            }
+
+            // load view
+            Parent root = FXMLLoader.load(StageManager.class.getResource("view/snake/snakeGameView.fxml"), getLangBundle());
+            Scene scene = new Scene(root);
+
+            // init controller
+            snakeGameController = new SnakeGameController(scene, root, builder);
+            snakeGameController.init();
+
+            //start snake game stage
+            subStage = new Stage();
+            subStage.setTitle("Snake");
+            subStage.setResizable(false);
+            subStage.setScene(scene);
+            subStage.sizeToScene();
+            subStage.centerOnScreen();
+            subStage.initOwner(stage);
+            subStage.initModality(Modality.WINDOW_MODAL);
+            subStage.setOnCloseRequest(event -> {
+                if (snakeGameController != null) {
+                    snakeGameController.stop();
+                    snakeGameController = null;
+                }
+            });
+            subStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SnakeGameController getSnakeGameController() {
+        return snakeGameController;
+    }
+
+    public static void setRestClient(RestClient rest) {
         restClient = rest;
     }
 

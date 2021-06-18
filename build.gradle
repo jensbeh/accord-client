@@ -18,7 +18,7 @@ repositories {
 
 javafx {
     version = '11.0.1'
-    modules = ['javafx.graphics', 'javafx.fxml', 'javafx.base', 'javafx.controls']
+    modules = ['javafx.graphics', 'javafx.fxml', 'javafx.base', 'javafx.controls', 'javafx.media']
 }
 
 dependencies {
@@ -60,6 +60,8 @@ dependencies {
     implementation 'com.github.cliftonlabs:json-simple:3.1.0'
 
     compile 'com.github.harawata:appdirs:appdirs-1.2.1'
+
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 }
 
 mainClassName = 'de.uniks.stp.Launcher'
