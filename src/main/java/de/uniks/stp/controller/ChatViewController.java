@@ -69,11 +69,7 @@ public class ChatViewController {
             }
         });
 
-        for(Message message : ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat())){
-            oldMessage = true;
-            ob.add(message);
-        }
-        oldMessage = false;
+        ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat());
     }
 
     /**
@@ -135,15 +131,16 @@ public class ChatViewController {
     public static void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                Platform.runLater(() -> ob.add(msg));
-                if (!oldMessage){
+                //if (!oldMessage){
+                    Platform.runLater(() -> ob.add(msg));
                     ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), msg.getPrivateChat().getName(), msg);
-                }
+                //}
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
+
     }
 
     public void clearMessageField() {
