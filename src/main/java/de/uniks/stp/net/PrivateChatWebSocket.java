@@ -164,14 +164,14 @@ public class PrivateChatWebSocket extends Endpoint {
                     }
                 }
                 PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-//                if (!builder.isDoNotDisturb()) {
-//                    if (builder.isPlaySound()) {
-//                        builder.playSound();
-//                    }
-//                    if (builder.isShowNotifications()) {
-//                        channel.setUnreadMessagesCounter(1);
-//                    }
-//                }
+                if (!builder.isDoNotDisturb()) {
+                    if (builder.isPlaySound()) {
+                        builder.playSound();
+                    }
+                    if (builder.isShowNotifications()) {
+                        channel.setUnreadMessagesCounter(1);
+                    }
+                }
                 builder.getPersonalUser().withPrivateChat(channel);
                 Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
             }

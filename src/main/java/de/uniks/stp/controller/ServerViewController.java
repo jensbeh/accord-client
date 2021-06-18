@@ -185,23 +185,22 @@ public class ServerViewController {
      * WebSocket for system messages.
      */
     public void buildSystemWebSocket() {
-        //if (serverSystemWebSocket == null) {
+        if (serverSystemWebSocket == null) {
             serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             serverSystemWebSocket.setServerViewController(this);
             serverSystemWebSocket.setBuilder(builder);
             serverSystemWebSocket.setName(server.getName());
-       // }
-        /*serverSystemWebSocket.setServerViewController(this);
+        }
+        serverSystemWebSocket.setServerViewController(this);
         serverSystemWebSocket.setBuilder(builder);
-        serverSystemWebSocket.setName(server.getName());*/
-        //builder.setSERVER_USER(serverSystemWebSocket);
+        serverSystemWebSocket.setName(server.getName());
     }
 
     /**
      * WebSocket for chat messages.
      */
     private void buildChatWebSocket() {
-        //if (chatWebSocketClient == null) {
+        if (chatWebSocketClient == null) {
             chatWebSocketClient = new ServerChatWebSocket(URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
@@ -209,12 +208,12 @@ public class ServerViewController {
             chatWebSocketClient.setServer(server);
             chatWebSocketClient.setBuilder(builder);
             chatWebSocketClient.setName(server.getName());
-        //}
-        /*chatWebSocketClient.setServerViewController(this);
+        }
+        chatWebSocketClient.setServerViewController(this);
         chatWebSocketClient.setBuilder(builder);
         chatWebSocketClient.setServer(server);
-        chatWebSocketClient.setName(server.getName());*/
-        //builder.setServerChatWebSocketClient(chatWebSocketClient);
+        chatWebSocketClient.setName(server.getName());
+        builder.setServerChatWebSocketClient(chatWebSocketClient);
 
     }
 
@@ -433,6 +432,7 @@ public class ServerViewController {
      */
     public interface MessagesLoadedCallback {
         void onSuccess(String status);
+
     }
 
     private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
