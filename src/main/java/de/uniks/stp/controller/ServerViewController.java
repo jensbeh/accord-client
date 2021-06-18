@@ -213,8 +213,6 @@ public class ServerViewController {
         chatWebSocketClient.setBuilder(builder);
         chatWebSocketClient.setServer(server);
         chatWebSocketClient.setName(server.getName());
-        builder.setServerChatWebSocketClient(chatWebSocketClient);
-
     }
 
     /**
