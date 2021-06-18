@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.AlternateMessageListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -18,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.json.JSONObject;
+import util.ResourceManager;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -31,6 +33,7 @@ public class ChatViewController {
     private ListView<Message> messageList;
     private static ObservableList<Message> ob;
     private HBox messageBox;
+    private static Boolean oldMessage;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -44,7 +47,7 @@ public class ChatViewController {
         this.currentChannel = currentChannel;
     }
 
-    public void init() {
+    public void init() throws JsonException, IOException {
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
@@ -65,6 +68,12 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
+
+        for(Message message : ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat())){
+            oldMessage = true;
+            ob.add(message);
+        }
+        oldMessage = false;
     }
 
     /**
@@ -101,8 +110,9 @@ public class ChatViewController {
                 if (!HomeViewController.inServerChat) {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null) {
                             builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -126,6 +136,9 @@ public class ChatViewController {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 Platform.runLater(() -> ob.add(msg));
+                if (!oldMessage){
+                    ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), msg.getPrivateChat().getName(), msg);
+                }
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId()))

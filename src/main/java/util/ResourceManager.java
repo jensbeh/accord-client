@@ -1,16 +1,26 @@
 package util;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Message;
+import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
 
+import javax.json.Json;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static util.Constants.*;
 
@@ -130,5 +140,63 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * save privateChat to file
+     */
+    public static void savePrivatChat(String currentUserName, String chatPartnerName, String name, Message message) {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
+            }
+
+            JsonArray parser = new JsonArray();
+            File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
+            if(f.exists()){
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
+                parser = (JsonArray) Jsoner.deserialize(reader);
+            }
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
+
+
+            JsonObject obj = new JsonObject();
+            obj.put("currentUserName", message.getFrom());
+            obj.put("chatPartnerName", chatPartnerName);
+            obj.put("privateChatName", name);
+            obj.put("message", message.getMessage());
+            obj.put("timestamp", message.getTimestamp());
+            parser.add(obj);
+
+            System.out.println("savePrivatChat: " + message);
+            Jsoner.serialize(parser, writer);
+            writer.close();
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * load privateChat from file
+     */
+    public static ArrayList<Message> loadPrivatChat(String currentUserName, String chatPartnerName, PrivateChat privateChat) throws IOException, JsonException {
+        JsonArray parser = new JsonArray();
+        ArrayList<Message> messageList = new ArrayList<>();
+
+        File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
+        if(f.exists()){
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
+            parser = (JsonArray) Jsoner.deserialize(reader);
+            for(Object jsonObject : parser){
+                Message message = new Message();
+                JsonObject jsonObject1 = (JsonObject) jsonObject;
+                message.setMessage((String) jsonObject1.get("message"));
+                message.setFrom((String) jsonObject1.get("currentUserName"));
+                message.setPrivateChat(privateChat);
+                message.setTimestamp(((BigDecimal) jsonObject1.get("timestamp")).longValue());
+                messageList.add(message);
+            }
+        }
+        return messageList;
     }
 }

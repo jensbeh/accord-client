@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -393,7 +394,7 @@ public class ServerViewController {
                     ChatViewController.printMessage(msg);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
     }
