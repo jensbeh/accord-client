@@ -116,7 +116,6 @@ public class PrivateMessageTest extends ApplicationTest {
         MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 
-
     public void mockGetServers() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")

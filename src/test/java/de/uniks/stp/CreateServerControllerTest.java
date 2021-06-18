@@ -1,7 +1,11 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.net.*;
+import de.uniks.stp.controller.LoginScreenController;
+import de.uniks.stp.net.PrivateChatWebSocket;
+import de.uniks.stp.net.PrivateSystemWebSocketClient;
+import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.ServerChatWebSocket;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -12,12 +16,12 @@ import kong.unirest.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
@@ -34,21 +38,15 @@ import static org.mockito.Mockito.*;
 public class CreateServerControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
+    private final String testServerName = "TestServer Team Bit Shift";
+    private final String testUserName = "Hendry Bracken";
+    private final String testUserPw = "stp2021pw";
+    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+    private final String testServerOwner = "5e2iof875dd077d03df505";
+    private final String testServerId = "5e2fbd8770dd077d03df505";
 
     @Mock
     private RestClient restClient;
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
 
     @Mock
     private HttpResponse<JsonNode> response;
@@ -65,6 +63,18 @@ public class CreateServerControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response5;
 
+    @Mock
+    private HttpResponse<JsonNode> response6;
+
+    @Mock
+    private HttpResponse<JsonNode> response7;
+
+    @Mock
+    private HttpResponse<JsonNode> response8;
+
+    @Mock
+    private HttpResponse<JsonNode> response9;
+
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
@@ -80,11 +90,40 @@ public class CreateServerControllerTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @InjectMocks
+    StageManager mockApp = new StageManager();
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(LoginScreenController.class);
     }
 
     @Override
@@ -94,240 +133,266 @@ public class CreateServerControllerTest extends ApplicationTest {
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
-        builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
         StageManager.setBuilder(builder);
         app.setRestClient(restClient);
-
         app.start(stage);
         this.stage.centerOnScreen();
     }
 
-    @InjectMocks
-    StageManager mockApp = new StageManager();
-
-    @BeforeAll
-    static void setup() throws IOException {
-        MockitoAnnotations.openMocks(PrivateMessageTest.class);
+    public void mockLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor.getValue();
+                callback.completed(response);
+                return null;
+            }
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
+    public void mockPostServer() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor2.getValue();
+                callback.completed(response2);
+                return null;
+            }
+        }).when(restClient).postServer(anyString(), anyString(), callbackCaptor2.capture());
+    }
 
     public void mockGetServers() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer Team Bit Shift")));
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor2.getValue();
-            callback.completed(response2);
-            mockGetServerUser();
-            return null;
-        }).when(restClient).getServers(anyString(), callbackCaptor2.capture());
-    }
-
-    public void mockGetServerUser() {
-        JSONArray members = new JSONArray();
-        JSONArray categories = new JSONArray();
-        categories.put("60b77ba0026b3534ca5a61ae");
-        JSONObject member = new JSONObject();
-        member.put("id", "60ad230ac77d3f78988b3e5b")
-                .put("name", "Peter Lustig")
-                .put("online", true);
-        members.put(member);
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject()
-                        .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
-                        .put("owner", "60ad230ac77d3f78988b3e5b")
-                        .put("categories", categories)
-                        .put("members", members)
-                );
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor3.getValue();
-            callback.completed(response3);
-            mockGetCategories();
-            return null;
-        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor3.capture());
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor3.getValue();
+                callback.completed(response3);
+                return null;
+            }
+        }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
     }
 
-    public void mockGetCategories() {
-        JSONArray channels = new JSONArray();
-        channels.put("60b77ba0026b3534ca5a61af");
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61ae")
-                .put("name", "default")
-                .put("server", "5e2fbd8770dd077d03df505")
-                .put("channels", channels));
+    public void mockGetServerUsers() {
+        String categories[] = new String[1];
+        categories[0] = "5e2fbd8770dd077d03df600";
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", data);
+                .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner).put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor4.getValue();
-            callback.completed(response4);
-            return null;
-        }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor4.capture());
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor4.getValue();
+                callback.completed(response4);
+                return null;
+            }
+        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor4.capture());
     }
 
-    public void mockGetChannels() {
-        JSONArray members = new JSONArray();
-        JSONArray data = new JSONArray();
-        data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61af")
-                .put("name", "testChannel")
-                .put("type", "text")
-                .put("privileged", false)
-                .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members));
+    public void mockGetServerCategories() {
+        String[] channels = new String[1];
+        channels[0] = "60adc8aec77d3f78988b57a0";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", data);
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df600").put("name", "default")
+                        .put("server", "5e2fbd8770dd077d03df505").put("channels", channels)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor5.getValue();
-            callback.completed(response5);
-            return null;
-        }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor5.getValue();
+                callback.completed(response5);
+                return null;
+            }
+        }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor5.capture());
     }
 
-
-    public void loginInit() throws InterruptedException {
-        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
-        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
-        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
-        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
-        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
-        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
-        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
-        mockGetServers();
-        mockGetServerUser();
-        mockGetCategories();
-        mockGetChannels();
-
+    public void mockGetCategoryChannels() {
+        String[] members = new String[0];
+        String[] audioMembers = new String[0];
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
-                .put("name", "Peter")
-                .put("password", "1234")
-                .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", "60adc8aec77d3f78988b57a0").put("name", "general").put("type", "text")
+                        .put("privileged", false).put("category", "5e2fbd8770dd077d03df600").put("members", members).put("audioMembers", audioMembers)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            String name = (String) invocation.getArguments()[0];
-            String password = (String) invocation.getArguments()[1];
-            System.out.println(name);
-            System.out.println(password);
-            Callback<JsonNode> callback = callbackCaptor.getValue();
-            callback.completed(response);
-            return null;
-        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+        when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor6.getValue();
+                callback.completed(response6);
+                mockGetCategoryChannels();
+                return null;
+            }
+        }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor6.capture());
+    }
+
+    public void mockGetServersEmpty() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor7.getValue();
+                callback.completed(response7);
+                return null;
+            }
+        }).when(restClient).getServers(anyString(), callbackCaptor7.capture());
+    }
+
+    public void mockGetChannelMessages() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor8.getValue();
+                callback.completed(response8);
+                return null;
+            }
+        }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
+    }
+
+    public void mockJoinServer() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Successfully arrived at server")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer(new Answer<Void>() {
+            public Void answer(InvocationOnMock invocation) {
+                Callback<JsonNode> callback = callbackCaptor9.getValue();
+                callback.completed(response9);
+                return null;
+            }
+        }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
+    }
+
+    public void loginInit(boolean emptyServers) throws InterruptedException {
+        mockPostServer();
+        if (!emptyServers)
+            mockGetServers();
+        else
+            mockGetServersEmpty();
+        mockGetServerUsers();
+        mockGetServerCategories();
+        mockGetCategoryChannels();
+        mockGetChannelMessages();
+        mockJoinServer();
+
+        mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText("Peter");
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText("1234");
         clickOn("#loginButton");
 
-        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
-        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateSystemWebSocketClient.handleMessage(jsonObject);
-
-
-        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
     }
 
-    //@Test
+    @Test
     public void createServerTest() throws InterruptedException {
-        loginInit();
+        loginInit(false);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
         TextField serverName = lookup("#serverName").query();
-        serverName.setText("TestServer2");
-        Assert.assertEquals("TestServer2", serverName.getText());
-
-        clickOn("#createServer");
-        //TODO build new server with rest mocking
+        serverName.setText("TestServer Team Bit Shift");
+        Assert.assertEquals("TestServer Team Bit Shift", serverName.getText());
     }
 
-    //@Test
+    @Test
     public void emptyTextField() throws InterruptedException {
-        loginInit();
+        loginInit(false);
+        //mockPostServer();
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
-
-
     }
 
-    //@Test
+    @Test
     public void showCreateServerTest() throws InterruptedException {
-        loginInit();
+        loginInit(true);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
 
         TextField serverName = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
         serverName.setText("TestServer Team Bit Shift");
         clickOn(createServer);
-
         WaitForAsyncUtils.waitForFxEvents();
-        /*TODO build new server with rest mocking
+
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
-
-         */
     }
 
-    //@Test
+    @Test
     public void showNoConnectionToServerTest() {
-        /*TODO: remake*/
-        /*String message = "";
-        when(restMock.postServer(anyString(), anyString())).thenThrow(new UnirestException("No route to host: connect"));
+        String message = "";
+        when(restClient.postServer(anyString(), anyString(), any())).thenThrow(new UnirestException("No route to host: connect"));
         try {
-            restMock.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer");
+            restClient.postServer("c653b568-d987-4331-8d62-26ae617847bf", "TestServer", response -> {
+            });
         } catch (Exception e) {
             if (e.getMessage().equals("No route to host: connect")) {
                 message = "No Connection - Please check your connection and try again";
             }
         }
-        Assert.assertEquals("No Connection - Please check your connection and try again", message);*/
+        Assert.assertEquals("No Connection - Please check your connection and try again", message);
     }
 
-    //@Test
+    @Test
     public void joinServer() throws InterruptedException {
-        loginInit();
+        loginInit(true);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         TextField invLink = lookup("#inviteLink").query();
-        invLink.setText("https://ac.uniks.de/api/servers/60b7dafd026b3534ca5be36a/invites/60b7db05026b3534ca5be39b");
+        invLink.setText("https://ac.uniks.de/api/servers/5e2fbd8770dd077d03df505/invites/60b7db05026b3534ca5be39b");
+        mockGetServers();
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
         MenuButton serverMenuButton = lookup("#serverMenuButton").query();
-        Assert.assertEquals("Hey Taeubchen Gurr Gurr", serverMenuButton.getText());
+        Assert.assertEquals(testServerName, serverMenuButton.getText());
     }
 }

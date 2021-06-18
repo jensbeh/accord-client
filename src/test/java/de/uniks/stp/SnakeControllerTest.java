@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static de.uniks.stp.controller.snake.Constants.FIELD_SIZE;
-
+/*
 public class SnakeControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
@@ -249,3 +249,4 @@ public class SnakeControllerTest extends ApplicationTest {
         }
     }
 }
+*/

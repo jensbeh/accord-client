@@ -122,7 +122,7 @@ public class ServerMessageTest extends ApplicationTest {
     public void mockGetServerUsers() {
         String categories[] = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("id", testUserMainName).put("online", true));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserMainName).put("online", true));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")

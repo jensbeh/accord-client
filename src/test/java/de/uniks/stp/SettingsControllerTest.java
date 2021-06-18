@@ -144,7 +144,7 @@ public class SettingsControllerTest extends ApplicationTest {
         }
     }
 
-    //@Test
+    @Test
     public void doNotDisturbTest() throws InterruptedException {
         loginInit();
         clickOn("#settingsButton");
