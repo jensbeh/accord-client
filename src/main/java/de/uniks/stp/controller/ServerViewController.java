@@ -185,14 +185,15 @@ public class ServerViewController {
      * WebSocket for system messages.
      */
     public void buildSystemWebSocket() {
-        if (serverSystemWebSocket == null) {
+        //if (serverSystemWebSocket == null) {
             serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             serverSystemWebSocket.setServerViewController(this);
             serverSystemWebSocket.setBuilder(builder);
-        }
-        serverSystemWebSocket.setServerViewController(this);
+            serverSystemWebSocket.setName(server.getName());
+       // }
+        /*serverSystemWebSocket.setServerViewController(this);
         serverSystemWebSocket.setBuilder(builder);
-        serverSystemWebSocket.setName(server.getName());
+        serverSystemWebSocket.setName(server.getName());*/
         //builder.setSERVER_USER(serverSystemWebSocket);
     }
 
@@ -200,18 +201,19 @@ public class ServerViewController {
      * WebSocket for chat messages.
      */
     private void buildChatWebSocket() {
-        if (chatWebSocketClient == null) {
+        //if (chatWebSocketClient == null) {
             chatWebSocketClient = new ServerChatWebSocket(URI.
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             chatWebSocketClient.setServerViewController(this);
             chatWebSocketClient.setServer(server);
             chatWebSocketClient.setBuilder(builder);
-        }
-        chatWebSocketClient.setServerViewController(this);
+            chatWebSocketClient.setName(server.getName());
+        //}
+        /*chatWebSocketClient.setServerViewController(this);
         chatWebSocketClient.setBuilder(builder);
         chatWebSocketClient.setServer(server);
-        chatWebSocketClient.setName(server.getName());
+        chatWebSocketClient.setName(server.getName());*/
         //builder.setServerChatWebSocketClient(chatWebSocketClient);
 
     }
@@ -324,7 +326,6 @@ public class ServerViewController {
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
                 userBox.setSpacing(0);
-                //onlineUsersList.setPrefHeight(0);
             } else {
                 userBox.setSpacing(8);
                 onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
