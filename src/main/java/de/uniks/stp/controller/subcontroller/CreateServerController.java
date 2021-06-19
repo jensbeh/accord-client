@@ -7,10 +7,13 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
@@ -26,6 +29,7 @@ public class CreateServerController {
     private final ModelBuilder builder;
     private final Parent view;
     private static TextField serverName;
+    private final Stage stage;
     private Button createServer;
     private Runnable create;
     private static Label errorLabel;
@@ -34,11 +38,16 @@ public class CreateServerController {
     private Button joinServer;
     private Runnable join;
     private Boolean serverIdTrue = false;
+    private Button joinButton;
+    private Button createButton;
+    private VBox window;
+
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
      */
-    public CreateServerController(Parent view, ModelBuilder builder) {
+    public CreateServerController(Parent view, ModelBuilder builder, Stage stage) {
+        this.stage = stage;
         this.builder = builder;
         this.view = view;
         restClient = builder.getRestClient();
@@ -49,13 +58,44 @@ public class CreateServerController {
      */
     public void init() {
         // Load all view references
-        serverName = (TextField) view.lookup("#serverName");
-        errorLabel = (Label) view.lookup("#errorLabel");
-        createServer = (Button) view.lookup("#createServer");
-        createServer.setOnAction(this::onCreateServerClicked);
-        linkTextField = (TextField) view.lookup("#inviteLink");
-        joinServer = (Button) view.lookup("#joinServer");
-        joinServer.setOnAction(this::onServerJoinClicked);
+        window = (VBox) view.lookup("#createServerBox");
+        joinButton = (Button) view.lookup("#chooseJoin");
+        createButton = (Button) view.lookup("#chooseCreate");
+
+        joinButton.setOnAction(this::joinChosen);
+        createButton.setOnAction(this::createChosen);
+    }
+
+    private void createChosen(ActionEvent actionEvent) {
+        try {
+            Parent subView = FXMLLoader.load(StageManager.class.getResource("controller/CreateServer.fxml"), StageManager.getLangBundle());
+            stop();
+            window.getChildren().clear();
+            window.getChildren().add(subView);
+            stage.setTitle("Create a new Server");
+            serverName = (TextField) view.lookup("#serverName");
+            errorLabel = (Label) view.lookup("#errorLabel");
+            createServer = (Button) subView.lookup("#createServer");
+            createServer.setOnAction(this::onCreateServerClicked);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void joinChosen(ActionEvent actionEvent) {
+        try {
+            Parent subView = FXMLLoader.load(StageManager.class.getResource("controller/JoinServer.fxml"), StageManager.getLangBundle());
+            stop();
+            window.getChildren().clear();
+            window.getChildren().add(subView);
+            stage.setTitle("Join a new Server");
+            linkTextField = (TextField) view.lookup("#inviteLink");
+            errorLabel = (Label) view.lookup("#errorLabel");
+            joinServer = (Button) view.lookup("#joinServer");
+            joinServer.setOnAction(this::onServerJoinClicked);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -189,7 +229,13 @@ public class CreateServerController {
     }
 
     public void stop() {
-        createServer.setOnAction(null);
-        joinServer.setOnAction(null);
+        joinButton.setOnAction(null);
+        createButton.setOnAction(null);
+        if (createServer != null) {
+            createServer.setOnAction(null);
+        }
+        if (joinServer != null) {
+            joinServer.setOnAction(null);
+        }
     }
 }

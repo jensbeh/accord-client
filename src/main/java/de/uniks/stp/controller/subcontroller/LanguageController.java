@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.subcontroller;
 
-import de.uniks.stp.LangString;
 import de.uniks.stp.StageManager;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -18,6 +17,7 @@ public class LanguageController extends SubSetting {
     private ComboBox<String> languageSelector;
     private static Label selectLanguageLabel;
     private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+    private static Locale currentLocale;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
@@ -27,7 +27,8 @@ public class LanguageController extends SubSetting {
         try {
             FileInputStream ip = new FileInputStream(PATH_FILE_SETTINGS);
             prop.load(ip);
-            LangString.setLocale(new Locale(prop.getProperty("LANGUAGE")));
+            currentLocale = new Locale(prop.getProperty("LANGUAGE"));
+            Locale.setDefault(currentLocale);
             StageManager.resetLangBundle();
         } catch (Exception e) {
             System.err.println(e);
@@ -54,7 +55,7 @@ public class LanguageController extends SubSetting {
         this.languageSelector = (ComboBox<String>) view.lookup("#comboBox_langSelect");
         selectLanguageLabel = (Label) view.lookup("#label_langSelect");
 
-        this.languageSelector.setPromptText(languages.get((LangString.getLocale().toString())));
+        this.languageSelector.setPromptText(languages.get(currentLocale.toString()));
         for (Map.Entry<String, String> language : languages.entrySet()) {
             this.languageSelector.getItems().add(language.getValue());
         }
@@ -78,7 +79,8 @@ public class LanguageController extends SubSetting {
         // get selected language and change
         String selectedLanguage = this.languageSelector.getValue();
         String language = getKey(languages, selectedLanguage);
-        LangString.setLocale(locales.get(language));
+        currentLocale = locales.get(language);
+        Locale.setDefault(currentLocale);
         StageManager.onLanguageChanged();
 
         // save in Settings

@@ -249,30 +249,37 @@ public class ServerSystemWebSocket extends Endpoint {
      * deletes a category with controller and view
      */
     private void deleteCategory(JsonObject jsonData) {
+        Server currentServer=null;
+        Categories deletedCategory=null;
+        Node deletedNode = null;
         String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
 
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
                 for (Categories categories : server.getCategories()) {
+                    currentServer=server;
                     if (categories.getId().equals(categoryId)) {
-                        server.withoutCategories(categories);
                         if (builder.getCurrentServer() == serverViewController.getServer()) {
                             for (Node view : serverViewController.getCategoryBox().getChildren()) {
                                 if (view.getId().equals(categories.getId())) {
-                                    Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(view));
-                                    serverViewController.getCategorySubControllerList().get(categories).stop();
-                                    serverViewController.getCategorySubControllerList().remove(categories);
-
-                                    if (categories.getChannel().contains(serverViewController.getCurrentChannel()) || serverViewController.getServer().getCategories().size() == 0) {
-                                        serverViewController.throwOutUserFromChatView();
-                                    }
-                                    break;
+                                    deletedCategory = categories;
+                                    deletedNode = view;
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+        if (deletedNode!=null){
+            currentServer.withoutCategories(deletedCategory);
+            Node finalDeletedNode = deletedNode;
+            Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(finalDeletedNode));
+            serverViewController.getCategorySubControllerList().get(deletedCategory).stop();
+            serverViewController.getCategorySubControllerList().remove(deletedCategory);
+            if (deletedCategory.getChannel().contains(serverViewController.getCurrentChannel()) || serverViewController.getServer().getCategories().size() == 0) {
+                serverViewController.throwOutUserFromChatView();
             }
         }
     }

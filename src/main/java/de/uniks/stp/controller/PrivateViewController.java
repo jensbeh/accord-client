@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+
 import de.uniks.stp.AlternatePrivateChatListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
@@ -24,8 +25,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
+import util.ResourceManager;
 import util.SortUser;
 
+import javax.json.JsonException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ResourceBundle;
@@ -48,6 +51,8 @@ public class PrivateViewController {
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
     private static PrivateChat selectedChat;
+    private PrivateSystemWebSocketClient systemWebSocketClient;
+    private PrivateChatWebSocket chatWebSocketClient;
     private TextField messageField;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
@@ -188,7 +193,7 @@ public class PrivateViewController {
                     ChatViewController.printMessage(msg);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
     }
@@ -219,11 +224,18 @@ public class PrivateViewController {
             if (!chatExisting) {
                 selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
                 builder.getPersonalUser().withPrivateChat(selectedChat);
+                try {
+                    // load messages for new channel
+                    selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
+                } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
+                    e.printStackTrace();
+                }
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
                         getPrivateChat()));
             }
-            if (!selectedChat.equals(currentChannel))
+            if (!selectedChat.equals(currentChannel)) {
                 MessageViews();
+            }
         }
     }
 

@@ -1,8 +1,8 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
@@ -26,20 +25,31 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SettingsControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private final String testUserMainName = "Hendry Bracken";
-    private final String testUserMainPw = "stp2021pw";
-    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
 
     @Mock
     private RestClient restClient;
 
     @Mock
     private HttpResponse<JsonNode> response;
+
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
@@ -57,38 +67,47 @@ public class SettingsControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
+        //start application
+        ModelBuilder builder = new ModelBuilder();
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
+        builder.setServerChatWebSocketClient(serverChatWebSocket);
         app = mockApp;
-        app.setRestClient(restClient);
+        StageManager.setBuilder(builder);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(LoginScreenController.class);
+        MockitoAnnotations.openMocks(SettingsControllerTest.class);
     }
 
     public void mockLogin() {
+        String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONObject().put("userKey", userKey));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
     public void loginInit() throws InterruptedException {
         mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
+        String testUserMainName = "Hendry Bracken";
         usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
+        String testUserMainPw = "stp2021pw";
         passwordField.setText(testUserMainPw);
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
@@ -144,7 +163,7 @@ public class SettingsControllerTest extends ApplicationTest {
         }
     }
 
-    //@Test
+    @Test
     public void doNotDisturbTest() throws InterruptedException {
         loginInit();
         clickOn("#settingsButton");
@@ -165,5 +184,9 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn(doNotDisturb);
         Assert.assertTrue(showNotifications.isDisabled());
         Assert.assertTrue(playSound.isDisabled());
+        clickOn(doNotDisturb);
+        if (!showNotifications.isSelected()) {
+            clickOn(showNotifications);
+        }
     }
 }

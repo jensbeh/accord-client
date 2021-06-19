@@ -1,9 +1,9 @@
 package de.uniks.stp;
 
-import de.uniks.stp.controller.HomeViewController;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.model.Food;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,12 +35,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static de.uniks.stp.controller.snake.Constants.FIELD_SIZE;
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SnakeControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
@@ -53,6 +53,18 @@ public class SnakeControllerTest extends ApplicationTest {
 
     @Mock
     private HttpResponse<JsonNode> response;
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
@@ -69,16 +81,23 @@ public class SnakeControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        this.stage = stage;
+        //start application
+        ModelBuilder builder = new ModelBuilder();
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
+        builder.setServerChatWebSocketClient(serverChatWebSocket);
         app = mockApp;
-        app.setRestClient(restClient);
+        StageManager.setBuilder(builder);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
+        MockitoAnnotations.openMocks(SnakeControllerTest.class);
     }
 
     public void mockLogin() {
@@ -88,12 +107,10 @@ public class SnakeControllerTest extends ApplicationTest {
                 .put("data", new JSONObject().put("userKey", userKey));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
@@ -107,13 +124,13 @@ public class SnakeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
-    //@Test
+    @Test
     public void openStartGameViewTest() throws InterruptedException {
         loginInit();
 
         // clicks 15 times on home
         Circle homeButton = lookup("#homeButton").query();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             clickOn(homeButton);
         }
 
@@ -140,7 +157,7 @@ public class SnakeControllerTest extends ApplicationTest {
         }
     }
 
-    //@Test
+    @Test
     public void SnakeGameTest() throws InterruptedException {
         loginInit();
 

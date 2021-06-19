@@ -76,19 +76,17 @@ public class HomeViewControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
 
-    private ModelBuilder builder;
-
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @Override
     public void start(Stage stage) {
         //start application
-        builder = new ModelBuilder();
+        ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
@@ -227,6 +225,9 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseCreate");
+        WaitForAsyncUtils.waitForFxEvents();
+
 
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
@@ -331,6 +332,7 @@ public class HomeViewControllerTest extends ApplicationTest {
     @Test()
     public void logout() throws InterruptedException {
         loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
         // Clicking logout...

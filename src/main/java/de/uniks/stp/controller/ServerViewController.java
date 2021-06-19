@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -44,6 +45,7 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
+    private ServerSystemWebSocket systemWebSocketClient;
 
     private VBox chatBox;
     private ChatViewController messageViewController;
@@ -546,7 +548,9 @@ public class ServerViewController {
      */
     public void throwOutUserFromChatView() {
         setCurrentChannel(null);
-        this.messageViewController.stop();
+        if (this.messageViewController != null) {
+            this.messageViewController.stop();
+        }
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }
 

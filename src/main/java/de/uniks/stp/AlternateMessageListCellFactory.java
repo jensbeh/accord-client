@@ -1,5 +1,7 @@
 package de.uniks.stp;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
+import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import javafx.geometry.Pos;
@@ -9,10 +11,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import java.time.LocalDateTime;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -56,22 +62,48 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 Label userName = new Label();
                 userName.setId("userNameLabel");
                 userName.setTextFill(Color.WHITE);
-                Label message = new Label();
-                message.setId("messageLabel");
+                EmojiTextFlow message;
+
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
+                DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
+                    userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
+                    EmojiTextFlowParameters emojiTextFlowParameters;
+                    {
+                        emojiTextFlowParameters = new EmojiTextFlowParameters();
+                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                        emojiTextFlowParameters.setTextColor(Color.WHITE);
+                    }
+                    message = new EmojiTextFlow(emojiTextFlowParameters);
                     message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.WHITE);
-                    userName.setText(formatterTime.format(date) + " " + item.getFrom());
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
+                    userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
+                    EmojiTextFlowParameters emojiTextFlowParameters;
+                    {
+                        emojiTextFlowParameters = new EmojiTextFlowParameters();
+                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                        emojiTextFlowParameters.setTextColor(Color.BLACK);
+                    }
+                    message = new EmojiTextFlow(emojiTextFlowParameters);
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
-                    message.setTextFill(Color.BLACK);
-                    userName.setText(item.getFrom() + " " + formatterTime.format(date));
                 }
+                message.setId("messageLabel");
+                //if(item.getMessage().length() <= 320){
+                //  message.setMaxWidth(item.getMessage().length() + 10);
+                //}else {
+                message.setMaxWidth(320);
+                //}
+                message.setPrefWidth(item.getMessage().length());
+
+
                 //new Line after 50 Characters
                 String str = item.getMessage();
                 int point = 0;
@@ -98,7 +130,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     found = false;
                     counter = 25;
                 }
-                message.setText(" " + str + " ");
+                message.parseAndAppend(" " + str + " ");
                 vbox.getChildren().addAll(userName, message);
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);

@@ -1,50 +1,91 @@
 package de.uniks.stp;
 
-import de.uniks.stp.model.Server;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.RestClient;
-import javafx.application.Platform;
+import de.uniks.stp.net.*;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import javax.websocket.*;
+import javax.json.JsonObject;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
+import java.nio.channels.Channel;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private static String testUserMainName;
-    private static String testUserMainPw;
-    private static String testUserOneName;
-    private static String testUserOnePw;
-    private static String testUserOne_UserKey;
-    private static String testUserOne_ID;
-    private static String testServerId;
-    private static ClientEndpointConfig testUser1_CLIENT_CONFIG = null;
-    private static ServerViewControllerTest.ClientTestEndpoint testUser1_CLIENT = null;
-    private CountDownLatch messageLatch;
+    private static final String testUserOneName = "Peter";
+    private static final String testUserOnePw= "1234";
+
+
+    @Mock
     private RestClient restClient;
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Mock
+    private HttpResponse<JsonNode> response2;
+
+    @Mock
+    private HttpResponse<JsonNode> response3;
+
+    @Mock
+    private HttpResponse<JsonNode> response4;
+
+    @Mock
+    private HttpResponse<JsonNode> response5;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
+
+    private ModelBuilder builder;
 
 
     @BeforeClass
@@ -57,197 +98,183 @@ public class ServerViewControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         //start application
+        builder = new ModelBuilder();
         this.stage = stage;
-        app = new StageManager();
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
+        builder.setServerChatWebSocketClient(serverChatWebSocket);
+        app = mockApp;
+        StageManager.setBuilder(builder);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
-        this.restClient = new RestClient();
+        stage.centerOnScreen();
     }
 
-    @Mock
-    private RestClient restMock;
+    @InjectMocks
+    StageManager mockApp = new StageManager();
 
-    @Mock
-    private HttpResponse<JsonNode> res;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    @BeforeAll
+    static void setup() throws IOException {
+        MockitoAnnotations.openMocks(ServerViewControllerTest.class);
     }
 
-    public void loginInitWithTemp() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserMainName = body.getObject().getJSONObject("data").getString("name");
-            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
+    public void mockGetServers() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer Team Bit Shift")));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            mockGetServerUser();
+            return null;
+        }).when(restClient).getServers(anyString(), callbackCaptor2.capture());
+    }
 
+    public void mockGetServerUser() {
+        JSONArray members = new JSONArray();
+        JSONArray categories = new JSONArray();
+        categories.put("60b77ba0026b3534ca5a61ae");
+        JSONObject member = new JSONObject();
+        member.put("id", "60ad230ac77d3f78988b3e5b")
+                .put("name", "Peter Lustig")
+                .put("online", true);
+        members.put(member);
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject()
+                        .put("id", "5e2fbd8770dd077d03df505")
+                        .put("name", "asdfasdf")
+                        .put("owner", "60ad230ac77d3f78988b3e5b")
+                        .put("categories", categories)
+                        .put("members", members)
+                );
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            mockGetCategories();
+            return null;
+        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor3.capture());
+    }
+
+    public void mockGetCategories() {
+        JSONArray channels = new JSONArray();
+        channels.put("60b77ba0026b3534ca5a61af");
+        JSONArray data = new JSONArray();
+        data.put(new JSONObject()
+                .put("id", "60b77ba0026b3534ca5a61ae")
+                .put("name", "default")
+                .put("server", "5e2fbd8770dd077d03df505")
+                .put("channels", channels));
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", data);
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor4.getValue();
+            callback.completed(response4);
+            return null;
+        }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor4.capture());
+    }
+
+    public void mockGetChannels() {
+        JSONArray members = new JSONArray();
+        JSONArray data = new JSONArray();
+        data.put(new JSONObject()
+                .put("id", "60b77ba0026b3534ca5a61af")
+                .put("name", "testChannel")
+                .put("type", "text")
+                .put("privileged", false)
+                .put("category", "60b77ba0026b3534ca5a61ae")
+                .put("members", members));
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", data);
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor5.getValue();
+            callback.completed(response5);
+            return null;
+        }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
+    }
+
+
+    public void loginInit(String name2, String pw) throws InterruptedException {
+        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
+        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        mockGetServers();
+        mockGetServerUser();
+        mockGetCategories();
+        mockGetChannels();
+
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("name", name2)
+                .put("password", pw)
+                .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            String name = (String) invocation.getArguments()[0];
+            String password = (String) invocation.getArguments()[1];
+            System.out.println(name);
+            System.out.println(password);
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
         TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(testUserMainName);
+        usernameTextField.setText("Peter");
         PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(testUserMainPw);
-
+        passwordField.setText("1234");
         clickOn("#loginButton");
 
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
+        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateSystemWebSocketClient.handleMessage(jsonObject);
+
+
+        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateChatWebSocket.handleMessage(jsonObject);
     }
 
-    public void loginInit(String name, String password) throws InterruptedException {
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(name);
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(password);
-
-        clickOn("#loginButton");
-
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-    }
-
-
-    public void loginInitWithTempUser() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserMainName = body.getObject().getJSONObject("data").getString("name");
-            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
-        TextField usernameTextField = lookup("#usernameTextfield").query();
-        usernameTextField.setText(testUserMainName);
-        PasswordField passwordField = lookup("#passwordTextField").query();
-        passwordField.setText(testUserMainPw);
-
-        clickOn("#loginButton");
-
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-    }
-
-    private void setupWebSocketClient() {
-        System.out.println("Starting WebSocket Client");
-        testUser1_CLIENT_CONFIG = ClientEndpointConfig.Builder.create()
-                .configurator(new ServerViewControllerTest.TestWebSocketConfigurator(testUserOne_UserKey))
-                .build();
-        messageLatch = new CountDownLatch(1);
-        testUser1_CLIENT = new ServerViewControllerTest.ClientTestEndpoint();
-    }
-
-    private void connectWebSocketClient() throws DeploymentException, IOException {
-        try {
-            ContainerProvider.getWebSocketContainer().connectToServer(testUser1_CLIENT, testUser1_CLIENT_CONFIG, URI.create("wss://ac.uniks.de/ws/chat?user=" + testUserOneName.replace(" ", "+") + "&serverId=" + app.getBuilder().getCurrentServer().getId()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    private void shutDownWebSocketClient() throws IOException {
-        System.out.println("Closing WebSocket Client\n");
-        testUser1_CLIENT.getSession().close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Test was finished"));
-    }
-
-    class ClientTestEndpoint extends Endpoint {
-
-        private Session session;
-
-        public Session getSession() {
-            return session;
-        }
-
-        @Override
-        public void onOpen(Session session, EndpointConfig config) {
-            this.session = session;
-            this.session.addMessageHandler(String.class, this::onMessage);
-        }
-
-        public void sendMessage(String message) throws IOException {
-            if (this.session != null && this.session.isOpen()) {
-                this.session.getBasicRemote().sendText(message);
-                this.session.getBasicRemote().flushBatch();
-            }
-        }
-
-        private void onMessage(String message) {
-            System.out.println("TEST CLIENT Received message: " + message);
-            if (message.contains("this is a test homie")) {
-                messageLatch.countDown(); // Count incoming messages
-            }
-        }
-    }
-
-    class TestWebSocketConfigurator extends ClientEndpointConfig.Configurator {
-        private final String name;
-
-        public TestWebSocketConfigurator(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public void beforeRequest(Map<String, List<String>> headers) {
-            super.beforeRequest(headers);
-            ArrayList<String> key = new ArrayList<>();
-            key.add(this.name);
-            headers.put("userkey", key);
-        }
-    }
-
-    public void getServerId() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            JsonNode body = response.getBody();
-            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        Thread.sleep(2000);
-
-        /*TODO: check if still works after replacement*/
-        //JsonNode body = restClient.postServer(testUserOne_UserKey, "TestServer Team Bit Shift");
-        //testServerId = body.getObject().getJSONObject("data").getString("id");
-        restClient.postServer(testUserOne_UserKey, "TestServer Team Bit Shift", response -> {
-        });
-        testServerId = "ri9fdrSw0fj90";
-
-        restClient.logout(testUserOne_UserKey, response -> {
-        });
-    }
-
-    //@Test
+    @Test
     public void showServerTest() throws InterruptedException {
-        getServerId();
         loginInit(testUserOneName, testUserOnePw);
+        WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#serverName_" + testServerId));
-        Thread.sleep(2000);
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
 
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
-
-
-        Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void showServerUsersTest() throws InterruptedException {
-        getServerId();
         loginInit(testUserOneName, testUserOnePw);
 
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#serverName_" + testServerId));
-        Thread.sleep(2000);
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
 
         app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false);
         app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true);
@@ -257,117 +284,61 @@ public class ServerViewControllerTest extends ApplicationTest {
         ListView<User> offlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#offlineUsers");
         app.getHomeViewController().getServerController().showOnlineOfflineUsers();
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
 
-        Assert.assertEquals(1, onlineUserList.getItems().size());
+        Assert.assertEquals(2, onlineUserList.getItems().size());
         Assert.assertEquals(1, offlineUserList.getItems().size());
-
-
-        Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void logoutMultiLogin() throws InterruptedException {
-        getServerId();
         loginInit(testUserOneName, testUserOnePw);
 
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#serverName_" + testServerId));
-        Thread.sleep(2000);
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-        });
+        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
+        String message = "{\"action\":\"userLeft\",\"data\":{\"id\":\"" + "00" + "\",\"name\":\"" + "Peter" + "\"}}";
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateSystemWebSocketClient.handleMessage(jsonObject);
 
-        Thread.sleep(2000);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Accord - Login", stage.getTitle());
-
-        restClient.logout(testUserOne_UserKey, response -> {
-        });
     }
 
 
-    //@Test
+    @Test
     public void categoryViewTest() throws InterruptedException {
-        getServerId();
         loginInit(testUserOneName, testUserOnePw);
 
-        ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverList.lookup("#serverName_" + testServerId));
-        Thread.sleep(2000);
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        ListView channels = lookup("#channellist").queryListView();
+        ListView<Channel> channels = lookup("#channellist").queryListView();
         app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY"));
         Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
-
-
-        Thread.sleep(2000);
     }
 
-    //@Test
-    public void onNewMessageIconCounterTest() throws InterruptedException, DeploymentException, IOException {
-        // test User 1 login
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserOneName = body.getObject().getJSONObject("data").getString("name");
-            testUserOnePw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-        restClient.login(testUserOneName, testUserOnePw, response -> {
-            JsonNode body = response.getBody();
-            testUserOne_UserKey = body.getObject().getJSONObject("data").getString("userKey");
-        });
-        Thread.sleep(2000);
+    @Test
+    public void onNewMessageIconCounterTest() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        serverChatWebSocket.setBuilder(builder);
+        loginInit(testUserOneName, testUserOnePw);
+        builder.setPlaySound(false);
+        builder.setShowNotifications(true);
+        builder.setDoNotDisturb(false);
 
-        loginInitWithTempUser();
-
-        Circle addServer = lookup("#addServer").query();
-        clickOn(addServer);
-
-        TextField serverName = lookup("#serverName").query();
-        Button createServer = lookup("#createServer").query();
-        serverName.setText("TestServer Team Bit Shift");
-        clickOn(createServer);
-
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-        clickOn("#serverMenuButton");
-        moveBy(0, 50);
-        write("\n");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Button createLink = lookup("#createLink").query();
-        TextField linkTextField = lookup("#linkTextField").query();
-        clickOn(createLink);
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        String serverLink = linkTextField.getText();
-        String[] splitLink = serverLink.split("/");
-        String serverId = splitLink[splitLink.length - 3];
-        String inviteId = splitLink[splitLink.length - 1];
-        restClient.joinServer(serverId, inviteId, testUserOneName, testUserOnePw, testUserOne_UserKey, response -> {
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        setupWebSocketClient();
-        connectWebSocketClient();
-        WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
-
-        for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                Platform.runLater(((Stage) object)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
 
         ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
 
-        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", channel.getId()).put("message", "Testing notification").toString());
-        Thread.sleep(2000);
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "Ey").put("from", "Copei").put("id", "5e2fbd8770dd077d03df505");
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         Label counter = lookup("#notificationCounter_" + channel.getId()).query();
         Circle background = lookup("#notificationCounterBackground_" + channel.getId()).query();
@@ -377,8 +348,11 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertTrue(background.isVisible());
         Assert.assertTrue(foreground.isVisible());
 
-        testUser1_CLIENT.sendMessage(new JSONObject().put("channel", channel.getId()).put("message", "Testing more notification").toString());
-        Thread.sleep(2000);
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "Du Lappen!").put("from", "Copei").put("id", "5e2fbd8770dd077d03df505");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         Label counterSecondTime = lookup("#notificationCounter_" + channel.getId()).query();
         Circle backgroundSecondTime = lookup("#notificationCounterBackground_" + channel.getId()).query();
@@ -386,17 +360,13 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertEquals("2", counterSecondTime.getText());
         Assert.assertTrue(backgroundSecondTime.isVisible());
         Assert.assertTrue(foregroundSecondTime.isVisible());
-        Thread.sleep(2000);
 
         ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channellist").query();
         doubleClickOn(channelList.lookup("#" + channel.getId()));
 
-        Assert.assertFalse(lookup("#notificationCounter_" + testUserOne_UserKey).queryAll().contains(counterSecondTime));
-        Assert.assertFalse(lookup("#notificationCounterBackground_" + testUserOne_UserKey).queryAll().contains(backgroundSecondTime));
-        Assert.assertFalse(lookup("#notificationCounterForeground_" + testUserOne_UserKey).queryAll().contains(foregroundSecondTime));
+        Assert.assertFalse(lookup("#notificationCounter_" + "c3a981d1-d0a2-47fd-ad60-46c7754d9271").queryAll().contains(counterSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterBackground_" + "c3a981d1-d0a2-47fd-ad60-46c7754d9271").queryAll().contains(backgroundSecondTime));
+        Assert.assertFalse(lookup("#notificationCounterForeground_" + "c3a981d1-d0a2-47fd-ad60-46c7754d9271").queryAll().contains(foregroundSecondTime));
 
-        shutDownWebSocketClient();
-        restClient.logout(testUserOne_UserKey, response -> {
-        });
     }
 }
