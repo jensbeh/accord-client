@@ -1,8 +1,9 @@
 package de.uniks.stp;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.model.Food;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,9 +13,19 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import kong.unirest.Callback;
+import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 import util.ResourceManager;
@@ -24,13 +35,42 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static de.uniks.stp.controller.snake.Constants.FIELD_SIZE;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
+
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SnakeControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
+    private final String testUserMainName = "Hendry Bracken";
+    private final String testUserMainPw = "stp2021pw";
+    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+
+    @Mock
     private RestClient restClient;
-    private static String testUserMainName;
-    private static String testUserMainPw;
+
+    @Mock
+    private HttpResponse<JsonNode> response;
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @InjectMocks
+    StageManager mockApp = new StageManager();
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -41,34 +81,50 @@ public class SnakeControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        this.stage = stage;
-        app = new StageManager();
+        //start application
+        ModelBuilder builder = new ModelBuilder();
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
+        builder.setServerChatWebSocketClient(serverChatWebSocket);
+        app = mockApp;
+        StageManager.setBuilder(builder);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
-        this.restClient = new RestClient();
+        stage.centerOnScreen();
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(SnakeControllerTest.class);
+    }
+
+    public void mockLogin() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("userKey", userKey));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
     public void loginInit() throws InterruptedException {
-        restClient.loginTemp(response -> {
-            JsonNode body = response.getBody();
-            //get name and password from server
-            testUserMainName = body.getObject().getJSONObject("data").getString("name");
-            testUserMainPw = body.getObject().getJSONObject("data").getString("password");
-        });
-        Thread.sleep(2000);
-
+        mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
         passwordField.setText(testUserMainPw);
-
         clickOn("#loginButton");
-
         WaitForAsyncUtils.waitForFxEvents();
-        Thread.sleep(2000);
     }
 
-    //@Test
+    @Test
     public void openStartGameViewTest() throws InterruptedException {
         loginInit();
 
@@ -77,6 +133,8 @@ public class SnakeControllerTest extends ApplicationTest {
         for (int i = 0; i < 10; i++) {
             clickOn(homeButton);
         }
+
+        WaitForAsyncUtils.waitForFxEvents();
 
         // check if title is correct
         boolean found = false;
@@ -94,13 +152,12 @@ public class SnakeControllerTest extends ApplicationTest {
         for (Object object : this.listTargetWindows()) {
             if (((Stage) object).getTitle().equals("Snake")) {
                 Platform.runLater(((Stage) object)::close);
-                Thread.sleep(2000);
                 break;
             }
         }
     }
 
-    //@Test
+    @Test
     public void SnakeGameTest() throws InterruptedException {
         loginInit();
 

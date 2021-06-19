@@ -4,9 +4,9 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.WebSocketClient;
+import de.uniks.stp.net.*;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,18 +22,18 @@ import java.util.List;
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
+    private ServerChannel currentServerChannel;
 
-    private WebSocketClient SERVER_USER;
-    private WebSocketClient USER_CLIENT;
-    private WebSocketClient privateChatWebSocketCLient;
-    private WebSocketClient serverChatWebSocketClient;
+    private ServerSystemWebSocket serverSystemWebSocket;
+    private PrivateSystemWebSocketClient USER_CLIENT;
+    private PrivateChatWebSocket privateChatWebSocketCLient;
+    private ServerChatWebSocket serverChatWebSocketClient;
 
     private RestClient restClient;
-    private Clip clip;
-
+    private boolean playSound;
     private boolean doNotDisturb;
     private boolean showNotifications;
-    private boolean playSound;
+    private Clip clip;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -108,36 +108,36 @@ public class ModelBuilder {
     }
 
 
-    public WebSocketClient getSERVER_USER() {
-        return SERVER_USER;
+    public ServerSystemWebSocket getServerSystemWebSocket() {
+        return serverSystemWebSocket;
     }
 
-    public void setSERVER_USER(WebSocketClient SERVER_USER) {
-        this.SERVER_USER = SERVER_USER;
+    public void setSERVER_USER(ServerSystemWebSocket serverSystemWebSocket) {
+        this.serverSystemWebSocket = serverSystemWebSocket;
     }
 
-    public WebSocketClient getUSER_CLIENT() {
+    public PrivateSystemWebSocketClient getUSER_CLIENT() {
         return USER_CLIENT;
     }
 
-    public void setUSER_CLIENT(WebSocketClient USER_CLIENT) {
+    public void setUSER_CLIENT(PrivateSystemWebSocketClient USER_CLIENT) {
         this.USER_CLIENT = USER_CLIENT;
     }
 
-    public WebSocketClient getPrivateChatWebSocketCLient() {
+    public PrivateChatWebSocket getPrivateChatWebSocketCLient() {
         return privateChatWebSocketCLient;
     }
 
-    public void setPrivateChatWebSocketCLient(WebSocketClient privateChatWebSocketCLient) {
+    public void setPrivateChatWebSocketCLient(PrivateChatWebSocket privateChatWebSocketCLient) {
         this.privateChatWebSocketCLient = privateChatWebSocketCLient;
     }
 
     //Server WebSocket getter/setter
-    public WebSocketClient getServerChatWebSocketClient() {
+    public ServerChatWebSocket getServerChatWebSocketClient() {
         return serverChatWebSocketClient;
     }
 
-    public void setServerChatWebSocketClient(WebSocketClient serverChatWebSocketClient) {
+    public void setServerChatWebSocketClient(ServerChatWebSocket serverChatWebSocketClient) {
         this.serverChatWebSocketClient = serverChatWebSocketClient;
     }
 
