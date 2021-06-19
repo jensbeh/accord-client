@@ -305,6 +305,7 @@ public class StageManager extends Application {
         }
     }
 
+
     public SnakeGameController getSnakeGameController() {
         return snakeGameController;
     }

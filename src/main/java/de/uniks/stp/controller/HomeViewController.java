@@ -132,6 +132,7 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -139,6 +140,7 @@ public class HomeViewController {
      */
     public void refreshServerList() {
         serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer()));
+        scrollPaneServerBox.setVvalue(0);
     }
 
     /**
@@ -224,6 +226,8 @@ public class HomeViewController {
     }
 
     private void joinNewServer() {
+        builder.setServerChatWebSocketClient(null);
+        builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
             showServers(new ServerLoadedCallback() {
@@ -260,6 +264,8 @@ public class HomeViewController {
      * called after the ok button in createServer is clicked
      */
     public void onServerCreated() {
+        builder.setServerChatWebSocketClient(null);
+        builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
             showServers(new ServerLoadedCallback() {
@@ -298,6 +304,8 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
+        builder.setServerChatWebSocketClient(null);
+        builder.setSERVER_USER(null);
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
@@ -407,6 +415,7 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
+        scrollPaneServerBox.setVvalue(0);
 
         // start EasterEgg - Snake
         if (mouseEvent.getClickCount() == 10) {
