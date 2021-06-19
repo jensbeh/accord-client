@@ -83,7 +83,7 @@ public class SettingsControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(LoginScreenController.class);
+        MockitoAnnotations.openMocks(SettingsControllerTest.class);
     }
 
     public void mockLogin() {

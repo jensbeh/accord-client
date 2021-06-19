@@ -146,7 +146,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(LoginScreenController.class);
+        MockitoAnnotations.openMocks(InviteUsersControllerTest.class);
     }
 
     @Override

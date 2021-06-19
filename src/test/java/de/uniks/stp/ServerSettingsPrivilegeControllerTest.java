@@ -142,7 +142,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(ServerSettingsCategoryControllerTest.class);
+        MockitoAnnotations.openMocks(ServerSettingsPrivilegeControllerTest.class);
     }
 
     public void mockGetServers() {
