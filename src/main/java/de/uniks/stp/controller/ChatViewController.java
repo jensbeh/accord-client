@@ -59,6 +59,7 @@ public class ChatViewController {
         messageList.setStyle("-fx-background-color: grey;");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
         ob = FXCollections.observableArrayList();
+        ob.addAll(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat()));
         this.messageList.setItems(ob);
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
@@ -68,8 +69,6 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
-
-        ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat());
     }
 
     /**
@@ -131,16 +130,13 @@ public class ChatViewController {
     public static void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                //if (!oldMessage){
-                    Platform.runLater(() -> ob.add(msg));
-                    ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), msg.getPrivateChat().getName(), msg);
-                //}
+                Platform.runLater(() -> ob.add(msg));
+                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), msg.getPrivateChat().getName(), msg);
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId()))
                 Platform.runLater(() -> ob.add(msg));
         }
-
     }
 
     public void clearMessageField() {

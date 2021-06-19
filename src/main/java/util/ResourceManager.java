@@ -180,7 +180,7 @@ public class ResourceManager {
      * load privateChat from file
      */
     public static ArrayList<Message> loadPrivatChat(String currentUserName, String chatPartnerName, PrivateChat privateChat) throws IOException, JsonException {
-        JsonArray parser = new JsonArray();
+        JsonArray parser;
         ArrayList<Message> messageList = new ArrayList<>();
 
         File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
