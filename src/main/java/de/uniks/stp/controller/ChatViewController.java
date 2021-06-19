@@ -106,6 +106,9 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
+
+        Emoji emo =(Emoji) EmojiParser.getInstance().search(":wink:").get(0);
+        System.out.println(emo.getHex());
         emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
 
@@ -187,6 +190,7 @@ public class ChatViewController {
      */
     private ImageView getEmojiImage(String hexStr) {
         ImageView imageView = new ImageView();
+        imageView.setId(hexStr);
         imageView.setFitWidth(32);
         imageView.setFitHeight(32);
         Image image = new Image(Objects.requireNonNull(StageManager.class.getResource("twemoji/" + hexStr + ".png")).toExternalForm());
@@ -198,7 +202,6 @@ public class ChatViewController {
             String emojiName = urlName.substring(89, urlName.length() - 4);
             for (Emoji emoji : EmojiParser.getInstance().search("")) {
                 if (emoji.getHex().equals(emojiName)) {
-                    txtSearch.setText(emoji.getShortname());
                     messageTextField.setText(messageTextField.getText() + emoji.getShortname());
                 }
             }
