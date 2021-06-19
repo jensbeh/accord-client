@@ -242,7 +242,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
         Assert.assertEquals("Name already taken", errorLabel.getText());
     }
 
-    @Test
+    //@Test
     public void emptyFieldTest() {
         //usernameField and passwordField are both empty
         Label errorLabel = lookup("#errorLabel").query();
