@@ -10,111 +10,30 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="emojiVbox" prefHeight="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <HBox spacing="5.0">
             <children>
-                <TextField fx:id="txtSearch" focusTraversable="false" promptText="Search emoji" HBox.hgrow="ALWAYS" />
-                <ComboBox fx:id="boxTone" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" />
+                <TextField id="emojiSearchTextField" fx:id="txtSearch" focusTraversable="false" promptText="Search emoji" HBox.hgrow="ALWAYS" />
+                <ComboBox id="emojiCombobox" fx:id="boxTone" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" />
             </children>
         </HBox>
-        <AnchorPane VBox.vgrow="ALWAYS">
+        <AnchorPane id="emojiAnchorpane" VBox.vgrow="ALWAYS">
             <children>
-                <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <TabPane id="emojiTabpane" fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                        <Tab text="Frequently Used">
+                        <Tab id="frequentlyTab" text="Frequently Used">
                             <content>
-                                <ScrollPane>
+                                <ScrollPane id="scroll">
                                     <content>
                                         <FlowPane />
                                     </content>
                                 </ScrollPane>
                             </content>
                         </Tab>
-                        <Tab text="People">
+                        <Tab id="emojiTab" text="Emojis">
                             <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Nature">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Food">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Activity">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Travel">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Objects">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Symbols">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Flags">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Regional">
-                            <content>
-                                <ScrollPane>
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Extras">
-                            <content>
-                                <ScrollPane>
+                                <ScrollPane id="scrollPaneList">
                                     <content>
                                         <FlowPane />
                                     </content>
@@ -123,9 +42,9 @@
                         </Tab>
                     </tabs>
                 </TabPane>
-                <ScrollPane fx:id="searchScrollPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <ScrollPane id="emojiScrollpane" fx:id="searchScrollPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <content>
-                        <FlowPane fx:id="searchFlowPane" />
+                        <FlowPane id="emojiFlowpane" fx:id="searchFlowPane" />
                     </content>
                 </ScrollPane>
             </children>

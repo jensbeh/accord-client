@@ -92,6 +92,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
                 message.setId("messageLabel");
+                message.setPrefWidth(item.getMessage().length());
                 message.setMaxWidth(320);
 
                 //new Line after 50 Characters
