@@ -35,10 +35,10 @@ import javax.json.JsonObject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServerMessageTest extends ApplicationTest {
@@ -121,6 +121,7 @@ public class ServerMessageTest extends ApplicationTest {
 
     @InjectMocks
     StageManager mockApp = new StageManager();
+    private ModelBuilder builder;
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -132,7 +133,7 @@ public class ServerMessageTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         //start application
-        ModelBuilder builder = new ModelBuilder();
+        builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
@@ -310,6 +311,10 @@ public class ServerMessageTest extends ApplicationTest {
 
     @Test
     public void testSendAllMessage() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        serverChatWebSocket.setBuilder(builder);
         loginInit(true);
 
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
@@ -325,16 +330,11 @@ public class ServerMessageTest extends ApplicationTest {
         TextField messageField = lookup("#messageTextField").query();
         messageField.setText("Okay!");
         WaitForAsyncUtils.waitForFxEvents();
-        /*TODO WebSocket send message*/
         clickOn("#sendButton");
-        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
-        String time = dtf2.format(LocalDateTime.now());
 
-
-        JSONObject message = new JSONObject().put("channel", "private").put("timestamp", 942351123).put("message", "Moin Udo").put("from", "Peter").put("to", "Gustav");
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "Okay!").put("from", testUserMainName).put("id",testServerId);
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
-        //.handleMessage(jsonObject);
-
+        serverChatWebSocket.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -342,14 +342,18 @@ public class ServerMessageTest extends ApplicationTest {
         Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
         Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
         Assert.assertEquals(" Okay! ", messageLabel.getText());
-        Assert.assertEquals(time + " " + testUserOneName, userNameLabel.getText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
-
-        /*TODO WebSocket send message?*/
         messageField.setText("Okay");
         write("\n");
+
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", "Okay").put("from", testUserMainName).put("id",testServerId);
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
         boolean msgArrived = false;
         for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
             if (privateChatMessageList.getItems().get(i).getMessage().equals("Okay")) {
