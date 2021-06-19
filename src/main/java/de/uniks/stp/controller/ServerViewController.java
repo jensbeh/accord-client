@@ -7,7 +7,6 @@ import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.ServerChatWebSocket;
 import de.uniks.stp.net.ServerSystemWebSocket;
-import de.uniks.stp.net.WebSocketClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -45,7 +44,7 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
-    private WebSocketClient systemWebSocketClient;
+    private ServerSystemWebSocket systemWebSocketClient;
 
     private VBox chatBox;
     private ChatViewController messageViewController;
