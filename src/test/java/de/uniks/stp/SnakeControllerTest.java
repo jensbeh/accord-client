@@ -171,6 +171,7 @@ public class SnakeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn("#button_start");
+        WaitForAsyncUtils.waitForFxEvents();
 
         Label scoreLabel = lookup("#label_score").query();
         Label highScoreLabel = lookup("#label_highscore").query();
