@@ -34,7 +34,7 @@ import javax.json.JsonObject;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerMessageTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;

@@ -74,7 +74,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-    
+
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -225,6 +225,8 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
+
 
         TextField serverNameInput = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
