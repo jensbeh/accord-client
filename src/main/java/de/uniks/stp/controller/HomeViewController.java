@@ -219,14 +219,15 @@ public class HomeViewController {
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateJoinView.fxml"), StageManager.getLangBundle());
             Scene scene = new Scene(root);
-            CreateServerController createServerController = new CreateServerController(root, builder);
-            createServerController.init();
             stage = new Stage();
+            CreateServerController createServerController = new CreateServerController(root, builder,stage);
+            createServerController.init();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
-            setStageTitle("window_title_create_new_server");
+            stage.setTitle("Create or Join a new Server");
+            //setStageTitle("Create or Join a new Server"); //TODO
             stage.setScene(scene);
             stage.show();
             updateServerListColor();
