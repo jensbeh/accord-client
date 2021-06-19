@@ -1,6 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
@@ -50,10 +51,8 @@ public class StageManager extends Application {
         if (restClient == null) {
             restClient = new RestClient();
         }
-
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
         SettingsController.setup();
-
         // start application
         stage = primaryStage;
         showLoginScreen();
@@ -66,7 +65,6 @@ public class StageManager extends Application {
 
     public static void showLoginScreen() {
         cleanup();
-
         //show login screen
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());

@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.model.Message;
@@ -12,6 +13,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -22,6 +26,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -137,7 +142,7 @@ public class ServerMessageTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
+        MockitoAnnotations.openMocks(ServerMessageTest.class);
     }
 
     public void mockLogin() {
@@ -314,8 +319,11 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
-        Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
-        Assert.assertEquals(" Okay! ", messageLabel.getText());
+        //Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
+        //Assert.assertEquals(" Okay! ", messageLabel.getText());
+        Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
+
+        //Assert.assertEquals(" Okay! ", messageLabel.getAccessibleText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
@@ -335,5 +343,17 @@ public class ServerMessageTest extends ApplicationTest {
             }
         }
         Assert.assertTrue(msgArrived);
+
+        Thread.sleep(2000);
+
+        //Emoji List test
+        Platform.runLater(()->clickOn("#emojiButton"));
+        TextField emojiSearchTextField = lookup("#emojiSearchTextField").query() ;
+        Platform.runLater(()->emojiSearchTextField.setText(":wink:"));
+        Thread.sleep(2000);
+        moveBy(-290, -150);
+        clickOn();
+        Thread.sleep(2000);
+        //Assert.assertEquals(":wink:", messageField.getText());
     }
 }

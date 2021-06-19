@@ -112,7 +112,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(LoginScreenController.class);
+        MockitoAnnotations.openMocks(CreateServerControllerTest.class);
     }
 
     @Override
