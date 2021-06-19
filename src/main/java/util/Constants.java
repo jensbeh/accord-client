@@ -33,6 +33,7 @@ public class Constants {
     public static String CONFIG_PATH = "/config";
     public static String SAVES_PATH = "/saves";
     public static String SNAKE_PATH = "/snake";
+    public static String PRIVATE_CHAT_PATH = "/private";
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
 }
