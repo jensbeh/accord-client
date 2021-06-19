@@ -1,4 +1,5 @@
 package de.uniks.stp.controller;
+import javafx.collections.ObservableList;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
@@ -10,11 +11,13 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -22,15 +25,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
+import util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,9 +54,10 @@ public class ChatViewController {
     private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
-    private ListView<Message> messageList;
-    private static ObservableList<Message> ob;
+    private static ListView<Message> messageList;
     private HBox messageBox;
+    private static Boolean oldMessage;
+    private static ArrayList<Message> messages;
     private ImageView imageView;
     private Button emojiButton;
     private VBox container;
@@ -71,7 +80,7 @@ public class ChatViewController {
         this.currentChannel = currentChannel;
     }
 
-    public void init() {
+    public void init() throws JsonException, IOException {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -100,9 +109,10 @@ public class ChatViewController {
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setStyle("-fx-background-color: grey;");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
-        ob = FXCollections.observableArrayList();
-        this.messageList.setItems(ob);
+        messages = new ArrayList<>();
+
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+        messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
@@ -211,6 +221,29 @@ public class ChatViewController {
     }
 
     /**
+     * build menu with chat options
+     */
+    private void chatClicked(MouseEvent mouseEvent) {
+        final ContextMenu contextMenu = new ContextMenu();
+        contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
+        final MenuItem item1 = new MenuItem("copy");
+        item1.setStyle("-fx-text-fill: #FFFFFF");
+        contextMenu.getItems().addAll(item1);
+        messageList.setContextMenu(contextMenu);
+        contextMenu.setOnAction(this::copy);
+    }
+
+    /**
+     * copied the selected text
+     */
+    private void copy(ActionEvent actionEvent) {
+        final ClipboardContent clipboardContent = new ClipboardContent();
+        String text = messageList.getSelectionModel().getSelectedItem().getMessage();
+        clipboardContent.putString(text);
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
+    }
+
+    /**
      * get Text from TextField and build message
      */
     private void sendButtonClicked(ActionEvent actionEvent) {
@@ -222,8 +255,9 @@ public class ChatViewController {
                 if (!HomeViewController.inServerChat) {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null)
+                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null) {
                             builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -246,12 +280,19 @@ public class ChatViewController {
     public static void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                Platform.runLater(() -> ob.add(msg));
+                messages.add(msg);
+                refreshMessageListView();
             }
         } else {
-            if (currentChannel.getId().equals(msg.getServerChannel().getId()))
-                Platform.runLater(() -> ob.add(msg));
+            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+                messages.add(msg);
+                refreshMessageListView();
+            }
         }
+    }
+
+    private static void refreshMessageListView() {
+        Platform.runLater(() -> messageList.setItems(FXCollections.observableArrayList(messages)));
     }
 
     public void clearMessageField() {

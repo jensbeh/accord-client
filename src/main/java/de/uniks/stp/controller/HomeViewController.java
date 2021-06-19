@@ -64,6 +64,8 @@ public class HomeViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        //loading Settings
+        builder.loadSettings();
         // Load all view references
         root = (HBox) view.lookup("#root");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
@@ -217,14 +219,15 @@ public class HomeViewController {
     private void onshowCreateServer(MouseEvent mouseEvent) {
 
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateServerView.fxml"), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateJoinView.fxml"), StageManager.getLangBundle());
             Scene scene = new Scene(root);
-            CreateServerController createServerController = new CreateServerController(root, builder);
-            createServerController.init();
             stage = new Stage();
+            CreateServerController createServerController = new CreateServerController(root, builder,stage);
+            createServerController.init();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
-            setStageTitle("window_title_create_new_server");
+            stage.setTitle("Create or Join a new Server");
+            //setStageTitle("Create or Join a new Server"); //TODO
             stage.setScene(scene);
             stage.show();
             updateServerListColor();
@@ -442,7 +445,9 @@ public class HomeViewController {
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
-        if (mouseEvent.getClickCount() == 15) {
+
+        // start EasterEgg - Snake
+        if (mouseEvent.getClickCount() == 10) {
             StageManager.showStartSnakeScreen();
         }
     }

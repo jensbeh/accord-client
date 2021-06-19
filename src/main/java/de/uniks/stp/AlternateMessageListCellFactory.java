@@ -14,8 +14,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-
 import java.time.LocalDateTime;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
@@ -63,6 +65,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 EmojiTextFlow message;
 
                 //right alignment if User is currentUser else left
+                Date date = new Date(item.getTimestamp());
+                DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);

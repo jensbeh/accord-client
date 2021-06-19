@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.AlternatePrivateChatListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
@@ -22,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import util.JsonUtil;
+import util.ResourceManager;
 import util.SortUser;
 
 import javax.json.JsonObject;
@@ -31,6 +33,7 @@ import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -104,29 +107,36 @@ public class PrivateViewController {
                         String channelName;
                         Boolean newChat = true;
                         // currentUser send
+                        long timestamp = new Date().getTime();
                         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
                             channelName = jsonObject.getString("to");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                             messageViewController.clearMessageField();
                         } else { // currentUser received
                             channelName = jsonObject.getString("from");
                             message = new Message().setMessage(jsonObject.getString("message")).
                                     setFrom(jsonObject.getString("from")).
-                                    setTimestamp(jsonObject.getInt("timestamp"));
+                                    setTimestamp(timestamp);
                         }
                         for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                             if (channel.getName().equals(channelName)) {
                                 channel.withMessage(message);
-                                if (selectedChat == null || channel != selectedChat) {
-                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                if (!builder.isDoNotDisturb() && (selectedChat == null || channel != selectedChat)) {
+                                    if (builder.isPlaySound()) {
+                                        builder.playSound();
+                                    }
+                                    if (builder.isShowNotifications()) {
+                                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                    }
                                 }
                                 privateChatList.refresh();
                                 newChat = false;
                                 break;
                             }
                         }
+
                         if (newChat) {
                             String userId = "";
                             for (User user : onlineUsersList.getItems()) {
@@ -134,9 +144,31 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message).setUnreadMessagesCounter(1);
-                            builder.getPersonalUser().withPrivateChat(channel);
-                            Platform.runLater(() -> privateChatList.getItems().add(channel));
+                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName);
+                            try {
+                                // load messages for new channel
+                                channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
+                                channel.withMessage(message);
+                                if (!builder.isDoNotDisturb()) {
+                                    if (builder.isPlaySound()) {
+                                        builder.playSound();
+                                    }
+                                    if (builder.isShowNotifications()) {
+                                        channel.setUnreadMessagesCounter(1);
+                                    }
+                                }
+                                builder.getPersonalUser().withPrivateChat(channel);
+                                Platform.runLater(() -> privateChatList.getItems().add(channel));
+                            } catch (IOException | JsonException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        // save message
+                        if (builder.getPersonalUser().getName().equals(message.getFrom())) {
+                            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), message);
+                        } else {
+                            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
                         }
                         if (messageViewController != null) {
                             ChatViewController.printMessage(message);
@@ -303,7 +335,7 @@ public class PrivateViewController {
                     ChatViewController.printMessage(msg);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
     }
@@ -334,11 +366,18 @@ public class PrivateViewController {
             if (!chatExisting) {
                 selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
                 builder.getPersonalUser().withPrivateChat(selectedChat);
+                try {
+                    // load messages for new channel
+                    selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
+                } catch (IOException | JsonException e) {
+                    e.printStackTrace();
+                }
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
                         getPrivateChat()));
             }
-            if (!selectedChat.equals(currentChannel))
+            if (!selectedChat.equals(currentChannel)) {
                 MessageViews();
+            }
         }
     }
 
