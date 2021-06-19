@@ -35,8 +35,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PrivateMessageTest extends ApplicationTest {
-    private Stage stage;
-    private StageManager app;
 
     @Mock
     private RestClient restClient;
@@ -99,13 +97,12 @@ public class PrivateMessageTest extends ApplicationTest {
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
-        this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
 
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     @InjectMocks
