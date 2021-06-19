@@ -251,7 +251,7 @@ public class ServerViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
-            UserProfileController userProfileController = new UserProfileController(root, builder);
+            UserProfileController userProfileController = new UserProfileController(root);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());

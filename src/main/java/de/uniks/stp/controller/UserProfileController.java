@@ -1,6 +1,5 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.builder.ModelBuilder;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -14,12 +13,10 @@ public class UserProfileController {
     public Label userName;
     private Circle onlineStatus;
     private Parent view;
-    private ModelBuilder builder;
 
 
-    public UserProfileController(Parent view, ModelBuilder modelBuilder) {
+    public UserProfileController(Parent view) {
         this.view = view;
-        this.builder = modelBuilder;
     }
 
     public void init() {
@@ -39,16 +36,5 @@ public class UserProfileController {
             Color color = Color.web("#13d86b");
             onlineStatus.setFill(color);
         });
-    }
-
-    public void setOffline() {
-        Platform.runLater(() -> {
-            Color color = Color.web("#e34646");
-            onlineStatus.setFill(color);
-        });
-    }
-
-    public void setBuilder(ModelBuilder builder) {
-        this.builder = builder;
     }
 }
