@@ -67,10 +67,9 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
-                DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
-                    userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
+                    userName.setText((formatterTime.format(date)) + " " + item.getFrom());
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
                         emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -83,7 +82,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
-                    userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
+                    userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
                         emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -96,11 +95,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
                 message.setId("messageLabel");
-                //if(item.getMessage().length() <= 320){
-                //  message.setMaxWidth(item.getMessage().length() + 10);
-                //}else {
                 message.setMaxWidth(320);
-                //}
                 message.setPrefWidth(item.getMessage().length());
 
 

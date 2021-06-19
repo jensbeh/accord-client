@@ -154,7 +154,6 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
             }
-
             JsonArray parser = new JsonArray();
             File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
             if(f.exists()){
@@ -163,7 +162,6 @@ public class ResourceManager {
             }
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
 
-
             JsonObject obj = new JsonObject();
             obj.put("currentUserName", message.getFrom());
             obj.put("chatPartnerName", chatPartnerName);
@@ -171,7 +169,6 @@ public class ResourceManager {
             obj.put("timestamp", message.getTimestamp());
             parser.add(obj);
 
-            System.out.println("savePrivatChat: " + message);
             Jsoner.serialize(parser, writer);
             writer.close();
         } catch (IOException | JsonException e) {
