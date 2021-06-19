@@ -85,7 +85,6 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        Mockito.reset();
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
