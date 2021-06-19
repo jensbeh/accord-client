@@ -8,7 +8,6 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -22,6 +21,7 @@ import org.json.JSONObject;
 import util.ResourceManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ChatViewController {
@@ -30,10 +30,10 @@ public class ChatViewController {
     private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
-    private ListView<Message> messageList;
-    private static ObservableList<Message> ob;
+    private static ListView<Message> messageList;
     private HBox messageBox;
     private static Boolean oldMessage;
+    private static ArrayList<Message> messages;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -58,9 +58,8 @@ public class ChatViewController {
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setStyle("-fx-background-color: grey;");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
-        ob = FXCollections.observableArrayList();
-        ob.addAll(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), PrivateViewController.getSelectedChat()));
-        this.messageList.setItems(ob);
+        messages = new ArrayList<>();
+
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
 
@@ -130,13 +129,19 @@ public class ChatViewController {
     public static void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                Platform.runLater(() -> ob.add(msg));
-                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), msg.getPrivateChat().getName(), msg);
+                messages.add(msg);
+                refreshMessageListView();
             }
         } else {
-            if (currentChannel.getId().equals(msg.getServerChannel().getId()))
-                Platform.runLater(() -> ob.add(msg));
+            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+                messages.add(msg);
+                refreshMessageListView();
+            }
         }
+    }
+
+    private static void refreshMessageListView() {
+        Platform.runLater(() -> messageList.setItems(FXCollections.observableArrayList(messages)));
     }
 
     public void clearMessageField() {

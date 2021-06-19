@@ -5,6 +5,7 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
@@ -145,7 +146,7 @@ public class ResourceManager {
     /**
      * save privateChat to file
      */
-    public static void savePrivatChat(String currentUserName, String chatPartnerName, String name, Message message) {
+    public static void savePrivatChat(String currentUserName, String chatPartnerName, Message message) {
         try {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
@@ -163,7 +164,6 @@ public class ResourceManager {
             JsonObject obj = new JsonObject();
             obj.put("currentUserName", message.getFrom());
             obj.put("chatPartnerName", chatPartnerName);
-            obj.put("privateChatName", name);
             obj.put("message", message.getMessage());
             obj.put("timestamp", message.getTimestamp());
             parser.add(obj);

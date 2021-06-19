@@ -23,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import util.JsonUtil;
+import util.ResourceManager;
 import util.SortUser;
 
 import javax.json.JsonObject;
@@ -135,6 +136,7 @@ public class PrivateViewController {
                                 break;
                             }
                         }
+
                         if (newChat) {
                             String userId = "";
                             for (User user : onlineUsersList.getItems()) {
@@ -142,17 +144,31 @@ public class PrivateViewController {
                                     userId = user.getId();
                                 }
                             }
-                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-                            if (!builder.isDoNotDisturb()) {
-                                if (builder.isPlaySound()) {
-                                    builder.playSound();
+                            PrivateChat channel = new PrivateChat().setId(userId).setName(channelName);
+                            try {
+                                // load messages for new channel
+                                channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
+                                channel.withMessage(message);
+                                if (!builder.isDoNotDisturb()) {
+                                    if (builder.isPlaySound()) {
+                                        builder.playSound();
+                                    }
+                                    if (builder.isShowNotifications()) {
+                                        channel.setUnreadMessagesCounter(1);
+                                    }
                                 }
-                                if (builder.isShowNotifications()) {
-                                    channel.setUnreadMessagesCounter(1);
-                                }
+                                builder.getPersonalUser().withPrivateChat(channel);
+                                Platform.runLater(() -> privateChatList.getItems().add(channel));
+                            } catch (IOException | JsonException e) {
+                                e.printStackTrace();
                             }
-                            builder.getPersonalUser().withPrivateChat(channel);
-                            Platform.runLater(() -> privateChatList.getItems().add(channel));
+                        }
+
+                        // save message
+                        if (builder.getPersonalUser().getName().equals(message.getFrom())) {
+                            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), message);
+                        } else {
+                            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
                         }
                         if (messageViewController != null) {
                             ChatViewController.printMessage(message);
@@ -350,11 +366,18 @@ public class PrivateViewController {
             if (!chatExisting) {
                 selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
                 builder.getPersonalUser().withPrivateChat(selectedChat);
+                try {
+                    // load messages for new channel
+                    selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
+                } catch (IOException | JsonException e) {
+                    e.printStackTrace();
+                }
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
                         getPrivateChat()));
             }
-            if (!selectedChat.equals(currentChannel))
+            if (!selectedChat.equals(currentChannel)) {
                 MessageViews();
+            }
         }
     }
 
