@@ -3,10 +3,7 @@ package de.uniks.stp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.PrivateChatWebSocket;
-import de.uniks.stp.net.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.ServerChatWebSocket;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
@@ -139,7 +136,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
     private PrivateChatWebSocket privateChatWebSocket;
 
     @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
     private ServerChatWebSocket serverChatWebSocket;
+
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -158,14 +159,17 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
         StageManager.setBuilder(builder);
         app.setRestClient(restClient);
+
         app.start(stage);
         this.stage.centerOnScreen();
     }

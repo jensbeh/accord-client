@@ -1,11 +1,12 @@
 package de.uniks.stp;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -30,6 +31,7 @@ import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import javax.json.JsonObject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -51,6 +53,20 @@ public class ServerMessageTest extends ApplicationTest {
     private static String testUserOneName;
     private static String testUserOnePw;
     private static String testUserOne_UserKey;
+
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+
+
 
     @Mock
     private RestClient restClient;
@@ -116,9 +132,16 @@ public class ServerMessageTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         //start application
+        ModelBuilder builder = new ModelBuilder();
+        builder.setUSER_CLIENT(privateSystemWebSocketClient);
+        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
+        builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
+        StageManager.setBuilder(builder);
         app.setRestClient(restClient);
+
         app.start(stage);
         this.stage.centerOnScreen();
     }
@@ -135,13 +158,11 @@ public class ServerMessageTest extends ApplicationTest {
                 .put("data", new JSONObject().put("userKey", testUserMainPw));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                mockGetServers();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            mockGetServers();
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
@@ -308,6 +329,13 @@ public class ServerMessageTest extends ApplicationTest {
         clickOn("#sendButton");
         DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
         String time = dtf2.format(LocalDateTime.now());
+
+
+        JSONObject message = new JSONObject().put("channel", "private").put("timestamp", 942351123).put("message", "Moin Udo").put("from", "Peter").put("to", "Gustav");
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        //.handleMessage(jsonObject);
+
+
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
