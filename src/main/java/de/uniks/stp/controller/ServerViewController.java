@@ -191,10 +191,11 @@ public class ServerViewController {
             serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             serverSystemWebSocket.setServerViewController(this);
             serverSystemWebSocket.setBuilder(builder);
+            serverSystemWebSocket.setName(server.getName());
         }
         serverSystemWebSocket.setServerViewController(this);
         serverSystemWebSocket.setBuilder(builder);
-        //builder.setSERVER_USER(serverSystemWebSocket);
+        serverSystemWebSocket.setName(server.getName());
     }
 
     /**
@@ -208,12 +209,12 @@ public class ServerViewController {
             chatWebSocketClient.setServerViewController(this);
             chatWebSocketClient.setServer(server);
             chatWebSocketClient.setBuilder(builder);
+            chatWebSocketClient.setName(server.getName());
         }
         chatWebSocketClient.setServerViewController(this);
         chatWebSocketClient.setBuilder(builder);
         chatWebSocketClient.setServer(server);
-        //builder.setServerChatWebSocketClient(chatWebSocketClient);
-
+        chatWebSocketClient.setName(server.getName());
     }
 
     /**
@@ -324,7 +325,6 @@ public class ServerViewController {
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
                 userBox.setSpacing(0);
-                //onlineUsersList.setPrefHeight(0);
             } else {
                 userBox.setSpacing(8);
                 onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
@@ -432,6 +432,7 @@ public class ServerViewController {
      */
     public interface MessagesLoadedCallback {
         void onSuccess(String status);
+
     }
 
     private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
@@ -455,9 +456,9 @@ public class ServerViewController {
 
     public void stop() {
         try {
-            if (this.systemWebSocketClient != null) {
-                if (this.systemWebSocketClient.getSession() != null) {
-                    this.systemWebSocketClient.stop();
+            if (this.serverSystemWebSocket != null) {
+                if (this.serverSystemWebSocket.getSession() != null) {
+                    this.serverSystemWebSocket.stop();
                 }
             }
             if (this.chatWebSocketClient != null) {

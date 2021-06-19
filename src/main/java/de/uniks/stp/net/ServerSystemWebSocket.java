@@ -2,7 +2,6 @@ package de.uniks.stp.net;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.Categories;
@@ -10,12 +9,10 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import util.JsonUtil;
-import util.SortUser;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -23,15 +20,19 @@ import javax.json.JsonStructure;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ServerSystemWebSocket extends Endpoint {
 
     private Session session;
     private Timer noopTimer;
     private ModelBuilder builder;
-    public static final String COM_NOOP = "noop";
     private ServerViewController serverViewController;
+    private String name;
+    public static final String COM_NOOP = "noop";
 
     public void setServerViewController(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
@@ -72,23 +73,23 @@ public class ServerSystemWebSocket extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "SYSTEM" + " #####");
+                System.out.println("##### NOOP MESSAGE FROM " + "SERVER SYSTEM " + name + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }, 0, 1000 * 30);
+        }, 10, 1000 * 30);
     }
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
-        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
@@ -111,7 +112,7 @@ public class ServerSystemWebSocket extends Endpoint {
         // cancel timer
         this.noopTimer.cancel();
         // close session
-        this.session.close();
+        this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL_CLOSURE"));
     }
 
     public Session getSession() {
@@ -176,17 +177,13 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
 
-
-
-
-
     /**
      * Build a serverUser with this instance of server.
      */
     private User buildServerUser(String userName, String userId, boolean online) {
         return builder.buildServerUser(serverViewController.getServer(), userName, userId, online);
     }
-    
+
     /**
      * update server
      */
@@ -423,7 +420,7 @@ public class ServerSystemWebSocket extends Endpoint {
                 }
             }
         }
-        
+
         for (Categories category : serverViewController.getServer().getCategories()) {
             if (category.getId().equals(categoryId)) {
                 for (ServerChannel channel : category.getChannel()) {
@@ -453,4 +450,7 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }

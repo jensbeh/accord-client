@@ -30,6 +30,7 @@ public class ServerChatWebSocket extends Endpoint {
     public static final String COM_NOOP = "noop";
     private ServerViewController serverViewController;
     private Server server;
+    private String name;
 
     public void setServerViewController(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
@@ -46,6 +47,7 @@ public class ServerChatWebSocket extends Endpoint {
     public void setServer(Server server) {
         this.server = server;
     }
+
 
     public ServerChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -73,23 +75,23 @@ public class ServerChatWebSocket extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "SYSTEM" + " #####");
+                System.out.println("##### NOOP MESSAGE FROM " + "SERVER CHAT " + name + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }, 0, 1000 * 30);
+        }, 10, 1000 * 30);
     }
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
-        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
@@ -190,7 +192,7 @@ public class ServerChatWebSocket extends Endpoint {
         // cancel timer
         this.noopTimer.cancel();
         // close session
-        this.session.close();
+        this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL_CLOSURE"));
     }
 
     public Session getSession() {
@@ -198,6 +200,7 @@ public class ServerChatWebSocket extends Endpoint {
     }
 
 
-
-
+    public void setName(String name) {
+        this.name = name;
+    }
 }

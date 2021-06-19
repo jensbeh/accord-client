@@ -25,15 +25,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
-import util.JsonUtil;
 import util.ResourceManager;
 import util.SortUser;
 
 import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonStructure;
-import javax.websocket.CloseReason;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ResourceBundle;
@@ -106,10 +101,9 @@ public class PrivateViewController {
     }
 
 
-
     private void startWebSocketConnection() {
         if (privateSystemWebSocketClient == null) {
-            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH+ SYSTEM_WEBSOCKET_PATH),builder.getPersonalUser().getUserKey());
+            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), builder.getPersonalUser().getUserKey());
             privateSystemWebSocketClient.setBuilder(builder);
             privateSystemWebSocketClient.setPrivateViewController(this);
         }
@@ -265,14 +259,14 @@ public class PrivateViewController {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
         try {
-            if (systemWebSocketClient != null) {
-                if (systemWebSocketClient.getSession() != null) {
-                    systemWebSocketClient.stop();
+            if (privateSystemWebSocketClient != null) {
+                if (privateSystemWebSocketClient.getSession() != null) {
+                    privateSystemWebSocketClient.stop();
                 }
             }
-            if (chatWebSocketClient != null) {
-                if (chatWebSocketClient.getSession() != null) {
-                    chatWebSocketClient.stop();
+            if (privateChatWebSocket != null) {
+                if (privateChatWebSocket.getSession() != null) {
+                    privateChatWebSocket.stop();
                 }
             }
         } catch (IOException e) {

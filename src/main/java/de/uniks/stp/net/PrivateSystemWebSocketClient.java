@@ -63,7 +63,7 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "SYSTEM" + " #####");
+                System.out.println("##### NOOP MESSAGE FROM " + "PRIVATE SYSTEM" + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
@@ -75,11 +75,11 @@ public class PrivateSystemWebSocketClient extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         // cancel timer
         this.noopTimer.cancel();
         // set session null
         this.session = null;
-        super.onClose(session, closeReason);
     }
 
     private void onMessage(String message) {
@@ -102,7 +102,7 @@ public class PrivateSystemWebSocketClient extends Endpoint {
         // cancel timer
         this.noopTimer.cancel();
         // close session
-        this.session.close();
+        this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL_CLOSURE"));
     }
 
     public Session getSession() {

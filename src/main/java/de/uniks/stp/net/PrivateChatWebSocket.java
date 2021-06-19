@@ -9,7 +9,6 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import util.JsonUtil;
@@ -21,13 +20,14 @@ import javax.json.JsonStructure;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import static util.Constants.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PrivateChatWebSocket extends Endpoint {
 
+    private String name;
     private Session session;
     private Timer noopTimer;
     private ModelBuilder builder;
@@ -88,6 +88,7 @@ public class PrivateChatWebSocket extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         // cancel timer
         try {
             this.noopTimer.cancel();
@@ -131,7 +132,7 @@ public class PrivateChatWebSocket extends Endpoint {
         // cancel timer
         this.noopTimer.cancel();
         // close session
-        this.session.close();
+        this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL_CLOSURE"));
     }
 
     public Session getSession() {
