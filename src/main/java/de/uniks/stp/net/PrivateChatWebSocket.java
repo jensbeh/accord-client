@@ -1,5 +1,6 @@
 package de.uniks.stp.net;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
@@ -12,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import util.JsonUtil;
+import util.ResourceManager;
 import util.SortUser;
 
 import javax.json.JsonObject;
@@ -182,16 +184,30 @@ public class PrivateChatWebSocket extends Endpoint {
                     }
                 }
                 PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-                if (!builder.isDoNotDisturb()) {
-                    if (builder.isPlaySound()) {
-                        builder.playSound();
+                try {
+                    // load messages for new channel
+                    channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
+                    channel.withMessage(message);
+                    if (!builder.isDoNotDisturb()) {
+                        if (builder.isPlaySound()) {
+                            builder.playSound();
+                        }
+                        if (builder.isShowNotifications()) {
+                            channel.setUnreadMessagesCounter(1);
+                        }
                     }
-                    if (builder.isShowNotifications()) {
-                        channel.setUnreadMessagesCounter(1);
-                    }
+                    builder.getPersonalUser().withPrivateChat(channel);
+                    Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
+
+                } catch (IOException | JsonException e) {
+                    e.printStackTrace();
                 }
-                builder.getPersonalUser().withPrivateChat(channel);
-                Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
+            }
+            // save message
+            if (builder.getPersonalUser().getName().equals(message.getFrom())) {
+                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), message);
+            } else {
+                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }
             if (privateViewController.getMessageViewController() != null) {
                 ChatViewController.printMessage(message);

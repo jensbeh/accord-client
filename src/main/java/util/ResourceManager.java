@@ -132,6 +132,9 @@ public class ResourceManager {
      */
     public static void saveMuteGameState(boolean isGameMute, String currentUserName) {
         try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
+            }
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH + "/muteSettings_" + currentUserName + ".json"));
             JsonObject obj = new JsonObject();
             obj.put("isGameMute", isGameMute);
