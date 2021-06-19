@@ -394,7 +394,7 @@ public class ServerViewController {
                     ChatViewController.printMessage(msg);
                 }
             }
-        } catch (IOException | JsonException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

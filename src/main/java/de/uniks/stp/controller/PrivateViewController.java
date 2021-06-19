@@ -1,6 +1,6 @@
 package de.uniks.stp.controller;
 
-import com.github.cliftonlabs.json_simple.JsonException;
+
 import de.uniks.stp.AlternatePrivateChatListCellFactory;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
@@ -26,6 +26,7 @@ import util.JsonUtil;
 import util.ResourceManager;
 import util.SortUser;
 
+import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.CloseReason;
@@ -159,7 +160,7 @@ public class PrivateViewController {
                                 }
                                 builder.getPersonalUser().withPrivateChat(channel);
                                 Platform.runLater(() -> privateChatList.getItems().add(channel));
-                            } catch (IOException | JsonException e) {
+                            } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -369,7 +370,7 @@ public class PrivateViewController {
                 try {
                     // load messages for new channel
                     selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
-                } catch (IOException | JsonException e) {
+                } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
                     e.printStackTrace();
                 }
                 this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().

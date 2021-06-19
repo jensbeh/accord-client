@@ -36,6 +36,7 @@ import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
 import util.ResourceManager;
 
+import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
