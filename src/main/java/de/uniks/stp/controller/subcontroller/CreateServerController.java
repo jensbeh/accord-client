@@ -64,19 +64,6 @@ public class CreateServerController {
 
         joinButton.setOnAction(this::joinChosen);
         createButton.setOnAction(this::createChosen);
-        
-        
-        /*
-        serverName = (TextField) view.lookup("#serverName");
-        errorLabel = (Label) view.lookup("#errorLabel");
-        createServer = (Button) view.lookup("#createServer");
-        createServer.setOnAction(this::onCreateServerClicked);
-        linkTextField = (TextField) view.lookup("#inviteLink");
-        joinServer = (Button) view.lookup("#joinServer");
-        joinServer.setOnAction(this::onServerJoinClicked);
-         */
-
-
     }
 
     private void createChosen(ActionEvent actionEvent) {

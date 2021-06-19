@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+//@RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerSettingsControllerTest extends ApplicationTest {
 
     private Stage stage;

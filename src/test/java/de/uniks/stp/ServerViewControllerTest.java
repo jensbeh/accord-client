@@ -25,6 +25,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 import java.io.IOException;
+import java.nio.channels.Channel;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,8 +36,8 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private static String testUserOneName;
-    private static String testUserOnePw;
+    private static final String testUserOneName = "Peter";
+    private static final String testUserOnePw= "1234";
 
 
     @Mock
@@ -90,7 +91,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -256,20 +257,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         privateChatWebSocket.handleMessage(jsonObject);
     }
 
-    public void mockTempLogin() {
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONObject().put("name", "Test User").put("password", "testPassword"));
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor.getValue();
-            callback.completed(response);
-            return null;
-        }).when(restClient).loginTemp(callbackCaptor.capture());
-    }
-
     @Test
     public void showServerTest() throws InterruptedException {
         loginInit(testUserOneName, testUserOnePw);
@@ -326,7 +313,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView channels = lookup("#channellist").queryListView();
+        ListView<Channel> channels = lookup("#channellist").queryListView();
         app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY"));
         Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
     }

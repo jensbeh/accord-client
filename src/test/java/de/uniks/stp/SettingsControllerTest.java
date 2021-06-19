@@ -184,5 +184,9 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn(doNotDisturb);
         Assert.assertTrue(showNotifications.isDisabled());
         Assert.assertTrue(playSound.isDisabled());
+        clickOn(doNotDisturb);
+        if (!showNotifications.isSelected()) {
+            clickOn(showNotifications);
+        }
     }
 }

@@ -3,14 +3,14 @@ package de.uniks.stp.controller;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.ServerChatWebSocket;
+import de.uniks.stp.net.ServerSystemWebSocket;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -18,14 +18,8 @@ import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.JsonUtil;
 import util.SortUser;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonStructure;
-import javax.websocket.CloseReason;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -50,7 +44,7 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
-    private WebSocketClient systemWebSocketClient;
+    private ServerSystemWebSocket systemWebSocketClient;
 
     private VBox chatBox;
     private ChatViewController messageViewController;
@@ -552,7 +546,9 @@ public class ServerViewController {
      */
     public void throwOutUserFromChatView() {
         setCurrentChannel(null);
-        this.messageViewController.stop();
+        if (this.messageViewController != null) {
+            this.messageViewController.stop();
+        }
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }
 
