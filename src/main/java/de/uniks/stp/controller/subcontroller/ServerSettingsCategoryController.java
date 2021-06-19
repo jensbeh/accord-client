@@ -128,7 +128,6 @@ public class ServerSettingsCategoryController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    currentServer.withoutCategories(selectedCategory);
                     Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
                     Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
                 } else {

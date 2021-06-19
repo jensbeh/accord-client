@@ -180,14 +180,12 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
     }
 
     public void mockGetCategories() {
-        JSONArray channels = new JSONArray();
-        channels.put("60b77ba0026b3534ca5a61af");
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61ae")
+                .put("id", "5e2ffbd8770dd077d03df600")
                 .put("name", "default")
                 .put("server", "5e2fbd8770dd077d03df505")
-                .put("channels", channels));
+                .put("channels", new JSONArray().put("60b77ba0026b3534ca5a61af")));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -265,15 +263,14 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
-
-
-        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
     }
 
     @Test
     public void openServerSettingsCategoryTest() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        serverChatWebSocket.setBuilder(builder);
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#serverName_5e2fbd8770dd077d03df505");
@@ -317,7 +314,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategory").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df600"));
+                .put("data", new JSONObject().put("name", "NewCategory").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -327,6 +324,11 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         }).when(restClient).createCategory(anyString(), anyString(), anyString(), callbackCaptor8.capture());
 
         clickOn(createCategoryButton);
+
+        String message = "{\"action\":\"categoryCreated\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\"NewCategory\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
         WaitForAsyncUtils.waitForFxEvents();
 
         Categories newCategory = new Categories();
@@ -354,7 +356,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df600"));
+                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
         jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -365,6 +367,11 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
 
         clickOn(changeCategoryNameButton);
+
+        message = "{\"action\":\"categoryUpdated\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\"NewCategoryName\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
         WaitForAsyncUtils.waitForFxEvents();
 
         for (Categories category : categoriesSelector.getItems()) {
@@ -386,7 +393,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df600"));
+                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
         jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -397,8 +404,13 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
 
         clickOn(deleteCategoryButton);
-        WaitForAsyncUtils.waitForFxEvents();
 
+        message = "{\"action\":\"categoryDeleted\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\""+newCategory.getName()+"\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        categoriesSelector = lookup("#editCategoriesSelector").query();
         Assert.assertFalse(builder.getCurrentServer().getCategories().contains(newCategory));
 
         Assert.assertFalse(categoriesSelector.getItems().contains(newCategory));
