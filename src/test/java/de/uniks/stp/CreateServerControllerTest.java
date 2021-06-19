@@ -1,7 +1,6 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.net.*;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;

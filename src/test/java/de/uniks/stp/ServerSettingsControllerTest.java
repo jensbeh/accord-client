@@ -353,22 +353,15 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
 
         serverSystemWebSocket.setBuilder(builder);
-        loginInit(true);
+        loginInit(false);
 
-        Circle addServer = lookup("#addServer").query();
-        clickOn(addServer);
-        clickOn("#chooseCreate");
-        TextField serverName = lookup("#serverName").query();
-        serverName.setText("TestServer Team Bit Shift");
-        clickOn("#createServer");
-        Assert.assertEquals("TestServer Team Bit Shift", serverName.getText());
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#server"));
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         System.out.println("ServerList: " + serverList.getItems().toString());
 
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn(serverList.lookup("#serverName_" + testServerId));
         clickOn("#serverMenuButton");
         moveBy(0, 25);
         write("\n");
