@@ -405,7 +405,7 @@ public class ServerSystemWebSocket extends Endpoint {
     /**
      * updates the channel name by change and the privileged with the privileged users from a channel by change
      */
-    public void updateChannel(JsonObject jsonData) {
+    private void updateChannel(JsonObject jsonData) {
         String categoryId = jsonData.getString("category");
         String channelId = jsonData.getString("id");
         String channelName = jsonData.getString("name");
