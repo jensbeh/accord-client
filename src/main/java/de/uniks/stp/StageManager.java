@@ -44,6 +44,10 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        if (builder == null) {
+            builder = new ModelBuilder();
+        }
         if (restClient == null) {
             restClient = new RestClient();
         }
@@ -55,13 +59,16 @@ public class StageManager extends Application {
         primaryStage.show();
     }
 
+    public static void setBuilder(ModelBuilder builder) {
+        StageManager.builder = builder;
+    }
+
     public static void showLoginScreen() {
         cleanup();
         //show login screen
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
             scene = new Scene(root);
-            builder = new ModelBuilder();
             builder.setRestClient(restClient);
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();

@@ -64,19 +64,6 @@ public class CreateServerController {
 
         joinButton.setOnAction(this::joinChosen);
         createButton.setOnAction(this::createChosen);
-        
-        
-        /*
-        serverName = (TextField) view.lookup("#serverName");
-        errorLabel = (Label) view.lookup("#errorLabel");
-        createServer = (Button) view.lookup("#createServer");
-        createServer.setOnAction(this::onCreateServerClicked);
-        linkTextField = (TextField) view.lookup("#inviteLink");
-        joinServer = (Button) view.lookup("#joinServer");
-        joinServer.setOnAction(this::onServerJoinClicked);
-         */
-
-
     }
 
     private void createChosen(ActionEvent actionEvent) {
@@ -130,16 +117,18 @@ public class CreateServerController {
             CurrentUser personalUser = builder.getPersonalUser();
             String name = serverName.getText();
             if (name != null && !name.isEmpty()) {
-                JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
-                String status = response.getObject().getString("status");
-                if (status.equals("success")) {
-                    String serverId = response.getObject().getJSONObject("data").getString("id");
-                    String serverName = response.getObject().getJSONObject("data").getString("name");
-                    builder.setCurrentServer(builder.buildServer(serverName, serverId));
-                    create.run();
-                } else if (status.equals(("failure"))) {
-                    setError("error.create_server_failure");
-                }
+                //JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
+                restClient.postServer(personalUser.getUserKey(), name, response -> {
+                    String status = response.getBody().getObject().getString("status");
+                    if (status.equals("success")) {
+                        String serverId = response.getBody().getObject().getJSONObject("data").getString("id");
+                        String serverName = response.getBody().getObject().getJSONObject("data").getString("name");
+                        builder.setCurrentServer(builder.buildServer(serverName, serverId));
+                        create.run();
+                    } else if (status.equals(("failure"))) {
+                        setError("error.create_server_failure");
+                    }
+                });
             } else {
                 setError("error.server_name_field_empty");
             }

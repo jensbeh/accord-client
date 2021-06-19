@@ -62,7 +62,7 @@ dependencies {
 
     implementation 'com.github.cliftonlabs:json-simple:3.1.0'
 
-    compile 'com.github.harawata:appdirs:appdirs-1.2.1'
+    implementation 'com.github.harawata:appdirs:appdirs-1.2.1'
 
     // https://github.com/vdurmont/emoji-java
     //compile 'com.vdurmont:emoji-java:5.1.1'
@@ -88,6 +88,7 @@ generateScenarioSource {
 test {
     jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
 }
+
 jar {
     manifest {
         attributes "Main-Class": "$mainClassName"
