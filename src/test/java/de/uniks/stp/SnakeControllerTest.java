@@ -166,7 +166,7 @@ public class SnakeControllerTest extends ApplicationTest {
         // clicks 15 times on home
         Circle homeButton = lookup("#homeButton").query();
         for (int i = 0; i < 10; i++) {
-            clickOn(homeButton);
+            clickOn(homeButton); 
         }
         WaitForAsyncUtils.waitForFxEvents();
 
