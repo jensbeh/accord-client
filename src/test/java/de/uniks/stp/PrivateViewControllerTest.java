@@ -1,7 +1,6 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PrivateViewControllerTest extends ApplicationTest {
     private Stage stage;
-    private StageManager app;
 
     @Mock
     private RestClient restClient;
@@ -101,9 +99,9 @@ public class PrivateViewControllerTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
 
         app.start(stage);
         this.stage.centerOnScreen();
@@ -114,7 +112,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(PrivateViewController.class);
+        MockitoAnnotations.openMocks(PrivateViewControllerTest.class);
     }
 
 
@@ -274,7 +272,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         }, "no Connection"));
 
         WaitForAsyncUtils.waitForFxEvents();
-        String result = "";
+        String result;
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
@@ -292,7 +290,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         String message = "{\"action\":\"info\",\"data\":{\"message\":\"User Seppel is not Online\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
-        String result = "";
+        String result;
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
@@ -311,7 +309,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
         String message = "{\"action\":\"info\",\"data\":{\"message\":\"This is not your username.\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
-        String result = "";
+        String result;
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();

@@ -3,10 +3,7 @@ package de.uniks.stp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.PrivateChatWebSocket;
-import de.uniks.stp.net.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.ServerChatWebSocket;
+import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
@@ -22,7 +19,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
@@ -36,17 +32,11 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class InviteUsersControllerTest extends ApplicationTest {
-
-    private Stage stage;
-    private StageManager app;
     private final String testServerName = "TestServer Team Bit Shift";
     private final String testUserName = "Hendry Bracken";
-    private final String testUserPw = "stp2021pw";
-    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
-    private final String testServerOwner = "5e2iof875dd077d03df505";
     private final String testServerId = "5e2fbd8770dd077d03df505";
 
-    private String inviteLinkIds = "5e2fbd8770dd077d445qs900";
+    private final String inviteLinkIds = "5e2fbd8770dd077d445qs900";
     private int inviteLinksCount = 0;
     private int inviteLinksCountDelete = 0;
 
@@ -138,7 +128,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
     private PrivateChatWebSocket privateChatWebSocket;
 
     @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
     private ServerChatWebSocket serverChatWebSocket;
+
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -157,31 +151,32 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
-        this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     public void mockLogin() {
+        String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONObject().put("userKey", userKey));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
@@ -192,12 +187,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor2.getValue();
-                callback.completed(response2);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            return null;
         }).when(restClient).postServer(anyString(), anyString(), callbackCaptor2.capture());
     }
 
@@ -208,18 +201,17 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor3.getValue();
-                callback.completed(response3);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            return null;
         }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
     }
 
     public void mockGetServerUsers() {
-        String categories[] = new String[1];
+        String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
+        String testServerOwner = "5e2iof875dd077d03df505";
         JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -227,12 +219,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner).put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor4.getValue();
-                callback.completed(response4);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor4.getValue();
+            callback.completed(response4);
+            return null;
         }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor4.capture());
     }
 
@@ -246,12 +236,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                         .put("server", "5e2fbd8770dd077d03df505").put("channels", channels)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor5.getValue();
-                callback.completed(response5);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor5.getValue();
+            callback.completed(response5);
+            return null;
         }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor5.capture());
     }
 
@@ -265,13 +253,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
                         .put("privileged", false).put("category", "5e2fbd8770dd077d03df600").put("members", members).put("audioMembers", audioMembers)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor6.getValue();
-                callback.completed(response6);
-                mockGetCategoryChannels();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor6.getValue();
+            callback.completed(response6);
+            mockGetCategoryChannels();
+            return null;
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor6.capture());
     }
 
@@ -282,12 +268,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONArray());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor7.getValue();
-                callback.completed(response7);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor7.getValue();
+            callback.completed(response7);
+            return null;
         }).when(restClient).getServers(anyString(), callbackCaptor7.capture());
     }
 
@@ -298,12 +282,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONArray());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor8.getValue();
-                callback.completed(response8);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor8.getValue();
+            callback.completed(response8);
+            return null;
         }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
     }
 
@@ -314,12 +296,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONObject());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor9.getValue();
-                callback.completed(response9);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
         }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
@@ -333,13 +313,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
                         .put("server", testServerId));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor10.getValue();
-                callback.completed(response10);
-                mockCreateTempLink();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor10.getValue();
+            callback.completed(response10);
+            mockCreateTempLink();
+            return null;
         }).when(restClient).createTempLink(anyString(), anyInt(), anyString(), anyString(), callbackCaptor10.capture());
     }
 
@@ -366,13 +344,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response11.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor11.getValue();
-                callback.completed(response11);
-                mockGetInvLinks();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor11.getValue();
+            callback.completed(response11);
+            mockGetInvLinks();
+            return null;
         }).when(restClient).getInvLinks(anyString(), anyString(), callbackCaptor11.capture());
     }
 
@@ -386,13 +362,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
                         .put("server", testServerId));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response12.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor12.getValue();
-                callback.completed(response12);
-                mockDeleteInvLink();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor12.getValue();
+            callback.completed(response12);
+            mockDeleteInvLink();
+            return null;
         }).when(restClient).deleteInvLink(anyString(), anyString(), anyString(), callbackCaptor12.capture());
     }
 
@@ -403,12 +377,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
                 .put("data", new JSONObject());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response13.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor13.getValue();
-                callback.completed(response13);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor13.getValue();
+            callback.completed(response13);
+            return null;
         }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor13.capture());
     }
 
@@ -431,6 +403,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         TextField usernameTextField = lookup("#usernameTextfield").query();
         usernameTextField.setText(testUserName);
         PasswordField passwordField = lookup("#passwordTextField").query();
+        String testUserPw = "stp2021pw";
         passwordField.setText(testUserPw);
         clickOn("#loginButton");
 
@@ -450,7 +423,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         write("\n");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(2, this.listTargetWindows().size());
-        String serverSettingsTitle = "";
+        String serverSettingsTitle;
         for (Object object : this.listTargetWindows()) {
             if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 serverSettingsTitle = ((Stage) object).getTitle();
@@ -485,9 +458,24 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals("User Limit", label.getText());
         TextField userLimit = lookup("#maxUsers").query();
         userLimit.setText("1");
-        int count = 0;
+        int count;
         count = Integer.parseInt(userLimit.getText());
         Assert.assertEquals(count, 1);
+
+
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "00000000").put("link", "https://ac.uniks.de/api/servers/5e2ffbd8770dd077d03df505/invites/5e2ffbd8770dd077d445qs900").put("type", "count").put("max", 1).put("current", 0).put("server", serverListView.getItems().get(0).getId()));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor6.getValue();
+            callback.completed(response6);
+            return null;
+        }).when(restClient).createTempLink(anyString(), anyInt(), anyString(), anyString(), callbackCaptor6.capture());
+
+
         clickOn("#createLink");
         clickOn("#createLink");
         clickOn("#createLink");
@@ -496,9 +484,9 @@ public class InviteUsersControllerTest extends ApplicationTest {
         TextField link = lookup("#linkTextField").query();
         ComboBox<List<String>> links = lookup("#LinkComboBox").query();
         String certainLink = "";
-        for (String s : links.getItems().get(2)) {
-            if (s.equals(link.getText())) {
-                certainLink = s;
+        for (List<String> s : links.getItems()) {
+            if ((s.get(0)).equals(link.getText())) {
+                certainLink = s.get(0);
                 break;
             }
         }
@@ -531,6 +519,8 @@ public class InviteUsersControllerTest extends ApplicationTest {
         moveBy(0, 50);
         write("\n");
         WaitForAsyncUtils.waitForFxEvents();
+
+
         clickOn("#userLimitSelected");
         Assert.assertNotNull(links.getItems());
 
@@ -630,7 +620,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         TextField linkField = lookup("#linkTextField").query();
         String inviteLink = linkField.getText();
 
-        String serverSettingsTitle = "";
+        String serverSettingsTitle;
         for (Object object : this.listTargetWindows()) {
             if (!((Stage) object).getTitle().equals("Accord - Main")) {
                 serverSettingsTitle = ((Stage) object).getTitle();
@@ -642,6 +632,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         }
 
         clickOn(addServer);
+        clickOn("#chooseJoin");
         TextField insertInviteLink = lookup("#inviteLink").query();
         insertInviteLink.setText(inviteLink);
         mockJoinServerError("You already joined the server");
