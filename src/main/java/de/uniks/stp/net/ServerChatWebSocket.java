@@ -135,14 +135,14 @@ public class ServerChatWebSocket extends Endpoint {
                     for (ServerChannel channel : categories.getChannel()) {
                         if (channel.getId().equals(channelId)) {
                             channel.withMessage(message);
-//                            if (!builder.isDoNotDisturb() && (serverViewController.getCurrentChannel() == null || channel != serverViewController.getCurrentChannel())) {
-//                                if (builder.isPlaySound()) {
-//                                    builder.playSound();
-//                                }
-//                                if (builder.isShowNotifications()) {
-//                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-//                                }
-//                            }
+                            if (!builder.isDoNotDisturb() && (serverViewController.getCurrentChannel() == null || channel != serverViewController.getCurrentChannel())) {
+                                if (builder.isPlaySound()) {
+                                    builder.playSound();
+                                }
+                                if (builder.isShowNotifications()) {
+                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                                }
+                            }
                             if (builder.getCurrentServer() == serverViewController.getServer()) {
                                 serverViewController.getCategorySubControllerList().get(categories).refreshChannelList();
                             }

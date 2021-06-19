@@ -116,7 +116,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() throws IOException {
-        MockitoAnnotations.openMocks(PrivateMessageTest.class);
+        MockitoAnnotations.openMocks(ServerViewControllerTest.class);
     }
 
     public void mockGetServers() {
@@ -338,6 +338,9 @@ public class ServerViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
         serverChatWebSocket.setBuilder(builder);
         loginInit(testUserOneName, testUserOnePw);
+        builder.setPlaySound(false);
+        builder.setShowNotifications(true);
+        builder.setDoNotDisturb(false);
 
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
