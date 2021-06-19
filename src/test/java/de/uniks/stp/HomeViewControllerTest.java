@@ -225,6 +225,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseCreate");
         WaitForAsyncUtils.waitForFxEvents();
 
 
