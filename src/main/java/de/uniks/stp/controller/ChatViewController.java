@@ -15,7 +15,10 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -107,8 +110,6 @@ public class ChatViewController {
             }
         });
 
-        Emoji emo =(Emoji) EmojiParser.getInstance().search(":wink:").get(0);
-        System.out.println(emo.getHex());
         emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
 
@@ -135,7 +136,7 @@ public class ChatViewController {
     /**
      * sets emojis on FlowPane
      */
-    private void showEmojis(){
+    private void showEmojis() {
         Path path = null;
         try {
             path = Paths.get((Objects.requireNonNull(StageManager.class.getResource("twemoji"))).toURI());
@@ -146,7 +147,7 @@ public class ChatViewController {
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
         searchList = new ArrayList<>();
-        for(Emoji emoji : EmojiParser.getInstance().search(txtSearch.getText())){
+        for (Emoji emoji : EmojiParser.getInstance().search(txtSearch.getText())) {
             searchList.add(emoji.getHex());
         }
         for (String hex : listFilesForFolder(folder, searchList)) {
@@ -159,12 +160,12 @@ public class ChatViewController {
      */
     private ArrayList<String> listFilesForFolder(final File folder, List<String> list) {
         ArrayList<String> pngNames = new ArrayList<>();
-        for (final File fileEntry : folder.listFiles()) {
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry, list);
             } else {
                 String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-                if(list.contains(name)){
+                if (list.contains(name)) {
                     pngNames.add(name);
                 }
             }
