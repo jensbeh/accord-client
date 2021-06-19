@@ -73,7 +73,7 @@ generateScenarioSource {
 test {
     jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
 }
-/*
+
 jar {
     manifest {
         attributes "Main-Class": "$mainClassName"
@@ -82,7 +82,6 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
- */
 
 /* DO NOT CHANGE THIS PART */
 jacocoTestReport {

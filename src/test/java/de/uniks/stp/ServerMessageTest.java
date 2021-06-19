@@ -137,7 +137,7 @@ public class ServerMessageTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
+        MockitoAnnotations.openMocks(ServerMessageTest.class);
     }
 
     public void mockLogin() {
