@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,25 +14,15 @@
         <HBox spacing="5.0">
             <children>
                 <TextField id="emojiSearchTextField" fx:id="txtSearch" focusTraversable="false" promptText="Search emoji" HBox.hgrow="ALWAYS" />
-                <ComboBox id="emojiCombobox" fx:id="boxTone" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="51.0" />
             </children>
         </HBox>
         <AnchorPane id="emojiAnchorpane" VBox.vgrow="ALWAYS">
             <children>
                 <TabPane id="emojiTabpane" fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                        <Tab id="frequentlyTab" text="Frequently Used">
+                        <Tab id="frequentlyTab" text="Emojis">
                             <content>
                                 <ScrollPane id="scroll">
-                                    <content>
-                                        <FlowPane />
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab id="emojiTab" text="Emojis">
-                            <content>
-                                <ScrollPane id="scrollPaneList">
                                     <content>
                                         <FlowPane />
                                     </content>

@@ -15,7 +15,12 @@
          <children>
             <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: transparent;">
                <children>
-                  <fx:include source="emojiList.fxml" />
+                  <HBox prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: transparent;" />
+                        <fx:include source="emojiList.fxml" />
+                     </children>
+                  </HBox>
                </children></VBox>
             <VBox id="container" prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;">
                <children>
