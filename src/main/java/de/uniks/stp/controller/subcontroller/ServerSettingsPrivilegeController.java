@@ -120,7 +120,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 } else {
                     privilegeOffButton.setSelected(true);
                 }
-                privilegeOnButton((ActionEvent) event);
+                privilegeOnButton(event);
             }
         });
         // start property change listener

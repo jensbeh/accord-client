@@ -34,8 +34,6 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private final String testServerName = "TestServer Team Bit Shift";
-    private final String testServerId = "5e2fbd8770dd077d03df505";
 
 
     @Mock
@@ -109,7 +107,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -284,6 +282,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             }
         }
 
+        String testServerId = "5e2fbd8770dd077d03df505";
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -337,11 +336,11 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 newCategory = category;
             }
         }
-        Assert.assertTrue(createCategoryNameTextField.getText().equals(""));
-        Assert.assertTrue(newCategory.getName().equals("NewCategory"));
+        Assert.assertEquals("", createCategoryNameTextField.getText());
+        Assert.assertEquals("NewCategory", newCategory.getName());
         for (Categories categories : app.getBuilder().getCurrentServer().getCategories()) {
             if (categories.getId().equals(newCategory.getId())) {
-                Assert.assertTrue(categories.getId().equals(newCategory.getId()));
+                Assert.assertEquals(categories.getId(), newCategory.getId());
             }
         }
 
@@ -380,8 +379,9 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             }
         }
 
-        Assert.assertTrue(categoryNameTextField.getText().equals(""));
-        Assert.assertTrue(newCategory.getName().equals("NewCategoryName"));
+        Assert.assertEquals("", categoryNameTextField.getText());
+        Assert.assertEquals("NewCategoryName", newCategory.getName());
+        assert currentServer != null;
         Assert.assertTrue(currentServer.getCategories().contains(newCategory));
 
         clickOn(categoriesSelector);
