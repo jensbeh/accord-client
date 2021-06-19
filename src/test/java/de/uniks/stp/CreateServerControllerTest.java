@@ -2,10 +2,7 @@ package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.LoginScreenController;
-import de.uniks.stp.net.PrivateChatWebSocket;
-import de.uniks.stp.net.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.ServerChatWebSocket;
+import de.uniks.stp.net.*;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -21,14 +18,10 @@ import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-
-import javax.json.JsonObject;
-import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,14 +29,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class CreateServerControllerTest extends ApplicationTest {
-    private Stage stage;
-    private StageManager app;
     private final String testServerName = "TestServer Team Bit Shift";
-    private final String testUserName = "Hendry Bracken";
-    private final String testUserPw = "stp2021pw";
-    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
-    private final String testServerOwner = "5e2iof875dd077d03df505";
-    private final String testServerId = "5e2fbd8770dd077d03df505";
 
     @Mock
     private RestClient restClient;
@@ -106,6 +92,9 @@ public class CreateServerControllerTest extends ApplicationTest {
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
 
     @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+
+    @Mock
     private PrivateChatWebSocket privateChatWebSocket;
 
     @Mock
@@ -128,33 +117,32 @@ public class CreateServerControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
-        Mockito.reset();
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
-        this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
+
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     public void mockLogin() {
+        String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONObject().put("userKey", userKey));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor.getValue();
-                callback.completed(response);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
         }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
     }
 
@@ -165,12 +153,10 @@ public class CreateServerControllerTest extends ApplicationTest {
                 .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor2.getValue();
-                callback.completed(response2);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            return null;
         }).when(restClient).postServer(anyString(), anyString(), callbackCaptor2.capture());
     }
 
@@ -181,31 +167,30 @@ public class CreateServerControllerTest extends ApplicationTest {
                 .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor3.getValue();
-                callback.completed(response3);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            return null;
         }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
     }
 
     public void mockGetServerUsers() {
-        String categories[] = new String[1];
+        String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
+        String testServerOwner = "5e2iof875dd077d03df505";
+        String testUserName = "Hendry Bracken";
         JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true));
+        String testServerId = "5e2fbd8770dd077d03df505";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner).put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor4.getValue();
-                callback.completed(response4);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor4.getValue();
+            callback.completed(response4);
+            return null;
         }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor4.capture());
     }
 
@@ -219,12 +204,10 @@ public class CreateServerControllerTest extends ApplicationTest {
                         .put("server", "5e2fbd8770dd077d03df505").put("channels", channels)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor5.getValue();
-                callback.completed(response5);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor5.getValue();
+            callback.completed(response5);
+            return null;
         }).when(restClient).getServerCategories(anyString(), anyString(), callbackCaptor5.capture());
     }
 
@@ -238,13 +221,11 @@ public class CreateServerControllerTest extends ApplicationTest {
                         .put("privileged", false).put("category", "5e2fbd8770dd077d03df600").put("members", members).put("audioMembers", audioMembers)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor6.getValue();
-                callback.completed(response6);
-                mockGetCategoryChannels();
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor6.getValue();
+            callback.completed(response6);
+            mockGetCategoryChannels();
+            return null;
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor6.capture());
     }
 
@@ -255,12 +236,10 @@ public class CreateServerControllerTest extends ApplicationTest {
                 .put("data", new JSONArray());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor7.getValue();
-                callback.completed(response7);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor7.getValue();
+            callback.completed(response7);
+            return null;
         }).when(restClient).getServers(anyString(), callbackCaptor7.capture());
     }
 
@@ -271,12 +250,10 @@ public class CreateServerControllerTest extends ApplicationTest {
                 .put("data", new JSONArray());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor8.getValue();
-                callback.completed(response8);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor8.getValue();
+            callback.completed(response8);
+            return null;
         }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
     }
 
@@ -287,12 +264,10 @@ public class CreateServerControllerTest extends ApplicationTest {
                 .put("data", new JSONObject());
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer(new Answer<Void>() {
-            public Void answer(InvocationOnMock invocation) {
-                Callback<JsonNode> callback = callbackCaptor9.getValue();
-                callback.completed(response9);
-                return null;
-            }
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
         }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
@@ -324,6 +299,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseCreate");
         WaitForAsyncUtils.waitForFxEvents();
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
@@ -341,6 +317,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseCreate");
         WaitForAsyncUtils.waitForFxEvents();
         Label errorLabel = lookup("#errorLabel").query();
         clickOn("#createServer");
@@ -354,6 +331,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseCreate");
         WaitForAsyncUtils.waitForFxEvents();
 
         TextField serverName = lookup("#serverName").query();
@@ -387,6 +365,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
+        clickOn("#chooseJoin");
         TextField invLink = lookup("#inviteLink").query();
         invLink.setText("https://ac.uniks.de/api/servers/5e2fbd8770dd077d03df505/invites/60b7db05026b3534ca5be39b");
         mockGetServers();
