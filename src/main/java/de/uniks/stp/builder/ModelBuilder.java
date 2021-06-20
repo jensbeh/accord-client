@@ -7,16 +7,15 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
+import spark.utils.IOUtils;
 import util.ResourceManager;
 import util.Constants;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -27,10 +26,8 @@ import static util.Constants.*;
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-    private ServerChannel currentServerChannel;
     private static final String ROOT_PATH = "/de/uniks/stp";
-    private String settingsFile = String.valueOf(ModelBuilder.class.getResourceAsStream(ROOT_PATH +"/files/settings.json"));
-    private String soundFile = String.valueOf(ModelBuilder.class.getResourceAsStream(ROOT_PATH +"/sounds/open-ended.wav"));
+    private final InputStream soundFile = ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/open-ended.wav");
 
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
@@ -158,7 +155,7 @@ public class ModelBuilder {
             clip.stop();
         }
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundFile));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(soundFile));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
