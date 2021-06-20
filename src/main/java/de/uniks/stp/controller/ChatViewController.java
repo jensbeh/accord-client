@@ -28,14 +28,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
+import org.junit.Assert;
+import util.ResourceManager;
 
 import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static util.Constants.*;
@@ -77,6 +76,7 @@ public class ChatViewController {
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
+        messageTextField.setText("");
         sendButton.setOnAction(this::sendButtonClicked);
         HBox messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
@@ -124,26 +124,40 @@ public class ChatViewController {
      * sets emojis on FlowPane
      */
     private void showEmojis() {
-        loadEmojis();
+        ArrayList<String> pngNames = new ArrayList<>();
+        FlowPane flow = new FlowPane();
+        scrollPane.setContent(flow);
+        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            Assert.assertNotNull(ResourceManager.getEmojiList());
+            //HashMap<String,String> test = ResourceManager.getEmojiList();
+            List<List<String>> test = ResourceManager.getEmoList();
+
+            System.out.println("size" + test.size());
+            /*if(test.get(name).contains(messageTextField.getText())){
+                pngNames.add(name);
+                flow.getChildren().add((getImageStack(fileEntry)));
+            }*/
+        }
     }
 
     /**
      * search through emoji folder
      */
-    private void loadEmojis() {
+    /*private void loadEmojis() {
         ArrayList<String> pngNames = new ArrayList<>();
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
-
         final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-
 
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
             pngNames.add(name);
             flow.getChildren().add((getImageStack(fileEntry)));
         }
-    }
+    }*/
 
     /**
      * creates StackPane for each image
@@ -176,10 +190,8 @@ public class ChatViewController {
         AtomicReference<String> url = new AtomicReference<>("");
         imageView.setOnMouseClicked(event -> {
             url.set(imageView.getImage().getUrl());
-            String urlName = url.get();
-            String emojiName = urlName.substring(89, urlName.length() - 4);
             for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                if (emoji.getHex().equals(emojiName)) {
+                if (emoji.getHex().equals(imageView.getId())) {
                     messageTextField.setText(messageTextField.getText() + emoji.getShortname());
                 }
             }
@@ -216,7 +228,6 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        //String textMessage = EmojiParser.parseToUnicode(result);
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
