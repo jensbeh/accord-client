@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -68,7 +69,7 @@ public class CreateServerController {
 
     private void createChosen(ActionEvent actionEvent) {
         try {
-            Parent subView = FXMLLoader.load(StageManager.class.getResource("controller/CreateServer.fxml"), StageManager.getLangBundle());
+            Parent subView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateServer.fxml")), StageManager.getLangBundle());
             stop();
             window.getChildren().clear();
             window.getChildren().add(subView);
@@ -84,7 +85,7 @@ public class CreateServerController {
 
     private void joinChosen(ActionEvent actionEvent) {
         try {
-            Parent subView = FXMLLoader.load(StageManager.class.getResource("controller/JoinServer.fxml"), StageManager.getLangBundle());
+            Parent subView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/JoinServer.fxml")), StageManager.getLangBundle());
             stop();
             window.getChildren().clear();
             window.getChildren().add(subView);
@@ -146,7 +147,7 @@ public class CreateServerController {
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (serverName != null)
-            serverName.setText(lang.getString("textfield.server_name"));
+            serverName.setText(lang.getString("textField.server_name"));
 
         if (error != null && !error.equals("")) {
             errorLabel.setText(lang.getString(error));

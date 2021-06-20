@@ -34,6 +34,7 @@ public class ServerSubSettingsPrivilegeController {
         restClient = builder.getRestClient();
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         addUserMenu = (ComboBox<String>) view.lookup("#Add_User_to_Privilege");
         removeUserMenu = (ComboBox<String>) view.lookup("#Remove_User_from_Privilege");

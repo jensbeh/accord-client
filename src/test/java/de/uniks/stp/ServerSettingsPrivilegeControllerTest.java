@@ -36,16 +36,7 @@ import static org.mockito.Mockito.doAnswer;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
-    private static String testUserMainName;
-    private static String testUserMainPw;
-    private static String testUserOneName;
-    private static String testUserOnePw;
-    private static String testUserOne_UserKey;
-    private static String testServerId;
-    private ArrayList<User> privileged = new ArrayList<>();
-    private Server currentServer;
+    private final ArrayList<User> privileged = new ArrayList<>();
 
 
     @Mock
@@ -79,15 +70,6 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response5;
 
-    @Mock
-    private HttpResponse<JsonNode> response7;
-
-    @Mock
-    private HttpResponse<JsonNode> response8;
-
-    @Mock
-    private HttpResponse<JsonNode> response9;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
@@ -102,15 +84,6 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
 
     @InjectMocks
     StageManager mockApp = new StageManager();
@@ -128,16 +101,15 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         //start application
         builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
-        this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
         app.start(stage);
-        this.stage.centerOnScreen();
+        stage.centerOnScreen();
     }
 
     @BeforeAll
@@ -174,7 +146,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject()
                         .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
+                        .put("name", "JOIdk")
                         .put("owner", "60ad230ac77d3f78988b3e5b")
                         .put("categories", categories)
                         .put("members", members)
@@ -192,7 +164,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
     public void mockGetCategories() {
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
-                .put("id", "5e2ffbd8770dd077d03df600")
+                .put("id", "5e2fbd8770dd077d03df600")
                 .put("name", "default")
                 .put("server", "5e2fbd8770dd077d03df505")
                 .put("channels", new JSONArray().put("60b77ba0026b3534ca5a61af")));
@@ -286,7 +258,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         clickOn("#ServerSettings");
         clickOn("#privilege");
 
-        currentServer = builder.getCurrentServer();
+        Server currentServer = builder.getCurrentServer();
         RadioButton privilegeOn = lookup("#Privilege_On_Button").query();
         RadioButton privilegeOff = lookup("#Privilege_Off_Button").query();
         HBox privilegeOnView = lookup("#Privilege_On").query();
@@ -297,15 +269,11 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         Assert.assertEquals(categoryChoice.getItems(), currentServer.getCategories());
 
         clickOn(categoryChoice);
-        interact(() -> {
-            categoryChoice.getSelectionModel().select(0);
-        });
+        interact(() -> categoryChoice.getSelectionModel().select(0));
         Assert.assertEquals(channelChoice.getItems(), currentServer.getCategories().get(0).getChannel());
 
         clickOn(channelChoice);
-        interact(() -> {
-            channelChoice.getSelectionModel().select(0);
-        });
+        interact(() -> channelChoice.getSelectionModel().select(0));
 
         clickOn(privilegeOn);
         Assert.assertTrue(privilegeOn.isSelected());
@@ -330,9 +298,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         ComboBox<String> removeMenu = lookup("#Remove_User_from_Privilege").query();
 
         clickOn(addMenu);
-        interact(() -> {
-            addMenu.getSelectionModel().select(0);
-        });
+        interact(() -> addMenu.getSelectionModel().select(0));
         for (User user : currentServer.getUser()) {
             if (user.getName().equals(addMenu.getSelectionModel().getSelectedItem())) {
                 privileged.add(user);
@@ -346,9 +312,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
 
         clickOn(removeMenu);
-        interact(() -> {
-            removeMenu.getSelectionModel().select(0);
-        });
+        interact(() -> removeMenu.getSelectionModel().select(0));
         for (User user : currentServer.getUser()) {
             if (user.getName().equals(removeMenu.getSelectionModel().getSelectedItem())) {
                 privileged.remove(user);
@@ -361,9 +325,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
 
         clickOn(removeMenu);
-        interact(() -> {
-            removeMenu.getSelectionModel().select(0);
-        });
+        interact(() -> removeMenu.getSelectionModel().select(0));
         for (User user : currentServer.getUser()) {
             if (user.getName().equals(removeMenu.getSelectionModel().getSelectedItem())) {
                 privileged.remove(user);

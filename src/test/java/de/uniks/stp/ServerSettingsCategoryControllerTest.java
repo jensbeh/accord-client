@@ -116,7 +116,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         //start application
         builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
@@ -162,7 +162,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject()
                         .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
+                        .put("name", "JOIdk")
                         .put("owner", "60ad230ac77d3f78988b3e5b")
                         .put("categories", categories)
                         .put("members", members)
@@ -180,7 +180,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
     public void mockGetCategories() {
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
-                .put("id", "5e2ffbd8770dd077d03df600")
+                .put("id", "5e2fbd8770dd077d03df600")
                 .put("name", "default")
                 .put("server", "5e2fbd8770dd077d03df505")
                 .put("channels", new JSONArray().put("60b77ba0026b3534ca5a61af")));
@@ -313,7 +313,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategory").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
+                .put("data", new JSONObject().put("name", "NewCategory").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2fbd8770dd077d03df601"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -324,7 +324,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn(createCategoryButton);
 
-        String message = "{\"action\":\"categoryCreated\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\"NewCategory\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        String message = "{\"action\":\"categoryCreated\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\"NewCategory\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
@@ -355,7 +355,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
+                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2fbd8770dd077d03df601"));
         jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -367,7 +367,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn(changeCategoryNameButton);
 
-        message = "{\"action\":\"categoryUpdated\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\"NewCategoryName\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        message = "{\"action\":\"categoryUpdated\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\"NewCategoryName\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
@@ -393,7 +393,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2ffbd8770dd077d03df601"));
+                .put("data", new JSONObject().put("name", "NewCategoryName").put("server", testServerId).put("channel", new JSONObject()).put("id", "5e2fbd8770dd077d03df601"));
         jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -405,7 +405,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn(deleteCategoryButton);
 
-        message = "{\"action\":\"categoryDeleted\",\"data\":{\"id\":\"5e2ffbd8770dd077d03df601\",\"name\":\""+newCategory.getName()+"\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        message = "{\"action\":\"categoryDeleted\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\""+newCategory.getName()+"\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 

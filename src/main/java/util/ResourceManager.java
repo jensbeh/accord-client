@@ -4,15 +4,10 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
-import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
 
-import javax.json.Json;
-import javax.json.JsonWriter;
-import javax.json.JsonWriterFactory;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +16,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 import static util.Constants.*;
 
@@ -88,7 +83,7 @@ public class ResourceManager {
      * load snakeGameIcons from file
      */
     public static Image loadSnakeGameIcon(String image) {
-        return new Image(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png").toString());
+        return new Image(Objects.requireNonNull(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png")).toString());
     }
 
     /**

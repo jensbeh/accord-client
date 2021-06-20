@@ -92,7 +92,7 @@ public class PrivateMessageTest extends ApplicationTest {
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         StageManager app = mockApp;

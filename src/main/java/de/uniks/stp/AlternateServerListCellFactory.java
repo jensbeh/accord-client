@@ -15,16 +15,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 public class AlternateServerListCellFactory implements javafx.util.Callback<ListView<Server>, ListCell<Server>> {
-    /**
-     * The <code>call</code> method is called when required, and is given a
-     * single argument of type P, with a requirement that an object of type R
-     * is returned.
-     *
-     * @param param The single argument upon which the returned value should be
-     * determined.
-     * @return An object of type R that may be determined based on the provided
-     * parameter value.
-     */
     private static Server currentServer;
 
     public static Server getCurrentServer() {
@@ -35,7 +25,16 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
         AlternateServerListCellFactory.currentServer = currentServer;
     }
 
-
+    /**
+     * The <code>call</code> method is called when required, and is given a
+     * single argument of type P, with a requirement that an object of type R
+     * is returned.
+     *
+     * @param param The single argument upon which the returned value should be
+     * determined.
+     * @return An object of type R that may be determined based on the provided
+     * parameter value.
+     */
     @Override
     public ListCell<Server> call(ListView<Server> param) {
         return new AlternateServerListCellFactory.ServerListCell();
@@ -43,7 +42,7 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
 
     private static class ServerListCell extends ListCell<Server> {
         protected void updateItem(Server item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             StackPane cell = new StackPane();
             Circle circle = new Circle(34);
             Label serverName = new Label();

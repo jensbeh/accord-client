@@ -14,11 +14,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import java.time.LocalDateTime;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -104,7 +102,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 int point = 0;
                 int counter = 25;
                 boolean found = false;
-                int endPoint = 0;
+                int endPoint;
                 int length = str.length();
                 while ((point + 50) < length) {
                     endPoint = point + 50;

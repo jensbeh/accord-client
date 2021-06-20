@@ -2,22 +2,18 @@ package de.uniks.stp.controller.snake.model;
 
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import util.ResourceManager;
 
-import java.util.ArrayList;
 import java.util.Random;
-
-import static de.uniks.stp.controller.snake.Constants.*;
 
 public class Food {
     private int posX;
     private int posY;
-    private Image foodPic;
-    private String[] foodList = {"apple", "berry", "cherry", "orange"};
+    private final Image foodPic;
 
     public Food() {
         Random rand = new Random();
+        String[] foodList = {"apple", "berry", "cherry", "orange"};
         foodPic = ResourceManager.loadSnakeGameIcon(foodList[rand.nextInt(4)]);
     }
 

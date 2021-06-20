@@ -1,7 +1,6 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
@@ -70,7 +69,7 @@ public class SettingsControllerTest extends ApplicationTest {
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         app = mockApp;

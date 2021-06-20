@@ -122,7 +122,7 @@ public class ServerMessageTest extends ApplicationTest {
         //start application
         builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;

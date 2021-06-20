@@ -15,13 +15,12 @@ import java.beans.PropertyChangeListener;
 
 public class CategorySubController {
     private final ServerViewController serverViewController;
-    private Parent view;
-    private Categories category;
+    private final Parent view;
+    private final Categories category;
     private Label categoryName;
     private ListView<ServerChannel> channelList;
-    private AlternateServerChannelListCellFactory channelListCellFactory;
-    private int ROW_HEIGHT = 30;
-    private PropertyChangeListener channelListPCL = this::onChannelNameChanged;
+    private final int ROW_HEIGHT = 30;
+    private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
 
     public CategorySubController(Parent view, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -29,11 +28,12 @@ public class CategorySubController {
         this.serverViewController = serverViewController;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channellist");
-        channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
+        AlternateServerChannelListCellFactory channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
         channelList.setCellFactory(channelListCellFactory);
         channelList.setItems(FXCollections.observableList(category.getChannel()));
         channelList.setOnMouseClicked(this::onChannelListClicked);
@@ -71,7 +71,8 @@ public class CategorySubController {
         if (category.getChannel().size() > 0) {
             channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT);
             for (ServerChannel channel : category.getChannel()) {
-                ServerChannel theChannel = (ServerChannel) propertyChangeEvent.getNewValue(); // if newValue not null -> add PCL, else if null -> removePCL
+                /*TODO if newValue not null -> add PCL, else if null -> removePCL*/
+                //ServerChannel theChannel = (ServerChannel) propertyChangeEvent.getNewValue();
                 channel.removePropertyChangeListener(this.channelListPCL);
                 channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
             }
@@ -81,7 +82,7 @@ public class CategorySubController {
     }
 
     /**
-     * sets the new Categoryname
+     * sets the new Category name
      */
     private void onCategoryNameChanged(PropertyChangeEvent propertyChangeEvent) {
         Platform.runLater(() -> categoryName.setText(category.getName()));

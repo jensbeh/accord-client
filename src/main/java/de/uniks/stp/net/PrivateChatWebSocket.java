@@ -13,7 +13,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import util.JsonUtil;
 import util.ResourceManager;
-import util.SortUser;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -27,9 +26,8 @@ import java.util.TimerTask;
 
 public class PrivateChatWebSocket extends Endpoint {
 
-    private String name;
     private Session session;
-    private Timer noopTimer;
+    private final Timer noopTimer;
     private ModelBuilder builder;
     public static final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
@@ -52,7 +50,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public PrivateChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.privateViewController = privateViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
@@ -61,7 +58,7 @@ public class PrivateChatWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing websocket connection:");
+            System.err.println("Error during establishing WebSocket connection:");
         }
     }
 
@@ -146,7 +143,7 @@ public class PrivateChatWebSocket extends Endpoint {
         if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
             Message message;
             String channelName;
-            Boolean newChat = true;
+            boolean newChat = true;
             // currentUser send
             long timestamp = new Date().getTime();
             if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {

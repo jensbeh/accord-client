@@ -25,6 +25,7 @@ import util.ResourceManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 import static de.uniks.stp.controller.snake.Constants.*;
@@ -284,9 +285,10 @@ public class SnakeGameController {
             int posX = rand.nextInt(COLUMN) * FIELD_SIZE;
             int posY = rand.nextInt(ROW) * FIELD_SIZE;
             spawned = true;
-            for (int i = 0; i < snake.size(); i++) {
-                if (snake.get(i).getPosX() == posX && snake.get(i).getPosY() == posY) {
+            for (Snake value : snake) {
+                if (value.getPosX() == posX && value.getPosY() == posY) {
                     spawned = false;
+                    break;
                 }
             }
             if (spawned) {
@@ -517,21 +519,21 @@ public class SnakeGameController {
      */
     private void loadAllSounds() {
         try {
-            Media media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav").toURI().toString());
+            Media media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav")).toURI().toString());
             backgroundMusic = new MediaPlayer(media);
             backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
 
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/gameOver.wav").toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/gameOver.wav")).toURI().toString());
             gameOverSound = new MediaPlayer(media);
 
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/eating.wav").toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/eating.wav")).toURI().toString());
             eatingSound = new MediaPlayer(media);
 
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdown321.wav").toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/countdown321.wav")).toURI().toString());
             countDown321Sound = new MediaPlayer(media);
 
-            media = new Media(getClass().getResource("/de/uniks/stp/sounds/snake/countdownGO.wav").toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/countdownGO.wav")).toURI().toString());
             countDownGoSound = new MediaPlayer(media);
 
         } catch (URISyntaxException e) {

@@ -37,6 +37,7 @@ public class InviteUsersUserLimitSubController {
         this.server = server;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
         deleteLink = (Button) view.lookup("#deleteLink");
@@ -44,7 +45,7 @@ public class InviteUsersUserLimitSubController {
         userLimit = (TextField) view.lookup("#maxUsers");
         linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
 
-        links = new HashMap<String, String>();
+        links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -87,7 +88,7 @@ public class InviteUsersUserLimitSubController {
     }
 
     /**
-     * OnCreate clicked send restclient request to the server and handles the response accordingly.
+     * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         if (!userLimit.getText().equals("")) {
@@ -117,7 +118,7 @@ public class InviteUsersUserLimitSubController {
     }
 
     /**
-     * OnDelete clicked removes selected Link from the Combobox
+     * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (this.selectedList != null) {
@@ -135,7 +136,7 @@ public class InviteUsersUserLimitSubController {
 
 
     /**
-     * updates the selectedLink and the textfield
+     * updates the selectedLink and the TextField
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         this.selectedList = this.linkComboBox.getSelectionModel().getSelectedItem();

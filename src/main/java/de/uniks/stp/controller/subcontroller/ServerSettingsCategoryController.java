@@ -19,7 +19,7 @@ public class ServerSettingsCategoryController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
-    private RestClient restClient;
+    private final RestClient restClient;
     private ComboBox<Categories> categoriesSelector;
     private TextField changeCategoryNameTextField;
     private Button changeCategoryNameButton;
@@ -27,7 +27,7 @@ public class ServerSettingsCategoryController extends SubSetting {
     private TextField createCategoryNameTextField;
     private Button createCategoryButton;
 
-    private Server currentServer;
+    private final Server currentServer;
     private Categories selectedCategory;
 
 
@@ -38,8 +38,8 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.restClient = builder.getRestClient();
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
-
         categoriesSelector = (ComboBox<Categories>) view.lookup("#editCategoriesSelector");
         changeCategoryNameTextField = (TextField) view.lookup("#editCategoryNameTextField");
         changeCategoryNameButton = (Button) view.lookup("#changeCategoryNameButton");
@@ -57,7 +57,7 @@ public class ServerSettingsCategoryController extends SubSetting {
 
         for (Categories category : currentServer.getCategories()) {
             this.categoriesSelector.getItems().add(category);
-            this.categoriesSelector.setConverter(new StringConverter<Categories>() {
+            this.categoriesSelector.setConverter(new StringConverter<>() {
                 @Override
                 public String toString(Categories categoryToString) {
                     return categoryToString.getName();
