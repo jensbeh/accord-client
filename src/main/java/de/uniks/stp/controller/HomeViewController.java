@@ -22,13 +22,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.Constants;
 
-import javax.websocket.CloseReason;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -376,10 +372,10 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (builder.getPrivateChatWebSocketCLient() != null) {
+        if (builder.getPrivateChatWebSocketClient() != null) {
             try {
-                if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
-                    builder.getPrivateChatWebSocketCLient().stop();
+                if (builder.getPrivateChatWebSocketClient().getSession() != null) {
+                    builder.getPrivateChatWebSocketClient().stop();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

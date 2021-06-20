@@ -64,7 +64,7 @@ public class PrivateViewController {
         this.builder = modelBuilder;
         restClient = modelBuilder.getRestClient();
         this.privateSystemWebSocketClient = modelBuilder.getUSER_CLIENT();
-        this.privateChatWebSocket = modelBuilder.getPrivateChatWebSocketCLient();
+        this.privateChatWebSocket = modelBuilder.getPrivateChatWebSocketClient();
     }
 
     public ChatViewController getMessageViewController() {
@@ -97,7 +97,7 @@ public class PrivateViewController {
         }
         privateChatWebSocket.setBuilder(builder);
         privateChatWebSocket.setPrivateViewController(this);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
     }
 
 

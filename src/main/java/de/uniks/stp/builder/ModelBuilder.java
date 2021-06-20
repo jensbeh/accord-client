@@ -4,24 +4,23 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
-import spark.utils.IOUtils;
-import util.ResourceManager;
-import util.Constants;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.*;
-import java.net.URL;
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static util.Constants.*;
+import static util.Constants.APPDIR_ACCORD_PATH;
+import static util.Constants.CONFIG_PATH;
 
 public class ModelBuilder {
     private Server currentServer;
@@ -31,7 +30,7 @@ public class ModelBuilder {
 
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
-    private PrivateChatWebSocket privateChatWebSocketCLient;
+    private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
 
     private RestClient restClient;
@@ -129,12 +128,12 @@ public class ModelBuilder {
         this.USER_CLIENT = USER_CLIENT;
     }
 
-    public PrivateChatWebSocket getPrivateChatWebSocketCLient() {
-        return privateChatWebSocketCLient;
+    public PrivateChatWebSocket getPrivateChatWebSocketClient() {
+        return privateChatWebSocketClient;
     }
 
-    public void setPrivateChatWebSocketCLient(PrivateChatWebSocket privateChatWebSocketCLient) {
-        this.privateChatWebSocketCLient = privateChatWebSocketCLient;
+    public void setPrivateChatWebSocketClient(PrivateChatWebSocket privateChatWebSocketClient) {
+        this.privateChatWebSocketClient = privateChatWebSocketClient;
     }
 
     //Server WebSocket getter/setter
@@ -168,7 +167,7 @@ public class ModelBuilder {
 
     public void saveSettings() {
         try {
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH+CONFIG_PATH + "/settings.json"));
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
             JsonObject settings = new JsonObject();
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
@@ -184,14 +183,14 @@ public class ModelBuilder {
 
     public void loadSettings() {
         try {
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH+CONFIG_PATH + "/settings.json"))){
-                Files.createFile(Path.of(APPDIR_ACCORD_PATH+CONFIG_PATH + "/settings.json"));
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
                 doNotDisturb = false;
                 showNotifications = true;
                 playSound = true;
                 saveSettings();
             }
-            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH+CONFIG_PATH + "/settings.json"));
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
             JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");
