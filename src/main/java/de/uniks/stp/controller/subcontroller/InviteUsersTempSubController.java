@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -7,20 +8,23 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 public class InviteUsersTempSubController {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
     private final RestClient restClient;
-    private Button createLink;
-    private Button deleteLink;
+    private static Button createLink;
+    private static Label inviteLinksLabel;
+    private static Button deleteLink;
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
@@ -37,6 +41,7 @@ public class InviteUsersTempSubController {
     @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
+        inviteLinksLabel = (Label) view.lookup("#inviteLinksLabel");
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
@@ -117,5 +122,20 @@ public class InviteUsersTempSubController {
         createLink.setOnAction(null);
         deleteLink.setOnAction(null);
         linkComboBox.setOnAction(null);
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (createLink != null)
+            createLink.setText(lang.getString("button.create"));
+
+        if (inviteLinksLabel != null)
+            inviteLinksLabel.setText(lang.getString("label.inviteLinks"));
+
+        if (deleteLink != null)
+            deleteLink.setText(lang.getString("button.delete"));
     }
 }

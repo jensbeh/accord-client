@@ -12,9 +12,9 @@
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="559.0" spacing="10.0">
          <children>
-            <Label id="userLimit" text="User Limit" textFill="WHITE" />
+            <Label id="userLimit" text="%label.userLimit" textFill="WHITE" />
             <TextField id="maxUsers" alignment="CENTER" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #333333; -fx-text-fill: white;" />
-            <Button id="createLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="create" textFill="WHITE" />
+            <Button id="createLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="%button.create" textFill="WHITE" />
          </children>
          <VBox.margin>
             <Insets />
@@ -23,11 +23,11 @@
       <TextField id="linkTextField" alignment="CENTER" prefWidth="559.0" style="-fx-background-color: #333333; -fx-text-fill: white;" text="link ..." />
       <VBox prefHeight="400.0" prefWidth="60.0" spacing="25.0">
          <children>
-            <Label text="Invite Links" textFill="WHITE" />
+            <Label id="inviteLinksLabel" text="%label.inviteLinks" textFill="WHITE" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
                   <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="520.0" style="-fx-background-color: #333333; -fx-text-fill: white;" stylesheets="@../../styles/InviteComboBox.css" />
-                  <Button id="deleteLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="Delete" textFill="RED" />
+                  <Button id="deleteLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="%button.delete" textFill="RED" />
                </children>
             </HBox>
          </children>
