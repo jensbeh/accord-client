@@ -20,9 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import util.ResourceManager;
@@ -31,29 +29,22 @@ import util.SortUser;
 import javax.json.JsonException;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static util.Constants.*;
 
 public class PrivateViewController {
 
-    private HBox root;
     private final RestClient restClient;
 
     private final Parent view;
-    private ScrollPane scrollPaneUserBox;
-    private ModelBuilder builder;
-    private VBox userBox;
+    private final ModelBuilder builder;
     private VBox currentUserBox;
     private VBox chatBox;
-    private HBox viewBox;
-    private ObservableList<PrivateChat> privateChats;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
     private static PrivateChat selectedChat;
-    private PrivateSystemWebSocketClient systemWebSocketClient;
-    private PrivateChatWebSocket chatWebSocketClient;
-    private TextField messageField;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
@@ -71,22 +62,19 @@ public class PrivateViewController {
         return messageViewController;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
-        root = (HBox) view.lookup("#root");
-        scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
-        userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
-        privateChats = FXCollections.observableArrayList();
+        ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
-        viewBox = (HBox) view.lookup("#viewBox");
-        messageField = (TextField) view.lookup("#messageField");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
         showUsers();
@@ -142,8 +130,8 @@ public class PrivateViewController {
      */
     private void showCurrentUser() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
-            UserProfileController userProfileController = new UserProfileController(root, builder);
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("UserProfileView.fxml")));
+            UserProfileController userProfileController = new UserProfileController(root);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -181,7 +169,7 @@ public class PrivateViewController {
      */
     public void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ChatView.fxml")), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();

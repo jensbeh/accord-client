@@ -21,14 +21,13 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class ServerSystemWebSocket extends Endpoint {
 
     private Session session;
-    private Timer noopTimer;
+    private final Timer noopTimer;
     private ModelBuilder builder;
     private ServerViewController serverViewController;
     private String name;
@@ -49,7 +48,6 @@ public class ServerSystemWebSocket extends Endpoint {
 
     public ServerSystemWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.serverViewController = serverViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
@@ -58,7 +56,7 @@ public class ServerSystemWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing websocket connection:");
+            System.err.println("Error during establishing WebSocket connection:");
         }
     }
 
@@ -212,7 +210,7 @@ public class ServerSystemWebSocket extends Endpoint {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
             alert.setTitle("Server deleted!");
             alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
-            Optional<ButtonType> result = alert.showAndWait();
+            alert.showAndWait();
         });
 
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
@@ -391,9 +389,9 @@ public class ServerSystemWebSocket extends Endpoint {
                 serverViewController.getHomeViewController().serverDeleted();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle("Server leaved!");
-                alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was leaved!");
-                Optional<ButtonType> result = alert.showAndWait();
+                alert.setTitle("Server left!");
+                alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
+                alert.showAndWait();
             });
             serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
         }
@@ -409,7 +407,7 @@ public class ServerSystemWebSocket extends Endpoint {
         String channelType = jsonData.getString("type");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
-        String memberId = "";
+        String memberId;
         boolean hasChannel = false;
         ArrayList<User> member = new ArrayList<>();
         for (int j = 0; j < jsonArray.size(); j++) {

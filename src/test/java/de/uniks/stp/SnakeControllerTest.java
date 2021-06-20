@@ -41,11 +41,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class SnakeControllerTest extends ApplicationTest {
-    private Stage stage;
     private StageManager app;
-    private final String testUserMainName = "Hendry Bracken";
-    private final String testUserMainPw = "stp2021pw";
-    private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
 
     @Mock
     private RestClient restClient;
@@ -100,6 +96,7 @@ public class SnakeControllerTest extends ApplicationTest {
     }
 
     public void mockLogin() {
+        String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -116,8 +113,10 @@ public class SnakeControllerTest extends ApplicationTest {
     public void loginInit() throws InterruptedException {
         mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
+        String testUserMainName = "Hendry Bracken";
         usernameTextField.setText(testUserMainName);
         PasswordField passwordField = lookup("#passwordTextField").query();
+        String testUserMainPw = "stp2021pw";
         passwordField.setText(testUserMainPw);
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();

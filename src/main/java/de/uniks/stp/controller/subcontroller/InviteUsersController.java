@@ -6,15 +6,21 @@ import de.uniks.stp.model.Server;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.VBox;
+
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class InviteUsersController {
     private static RadioButton tempSelected;
     private static RadioButton userLimitSelected;
     private static VBox inviteBox;
-    private Server server;
-    private ModelBuilder builder;
+    private static Label tempLabel;
+    private static Label userLimitLabel;
+    private final Server server;
+    private final ModelBuilder builder;
     private static Parent view;
     private InviteUsersTempSubController inviteUsersTempSubController;
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;
@@ -31,6 +37,8 @@ public class InviteUsersController {
         tempSelected.setOnAction(this::tempSelected);
         userLimitSelected.setOnAction(this::userLimitSelected);
         inviteBox = (VBox) view.lookup("#inviteBox");
+        tempLabel = (Label) view.lookup("#tempLabel");
+        userLimitLabel = (Label) view.lookup("#userLimitLabel");
         tempSelected(null);
     }
 
@@ -44,7 +52,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsersTemp.fxml"));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersTemp.fxml")), StageManager.getLangBundle());
             //Controller
             inviteUsersTempSubController = new InviteUsersTempSubController(view, builder, server);
             inviteUsersTempSubController.init();
@@ -60,7 +68,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsersUserLimit.fxml"));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersUserLimit.fxml")), StageManager.getLangBundle());
             //Controller
             inviteUsersUserLimitSubController = new InviteUsersUserLimitSubController(view, builder, server);
             inviteUsersUserLimitSubController.init();
@@ -82,5 +90,18 @@ public class InviteUsersController {
         }
     }
 
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (tempLabel != null)
+            tempLabel.setText(lang.getString("label.temp"));
 
+        if (userLimitLabel != null)
+            userLimitLabel.setText(lang.getString("label.userLimit"));
+
+        InviteUsersTempSubController.onLanguageChanged();
+        InviteUsersUserLimitSubController.onLanguageChanged();
+    }
 }

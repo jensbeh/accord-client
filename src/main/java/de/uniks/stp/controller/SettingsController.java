@@ -5,8 +5,6 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.SubSetting;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -17,24 +15,20 @@ import util.Constants;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * The class SettingsController controls the view in Settings
  */
 public class SettingsController {
     private final ModelBuilder builder;
-    private Parent view;
+    private final Parent view;
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
     private static Button languageButton;
 
     private SubSetting subController;
-    private Button DoNotDisturbButton;
 
     /**
      * First check if there is a settings file already in user local directory - if not, create
@@ -57,7 +51,7 @@ public class SettingsController {
                     prop.store(op, null);
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println(e+"");
                 e.printStackTrace();
             }
         }
@@ -83,9 +77,9 @@ public class SettingsController {
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
         if (builder.getPersonalUser() != null) {
-            DoNotDisturbButton = addItem("DnD");
-            DoNotDisturbButton.setText("Do Not Disturb");
-            addAction(DoNotDisturbButton, "DoNotDisturb");
+            Button doNotDisturbButton = addItem("DnD");
+            doNotDisturbButton.setText("Do Not Disturb");
+            addAction(doNotDisturbButton, "DoNotDisturb");
         }
 
         onLanguageChanged(); // needs to be called because new buttons added
@@ -130,12 +124,7 @@ public class SettingsController {
      * @param viewName the fxml sub name
      */
     public void addAction(Button button, String viewName) {
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                openSettings(viewName);
-            }
-        });
+        button.setOnAction(event -> openSettings(viewName));
     }
 
     /**
@@ -152,7 +141,7 @@ public class SettingsController {
         // clear old and load new subSetting view
         try {
             this.settingsContainer.getChildren().clear();
-            Parent settingsField = FXMLLoader.load(StageManager.class.getResource("settings/Settings_" + fxmlName + ".fxml"), StageManager.getLangBundle());
+            Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
 
             switch (fxmlName) {
                 case "Language":

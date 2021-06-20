@@ -2,7 +2,6 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -16,25 +15,21 @@ import java.util.Optional;
 public class OverviewOwnerController {
     private final Parent view;
     private final ModelBuilder builder;
-    private final HomeViewController homeViewController;
     private Label serverName;
-    private Button deleteServer;
-    private Button changeName;
     private TextField nameText;
-    private RestClient restClient;
+    private final RestClient restClient;
 
-    public OverviewOwnerController(Parent view, ModelBuilder modelBuilder, HomeViewController homeViewController) {
+    public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
-        this.homeViewController = homeViewController;
         this.restClient = modelBuilder.getRestClient();
     }
 
     public void init() {
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
-        this.deleteServer = (Button) view.lookup("#deleteServer");
-        this.changeName = (Button) view.lookup("#changeName");
+        Button deleteServer = (Button) view.lookup("#deleteServer");
+        Button changeName = (Button) view.lookup("#changeName");
         this.nameText = (TextField) view.lookup("#nameText");
         nameText.setStyle("-fx-text-fill: white;" + "-fx-background-color:  #333333;");
         //Buttons

@@ -1,7 +1,6 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.controller.LoginScreenController;
 import de.uniks.stp.controller.SettingsController;
@@ -17,7 +16,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class StageManager extends Application {
         cleanup();
         //show login screen
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("LoginScreenView.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("LoginScreenView.fxml")), getLangBundle());
             scene = new Scene(root);
             builder.setRestClient(restClient);
             loginCtrl = new LoginScreenController(root, builder);
@@ -88,7 +86,7 @@ public class StageManager extends Application {
     public static void showHome() {
         cleanup();
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("HomeView.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("HomeView.fxml")), getLangBundle());
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
@@ -98,9 +96,7 @@ public class StageManager extends Application {
             stage.sizeToScene();
             stage.setMinHeight(650);
             stage.setMinWidth(900);
-            stage.setOnCloseRequest(event -> {
-                stopAll();
-            });
+            stage.setOnCloseRequest(event -> stopAll());
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,7 +133,7 @@ public class StageManager extends Application {
         if (!Objects.isNull(builder.getPersonalUser())) {
             String userKey = builder.getPersonalUser().getUserKey();
             if (userKey != null && !userKey.isEmpty()) {
-                JsonNode body = Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
+                Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
                 System.out.println("Logged out");
             }
         }
@@ -148,7 +144,7 @@ public class StageManager extends Application {
     public static void showSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("settings/Settings.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("settings/Settings.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
@@ -178,16 +174,16 @@ public class StageManager extends Application {
     public static void showServerSettingsScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
-            serverSettingsController = new ServerSettingsController(root, builder, homeViewController, builder.getCurrentServer());
+            serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
             serverSettingsController.init();
 
             //setting stage settings
             subStage = new Stage();
-            subStage.setTitle("ServerSettings");
+            setSubStageTitle("window_title_serverSettings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -210,7 +206,7 @@ public class StageManager extends Application {
     public static void showInviteUsersScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsers.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsers.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
@@ -218,7 +214,7 @@ public class StageManager extends Application {
             inviteUsersController.init();
 
             subStage = new Stage();
-            subStage.setTitle("Invite Users");
+            setSubStageTitle("window_title_inviteUsers");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -240,11 +236,11 @@ public class StageManager extends Application {
     public static void showStartSnakeScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/snake/startSnakeView.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/snake/startSnakeView.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
-            startSnakeController = new StartSnakeController(root, builder);
+            startSnakeController = new StartSnakeController(root);
             startSnakeController.init();
 
             //start snake stage
@@ -277,7 +273,7 @@ public class StageManager extends Application {
             }
 
             // load view
-            Parent root = FXMLLoader.load(StageManager.class.getResource("view/snake/snakeGameView.fxml"), getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/snake/snakeGameView.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
@@ -358,5 +354,6 @@ public class StageManager extends Application {
         LanguageController.onLanguageChanged();
         LoginScreenController.onLanguageChanged();
         HomeViewController.onLanguageChanged();
+        InviteUsersController.onLanguageChanged();
     }
 }

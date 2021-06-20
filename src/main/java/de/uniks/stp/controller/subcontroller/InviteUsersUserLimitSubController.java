@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -7,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
@@ -15,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class InviteUsersUserLimitSubController {
 
@@ -22,8 +25,9 @@ public class InviteUsersUserLimitSubController {
     private final ModelBuilder builder;
     private final Server server;
     private final RestClient restClient;
-    private Button createLink;
-    private Button deleteLink;
+    private static Button createLink;
+    private static Label inviteLinksLabel;
+    private static Button deleteLink;
     private TextField linkTextField;
     private TextField userLimit;
     private ComboBox<List<String>> linkComboBox;
@@ -37,14 +41,16 @@ public class InviteUsersUserLimitSubController {
         this.server = server;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
+        inviteLinksLabel = (Label) view.lookup("#inviteLinksLabel");
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
         userLimit = (TextField) view.lookup("#maxUsers");
         linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
 
-        links = new HashMap<String, String>();
+        links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -52,7 +58,8 @@ public class InviteUsersUserLimitSubController {
             @Override
             public String toString(List<String> list) {
                 if (list == null) {
-                    return "Select Link...";
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    return lang.getString("comboBox.selectLink");
                 }
                 return list.get(0) + " | " + list.get(1);
             }
@@ -87,7 +94,7 @@ public class InviteUsersUserLimitSubController {
     }
 
     /**
-     * OnCreate clicked send restclient request to the server and handles the response accordingly.
+     * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         if (!userLimit.getText().equals("")) {
@@ -117,7 +124,7 @@ public class InviteUsersUserLimitSubController {
     }
 
     /**
-     * OnDelete clicked removes selected Link from the Combobox
+     * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (this.selectedList != null) {
@@ -135,7 +142,7 @@ public class InviteUsersUserLimitSubController {
 
 
     /**
-     * updates the selectedLink and the textfield
+     * updates the selectedLink and the TextField
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         this.selectedList = this.linkComboBox.getSelectionModel().getSelectedItem();
@@ -144,7 +151,8 @@ public class InviteUsersUserLimitSubController {
             selectedLink = selectedList.get(0);
             maxUsers = selectedList.get(1);
         } else {
-            selectedLink = "Select Link...";
+            ResourceBundle lang = StageManager.getLangBundle();
+            selectedLink = lang.getString("comboBox.selectLink");
             maxUsers = "";
         }
         this.linkComboBox.setPromptText(selectedLink);
@@ -156,5 +164,20 @@ public class InviteUsersUserLimitSubController {
         createLink.setOnAction(null);
         deleteLink.setOnAction(null);
         linkComboBox.setOnAction(null);
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (createLink != null)
+            createLink.setText(lang.getString("button.create"));
+
+        if (inviteLinksLabel != null)
+            inviteLinksLabel.setText(lang.getString("label.inviteLinks"));
+
+        if (deleteLink != null)
+            deleteLink.setText(lang.getString("button.delete"));
     }
 }

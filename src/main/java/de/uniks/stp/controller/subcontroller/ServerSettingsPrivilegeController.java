@@ -47,6 +47,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         restClient = builder.getRestClient();
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         categoryChoice = (ComboBox<Categories>) view.lookup("#Category");
         channelChoice = (ComboBox<ServerChannel>) view.lookup("#Channels");
@@ -66,7 +67,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         //load all categories
         for (Categories category : server.getCategories()) {
             categoryChoice.getItems().add(category);
-            categoryChoice.setConverter(new StringConverter<Categories>() {
+            categoryChoice.setConverter(new StringConverter<>() {
                 @Override
                 public String toString(Categories object) {
                     if (object == null) {
@@ -94,7 +95,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             // load channel for this category
             for (ServerChannel channel : selectedCategory.getChannel()) {
                 Platform.runLater(() -> channelChoice.getItems().add(channel));
-                channelChoice.setConverter(new StringConverter<ServerChannel>() {
+                channelChoice.setConverter(new StringConverter<>() {
                     @Override
                     public String toString(ServerChannel object) {
                         if (object == null) {
@@ -186,7 +187,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     }
 
     /**
-     * load fxml when channel privilege on. load subcontroller.
+     * load fxml when channel privilege on. load SubController.
      */
     private void privilegeOnButton(ActionEvent actionEvent) {
         if (serverSubSettingsPrivilegeController != null) {

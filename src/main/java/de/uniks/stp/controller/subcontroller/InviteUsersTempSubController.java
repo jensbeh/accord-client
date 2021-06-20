@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -7,20 +8,23 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 public class InviteUsersTempSubController {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
     private final RestClient restClient;
-    private Button createLink;
-    private Button deleteLink;
+    private static Button createLink;
+    private static Label inviteLinksLabel;
+    private static Button deleteLink;
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
@@ -34,13 +38,15 @@ public class InviteUsersTempSubController {
         this.server = server;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
+        inviteLinksLabel = (Label) view.lookup("#inviteLinksLabel");
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
-        links = new HashMap<String, String>();
+        links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -68,7 +74,7 @@ public class InviteUsersTempSubController {
     }
 
     /**
-     * OnCreate clicked send restclient request to the server and handles the response accordingly.
+     * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         System.out.println("onCreateLinkClicked");
@@ -88,7 +94,7 @@ public class InviteUsersTempSubController {
     }
 
     /**
-     * OnDelete clicked removes selected Link from the Combobox
+     * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (selectedLink != null) {
@@ -104,7 +110,7 @@ public class InviteUsersTempSubController {
 
 
     /**
-     * updates the selectedLink and the textfield
+     * updates the selectedLink and the TextField
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedLink = this.linkComboBox.getSelectionModel().getSelectedItem();
@@ -116,5 +122,20 @@ public class InviteUsersTempSubController {
         createLink.setOnAction(null);
         deleteLink.setOnAction(null);
         linkComboBox.setOnAction(null);
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public static void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        if (createLink != null)
+            createLink.setText(lang.getString("button.create"));
+
+        if (inviteLinksLabel != null)
+            inviteLinksLabel.setText(lang.getString("label.inviteLinks"));
+
+        if (deleteLink != null)
+            deleteLink.setText(lang.getString("button.delete"));
     }
 }

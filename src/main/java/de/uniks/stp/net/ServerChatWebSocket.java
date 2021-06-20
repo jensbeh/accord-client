@@ -25,11 +25,10 @@ import java.util.TimerTask;
 public class ServerChatWebSocket extends Endpoint {
 
     private Session session;
-    private Timer noopTimer;
+    private final Timer noopTimer;
     private ModelBuilder builder;
     public static final String COM_NOOP = "noop";
     private ServerViewController serverViewController;
-    private Server server;
     private String name;
 
     public void setServerViewController(ServerViewController serverViewController) {
@@ -45,7 +44,7 @@ public class ServerChatWebSocket extends Endpoint {
     }
 
     public void setServer(Server server) {
-        this.server = server;
+        System.out.println(server.getName());
     }
 
 
@@ -59,7 +58,7 @@ public class ServerChatWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing websocket connection:");
+            System.err.println("Error during establishing WebSocket connection:");
         }
     }
 
@@ -107,7 +106,6 @@ public class ServerChatWebSocket extends Endpoint {
 
         if (jsonObject.containsKey("channel")) {
             Message message = null;
-            String id = jsonObject.getString("id");
             String channelId = jsonObject.getString("channel");
             String from = jsonObject.getString("from");
             String text = jsonObject.getString("text");

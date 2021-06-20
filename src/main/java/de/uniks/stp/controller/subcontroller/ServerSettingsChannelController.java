@@ -15,10 +15,10 @@ import kong.unirest.JsonNode;
 import java.util.List;
 
 public class ServerSettingsChannelController extends SubSetting {
-    private Parent view;
-    private ModelBuilder builder;
-    private Server server;
-    private RestClient restClient;
+    private final Parent view;
+    private final ModelBuilder builder;
+    private final Server server;
+    private final RestClient restClient;
 
     private Label categoryLabel;
     private static ComboBox<Categories> categorySelector;
@@ -45,6 +45,7 @@ public class ServerSettingsChannelController extends SubSetting {
         this.restClient = builder.getRestClient();
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         // init view
         this.categoryLabel = (Label) view.lookup("#categoryLabel");

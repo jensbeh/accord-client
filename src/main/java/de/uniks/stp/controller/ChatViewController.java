@@ -48,24 +48,16 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ChatViewController {
-    private static ModelBuilder builder;
+    private final ModelBuilder builder;
     private static ServerChannel currentChannel;
-    private Parent view;
+    private final Parent view;
     private static Button sendButton;
     private TextField messageTextField;
     private static ListView<Message> messageList;
-    private HBox messageBox;
-    private static Boolean oldMessage;
     private static ArrayList<Message> messages;
-    private ImageView imageView;
-    private Button emojiButton;
-    private VBox container;
     private StackPane stack;
-    private ScrollPane searchScrollPane;
     private ScrollPane scrollPane;
-    private FlowPane searchFlowPane;
     private TextField txtSearch;
-    private List<String> searchList;
 
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -73,12 +65,13 @@ public class ChatViewController {
         this.builder = builder;
     }
 
-    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel currentChannel) {
+    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel current) {
         this.view = view;
         this.builder = builder;
-        this.currentChannel = currentChannel;
+        currentChannel = current;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() throws JsonException, IOException {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
@@ -93,14 +86,9 @@ public class ChatViewController {
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         sendButton.setOnAction(this::sendButtonClicked);
-        this.messageBox = (HBox) view.lookup("#messageBox");
-        imageView = (ImageView) view.lookup("#imageView");
+        HBox messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
-        container = (VBox) view.lookup("#container");
         stack = (StackPane) view.lookup("#stack");
-        searchScrollPane = new ScrollPane();
-        searchScrollPane = (ScrollPane) view.lookup("#scrollPaneList");
-        searchFlowPane = (FlowPane) view.lookup("#emojiFlowpane");
         txtSearch = (TextField) view.lookup("#emojiSearchTextField");
         scrollPane = (ScrollPane) view.lookup("#scroll");
 
@@ -119,12 +107,10 @@ public class ChatViewController {
             }
         });
 
-        emojiButton = (Button) view.lookup("#emojiButton");
+        Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
 
-        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> {
-            showEmojis();
-        }));
+        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> showEmojis()));
     }
 
     /**
@@ -132,11 +118,11 @@ public class ChatViewController {
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
-        ObservableList<Node> childs = stack.getChildren();
+        ObservableList<Node> child = stack.getChildren();
 
-        if (childs.size() > 1) {
+        if (child.size() > 1) {
             // Top Component
-            Node topNode = childs.get(childs.size() - 1);
+            Node topNode = child.get(child.size() - 1);
             topNode.toBack();
         }
         showEmojis();
@@ -155,7 +141,7 @@ public class ChatViewController {
         final File folder = new File(String.valueOf(path));
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
-        searchList = new ArrayList<>();
+        List<String> searchList = new ArrayList<>();
         for (Emoji emoji : EmojiParser.getInstance().search(txtSearch.getText())) {
             searchList.add(emoji.getHex());
         }
