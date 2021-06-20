@@ -14,8 +14,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class AlternateMessageListCellFactory implements javafx.util.Callback<ListView<Message>, ListCell<Message>> {
 
@@ -62,10 +63,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 EmojiTextFlow message;
 
                 //right alignment if User is currentUser else left
-                DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("dd.MM - HH:mm");
+                Date date = new Date(item.getTimestamp());
+                DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
-                    userName.setText(dtf2.format(LocalDateTime.now()) + " " + item.getFrom());
+                    userName.setText((formatterTime.format(date)) + " " + item.getFrom());
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
                         emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -78,7 +80,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
-                    userName.setText(item.getFrom() + " " + dtf2.format(LocalDateTime.now()));
+                    userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
                         emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -91,11 +93,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
                 message.setId("messageLabel");
-                //if(item.getMessage().length() <= 320){
-                //  message.setMaxWidth(item.getMessage().length() + 10);
-                //}else {
                 message.setMaxWidth(320);
-                //}
                 message.setPrefWidth(item.getMessage().length());
 
 
