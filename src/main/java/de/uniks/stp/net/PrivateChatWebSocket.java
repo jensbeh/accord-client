@@ -52,7 +52,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public PrivateChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.privateViewController = privateViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))

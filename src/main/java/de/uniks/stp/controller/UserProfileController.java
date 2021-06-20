@@ -41,13 +41,6 @@ public class UserProfileController {
         });
     }
 
-    public void setOffline() {
-        Platform.runLater(() -> {
-            Color color = Color.web("#e34646");
-            onlineStatus.setFill(color);
-        });
-    }
-
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
     }

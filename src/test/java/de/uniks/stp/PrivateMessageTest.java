@@ -83,7 +83,7 @@ public class PrivateMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -300,5 +300,9 @@ public class PrivateMessageTest extends ApplicationTest {
         //Assert.assertEquals(2, messageList.getItems().size());
         //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
         //Assert.assertEquals(msg2, messageList.getItems().get(1).getMessage());
+
+        rightClickOn("#userNameLabel");
+        moveBy(0,15);
+        write("\n");
     }
 }

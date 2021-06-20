@@ -39,7 +39,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
 
     public PrivateSystemWebSocketClient(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.privateViewController = privateViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))

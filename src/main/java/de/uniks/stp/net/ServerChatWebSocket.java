@@ -51,7 +51,6 @@ public class ServerChatWebSocket extends Endpoint {
 
     public ServerChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.serverViewController = serverViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
