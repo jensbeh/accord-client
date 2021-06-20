@@ -23,6 +23,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.ResourceManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -79,6 +80,8 @@ public class HomeViewController {
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
+
+        ResourceManager.extractEmojis();
 
         showPrivateView();
         showServers(() -> {
@@ -265,7 +268,6 @@ public class HomeViewController {
                     }
                 }
             });
-
         });
     }
 
@@ -455,10 +457,8 @@ public class HomeViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
-
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
-
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();

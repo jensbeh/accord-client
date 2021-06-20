@@ -73,14 +73,13 @@ public class ServerChatWebSocket extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "SERVER CHAT " + name + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }, 10, 1000 * 30);
+        }, 0, 1000 * 30);
     }
 
     @Override

@@ -1,5 +1,4 @@
 package de.uniks.stp.controller;
-import javafx.collections.ObservableList;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
@@ -11,44 +10,37 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
+import org.junit.Assert;
+import util.ResourceManager;
 
 import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static util.Constants.*;
+
 public class ChatViewController {
-    private final ModelBuilder builder;
+    private static ModelBuilder builder;
     private static ServerChannel currentChannel;
     private final Parent view;
     private static Button sendButton;
@@ -57,18 +49,17 @@ public class ChatViewController {
     private static ArrayList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
-    private TextField txtSearch;
-
+    private List<String> searchList;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
     }
 
-    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel current) {
+    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel currentChannel) {
         this.view = view;
         this.builder = builder;
-        currentChannel = current;
+        this.currentChannel = currentChannel;
     }
 
     @SuppressWarnings("unchecked")
@@ -85,11 +76,11 @@ public class ChatViewController {
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
+        messageTextField.setText("");
         sendButton.setOnAction(this::sendButtonClicked);
         HBox messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
-        txtSearch = (TextField) view.lookup("#emojiSearchTextField");
         scrollPane = (ScrollPane) view.lookup("#scroll");
 
         //ListView with message as parameter and observableList
@@ -106,11 +97,8 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
-
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
-
-        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> showEmojis()));
     }
 
     /**
@@ -118,11 +106,11 @@ public class ChatViewController {
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
-        ObservableList<Node> child = stack.getChildren();
+        ObservableList<Node> children = stack.getChildren();
 
-        if (child.size() > 1) {
+        if (children.size() > 1) {
             // Top Component
-            Node topNode = child.get(child.size() - 1);
+            Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
         showEmojis();
@@ -132,72 +120,51 @@ public class ChatViewController {
      * sets emojis on FlowPane
      */
     private void showEmojis() {
-        Path path = null;
-        try {
-            path = Paths.get((Objects.requireNonNull(StageManager.class.getResource("twemoji"))).toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        final File folder = new File(String.valueOf(path));
+        ArrayList<String> pngNames = new ArrayList<>();
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
-        List<String> searchList = new ArrayList<>();
-        for (Emoji emoji : EmojiParser.getInstance().search(txtSearch.getText())) {
-            searchList.add(emoji.getHex());
-        }
-        for (String hex : listFilesForFolder(folder, searchList)) {
-            flow.getChildren().add((getImageStack(hex)));
-        }
-    }
+        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
 
-    /**
-     * search through emoji folder
-     */
-    private ArrayList<String> listFilesForFolder(final File folder, List<String> list) {
-        ArrayList<String> pngNames = new ArrayList<>();
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry, list);
-            } else {
-                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-                if (list.contains(name)) {
-                    pngNames.add(name);
-                }
-            }
+            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            pngNames.add(name);
+            flow.getChildren().add((getImageStack(fileEntry)));
         }
-        return pngNames;
     }
 
     /**
      * creates StackPane for each image
+     *
      */
-    private StackPane getImageStack(String hexStr) {
+    private StackPane getImageStack(File fileEntry) {
         StackPane stackPane = new StackPane();
         stackPane.setMaxSize(32, 32);
         stackPane.setPrefSize(32, 32);
         stackPane.setMinSize(32, 32);
         stackPane.setPadding(new Insets(3));
-        stackPane.getChildren().add(getEmojiImage(hexStr));
+        stackPane.getChildren().add(getEmojiImage(fileEntry));
         return stackPane;
     }
 
     /**
      * get correct image to the hexStr and sets the textField if emoji clicked
+     *
      */
-    private ImageView getEmojiImage(String hexStr) {
+    private ImageView getEmojiImage(File fileEntry) {
         ImageView imageView = new ImageView();
-        imageView.setId(hexStr);
+        imageView.setId(fileEntry.getName().substring(0, fileEntry.getName().length() - 4));
         imageView.setFitWidth(32);
         imageView.setFitHeight(32);
-        Image image = new Image(Objects.requireNonNull(StageManager.class.getResource("twemoji/" + hexStr + ".png")).toExternalForm());
+
+        String path = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + "/" + fileEntry.getName();
+        File newFile = new File(path);
+        Image image = new Image(newFile.toURI().toString());
         imageView.setImage(image);
         AtomicReference<String> url = new AtomicReference<>("");
         imageView.setOnMouseClicked(event -> {
             url.set(imageView.getImage().getUrl());
-            String urlName = url.get();
-            String emojiName = urlName.substring(89, urlName.length() - 4);
             for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                if (emoji.getHex().equals(emojiName)) {
+                if (emoji.getHex().equals(imageView.getId())) {
                     messageTextField.setText(messageTextField.getText() + emoji.getShortname());
                 }
             }
@@ -234,7 +201,6 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        //String textMessage = EmojiParser.parseToUnicode(result);
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {

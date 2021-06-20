@@ -313,11 +313,6 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
-        //Label messageLabel = (Label) privateChatMessageList.lookup("#messageLabel");
-        //Assert.assertEquals(" Okay! ", messageLabel.getText());
-        Label userNameLabel = (Label) privateChatMessageList.lookup("#userNameLabel");
-
-        //Assert.assertEquals(" Okay! ", messageLabel.getAccessibleText());
 
         Assert.assertEquals(1, privateChatMessageList.getItems().size());
 
@@ -342,12 +337,8 @@ public class ServerMessageTest extends ApplicationTest {
 
         //Emoji List test
         Platform.runLater(() -> clickOn("#emojiButton"));
-        TextField emojiSearchTextField = lookup("#emojiSearchTextField").query();
-        Platform.runLater(() -> emojiSearchTextField.setText(":wink:"));
-        Thread.sleep(2000);
         moveBy(-290, -150);
         clickOn();
-        Thread.sleep(2000);
-        //Assert.assertEquals(":wink:", messageField.getText());
+        Assert.assertEquals(":ng:", messageField.getText());
     }
 }
