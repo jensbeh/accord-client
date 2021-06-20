@@ -14,8 +14,8 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
                <children>
-                  <Label text="Category" textFill="WHITE" />
-                  <Label text="Channels" textFill="WHITE" />
+                  <Label text="%label.category" textFill="WHITE" />
+                  <Label text="%label.channel" textFill="WHITE" />
                </children>
                <opaqueInsets>
                   <Insets />
@@ -23,17 +23,17 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
                <children>
-                  <ComboBox id="Category" prefWidth="150.0" promptText="Select Category" style="-fx-background-color: #333333; -fx-text-fill: white;" stylesheets="@../../styles/InviteComboBox.css" />
-                  <ComboBox id="Channels" prefWidth="150.0" promptText="Select Channel" style="-fx-text-fill: white; -fx-background-color: #333333;" stylesheets="@../../styles/InviteComboBox.css" />
+                  <ComboBox id="Category" prefWidth="150.0" promptText="%comboBox.selectCategory" style="-fx-background-color: #333333; -fx-text-fill: white;" stylesheets="@../../styles/InviteComboBox.css" />
+                  <ComboBox id="Channels" prefWidth="150.0" promptText="%comboBox.selectChannel" style="-fx-text-fill: white; -fx-background-color: #333333;" stylesheets="@../../styles/InviteComboBox.css" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Label text="Turn Privilege:" textFill="WHITE" />
+                  <Label text="%label.turnPrivilege" textFill="WHITE" />
                   <HBox alignment="CENTER" prefHeight="35.0" prefWidth="100.0" spacing="20.0">
                      <children>
-                        <Label text="on" textFill="WHITE" />
-                        <Label text="off" textFill="WHITE" />
+                        <Label text="%label.on" textFill="WHITE" />
+                        <Label text="%label.off" textFill="WHITE" />
                      </children>
                      <opaqueInsets>
                         <Insets />
@@ -56,7 +56,7 @@
                   <Insets top="10.0" />
                </HBox.margin>
             </VBox>
-            <Button id="Change_Privilege" mnemonicParsing="false" prefHeight="24.0" prefWidth="46.0" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-padding: 0 0 0 0;" text="change" textFill="WHITE" />
+            <Button id="Change_Privilege" mnemonicParsing="false" prefHeight="24.0" prefWidth="46.0" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-padding: 0 0 0 0;" text="%button.change" textFill="WHITE" />
          </children>
          <padding>
             <Insets bottom="10.0" />

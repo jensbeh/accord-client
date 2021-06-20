@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
@@ -13,6 +14,7 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ServerSettingsChannelController extends SubSetting {
     private final Parent view;
@@ -81,7 +83,8 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(Categories object) {
                 if (object == null) {
-                    return "Select category...";
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    return lang.getString("comboBox.selectCategory");
                 }
                 return object.getName();
             }
@@ -96,7 +99,8 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(ServerChannel object) {
                 if (object == null) {
-                    return "Select channel...";
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    return lang.getString("comboBox.selectChannel");
                 }
                 return object.getName();
             }
