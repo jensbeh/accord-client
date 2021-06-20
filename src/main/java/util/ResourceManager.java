@@ -8,15 +8,15 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static util.Constants.*;
 
@@ -149,13 +149,15 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
             }
+
             JsonArray parser = new JsonArray();
             File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
-            if(f.exists()){
+            if (f.exists()) {
                 Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
                 parser = (JsonArray) Jsoner.deserialize(reader);
             }
             BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
+
 
             JsonObject obj = new JsonObject();
             obj.put("currentUserName", message.getFrom());
@@ -164,6 +166,7 @@ public class ResourceManager {
             obj.put("timestamp", message.getTimestamp());
             parser.add(obj);
 
+            System.out.println("savePrivatChat: " + message);
             Jsoner.serialize(parser, writer);
             writer.close();
         } catch (IOException | JsonException e) {
@@ -179,10 +182,10 @@ public class ResourceManager {
         ArrayList<Message> messageList = new ArrayList<>();
 
         File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
-        if(f.exists()){
+        if (f.exists()) {
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
             parser = (JsonArray) Jsoner.deserialize(reader);
-            for(Object jsonObject : parser){
+            for (Object jsonObject : parser) {
                 Message message = new Message();
                 JsonObject jsonObject1 = (JsonObject) jsonObject;
                 message.setMessage((String) jsonObject1.get("message"));
@@ -193,5 +196,36 @@ public class ResourceManager {
             }
         }
         return messageList;
+    }
+
+    public static void extractEmojis() {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
+
+                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/twemoji.zip");
+                InputStream inputStream = zipFileURL.openStream();
+                ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+                ZipEntry entry = zipInputStream.getNextEntry();
+                while (entry != null) {
+                    String filePath = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + File.separator + entry.getName();
+
+                    // if the entry is a file, extracts it
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+                    byte[] bytesIn = new byte[4096];
+                    int read;
+                    while ((read = zipInputStream.read(bytesIn)) != -1) {
+                        bos.write(bytesIn, 0, read);
+                    }
+                    bos.close();
+
+                    zipInputStream.closeEntry();
+                    entry = zipInputStream.getNextEntry();
+                }
+                zipInputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

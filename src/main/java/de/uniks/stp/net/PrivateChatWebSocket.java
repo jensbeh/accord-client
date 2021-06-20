@@ -73,7 +73,6 @@ public class PrivateChatWebSocket extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "PRIVATE CHAT" + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {

@@ -62,7 +62,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             @Override
             public void run() {
                 // Send NOOP Message
-                System.out.println("##### NOOP MESSAGE FROM " + "PRIVATE SYSTEM" + " #####");
                 try {
                     sendMessage(COM_NOOP);
                 } catch (IOException e) {
