@@ -17,9 +17,11 @@ To start the Accord client, you can either compile and run the source code yours
 ## Create a server
 1.	Click on the button with the green plus sign.
 
-2.	Insert the servers name.
+2.  Click on the create a server button.
 
-3.	Click on Create.
+3.	Insert the servers name.
+
+4.	Click on Create.
 
 ## Create an invite link
 1.	Click on the same dropdown as described in “Edit server settings” and click on Invite Users.
@@ -29,9 +31,14 @@ To start the Accord client, you can either compile and run the source code yours
 
 ## Join a server
 1.	Have an invite link.
+      
 2.	Click on the button with the green plus sign.
-3.	Insert the invite link in the “InviteLink” field.
-4.	Click on “Join”
+
+3.  Click on the join a server button.
+    
+4.	Insert the invite link in the “InviteLink” field.
+      
+5.	Click on “Join”
 
 ## Chat in a server channel
 1.	Click on a server.
