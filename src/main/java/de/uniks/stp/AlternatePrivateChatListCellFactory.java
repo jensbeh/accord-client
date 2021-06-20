@@ -32,7 +32,7 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
     private static class ChannelListCell extends ListCell<PrivateChat> {
 
         protected void updateItem(PrivateChat item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             HBox nameAndNotificationCell = new HBox();
             HBox nameCell = new HBox();

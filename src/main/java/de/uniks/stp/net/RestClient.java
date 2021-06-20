@@ -112,13 +112,13 @@ public class RestClient {
         req.asJsonAsync(callback);
     }
 
-    public void createTempLink(String type, Integer max, String serverid, String userKey, Callback<JsonNode> callback) {
+    public void createTempLink(String type, Integer max, String serverId, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("type", type);
         if (type.equals("count")) {
             jsonObj.accumulate("max", max);
         }
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverid + SERVER_INVITES).header("userKey", userKey).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_INVITES).header("userKey", userKey).body(body);
         sendRequest(request, callback);
     }
 

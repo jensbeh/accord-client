@@ -20,7 +20,7 @@ import java.util.TimerTask;
 public class PrivateSystemWebSocketClient extends Endpoint {
 
     private Session session;
-    private Timer noopTimer;
+    private final Timer noopTimer;
     private ModelBuilder builder;
     public static final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
@@ -39,7 +39,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
 
     public PrivateSystemWebSocketClient(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
-        this.privateViewController = privateViewController;
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
@@ -48,7 +47,7 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing websocket connection:");
+            System.err.println("Error during establishing WebSocket connection:");
         }
     }
 

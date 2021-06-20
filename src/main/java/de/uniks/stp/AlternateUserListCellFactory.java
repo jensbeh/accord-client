@@ -28,7 +28,7 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
 
     private static class UserListCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
-            // creates a Hbox for each cell of the listView
+            // creates a HBox for each cell of the listView
             HBox cell = new HBox();
             Circle circle = new Circle(15);
             Label name = new Label();

@@ -149,7 +149,7 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject()
                         .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
+                        .put("name", "JOIdk")
                         .put("owner", "60ad230ac77d3f78988b3e5b")
                         .put("categories", categories)
                         .put("members", members)
@@ -269,6 +269,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void showServerUsersTest() throws InterruptedException {
         loginInit(testUserOneName, testUserOnePw);
