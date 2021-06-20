@@ -1,6 +1,5 @@
 package util;
 
-@SuppressWarnings("ALL")
 public class Constants {
     // Server
     public static final String WEBSOCKET_PATH = "/ws";
@@ -20,6 +19,11 @@ public class Constants {
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
     public static final String SERVER_INVITES = "/invites";
 
+
+    // Communication
+    public static final String COM_USERKEY = "userKey";
+    public static final String COM_NOOP = "noop";
+
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";
     public static final String WS_SERVER_URL = "wss://ac.uniks.de";
@@ -29,8 +33,9 @@ public class Constants {
     public static String CONFIG_PATH = "/config";
     public static String SAVES_PATH = "/saves";
     public static String SNAKE_PATH = "/snake";
+    public static String TEMP_PATH = "/temp";
+    public static String EMOJIS_PATH = "/emojis";
     public static String PRIVATE_CHAT_PATH = "/private";
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
 }
-

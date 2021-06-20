@@ -1,5 +1,4 @@
 package de.uniks.stp.controller;
-import javafx.collections.ObservableList;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
@@ -11,23 +10,18 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -39,39 +33,44 @@ import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static util.Constants.*;
+
 public class ChatViewController {
-    private final ModelBuilder builder;
+    private static ModelBuilder builder;
     private static ServerChannel currentChannel;
-    private final Parent view;
+    private Parent view;
     private static Button sendButton;
     private TextField messageTextField;
     private static ListView<Message> messageList;
+    private HBox messageBox;
+    private static Boolean oldMessage;
     private static ArrayList<Message> messages;
+    private ImageView imageView;
+    private Button emojiButton;
+    private VBox container;
     private StackPane stack;
+    private ScrollPane searchScrollPane;
     private ScrollPane scrollPane;
+    private FlowPane searchFlowPane;
     private TextField txtSearch;
-
+    private List<String> searchList;
+    private FlowPane flow;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
     }
 
-    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel current) {
+    public ChatViewController(Parent view, ModelBuilder builder, ServerChannel currentChannel) {
         this.view = view;
         this.builder = builder;
-        currentChannel = current;
+        this.currentChannel = currentChannel;
     }
 
-    @SuppressWarnings("unchecked")
     public void init() throws JsonException, IOException {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
@@ -86,9 +85,14 @@ public class ChatViewController {
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         sendButton.setOnAction(this::sendButtonClicked);
-        HBox messageBox = (HBox) view.lookup("#messageBox");
+        this.messageBox = (HBox) view.lookup("#messageBox");
+        imageView = (ImageView) view.lookup("#imageView");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
+        container = (VBox) view.lookup("#container");
         stack = (StackPane) view.lookup("#stack");
+        searchScrollPane = new ScrollPane();
+        searchScrollPane = (ScrollPane) view.lookup("#scrollPaneList");
+        searchFlowPane = (FlowPane) view.lookup("#emojiFlowpane");
         txtSearch = (TextField) view.lookup("#emojiSearchTextField");
         scrollPane = (ScrollPane) view.lookup("#scroll");
 
@@ -107,10 +111,12 @@ public class ChatViewController {
             }
         });
 
-        Button emojiButton = (Button) view.lookup("#emojiButton");
+        emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
 
-        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> showEmojis()));
+        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> {
+            showEmojis();
+        }));
     }
 
     /**
@@ -118,11 +124,11 @@ public class ChatViewController {
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
-        ObservableList<Node> child = stack.getChildren();
+        ObservableList<Node> childs = stack.getChildren();
 
-        if (child.size() > 1) {
+        if (childs.size() > 1) {
             // Top Component
-            Node topNode = child.get(child.size() - 1);
+            Node topNode = childs.get(childs.size() - 1);
             topNode.toBack();
         }
         showEmojis();
@@ -132,64 +138,57 @@ public class ChatViewController {
      * sets emojis on FlowPane
      */
     private void showEmojis() {
-        Path path = null;
-        try {
-            path = Paths.get((Objects.requireNonNull(StageManager.class.getResource("twemoji"))).toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        final File folder = new File(String.valueOf(path));
-        FlowPane flow = new FlowPane();
-        scrollPane.setContent(flow);
-        List<String> searchList = new ArrayList<>();
-        for (Emoji emoji : EmojiParser.getInstance().search(txtSearch.getText())) {
-            searchList.add(emoji.getHex());
-        }
-        for (String hex : listFilesForFolder(folder, searchList)) {
-            flow.getChildren().add((getImageStack(hex)));
-        }
+        loadEmojis();
     }
 
     /**
      * search through emoji folder
      */
-    private ArrayList<String> listFilesForFolder(final File folder, List<String> list) {
+    private ArrayList<String> loadEmojis() {
         ArrayList<String> pngNames = new ArrayList<>();
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry, list);
-            } else {
-                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-                if (list.contains(name)) {
-                    pngNames.add(name);
-                }
-            }
+        flow = new FlowPane();
+        scrollPane.setContent(flow);
+
+        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+
+
+        for (final File fileEntry : folder.listFiles()) {
+            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            pngNames.add(name);
+            flow.getChildren().add((getImageStack(fileEntry)));
         }
         return pngNames;
     }
 
     /**
      * creates StackPane for each image
+     *
+     * @param fileEntry
      */
-    private StackPane getImageStack(String hexStr) {
+    private StackPane getImageStack(File fileEntry) {
         StackPane stackPane = new StackPane();
         stackPane.setMaxSize(32, 32);
         stackPane.setPrefSize(32, 32);
         stackPane.setMinSize(32, 32);
         stackPane.setPadding(new Insets(3));
-        stackPane.getChildren().add(getEmojiImage(hexStr));
+        stackPane.getChildren().add(getEmojiImage(fileEntry));
         return stackPane;
     }
 
     /**
      * get correct image to the hexStr and sets the textField if emoji clicked
+     *
+     * @param fileEntry
      */
-    private ImageView getEmojiImage(String hexStr) {
+    private ImageView getEmojiImage(File fileEntry) {
         ImageView imageView = new ImageView();
-        imageView.setId(hexStr);
+        imageView.setId(fileEntry.getName().substring(0, fileEntry.getName().length() - 4));
         imageView.setFitWidth(32);
         imageView.setFitHeight(32);
-        Image image = new Image(Objects.requireNonNull(StageManager.class.getResource("twemoji/" + hexStr + ".png")).toExternalForm());
+
+        String path = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + "/" + fileEntry.getName();
+        File newFile = new File(path);
+        Image image = new Image(newFile.toURI().toString());
         imageView.setImage(image);
         AtomicReference<String> url = new AtomicReference<>("");
         imageView.setOnMouseClicked(event -> {
@@ -240,8 +239,8 @@ public class ChatViewController {
                 if (!HomeViewController.inServerChat) {
                     AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
-                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                        if (builder.getPrivateChatWebSocketCLient() != null && PrivateViewController.getSelectedChat() != null) {
+                            builder.getPrivateChatWebSocketCLient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
