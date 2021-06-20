@@ -23,7 +23,7 @@
             <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                <children>
                   <TextField id="nameText" prefHeight="25.0" prefWidth="123.0" style="-fx-background-color: #333333;" />
-                  <Button id="changeName" mnemonicParsing="false" prefHeight="25.0" prefWidth="64.0" style="-fx-background-radius: 10; -fx-background-color: ff9999;" text="change" textFill="WHITE" />
+                  <Button id="changeName" mnemonicParsing="false" prefHeight="25.0" prefWidth="64.0" style="-fx-background-radius: 10; -fx-background-color: ff9999;" text="%button.change" textFill="WHITE" />
                   <HBox prefHeight="100.0" prefWidth="138.0" />
                </children>
             </HBox>
@@ -31,7 +31,7 @@
       </VBox>
       <VBox alignment="CENTER" prefHeight="75.0" prefWidth="400.0">
          <children>
-            <Button id="deleteServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" style="-fx-background-color: red;" text="Delete Server" textFill="WHITE">
+            <Button id="deleteServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" style="-fx-background-color: red;" text="%button.deleteServer" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>

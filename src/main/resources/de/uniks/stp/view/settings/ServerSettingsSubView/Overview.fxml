@@ -20,7 +20,7 @@
       <VBox prefHeight="250.0" prefWidth="400.0" />
       <VBox alignment="CENTER" prefHeight="75.0" prefWidth="400.0">
          <children>
-            <Button id="leaveServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" style="-fx-background-color: red;" text="Leave Server" textFill="WHITE">
+            <Button id="leaveServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" style="-fx-background-color: red;" text="%button.leaveServer" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
