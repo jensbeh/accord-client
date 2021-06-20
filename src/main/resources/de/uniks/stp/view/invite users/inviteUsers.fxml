@@ -25,9 +25,9 @@
       <HBox prefHeight="25.0" prefWidth="590.0">
          <children>
             <Pane prefHeight="25.0" prefWidth="29.0" />
-            <Label text="Temp" textFill="WHITE" />
+            <Label id="tempLabel" text="%label.temp" textFill="WHITE" />
             <Pane prefHeight="25.0" prefWidth="36.0" />
-            <Label text="User limit" textFill="WHITE" />
+            <Label id="userLimitLabel" text="%label.userLimit" textFill="WHITE" />
          </children>
       </HBox>
       <VBox id="inviteBox" prefHeight="320.0" prefWidth="590.0" />

@@ -183,7 +183,7 @@ public class StageManager extends Application {
 
             //setting stage settings
             subStage = new Stage();
-            subStage.setTitle("ServerSettings");
+            setSubStageTitle("window_title_serverSettings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -206,7 +206,7 @@ public class StageManager extends Application {
     public static void showInviteUsersScreen() {
         try {
             // load view
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsers.fxml")));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsers.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
             // init controller
@@ -214,7 +214,7 @@ public class StageManager extends Application {
             inviteUsersController.init();
 
             subStage = new Stage();
-            subStage.setTitle("Invite Users");
+            setSubStageTitle("window_title_inviteUsers");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -354,5 +354,6 @@ public class StageManager extends Application {
         LanguageController.onLanguageChanged();
         LoginScreenController.onLanguageChanged();
         HomeViewController.onLanguageChanged();
+        InviteUsersController.onLanguageChanged();
     }
 }

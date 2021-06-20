@@ -45,8 +45,8 @@ public class ServerViewController {
 
     private VBox chatBox;
     private ChatViewController messageViewController;
-    private MenuItem serverSettings;
-    private MenuItem inviteUsers;
+    private static MenuItem serverSettings;
+    private static MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
     private final HomeViewController homeViewController;
@@ -160,6 +160,7 @@ public class ServerViewController {
             inviteUsers = serverMenuButton.getItems().get(1);
             inviteUsers.setOnAction(this::onInviteUsersClicked);
         }
+        onLanguageChanged();
         builder.setServerChatWebSocketClient(this.chatWebSocketClient); // TODO because of message view
 
         showCurrentUser();
@@ -476,6 +477,12 @@ public class ServerViewController {
 
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
+
+        if (serverSettings != null)
+            serverSettings.setText(lang.getString("menuItem.serverSettings"));
+
+        if (inviteUsers != null)
+            inviteUsers.setText(lang.getString("menuItem.inviteUsers"));
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
