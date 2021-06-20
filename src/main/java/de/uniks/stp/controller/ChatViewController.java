@@ -81,7 +81,6 @@ public class ChatViewController {
         HBox messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
-        TextField txtSearch = (TextField) view.lookup("#emojiSearchTextField");
         scrollPane = (ScrollPane) view.lookup("#scroll");
 
         //ListView with message as parameter and observableList
@@ -98,11 +97,8 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
-
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
-
-        txtSearch.textProperty().addListener(((observable, oldValue, newValue) -> showEmojis()));
     }
 
     /**
@@ -131,33 +127,10 @@ public class ChatViewController {
 
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            Assert.assertNotNull(ResourceManager.getEmojiList());
-            //HashMap<String,String> test = ResourceManager.getEmojiList();
-            List<List<String>> test = ResourceManager.getEmoList();
-
-            System.out.println("size" + test.size());
-            /*if(test.get(name).contains(messageTextField.getText())){
-                pngNames.add(name);
-                flow.getChildren().add((getImageStack(fileEntry)));
-            }*/
-        }
-    }
-
-    /**
-     * search through emoji folder
-     */
-    /*private void loadEmojis() {
-        ArrayList<String> pngNames = new ArrayList<>();
-        FlowPane flow = new FlowPane();
-        scrollPane.setContent(flow);
-        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
             pngNames.add(name);
             flow.getChildren().add((getImageStack(fileEntry)));
         }
-    }*/
+    }
 
     /**
      * creates StackPane for each image
