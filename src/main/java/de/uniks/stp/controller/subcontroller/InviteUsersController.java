@@ -9,12 +9,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.VBox;
 
+import java.util.Objects;
+
 public class InviteUsersController {
     private static RadioButton tempSelected;
     private static RadioButton userLimitSelected;
     private static VBox inviteBox;
-    private Server server;
-    private ModelBuilder builder;
+    private final Server server;
+    private final ModelBuilder builder;
     private static Parent view;
     private InviteUsersTempSubController inviteUsersTempSubController;
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;
@@ -44,7 +46,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsersTemp.fxml"));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersTemp.fxml")));
             //Controller
             inviteUsersTempSubController = new InviteUsersTempSubController(view, builder, server);
             inviteUsersTempSubController.init();
@@ -60,7 +62,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(StageManager.class.getResource("view/invite users/inviteUsersUserLimit.fxml"));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersUserLimit.fxml")));
             //Controller
             inviteUsersUserLimitSubController = new InviteUsersUserLimitSubController(view, builder, server);
             inviteUsersUserLimitSubController.init();

@@ -14,7 +14,6 @@ public class OverviewController {
     private final ModelBuilder builder;
     private final RestClient restClient;
     private Label serverName;
-    private Button leaveServer;
 
     public OverviewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -25,7 +24,7 @@ public class OverviewController {
     public void init() {
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
-        this.leaveServer = (Button) view.lookup("#leaveServer");
+        Button leaveServer = (Button) view.lookup("#leaveServer");
         //Buttons
         leaveServer.setOnAction(this::onLeaveServerClicked);
     }
@@ -34,13 +33,10 @@ public class OverviewController {
      * User leaves the current server with webSocket
      */
     private void onLeaveServerClicked(ActionEvent actionEvent) {
-        restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
-            builder.getPersonalUser().getServer().remove(builder.getCurrentServer());
-        });
+        restClient.postServerLeave(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> builder.getPersonalUser().getServer().remove(builder.getCurrentServer()));
         Platform.runLater(() -> {
             Stage stage = (Stage) serverName.getScene().getWindow();
             stage.close();
         });
-
     }
 }

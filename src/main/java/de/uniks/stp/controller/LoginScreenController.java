@@ -145,8 +145,8 @@ public class LoginScreenController {
                             String status = body.getObject().getString("status");
                             if (status.equals("success")) {
                                 //build user with key
-                                String userkey = body.getObject().getJSONObject("data").getString("userKey");
-                                builder.buildPersonalUser(username, password, userkey);
+                                String userKey = body.getObject().getJSONObject("data").getString("userKey");
+                                builder.buildPersonalUser(username, password, userKey);
                                 //show message on screen
                                 this.message = body.getObject().getString("status");
                                 Platform.runLater(() -> setError("error.login_success"));
@@ -172,14 +172,14 @@ public class LoginScreenController {
                         if (status.equals("success")) {
                             //get name and password from server
                             String name = body.getObject().getJSONObject("data").getString("name");
-                            String passw = body.getObject().getJSONObject("data").getString("password");
+                            String pass = body.getObject().getJSONObject("data").getString("password");
                             //show message on screen
                             this.message = body.getObject().getString("status");
                             //fill in username and password and login of tempUser
                             Platform.runLater(() -> {
                                 setError("error.login_success");
                                 usernameTextField.setText(name);
-                                passwordTextField.setText(passw);
+                                passwordTextField.setText(pass);
                                 tempUserCheckBox.setSelected(false);
                                 loginButtonOnClick(actionEvent);
                             });
@@ -276,12 +276,12 @@ public class LoginScreenController {
      */
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        usernameTextField.setPromptText(lang.getString("textfield.prompt_username"));
-        passwordTextField.setPromptText(lang.getString("textfield.prompt_password"));
+        usernameTextField.setPromptText(lang.getString("textField.prompt_username"));
+        passwordTextField.setPromptText(lang.getString("textField.prompt_password"));
         rememberCheckBox.setText(lang.getString("checkbox.remember_me"));
         tempUserCheckBox.setText(lang.getString("checkbox.login_temp_user"));
         loginButton.setText(lang.getString("button.login"));
-        signInButton.setText(lang.getString("button.signin"));
+        signInButton.setText(lang.getString("button.signIn"));
 
         if (error != null && !error.equals("")) {
             errorLabel.setText(lang.getString(error));

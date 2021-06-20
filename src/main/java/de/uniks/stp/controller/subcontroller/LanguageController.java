@@ -13,7 +13,7 @@ import java.util.*;
 
 public class LanguageController extends SubSetting {
 
-    private Parent view;
+    private final Parent view;
     private ComboBox<String> languageSelector;
     private static Label selectLanguageLabel;
     private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
@@ -31,7 +31,7 @@ public class LanguageController extends SubSetting {
             Locale.setDefault(currentLocale);
             StageManager.resetLangBundle();
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println(e+"");
             e.printStackTrace();
         }
     }
@@ -90,7 +90,7 @@ public class LanguageController extends SubSetting {
             prop.setProperty("LANGUAGE", language);
             prop.store(op, null);
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println(e+"");
             e.printStackTrace();
         }
     }

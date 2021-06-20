@@ -12,7 +12,7 @@ public class UserProfileController {
     public HBox root;
     public Label userName;
     private Circle onlineStatus;
-    private Parent view;
+    private final Parent view;
 
 
     public UserProfileController(Parent view) {
@@ -26,9 +26,7 @@ public class UserProfileController {
     }
 
     public void setUserName(String name) {
-        Platform.runLater(() -> {
-            userName.setText(name);
-        });
+        Platform.runLater(() -> userName.setText(name));
     }
 
     public void setOnline() {

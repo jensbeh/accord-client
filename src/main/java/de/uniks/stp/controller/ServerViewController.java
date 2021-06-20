@@ -1,6 +1,5 @@
 package de.uniks.stp.controller;
 
-import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.AlternateUserListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -36,16 +35,13 @@ public class ServerViewController {
     private final RestClient restClient;
     private final Server server;
     private final Parent view;
-    private ScrollPane scrollPaneUserBox;
     private MenuButton serverMenuButton;
     private static Label textChannelLabel;
     private static Label generalLabel;
     private static Label welcomeToAccord;
-    private static Button sendMessageButton;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
-    private ServerSystemWebSocket systemWebSocketClient;
 
     private VBox chatBox;
     private ChatViewController messageViewController;
@@ -53,8 +49,7 @@ public class ServerViewController {
     private MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
-    private ScrollPane scrollPaneCategories;
-    private HomeViewController homeViewController;
+    private final HomeViewController homeViewController;
     private Line dividerLineUser;
     private VBox userBox;
     private int loadedCategories;
@@ -122,14 +117,15 @@ public class ServerViewController {
     /**
      * Initialise all view parameters
      */
+    @SuppressWarnings("unchecked")
     public void startController(ServerReadyCallback serverReadyCallback) {
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
-        scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
+        ScrollPane scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
         categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
         textChannelLabel = (Label) view.lookup("#textChannel");
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
-        scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
@@ -141,18 +137,10 @@ public class ServerViewController {
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
 
-        loadServerInfos(new ServerInfoCallback() {
-            @Override
-            public void onSuccess(String status) {
-                if (status.equals("success")) {
-                    if (getServer().getCategories().size() == 0) {
-                        loadCategories(new CategoriesLoadedCallback() {
-                            @Override
-                            public void onSuccess(String status) {
-                                serverReadyCallback.onSuccess(status);
-                            }
-                        });
-                    }
+        loadServerInfo(status -> {
+            if (status.equals("success")) {
+                if (getServer().getCategories().size() == 0) {
+                    loadCategories(serverReadyCallback::onSuccess);
                 }
             }
         }); // members & (categories)
@@ -229,7 +217,7 @@ public class ServerViewController {
      */
     public void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("ChatView.fxml"), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ChatView.fxml")), StageManager.getLangBundle());
             this.messageViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
@@ -250,7 +238,7 @@ public class ServerViewController {
      */
     private void showCurrentUser() {
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("UserProfileView.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("UserProfileView.fxml")));
             UserProfileController userProfileController = new UserProfileController(root);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
@@ -274,7 +262,7 @@ public class ServerViewController {
     /**
      * Method to get Server information
      */
-    public void loadServerInfos(ServerInfoCallback serverInfoCallback) {
+    public void loadServerInfo(ServerInfoCallback serverInfoCallback) {
         restClient.getServerUsers(this.server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -320,7 +308,7 @@ public class ServerViewController {
         Platform.runLater(() -> {
             this.dividerLineUser.setVisible(onlineUsers.size() > 0 && offlineUsers.size() > 0);
             if (onlineUsers.size() == 0) {
-                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
+                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(0));
                 offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
@@ -357,14 +345,11 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    loadChannels(categories, new ChannelLoadedCallback() {
-                        @Override
-                        public void onSuccess(String status) {
-                            loadedCategories++;
-                            if (loadedCategories == data.length()) {
-                                loadedCategories = 0;
-                                categoriesLoadedCallback.onSuccess(status);
-                            }
+                    loadChannels(categories, status1 -> {
+                        loadedCategories++;
+                        if (loadedCategories == data.length()) {
+                            loadedCategories = 0;
+                            categoriesLoadedCallback.onSuccess(status1);
                         }
                     });
                 }
@@ -412,14 +397,11 @@ public class ServerViewController {
                             }
                         }
                     }
-                    loadChannelMessages(channel, new MessagesLoadedCallback() {
-                        @Override
-                        public void onSuccess(String status) {
-                            loadedChannel++;
-                            if (loadedChannel == data.length()) {
-                                loadedChannel = 0;
-                                channelLoadedCallback.onSuccess(status);
-                            }
+                    loadChannelMessages(channel, status1 -> {
+                        loadedChannel++;
+                        if (loadedChannel == data.length()) {
+                            loadedChannel = 0;
+                            channelLoadedCallback.onSuccess(status1);
                         }
                     });
                 }
@@ -487,16 +469,13 @@ public class ServerViewController {
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (textChannelLabel != null)
-            textChannelLabel.setText(lang.getString("label.textchannel"));
+            textChannelLabel.setText(lang.getString("label.textChannel"));
 
         if (generalLabel != null)
             generalLabel.setText(lang.getString("label.general"));
 
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
-
-        if (sendMessageButton != null)
-            sendMessageButton.setText(lang.getString("button.send"));
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
@@ -523,7 +502,7 @@ public class ServerViewController {
      */
     public void generateCategoryChannelView(Categories categories) {
         try {
-            Parent view = FXMLLoader.load(StageManager.class.getResource("CategorySubView.fxml"));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("CategorySubView.fxml")));
             view.setId(categories.getId());
             CategorySubController tempCategorySubController = new CategorySubController(view, this, categories);
             tempCategorySubController.init();

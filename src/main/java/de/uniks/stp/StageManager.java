@@ -182,7 +182,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            serverSettingsController = new ServerSettingsController(root, builder, homeViewController, builder.getCurrentServer());
+            serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
             serverSettingsController.init();
 
             //setting stage settings
@@ -244,7 +244,7 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            startSnakeController = new StartSnakeController(root, builder);
+            startSnakeController = new StartSnakeController(root);
             startSnakeController.init();
 
             //start snake stage

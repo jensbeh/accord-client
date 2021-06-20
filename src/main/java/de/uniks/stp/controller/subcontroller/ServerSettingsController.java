@@ -2,7 +2,6 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.HomeViewController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import javafx.event.ActionEvent;
@@ -12,12 +11,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ServerSettingsController {
-    private final HomeViewController homeViewController;
-    private Parent view;
-    private ModelBuilder builder;
-    private Server server;
+    private final Parent view;
+    private final ModelBuilder builder;
+    private final Server server;
     private Button selectedButton;
     private Button overview;
     private Button channel;
@@ -29,11 +28,10 @@ public class ServerSettingsController {
     private String userId;
 
 
-    public ServerSettingsController(Parent view, ModelBuilder modelBuilder, HomeViewController homeViewController, Server server) {
+    public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
         this.view = view;
         this.builder = modelBuilder;
         this.server = server;
-        this.homeViewController = homeViewController;
     }
 
     public void init() {
@@ -84,11 +82,11 @@ public class ServerSettingsController {
         try {
             Parent root;
             if (builder.getCurrentServer().getOwner().equals(userId)) {
-                root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml"), StageManager.getLangBundle());
-                OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder, homeViewController);
+                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml")), StageManager.getLangBundle());
+                OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
                 overviewOwnerController.init();
             } else {
-                root = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettingsSubView/Overview.fxml"), StageManager.getLangBundle());
+                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettingsSubView/Overview.fxml")), StageManager.getLangBundle());
                 OverviewController overviewController = new OverviewController(root, builder);
                 overviewController.init();
             }
@@ -158,7 +156,7 @@ public class ServerSettingsController {
         // clear old and load new subSetting view
         try {
             this.serverSettingsContainer.getChildren().clear();
-            Parent serverSettingsField = FXMLLoader.load(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml"));
+            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml")));
 
             switch (fxmlName) {
                 case "Channel":

@@ -101,7 +101,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         builder = new ModelBuilder();
         this.stage = stage;
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         app = mockApp;

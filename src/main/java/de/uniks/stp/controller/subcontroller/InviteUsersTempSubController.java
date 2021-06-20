@@ -34,13 +34,14 @@ public class InviteUsersTempSubController {
         this.server = server;
     }
 
+    @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
         deleteLink = (Button) view.lookup("#deleteLink");
         linkTextField = (TextField) view.lookup("#linkTextField");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
-        links = new HashMap<String, String>();
+        links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
@@ -68,7 +69,7 @@ public class InviteUsersTempSubController {
     }
 
     /**
-     * OnCreate clicked send restclient request to the server and handles the response accordingly.
+     * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
         System.out.println("onCreateLinkClicked");
@@ -88,7 +89,7 @@ public class InviteUsersTempSubController {
     }
 
     /**
-     * OnDelete clicked removes selected Link from the Combobox
+     * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (selectedLink != null) {
@@ -104,7 +105,7 @@ public class InviteUsersTempSubController {
 
 
     /**
-     * updates the selectedLink and the textfield
+     * updates the selectedLink and the TextField
      */
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedLink = this.linkComboBox.getSelectionModel().getSelectedItem();

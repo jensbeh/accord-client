@@ -6,7 +6,6 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -123,7 +122,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void start(Stage stage) {
         builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
-        builder.setPrivateChatWebSocketCLient(privateChatWebSocket);
+        builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
