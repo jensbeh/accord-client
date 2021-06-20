@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -82,7 +83,7 @@ public class ResourceManager {
      * load snakeGameIcons from file
      */
     public static Image loadSnakeGameIcon(String image) {
-        return new Image(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png").toString());
+        return new Image(Objects.requireNonNull(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png")).toString());
     }
 
     /**
@@ -212,7 +213,7 @@ public class ResourceManager {
                     // if the entry is a file, extracts it
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
                     byte[] bytesIn = new byte[4096];
-                    int read = 0;
+                    int read;
                     while ((read = zipInputStream.read(bytesIn)) != -1) {
                         bos.write(bytesIn, 0, read);
                     }

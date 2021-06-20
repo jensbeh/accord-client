@@ -1,5 +1,6 @@
 package util;
 
+@SuppressWarnings("ALL")
 public class Constants {
     // Server
     public static final String WEBSOCKET_PATH = "/ws";
@@ -18,11 +19,6 @@ public class Constants {
     public static final String SERVER_CHANNELS_PATH = "/channels";
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
     public static final String SERVER_INVITES = "/invites";
-
-
-    // Communication
-    public static final String COM_USERKEY = "userKey";
-    public static final String COM_NOOP = "noop";
 
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";

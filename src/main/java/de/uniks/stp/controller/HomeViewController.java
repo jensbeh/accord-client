@@ -18,29 +18,24 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import util.Constants;
 import util.ResourceManager;
 
-import javax.websocket.CloseReason;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
     private HBox root;
-    private VBox serverBox;
     private ScrollPane scrollPaneServerBox;
-    private Parent view;
+    private final Parent view;
     private ListView<Server> serverList;
     private Circle addServer;
     private Circle homeButton;
@@ -49,7 +44,6 @@ public class HomeViewController {
     private static Label homeLabel;
     private static Button logoutButton;
     private static Stage stage;
-    private static String stageTitleName;
     private ModelBuilder builder;
     private AlternateServerListCellFactory serverListCellFactory;
     private PrivateViewController privateViewController;
@@ -72,12 +66,11 @@ public class HomeViewController {
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
         homeButton = (Circle) view.lookup("#homeButton");
-        serverBox = (VBox) scrollPaneServerBox.getContent().lookup("#serverBox");
         settingsButton = (Button) view.lookup("#settingsButton");
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
         addServer = (Circle) view.lookup("#addServer");
-        addServer.setOnMouseClicked(this::onshowCreateServer);
+        addServer.setOnMouseClicked(this::onShowCreateServer);
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverListCellFactory = new AlternateServerListCellFactory();
         serverList.setCellFactory(serverListCellFactory);
@@ -91,24 +84,18 @@ public class HomeViewController {
         ResourceManager.extractEmojis();
 
         showPrivateView();
-        showServers(new ServerLoadedCallback() {
-            @Override
-            public void onSuccess() {
-                for (Server server : builder.getPersonalUser().getServer()) {
-                    try {
-                        Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-                        serverViews.put(server, serverView);
-                        serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                        serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
-                            @Override
-                            public void onSuccess(String status) {
-                                // TODO start here homeView -> from loginView this!
-                                System.out.println("loaded Server " + server.getName());
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        showServers(() -> {
+            for (Server server : builder.getPersonalUser().getServer()) {
+                try {
+                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                    serverViews.put(server, serverView);
+                    serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
+                    serverController.get(server).startController(status -> {
+                        // TODO start here homeView -> from loginView this!
+                        System.out.println("loaded Server " + server.getName());
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -166,7 +153,7 @@ public class HomeViewController {
         inServerChat = false;
         try {
             if (privateView == null) {
-                privateView = FXMLLoader.load(StageManager.class.getResource("PrivateView.fxml"), StageManager.getLangBundle());
+                privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("PrivateView.fxml")), StageManager.getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 this.root.getChildren().clear();
@@ -208,10 +195,10 @@ public class HomeViewController {
      *
      * @param mouseEvent is called when clicked on the + Button.
      */
-    private void onshowCreateServer(MouseEvent mouseEvent) {
+    private void onShowCreateServer(MouseEvent mouseEvent) {
 
         try {
-            Parent root = FXMLLoader.load(StageManager.class.getResource("controller/CreateJoinView.fxml"), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
             CreateServerController createServerController = new CreateServerController(root, builder,stage);
@@ -233,29 +220,21 @@ public class HomeViewController {
         builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
-            showServers(new ServerLoadedCallback() {
-                @Override
-                public void onSuccess() {
-                    for (Server server : builder.getPersonalUser().getServer()) {
-                        try {
-                            if (!serverController.containsKey(server)) {
-                                builder.setCurrentServer(server);
-                                Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-                                serverViews.put(server, serverView);
-                                serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                                serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
-                                    @Override
-                                    public void onSuccess(String status) {
-                                        Platform.runLater(() -> {
-                                            updateServerListColor();
-                                            showServerView();
-                                        });
-                                    }
-                                });
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            showServers(() -> {
+                for (Server server : builder.getPersonalUser().getServer()) {
+                    try {
+                        if (!serverController.containsKey(server)) {
+                            builder.setCurrentServer(server);
+                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                            serverViews.put(server, serverView);
+                            serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
+                            serverController.get(server).startController(status -> Platform.runLater(() -> {
+                                updateServerListColor();
+                                showServerView();
+                            }));
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -271,33 +250,24 @@ public class HomeViewController {
         builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
-            showServers(new ServerLoadedCallback() {
-                @Override
-                public void onSuccess() {
-                    for (Server server : builder.getPersonalUser().getServer()) {
-                        try {
-                            if (!serverController.containsKey(server)) {
-                                builder.setCurrentServer(server);
-                                Parent serverView = FXMLLoader.load(StageManager.class.getResource("ServerView.fxml"), StageManager.getLangBundle());
-                                serverViews.put(server, serverView);
-                                serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                                serverController.get(server).startController(new ServerViewController.ServerReadyCallback() {
-                                    @Override
-                                    public void onSuccess(String status) {
-                                        Platform.runLater(() -> {
-                                            updateServerListColor();
-                                            showServerView();
-                                        });
-                                    }
-                                });
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            showServers(() -> {
+                for (Server server : builder.getPersonalUser().getServer()) {
+                    try {
+                        if (!serverController.containsKey(server)) {
+                            builder.setCurrentServer(server);
+                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                            serverViews.put(server, serverView);
+                            serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
+                            serverController.get(server).startController(status -> Platform.runLater(() -> {
+                                updateServerListColor();
+                                showServerView();
+                            }));
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             });
-
         });
     }
 
@@ -379,10 +349,10 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (builder.getPrivateChatWebSocketCLient() != null) {
+        if (builder.getPrivateChatWebSocketClient() != null) {
             try {
-                if (builder.getPrivateChatWebSocketCLient().getSession() != null) {
-                    builder.getPrivateChatWebSocketCLient().stop();
+                if (builder.getPrivateChatWebSocketClient().getSession() != null) {
+                    builder.getPrivateChatWebSocketClient().stop();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -487,21 +457,10 @@ public class HomeViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
-
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
-
-        if (stageTitleName != null && !stageTitleName.equals("") && stage != null) {
-            stage.setTitle(lang.getString(stageTitleName));
-        }
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();
-    }
-
-    public static void setStageTitle(String name) {
-        ResourceBundle lang = StageManager.getLangBundle();
-        stageTitleName = name;
-        stage.setTitle(lang.getString(stageTitleName));
     }
 }
