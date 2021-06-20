@@ -9,10 +9,10 @@
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="100.0" spacing="5.0" style="-fx-background-color: #333333;">
          <children>
-            <Button id="overview" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="Overview" textFill="WHITE" />
-            <Button id="channel" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="Channel" textFill="WHITE" />
-            <Button id="category" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="Category" textFill="WHITE" />
-            <Button id="privilege" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="Privilege" textFill="WHITE" />
+            <Button id="overview" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="%button.overview" textFill="WHITE" />
+            <Button id="channel" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="%button.channel" textFill="WHITE" />
+            <Button id="category" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="%button.category" textFill="WHITE" />
+            <Button id="privilege" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #333333;" text="%button.privilege" textFill="WHITE" />
          </children>
          <padding>
             <Insets top="10.0" />

@@ -21,6 +21,7 @@ import javafx.util.StringConverter;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class ServerSettingsPrivilegeController extends SubSetting {
 
@@ -71,7 +72,8 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 @Override
                 public String toString(Categories object) {
                     if (object == null) {
-                        return "Select category...";
+                        ResourceBundle lang = StageManager.getLangBundle();
+                        return lang.getString("comboBox.selectCategory");
                     }
                     return object.getName();
                 }
@@ -99,7 +101,8 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                     @Override
                     public String toString(ServerChannel object) {
                         if (object == null) {
-                            return "Select channel...";
+                            ResourceBundle lang = StageManager.getLangBundle();
+                            return lang.getString("comboBox.selectChannel");
                         }
                         return object.getName();
                     }
@@ -136,7 +139,9 @@ public class ServerSettingsPrivilegeController extends SubSetting {
      * PropertyChange when channel privilege changed
      */
     private void onPrivilegeChanged(PropertyChangeEvent propertyChangeEvent) {
-        privilegeOnButton.setSelected(selectedChannel.isPrivilege());
+        if (selectedChannel != null)
+            privilegeOnButton.setSelected(selectedChannel.isPrivilege());
+
         privilegeOffButton.setSelected(!selectedChannel.isPrivilege());
         if (!selectedChannel.isPrivilege()) {
             Platform.runLater(() -> this.privilegeOn.getChildren().clear());
@@ -199,7 +204,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             if (selectedChannel.isPrivilege()) {
                 try {
                     //view
-                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_Privilege_UserChange.fxml")));
+                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_Privilege_UserChange.fxml")), StageManager.getLangBundle());
                     //Controller
                     serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
                     serverSubSettingsPrivilegeController.init();

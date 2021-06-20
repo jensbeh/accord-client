@@ -156,7 +156,7 @@ public class ServerSettingsController {
         // clear old and load new subSetting view
         try {
             this.serverSettingsContainer.getChildren().clear();
-            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml")));
+            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
 
             switch (fxmlName) {
                 case "Channel":
