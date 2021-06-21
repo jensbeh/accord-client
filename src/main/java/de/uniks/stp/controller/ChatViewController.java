@@ -25,18 +25,25 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static util.Constants.*;
@@ -212,7 +219,6 @@ public class ChatViewController {
     }
 
     private void delete(ActionEvent actionEvent) {
-        //TODO set right style
         try {
             Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
@@ -220,19 +226,22 @@ public class ChatViewController {
             stage.setTitle("Delete Message");
             msg = (Label) subview.lookup("#delete");
             msg.setText("are you sure you want to delete " + "\n" + "the following message:");
-            VBox box = (VBox) subview.lookup("#deleteMsg");
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
             deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setStyle("-fx-background-color: #4a4a4a;");
             pane.setStyle("-fx-background:  #4a4a4a;");
             String msgText = formattedText(text);
             deleteMsg.parseAndAppend(msgText);
+            deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
             No = (Button) subview.lookup("#chooseCancle");
             Yes = (Button) subview.lookup("#chooseDelete");
             Yes.setOnAction(this::deleteMessage);
             No.setOnAction(this::cancelDelete);
             stage.setScene(scene);
+            stage.setResizable(false);
+            stage.initOwner(messageBox.getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
