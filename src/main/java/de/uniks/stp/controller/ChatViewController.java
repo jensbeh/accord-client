@@ -22,14 +22,15 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import org.json.JSONObject;
-import org.junit.Assert;
-import util.ResourceManager;
 
 import javax.json.JsonException;
 import java.io.File;
@@ -50,6 +51,10 @@ public class ChatViewController {
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
+    private String text;
+    private ContextMenu contextMenu;
+    private ResourceBundle lang;
+    private HBox messageBox;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -78,7 +83,7 @@ public class ChatViewController {
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         messageTextField.setText("");
         sendButton.setOnAction(this::sendButtonClicked);
-        HBox messageBox = (HBox) view.lookup("#messageBox");
+        messageBox = (HBox) view.lookup("#messageBox");
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
@@ -88,6 +93,7 @@ public class ChatViewController {
         messageList.setStyle("-fx-background-color: grey;");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
         messages = new ArrayList<>();
+        lang = StageManager.getLangBundle();
 
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
@@ -134,7 +140,6 @@ public class ChatViewController {
 
     /**
      * creates StackPane for each image
-     *
      */
     private StackPane getImageStack(File fileEntry) {
         StackPane stackPane = new StackPane();
@@ -148,7 +153,6 @@ public class ChatViewController {
 
     /**
      * get correct image to the hexStr and sets the textField if emoji clicked
-     *
      */
     private ImageView getEmojiImage(File fileEntry) {
         ImageView imageView = new ImageView();
@@ -176,13 +180,65 @@ public class ChatViewController {
      * build menu with chat options
      */
     private void chatClicked(MouseEvent mouseEvent) {
-        final ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
-        final MenuItem item1 = new MenuItem("copy");
-        item1.setStyle("-fx-text-fill: #FFFFFF");
-        contextMenu.getItems().addAll(item1);
-        messageList.setContextMenu(contextMenu);
-        contextMenu.setOnAction(this::copy);
+        if (contextMenu == null) {
+            contextMenu = new ContextMenu();
+            contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
+            final MenuItem item1 = new MenuItem("copy");
+            final MenuItem item2 = new MenuItem("edit");
+            final MenuItem item3 = new MenuItem("delete");
+            item1.setStyle("-fx-text-fill: #FFFFFF");
+            item2.setStyle("-fx-text-fill: #FFFFFF");
+            item3.setStyle("-fx-text-fill: #FFFFFF");
+            contextMenu.getItems().addAll(item1, item2, item3);
+        }
+        if (messageList.getSelectionModel().getSelectedItem() == null) {
+            messageList.setContextMenu(null);
+        } else {
+            messageList.setContextMenu(contextMenu);
+            text = messageList.getSelectionModel().getSelectedItem().getMessage();
+        }
+        contextMenu.getItems().get(0).setOnAction(this::copy);
+        contextMenu.getItems().get(1).setOnAction(this::edit);
+        contextMenu.getItems().get(2).setOnAction(this::delete);
+        messageList.getSelectionModel().select(null);
+    }
+
+    private void delete(ActionEvent actionEvent) {
+        //TODO set right style
+        ButtonType button = new ButtonType("yes");
+        ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
+        alert.setTitle("Delete Message");
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStyleClass().remove("alert");
+        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
+        alert.setHeaderText("are you sure you want to delete the following message: " + "\n" + text);
+        buttonBar.setStyle("-fx-font-size: 14px;" +
+                "-fx-text-fill: white;"
+                + "-fx-background-color: indianred;");
+        buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
+        buttonBar.getButtons().get(1).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
+        dialogPane.getStylesheets().add(
+                StageManager.class.getResource("styles/AlertStyle.css").toExternalForm());
+        dialogPane.getStyleClass().add("AlertStyle");
+        Optional<ButtonType> result = alert.showAndWait();
+        //TODO delete Message
+    }
+
+    private void edit(ActionEvent actionEvent) {
+        Button editButton = new Button();
+        editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
+        editButton.setText("edit");
+        Button abortButton = new Button();
+        abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
+        abortButton.setText("abort");
+        messageBox.getChildren().remove(sendButton);
+        messageBox.getChildren().add(editButton);
+        messageBox.getChildren().add(abortButton);
+        messageBox.setPadding(new Insets(0, 20, 0, 0));
+        messageTextField.setText(text);
+
+
     }
 
     /**
@@ -190,7 +246,6 @@ public class ChatViewController {
      */
     private void copy(ActionEvent actionEvent) {
         final ClipboardContent clipboardContent = new ClipboardContent();
-        String text = messageList.getSelectionModel().getSelectedItem().getMessage();
         clipboardContent.putString(text);
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }
