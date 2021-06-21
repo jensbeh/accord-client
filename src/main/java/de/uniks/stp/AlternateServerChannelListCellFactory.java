@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import org.junit.Assert;
 
 import java.lang.reflect.Field;
 
@@ -50,6 +51,8 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
             HBox notificationCell = new HBox();
             HBox nameAndNotificationCell = new HBox();
 
+
+
             // get visibility of scrollbar
             try {
                 VBox vBox = (VBox) channelListView.getParent().getParent();
@@ -75,7 +78,6 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
                     this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
                 }
-
                 // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setPrefWidth(USE_COMPUTED_SIZE);
@@ -105,7 +107,15 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set channelName
                 name.setId(item.getId());
-                name.setText("\uD83D\uDD8A  " + item.getName());
+                if(item.getType() != null){
+                    if(item.getType().equals("text")){
+                        name.setText("\uD83D\uDD8A  " + item.getName());
+                    }else if(item.getType().equals("audio")){
+                        name.setText("\uD83D\uDD0A  " + item.getName());
+                    }
+                }else{
+                    name.setText("\uD83D\uDD8A  " + item.getName());
+                }
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
                 nameCell.getChildren().add(name);

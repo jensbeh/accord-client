@@ -490,6 +490,36 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         }
         Assert.assertFalse(found);
 
+        // Create Audio Channel
+        channelSize = currentServer.getCategories().get(0).getChannel().size();
+        clickOn(createChannelTextField);
+        createChannelTextField.setText("NewTestAudioChannel");
+        RadioButton voiceButton = lookup("#channelVoiceRadioButton").query();
+        clickOn(voiceButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn(channelCreateButton);
+
+        message = new JSONObject().put("action", "channelCreated").put("data", new JSONObject()
+                .put("id", "60adc8aec77d3f78988b5XXX")
+                .put("name", "NewTestAudioChannel").put("type", "audio").put("privileged", false).put("category", "5e2fbd8770dd077d03df600")
+                .put("members", new String[0]).put("audioMembers", new String[0]));
+
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals(channelSize + 1, currentServer.getCategories().get(0).getChannel().size());
+        Assert.assertEquals("", createChannelTextField.getText());
+        found = false;
+        for (ServerChannel channel : app.getBuilder().getCurrentServer().getCategories().get(0).getChannel()) {
+            if (channel.getName().equals("NewTestAudioChannel")) {
+                Assert.assertEquals("audio", channel.getType());
+                found = true;
+                break;
+            }
+        }
+        Assert.assertTrue(found);
+
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 Platform.runLater(((Stage) s)::close);

@@ -220,7 +220,7 @@ public class ServerSettingsChannelController extends SubSetting {
      * @param actionEvent the mouse click event
      */
     private void onChannelVoiceButtonClicked(ActionEvent actionEvent) {
-        channelType = "voice";
+        channelType = "audio";
     }
 
     /**
@@ -232,6 +232,7 @@ public class ServerSettingsChannelController extends SubSetting {
         if (!createChannelTextField.getText().isEmpty()) {
             String channelName = createChannelTextField.getText();
             String[] members = new String[0];
+            System.out.println("Channeltype: " + channelType);
             restClient.createChannel(server.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), channelName, channelType, false, members, response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
