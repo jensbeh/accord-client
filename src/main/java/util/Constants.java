@@ -19,6 +19,7 @@ public class Constants {
     public static final String SERVER_CHANNELS_PATH = "/channels";
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
     public static final String SERVER_INVITES = "/invites";
+    public static final String SERVER_AUDIO_JOIN = "/join";
 
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";

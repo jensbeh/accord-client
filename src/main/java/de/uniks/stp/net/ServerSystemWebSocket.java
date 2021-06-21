@@ -4,10 +4,7 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
-import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.*;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -121,9 +118,12 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
-        String userName = jsonData.getString("name");
-        String userId = jsonData.getString("id");
-
+        String userName = "";
+        String userId = "";
+        if (!userAction.equals("audioJoined")) {
+            userName = jsonData.getString("name");
+            userId = jsonData.getString("id");
+        }
         if (userAction.equals("categoryCreated")) {
             createCategory(jsonData);
         }
@@ -168,8 +168,40 @@ public class ServerSystemWebSocket extends Endpoint {
             updateServer(userName);
         }
 
+        // audioChannel
+        if (userAction.equals("audioJoined")) {
+            joinVoiceChannel(jsonData);
+        }
+
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
+        }
+    }
+
+    private void joinVoiceChannel(JsonObject jsonData) {
+        for (Categories category : this.serverViewController.getServer().getCategories()) {
+            if (jsonData.getString("category").equals(category.getId())) {
+                for (ServerChannel serverChannel : category.getChannel()) {
+                    if (jsonData.getString("channel").equals(serverChannel.getId())) {
+
+                        serverChannel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
+
+                        if (serverViewController.getCurrentAudioChannel() != null) {
+                            AudioMember toRemove = null;
+                            for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
+                                if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
+                                    toRemove = audioMember;
+                                    break;
+                                }
+                            }
+                            serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
+                        }
+
+                        serverViewController.setCurrentAudioChannel(serverChannel);
+                        serverViewController.refreshAllChannelLists();
+                    }
+                }
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateServerChannelListCellFactory;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
@@ -11,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -56,30 +56,23 @@ public class CategorySubController {
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
         ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
+        // TextChannel
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel && channel.getType().equals("text")) {
             channel.setUnreadMessagesCounter(0);
             serverViewController.setCurrentChannel(channel);
             serverViewController.refreshAllChannelLists();
             serverViewController.showMessageView();
         }
+
+        // AudioChannel
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
-            channel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
-
-            if (serverViewController.getCurrentAudioChannel() != null) {
-                AudioMember toRemove = null;
-                for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
-                    if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
-                        toRemove = audioMember;
-                        break;
-                    }
+            builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    System.out.println(body);
                 }
-                serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
-            }
-
-            serverViewController.setCurrentAudioChannel(channel);
-            serverViewController.refreshAllChannelLists();
-
-            refreshChannelList();
+            });
         }
     }
 
