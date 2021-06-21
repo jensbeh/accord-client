@@ -35,4 +35,12 @@ public class Constants {
     public static String PRIVATE_CHAT_PATH = "/private";
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
+
+    // VoIP
+    public static String VOIP_ADDRESS = "cranberry.uniks.de:33100";
+    public static int VOIP_PORT = 33100;
+    public static int AUDIO_SAMPLE_RATE = 48000;
+    public static int AUDIO_SAMPLE_SIZE = 16;
+    public static boolean AUDIO_SIGNED = true;
+    public static boolean AUDIO_BIG_ENDIAN = false;
 }

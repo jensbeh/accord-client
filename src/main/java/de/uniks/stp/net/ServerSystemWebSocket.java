@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
+import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -178,7 +179,11 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+    /**
+     * refreshes the current category view and starts a new udp session
+     */
     private void joinVoiceChannel(JsonObject jsonData) {
+        String userId = jsonData.getString("id");
         for (Categories category : this.serverViewController.getServer().getCategories()) {
             if (jsonData.getString("category").equals(category.getId())) {
                 for (ServerChannel serverChannel : category.getChannel()) {
@@ -199,6 +204,14 @@ public class ServerSystemWebSocket extends Endpoint {
 
                         serverViewController.setCurrentAudioChannel(serverChannel);
                         serverViewController.refreshAllChannelLists();
+
+
+                        // create new UDP-connection for personalUser when joined
+                        if (userId.equals(builder.getPersonalUser().getId())) {
+                            AudioStreamClient audiostreamClient = new AudioStreamClient();
+                            builder.setAudioStreamClient(audiostreamClient);
+                            audiostreamClient.init();
+                        }
                     }
                 }
             }

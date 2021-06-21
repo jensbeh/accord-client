@@ -116,6 +116,9 @@ public class CategorySubController {
         }
     }
 
+    /**
+     * refreshes the current category view with all channels in dependent on audioChannel user size
+     */
     public void refreshChannelList() {
         if (category.getChannel().size() > 0) {
             int AUDIO_CHANNEL_HEIGHT = 0;
