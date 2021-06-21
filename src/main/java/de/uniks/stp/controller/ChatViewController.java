@@ -211,6 +211,14 @@ public class ChatViewController {
         } else {
             messageList.setContextMenu(contextMenu);
             text = messageList.getSelectionModel().getSelectedItem().getMessage();
+
+            if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())) {
+                contextMenu.getItems().get(1).setVisible(false);
+                contextMenu.getItems().get(2).setVisible(false);
+            } else {
+                contextMenu.getItems().get(1).setVisible(true);
+                contextMenu.getItems().get(2).setVisible(true);
+            }
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
@@ -286,15 +294,17 @@ public class ChatViewController {
     }
 
     private void edit(ActionEvent actionEvent) {
-        editButton = new Button();
-        editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
-        editButton.setText("edit");
-        abortButton = new Button();
-        abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
-        abortButton.setText("abort");
-        messageBox.getChildren().remove(sendButton);
-        messageBox.getChildren().add(editButton);
-        messageBox.getChildren().add(abortButton);
+        if (messageBox.getChildren().contains(sendButton)) {
+            editButton = new Button();
+            editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
+            editButton.setText("edit");
+            abortButton = new Button();
+            abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
+            abortButton.setText("abort");
+            messageBox.getChildren().remove(sendButton);
+            messageBox.getChildren().add(editButton);
+            messageBox.getChildren().add(abortButton);
+        }
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);
         abortButton.setOnAction(this::abortEdit);
