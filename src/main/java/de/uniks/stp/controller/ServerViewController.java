@@ -57,6 +57,7 @@ public class ServerViewController {
     private ServerChannel currentChannel;
     private ServerSystemWebSocket serverSystemWebSocket;
     private ServerChatWebSocket chatWebSocketClient;
+    private ServerChannel currentAudioChannel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -99,6 +100,10 @@ public class ServerViewController {
         this.currentChannel = channel;
     }
 
+    public void setCurrentAudioChannel(ServerChannel channel) {
+        this.currentAudioChannel = channel;
+    }
+
     public ServerSystemWebSocket getServerSystemWebSocket() {
         return serverSystemWebSocket;
     }
@@ -106,6 +111,11 @@ public class ServerViewController {
     public ServerChatWebSocket getChatWebSocketClient() {
         return chatWebSocketClient;
     }
+
+    public ServerChannel getCurrentAudioChannel() {
+        return this.currentAudioChannel;
+    }
+
 
     /**
      * Callback, when all server information are loaded
@@ -136,6 +146,7 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
+        currentAudioChannel = null;
 
         loadServerInfo(status -> {
             if (status.equals("success")) {
@@ -510,7 +521,7 @@ public class ServerViewController {
         try {
             Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("CategorySubView.fxml")));
             view.setId(categories.getId());
-            CategorySubController tempCategorySubController = new CategorySubController(view, this, categories);
+            CategorySubController tempCategorySubController = new CategorySubController(view, builder, this, categories);
             tempCategorySubController.init();
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));

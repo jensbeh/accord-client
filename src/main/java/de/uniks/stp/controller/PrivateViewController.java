@@ -117,6 +117,8 @@ public class PrivateViewController {
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
                     builder.buildUser(userName, userId);
+                } else {
+                    builder.getPersonalUser().setId(userId);
                 }
             }
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().

@@ -1,6 +1,8 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.AlternateServerChannelListCellFactory;
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
@@ -16,14 +18,16 @@ import java.beans.PropertyChangeListener;
 public class CategorySubController {
     private final ServerViewController serverViewController;
     private final Parent view;
+    private final ModelBuilder builder;
     private final Categories category;
     private Label categoryName;
     private ListView<ServerChannel> channelList;
     private final int ROW_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
 
-    public CategorySubController(Parent view, ServerViewController serverViewController, Categories category) {
+    public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;
+        this.builder = builder;
         this.category = category;
         this.serverViewController = serverViewController;
     }
@@ -57,16 +61,18 @@ public class CategorySubController {
      */
     private void onChannelListClicked(MouseEvent mouseEvent) {
         ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
-        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel) {
-            if (channel.getType().equals("text")) {
-                channel.setUnreadMessagesCounter(0);
-                System.out.println(channel.getName());
-                serverViewController.refreshAllChannelLists();
-                serverViewController.setCurrentChannel(channel);
-                serverViewController.showMessageView();
-            } else if (channel.getType().equals("audio")) {
-                System.out.println(channel.getName());
-            }
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel && channel.getType().equals("text")) {
+            channel.setUnreadMessagesCounter(0);
+            System.out.println(channel.getName());
+            serverViewController.setCurrentChannel(channel);
+            serverViewController.refreshAllChannelLists();
+            serverViewController.showMessageView();
+        }
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
+            System.out.println(channel.getName());
+            channel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
+            serverViewController.setCurrentAudioChannel(channel);
+            serverViewController.refreshAllChannelLists();
         }
     }
 

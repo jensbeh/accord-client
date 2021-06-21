@@ -78,6 +78,13 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
                     this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
                 }
+
+                if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
+                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
+                }
+                if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
+                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+                }
                 // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setPrefWidth(USE_COMPUTED_SIZE);
