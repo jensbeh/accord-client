@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
+import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.AlternateMessageListCellFactory;
 import de.uniks.stp.StageManager;
@@ -12,9 +13,11 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,14 +25,12 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
@@ -55,6 +56,14 @@ public class ChatViewController {
     private ContextMenu contextMenu;
     private ResourceBundle lang;
     private HBox messageBox;
+    private Button No;
+    private Button Yes;
+    private EmojiTextFlow deleteMsg;
+    private Label msg;
+    private Stage stage;
+    private EmojiTextFlowParameters emojiTextFlowParameters;
+    private Button editButton;
+    private Button abortButton;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -69,14 +78,13 @@ public class ChatViewController {
 
     @SuppressWarnings("unchecked")
     public void init() throws JsonException, IOException {
-        EmojiTextFlowParameters emojiTextFlowParameters;
-        {
-            emojiTextFlowParameters = new EmojiTextFlowParameters();
-            emojiTextFlowParameters.setEmojiScaleFactor(1D);
-            emojiTextFlowParameters.setTextAlignment(TextAlignment.CENTER);
-            emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 5));
-            emojiTextFlowParameters.setTextColor(Color.BLACK);
-        }
+
+        emojiTextFlowParameters = new EmojiTextFlowParameters();
+        emojiTextFlowParameters.setEmojiScaleFactor(1D);
+        emojiTextFlowParameters.setTextAlignment(TextAlignment.CENTER);
+        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        emojiTextFlowParameters.setTextColor(Color.WHITE);
+
 
         // Load all view references
         sendButton = (Button) view.lookup("#sendButton");
@@ -205,31 +213,74 @@ public class ChatViewController {
 
     private void delete(ActionEvent actionEvent) {
         //TODO set right style
-        ButtonType button = new ButtonType("yes");
-        ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
-        alert.setTitle("Delete Message");
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().remove("alert");
-        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        alert.setHeaderText("are you sure you want to delete the following message: " + "\n" + text);
-        buttonBar.setStyle("-fx-font-size: 14px;" +
-                "-fx-text-fill: white;"
-                + "-fx-background-color: indianred;");
-        buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
-        buttonBar.getButtons().get(1).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
-        dialogPane.getStylesheets().add(
-                StageManager.class.getResource("styles/AlertStyle.css").toExternalForm());
-        dialogPane.getStyleClass().add("AlertStyle");
-        Optional<ButtonType> result = alert.showAndWait();
+        try {
+            Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
+            Scene scene = new Scene(subview);
+            stage = new Stage();
+            stage.setTitle("Delete Message");
+            msg = (Label) subview.lookup("#delete");
+            msg.setText("are you sure you want to delete " + "\n" + "the following message:");
+            VBox box = (VBox) subview.lookup("#deleteMsg");
+            ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
+            deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
+            deleteMsg.setStyle("-fx-background-color: #4a4a4a;");
+            pane.setStyle("-fx-background:  #4a4a4a;");
+            String msgText = formattedText(text);
+            deleteMsg.parseAndAppend(msgText);
+            pane.setContent(deleteMsg);
+            No = (Button) subview.lookup("#chooseCancle");
+            Yes = (Button) subview.lookup("#chooseDelete");
+            Yes.setOnAction(this::deleteMessage);
+            No.setOnAction(this::cancelDelete);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String formattedText(String text) {
+        String str = text;
+        int point = 0;
+        int counter = 25;
+        boolean found = false;
+        int endPoint;
+        int length = str.length();
+        while ((point + 50) < length) {
+            endPoint = point + 50;
+            while (counter != 0 && !found) {
+                counter--;
+                if (str.charAt(endPoint - (25 - counter)) == ' ') {
+                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
+                    length += 2;
+                    found = true;
+                    point = endPoint - (25 - counter) + 2;
+                }
+            }
+            if (counter == 0) {
+                str = new StringBuilder(str).insert(endPoint, "\n").toString();
+                length += 2;
+                point = endPoint + 2;
+            }
+            found = false;
+            counter = 25;
+        }
+        return str;
+    }
+
+    private void cancelDelete(ActionEvent actionEvent) {
+        stage.close();
+    }
+
+    private void deleteMessage(ActionEvent actionEvent) {
         //TODO delete Message
     }
 
     private void edit(ActionEvent actionEvent) {
-        Button editButton = new Button();
+        editButton = new Button();
         editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
         editButton.setText("edit");
-        Button abortButton = new Button();
+        abortButton = new Button();
         abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
         abortButton.setText("abort");
         messageBox.getChildren().remove(sendButton);
@@ -237,8 +288,21 @@ public class ChatViewController {
         messageBox.getChildren().add(abortButton);
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);
+        abortButton.setOnAction(this::abortEdit);
+        editButton.setOnAction(this::editMessage);
+        //TODO disable enter to send
+    }
 
+    private void editMessage(ActionEvent actionEvent) {
 
+    }
+
+    private void abortEdit(ActionEvent actionEvent) {
+        messageBox.getChildren().remove(editButton);
+        messageBox.getChildren().remove(abortButton);
+        messageBox.getChildren().add(sendButton);
+        messageTextField.clear();
+        //TODO enable enter to send
     }
 
     /**
