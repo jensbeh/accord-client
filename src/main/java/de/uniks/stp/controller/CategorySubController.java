@@ -58,11 +58,15 @@ public class CategorySubController {
     private void onChannelListClicked(MouseEvent mouseEvent) {
         ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel) {
-            channel.setUnreadMessagesCounter(0);
-            System.out.println(channel.getName());
-            serverViewController.refreshAllChannelLists();
-            serverViewController.setCurrentChannel(channel);
-            serverViewController.showMessageView();
+            if (channel.getType().equals("text")) {
+                channel.setUnreadMessagesCounter(0);
+                System.out.println(channel.getName());
+                serverViewController.refreshAllChannelLists();
+                serverViewController.setCurrentChannel(channel);
+                serverViewController.showMessageView();
+            } else if (channel.getType().equals("audio")) {
+                System.out.println(channel.getName());
+            }
         }
     }
 

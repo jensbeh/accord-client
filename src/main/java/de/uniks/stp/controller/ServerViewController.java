@@ -380,6 +380,7 @@ public class ServerViewController {
                     channel.setCurrentUser(builder.getPersonalUser());
                     channel.setId(channelInfo.getString("id"));
                     channel.setName(channelInfo.getString("name"));
+                    channel.setType(channelInfo.getString("type"));
                     channel.setCategories(cat);
                     boolean boolPrivilege = channelInfo.getBoolean("privileged");
                     channel.setPrivilege(boolPrivilege);
