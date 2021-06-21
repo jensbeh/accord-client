@@ -25,7 +25,6 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(channel, "unreadMessagesCounter", Type.INT);
         mm.haveAttribute(channel, "privilege", Type.BOOLEAN);
         mm.haveAttribute(channel, "type", Type.STRING);
-        mm.haveAttribute(channel, "type",Type.STRING);
 
         mm.associate(categories, "channel", 3, channel, "categories", 1);
 
