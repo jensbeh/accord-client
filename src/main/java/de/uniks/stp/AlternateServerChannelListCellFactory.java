@@ -1,7 +1,9 @@
 package de.uniks.stp;
 
 import de.uniks.stp.controller.ServerViewController;
+import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
+import de.uniks.stp.model.User;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
@@ -11,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import org.junit.Assert;
 
 import java.lang.reflect.Field;
 
@@ -42,15 +43,17 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
     private static class ChannelListCell extends ListCell<ServerChannel> {
 
         private boolean isScrollBarVisible;
+        private int audioMemberCount = 0;
 
         protected void updateItem(ServerChannel item, boolean empty) {
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             Label name = new Label();
-            HBox nameCell = new HBox();
+            VBox channelCell = new VBox();
+            HBox channelNameCell = new HBox();
+            VBox channelAudioUserCell = new VBox();
             HBox notificationCell = new HBox();
             HBox nameAndNotificationCell = new HBox();
-
 
 
             // get visibility of scrollbar
@@ -87,21 +90,23 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 }
                 // init complete cell
                 cell.setId("cell_" + item.getId());
-                cell.setPrefWidth(USE_COMPUTED_SIZE);
-                cell.setPrefHeight(30);
+                cell.setMaxWidth(169);
                 cell.setAlignment(Pos.CENTER_LEFT);
 
                 nameAndNotificationCell.setSpacing(9);
 
-                // init userName cell
-                nameCell.setPrefHeight(USE_COMPUTED_SIZE);
-                nameCell.setAlignment(Pos.CENTER_LEFT);
+                // init channel cell
                 if (isScrollBarVisible) {
-                    nameCell.setPrefWidth(140);
+                    channelCell.setPrefWidth(140);
+                    cell.setMaxWidth(164);
                 } else {
-                    nameCell.setPrefWidth(150);
+                    channelCell.setPrefWidth(150);
                 }
-                nameCell.setStyle("-fx-padding: 0 0 0 20;");
+
+                // init channelName cell
+                channelNameCell.setPrefHeight(USE_COMPUTED_SIZE);
+                channelNameCell.setAlignment(Pos.CENTER_LEFT);
+                channelNameCell.setStyle("-fx-padding: 0 10 0 20;");
 
                 // init notificationCell cell
                 notificationCell.setAlignment(Pos.CENTER);
@@ -114,18 +119,45 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set channelName
                 name.setId(item.getId());
-                if(item.getType() != null){
-                    if(item.getType().equals("text")){
+                if (item.getType() != null) {
+                    if (item.getType().equals("text")) {
                         name.setText("\uD83D\uDD8A  " + item.getName());
-                    }else if(item.getType().equals("audio")){
+                    } else if (item.getType().equals("audio")) {
                         name.setText("\uD83D\uDD0A  " + item.getName());
                     }
-                }else{
+                } else {
                     name.setText("\uD83D\uDD8A  " + item.getName());
                 }
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 name.setTextFill(Paint.valueOf("#FFFFFF"));
-                nameCell.getChildren().add(name);
+                channelNameCell.getChildren().add(name);
+
+                // channel is audioChannel
+                if (item.getType().equals("audio")) {
+                    channelAudioUserCell.setStyle("-fx-padding: 0 10 0 45;");
+                    audioMemberCount = 0;
+                    for (AudioMember audioMember : item.getAudioMember()) {
+                        for (User user : item.getCategories().getServer().getUser()) {
+                            if (audioMember.getId().equals(user.getId())) {
+                                Label audioMemberName = new Label();
+                                audioMemberName.setStyle("-fx-font-size: 14; -fx-text-fill: white");
+                                HBox audioMemberCell = new HBox();
+                                audioMemberCell.setPrefHeight(25);
+                                audioMemberName.setText(user.getName());
+                                audioMemberCell.getChildren().add(audioMemberName);
+                                channelAudioUserCell.getChildren().add(audioMemberCell);
+
+
+                                audioMemberCell.setOnMouseClicked((ae) -> {
+                                    System.out.println(audioMemberName.getText());
+                                });
+                                audioMemberCount++;
+                            }
+                        }
+                    }
+                }
+
+                channelCell.getChildren().addAll(channelNameCell, channelAudioUserCell);
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
@@ -147,9 +179,14 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 }
 
                 // set cells finally
-                nameAndNotificationCell.getChildren().addAll(nameCell, notificationCell);
-
-                cell.getChildren().addAll(nameAndNotificationCell);
+                if (item.getType().equals("audio")) {
+                    cell.getChildren().addAll(channelCell);
+                    cell.setPrefHeight(28 + 25 * audioMemberCount);
+                } else {
+                    nameAndNotificationCell.getChildren().addAll(channelCell, notificationCell);
+                    cell.getChildren().addAll(nameAndNotificationCell);
+                    cell.setPrefHeight(28);
+                }
             }
             this.setGraphic(cell);
         }

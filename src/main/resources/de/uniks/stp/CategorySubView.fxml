@@ -24,9 +24,9 @@
             <Insets left="10.0" />
          </padding>
       </HBox>
-      <ListView id="channellist" minHeight="50.0" prefWidth="170.0" style="-fx-background-color: #23272a;">
+      <ListView id="channellist" maxWidth="170.0" minHeight="50.0" minWidth="170.0" prefHeight="50.0" prefWidth="170.0" style="-fx-background-color: #23272a;" styleClass="category-list-view" stylesheets="@styles/ServerViewStyles.css">
          <VBox.margin>
-            <Insets bottom="30.0" />
+            <Insets bottom="10.0" />
          </VBox.margin></ListView>
    </children>
    <padding>

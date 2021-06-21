@@ -22,7 +22,7 @@ public class CategorySubController {
     private final Categories category;
     private Label categoryName;
     private ListView<ServerChannel> channelList;
-    private final int ROW_HEIGHT = 30;
+    private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
@@ -39,7 +39,6 @@ public class CategorySubController {
         channelList = (ListView<ServerChannel>) view.lookup("#channellist");
         AlternateServerChannelListCellFactory channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
         channelList.setCellFactory(channelListCellFactory);
-        channelList.setItems(FXCollections.observableList(category.getChannel()));
         channelList.setOnMouseClicked(this::onChannelListClicked);
         //PCL
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
@@ -49,11 +48,7 @@ public class CategorySubController {
             channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
         }
 
-        if (category.getChannel().size() > 0) {
-            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT);
-        } else {
-            channelList.setPrefHeight(ROW_HEIGHT);
-        }
+        refreshChannelList();
     }
 
     /**
@@ -63,23 +58,35 @@ public class CategorySubController {
         ServerChannel channel = this.channelList.getSelectionModel().getSelectedItem();
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentChannel() != channel && channel.getType().equals("text")) {
             channel.setUnreadMessagesCounter(0);
-            System.out.println(channel.getName());
             serverViewController.setCurrentChannel(channel);
             serverViewController.refreshAllChannelLists();
             serverViewController.showMessageView();
         }
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
-            System.out.println(channel.getName());
             channel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
+
+            if (serverViewController.getCurrentAudioChannel() != null) {
+                AudioMember toRemove = null;
+                for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
+                    if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
+                        toRemove = audioMember;
+                        break;
+                    }
+                }
+                serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
+            }
+
             serverViewController.setCurrentAudioChannel(channel);
             serverViewController.refreshAllChannelLists();
+
+            refreshChannelList();
         }
     }
 
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
         Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
         if (category.getChannel().size() > 0) {
-            channelList.setPrefHeight(category.getChannel().size() * ROW_HEIGHT);
+            channelList.setPrefHeight(category.getChannel().size() * CHANNEL_HEIGHT);
             for (ServerChannel channel : category.getChannel()) {
                 /*TODO if newValue not null -> add PCL, else if null -> removePCL*/
                 //ServerChannel theChannel = (ServerChannel) propertyChangeEvent.getNewValue();
@@ -87,7 +94,7 @@ public class CategorySubController {
                 channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
             }
         } else {
-            channelList.setPrefHeight(ROW_HEIGHT);
+            channelList.setPrefHeight(CHANNEL_HEIGHT);
         }
     }
 
@@ -117,6 +124,18 @@ public class CategorySubController {
     }
 
     public void refreshChannelList() {
-        channelList.refresh();
+        if (category.getChannel().size() > 0) {
+            int AUDIO_CHANNEL_HEIGHT = 0;
+            for (ServerChannel audioChannel : category.getChannel()) {
+                if (audioChannel.getAudioMember().size() > 0) {
+                    AUDIO_CHANNEL_HEIGHT = 25 * audioChannel.getAudioMember().size();
+                }
+            }
+            this.channelList.setPrefHeight(10 + category.getChannel().size() * CHANNEL_HEIGHT + AUDIO_CHANNEL_HEIGHT);
+        } else {
+            this.channelList.setPrefHeight(CHANNEL_HEIGHT);
+        }
+
+        Platform.runLater(() -> this.channelList.setItems(FXCollections.observableList(category.getChannel())));
     }
 }
