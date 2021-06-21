@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.glassfish.json.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -259,14 +260,32 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Test
     public void showServerTest() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
         loginInit(testUserOneName, testUserOnePw);
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
 
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar").put("online",true)).toString();
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar")).toString();
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
+
+        message = new JSONObject().put("action", "serverDeleted").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","TestServer Team Bit Shift")).toString();
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
     }
 
     @SuppressWarnings("unchecked")
@@ -276,6 +295,10 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
+
+        String message = new JSONObject().put("action", "userJoined").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar").put("online",true)).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
 
         app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false);
         app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true);
@@ -288,6 +311,11 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(2, onlineUserList.getItems().size());
         Assert.assertEquals(1, offlineUserList.getItems().size());
+
+
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testUserOneName)).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
     }
 
     @Test
@@ -317,6 +345,12 @@ public class ServerViewControllerTest extends ApplicationTest {
         ListView<Channel> channels = lookup("#channellist").queryListView();
         app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY"));
         Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
+
+
+        String message = new JSONObject().put("action", "userLeft").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testUserOneName)).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        
     }
 
     @Test

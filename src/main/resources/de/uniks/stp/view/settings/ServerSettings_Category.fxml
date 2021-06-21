@@ -16,7 +16,7 @@
                <children>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="39.0" prefWidth="360.0">
                      <children>
-                        <Label id="editCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="Edit Category" />
+                        <Label id="editCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.editCategory" />
                      </children>
                      <VBox.margin>
                         <Insets left="40.0" />
@@ -24,7 +24,7 @@
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
-                        <ComboBox id="editCategoriesSelector" prefWidth="150.0" promptText="Select category..." styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css">
+                        <ComboBox id="editCategoriesSelector" prefWidth="150.0" promptText="%comboBox.selectCategory" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
@@ -34,11 +34,11 @@
                         </ComboBox>
                         <VBox prefHeight="150.0" prefWidth="150.0" spacing="15.0">
                            <children>
-                              <TextField id="editCategoryNameTextField" maxWidth="150.0" prefWidth="150.0" promptText="Change name..." styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css" />
+                              <TextField id="editCategoryNameTextField" maxWidth="150.0" prefWidth="150.0" promptText="%textField.changeName" styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css" />
                               <HBox prefHeight="100.0" prefWidth="161.0" spacing="15.0">
                                  <children>
-                                    <Button id="changeCategoryNameButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="change" />
-                                    <Button id="deleteCategoryButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ff0000; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="Delete" />
+                                    <Button id="changeCategoryNameButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.change" />
+                                    <Button id="deleteCategoryButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ff0000; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.delete" />
                                  </children>
                                  <VBox.margin>
                                     <Insets />
@@ -57,7 +57,7 @@
                <children>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label id="createCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="Create Category">
+                        <Label id="createCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.createCategory">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -69,12 +69,12 @@
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
-                        <TextField id="createCategoryNameTextField" maxWidth="150.0" prefWidth="148.0" promptText="Create new one..." styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css">
+                        <TextField id="createCategoryNameTextField" maxWidth="150.0" prefWidth="148.0" promptText="%textField.createNewOne" styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css">
                            <HBox.margin>
                               <Insets top="2.0" />
                            </HBox.margin>
                         </TextField>
-                        <Button id="createCategoryButton" maxWidth="72.0" minHeight="30.0" minWidth="72.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="create" />
+                        <Button id="createCategoryButton" maxWidth="72.0" minHeight="30.0" minWidth="72.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.create" />
                      </children>
                      <VBox.margin>
                         <Insets left="20.0" />

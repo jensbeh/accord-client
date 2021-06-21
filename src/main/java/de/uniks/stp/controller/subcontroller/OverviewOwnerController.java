@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class OverviewOwnerController {
     private final Parent view;
@@ -51,16 +52,15 @@ public class OverviewOwnerController {
      * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
-        ButtonType button = new ButtonType("Delete Server");
-        ButtonType button2 = new ButtonType("Cancel");
+        ResourceBundle lang = StageManager.getLangBundle();
+        ButtonType button = new ButtonType(lang.getString("button.deleteServer"));
+        ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
-        alert.setTitle("Settings");
+        alert.setTitle(lang.getString("window_title_serverSettings"));
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        alert.setHeaderText("Warning!\n" +
-                "Do you want to delete this server\n" +
-                "all Data information of the Server will be lost ");
+        alert.setHeaderText(lang.getString("warning.deleteServer"));
         buttonBar.setStyle("-fx-font-size: 14px;" +
                 "-fx-text-fill: white;"
                 + "-fx-background-color: indianred;");

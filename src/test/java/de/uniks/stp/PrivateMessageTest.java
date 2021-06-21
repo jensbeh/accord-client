@@ -300,5 +300,9 @@ public class PrivateMessageTest extends ApplicationTest {
         //Assert.assertEquals(2, messageList.getItems().size());
         //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
         //Assert.assertEquals(msg2, messageList.getItems().get(1).getMessage());
+
+        rightClickOn("#userNameLabel");
+        moveBy(0,15);
+        write("\n");
     }
 }

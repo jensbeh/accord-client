@@ -10,17 +10,23 @@ import de.uniks.stp.net.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.File;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
+import static util.Constants.APPDIR_ACCORD_PATH;
+import static util.Constants.CONFIG_PATH;
+
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
+    private static final String ROOT_PATH = "/de/uniks/stp";
+    private final InputStream soundFile = ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/open-ended.wav");
 
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
@@ -148,7 +154,7 @@ public class ModelBuilder {
             clip.stop();
         }
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("src/main/resources/de/uniks/stp/sounds/open-ended.wav"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(soundFile));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
@@ -161,7 +167,7 @@ public class ModelBuilder {
 
     public void saveSettings() {
         try {
-            BufferedWriter writer = Files.newBufferedWriter(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
             JsonObject settings = new JsonObject();
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
@@ -177,7 +183,14 @@ public class ModelBuilder {
 
     public void loadSettings() {
         try {
-            Reader reader = Files.newBufferedReader(Path.of("src/main/resources/de/uniks/stp/files/settings.json"));
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
+                doNotDisturb = false;
+                showNotifications = true;
+                playSound = true;
+                saveSettings();
+            }
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
             JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");

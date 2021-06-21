@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
@@ -14,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
+
+import java.util.ResourceBundle;
 
 public class ServerSettingsCategoryController extends SubSetting {
 
@@ -51,7 +54,8 @@ public class ServerSettingsCategoryController extends SubSetting {
         deleteCategoryButton.setOnAction(this::deleteCategory);
         createCategoryButton.setOnAction(this::createCategory);
 
-        this.categoriesSelector.setPromptText("Select Category...");
+        ResourceBundle lang = StageManager.getLangBundle();
+        this.categoriesSelector.setPromptText(lang.getString("comboBox.selectCategory"));
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);
 

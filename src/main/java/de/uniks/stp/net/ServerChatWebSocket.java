@@ -5,7 +5,6 @@ import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Message;
-import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -41,10 +40,6 @@ public class ServerChatWebSocket extends Endpoint {
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
-    }
-
-    public void setServer(Server server) {
-        System.out.println(server.getName());
     }
 
 

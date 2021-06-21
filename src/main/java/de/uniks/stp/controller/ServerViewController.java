@@ -196,13 +196,11 @@ public class ServerViewController {
                     create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             chatWebSocketClient.setServerViewController(this);
-            chatWebSocketClient.setServer(server);
             chatWebSocketClient.setBuilder(builder);
             chatWebSocketClient.setName(server.getName());
         }
         chatWebSocketClient.setServerViewController(this);
         chatWebSocketClient.setBuilder(builder);
-        chatWebSocketClient.setServer(server);
         chatWebSocketClient.setName(server.getName());
     }
 
