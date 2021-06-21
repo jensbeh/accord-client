@@ -6,6 +6,7 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
+import de.uniks.stp.net.udp.AudioStreamClient;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -38,6 +39,8 @@ public class ModelBuilder {
     private boolean doNotDisturb;
     private boolean showNotifications;
     private Clip clip;
+
+    private AudioStreamClient audioStreamClient;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -226,5 +229,13 @@ public class ModelBuilder {
 
     public void setShowNotifications(boolean showNotifications) {
         this.showNotifications = showNotifications;
+    }
+
+    public void setAudioStreamClient(AudioStreamClient audioStreamClient) {
+        this.audioStreamClient = audioStreamClient;
+    }
+
+    public AudioStreamClient getAudioStreamClient() {
+        return this.audioStreamClient;
     }
 }
