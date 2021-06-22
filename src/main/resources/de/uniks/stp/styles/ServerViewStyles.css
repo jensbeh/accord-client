@@ -38,3 +38,17 @@
 	-fx-background-radius: 2em;
 
 }
+
+.category-list-view .scroll-bar:horizontal .increment-arrow,
+.category-list-view .scroll-bar:horizontal .decrement-arrow,
+.category-list-view .scroll-bar:horizontal .increment-button,
+.category-list-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding:0;
+}
+
+.category-list-view .scroll-bar:vertical .increment-arrow,
+.category-list-view .scroll-bar:vertical .decrement-arrow,
+.category-list-view .scroll-bar:vertical .increment-button,
+.category-list-view .scroll-bar:vertical .decrement-button {
+    -fx-padding:0;
+}

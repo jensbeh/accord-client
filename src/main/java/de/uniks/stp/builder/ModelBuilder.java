@@ -6,6 +6,7 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
+import de.uniks.stp.net.udp.AudioStreamClient;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -39,6 +40,8 @@ public class ModelBuilder {
     private boolean showNotifications;
     private String theme;
     private Clip clip;
+
+    private AudioStreamClient audioStreamClient;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -173,7 +176,6 @@ public class ModelBuilder {
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
             settings.put("playSound", playSound);
-            settings.put("theme", theme);
 
             Jsoner.serialize(settings, writer);
             writer.close();
@@ -190,7 +192,6 @@ public class ModelBuilder {
                 doNotDisturb = false;
                 showNotifications = true;
                 playSound = true;
-                theme = "dark";
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -198,7 +199,6 @@ public class ModelBuilder {
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");
             playSound = (boolean) parsedSettings.get("playSound");
-            theme = (String) parsedSettings.get("theme");
 
             reader.close();
 
@@ -230,6 +230,14 @@ public class ModelBuilder {
 
     public void setShowNotifications(boolean showNotifications) {
         this.showNotifications = showNotifications;
+    }
+
+    public void setAudioStreamClient(AudioStreamClient audioStreamClient) {
+        this.audioStreamClient = audioStreamClient;
+    }
+
+    public AudioStreamClient getAudioStreamClient() {
+        return this.audioStreamClient;
     }
 
     public String getTheme() {

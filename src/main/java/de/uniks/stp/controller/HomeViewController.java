@@ -201,7 +201,7 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
-            CreateServerController createServerController = new CreateServerController(root, builder,stage);
+            CreateServerController createServerController = new CreateServerController(root, builder, stage);
             createServerController.init();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
