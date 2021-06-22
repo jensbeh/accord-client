@@ -205,12 +205,12 @@ public class ServerSystemWebSocket extends Endpoint {
                         serverViewController.setCurrentAudioChannel(serverChannel);
                         serverViewController.refreshAllChannelLists();
 
-
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
-                            AudioStreamClient audiostreamClient = new AudioStreamClient();
+                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder);
                             builder.setAudioStreamClient(audiostreamClient);
                             audiostreamClient.init();
+                            audiostreamClient.startStream();
                         }
                     }
                 }

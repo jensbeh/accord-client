@@ -36,11 +36,12 @@ public class Constants {
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
 
-    // VoIP
-    public static String VOIP_ADDRESS = "cranberry.uniks.de:33100";
-    public static int VOIP_PORT = 33100;
-    public static int AUDIO_SAMPLE_RATE = 48000;
+    // AudioStream
+    public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de:33100";
+    public static int AUDIO_STREAM_PORT = 33100;
+    public static int AUDIO_BITRATE = 48000;
     public static int AUDIO_SAMPLE_SIZE = 16;
-    public static boolean AUDIO_SIGNED = true;
-    public static boolean AUDIO_BIG_ENDIAN = false;
+    public static int AUDIO_CHANNELS = 1;
+    public static boolean AUDIO_SIGNING = true;
+    public static boolean AUDIO_BYTE_ORDER = false;
 }

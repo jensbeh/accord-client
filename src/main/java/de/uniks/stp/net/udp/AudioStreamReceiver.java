@@ -1,8 +1,27 @@
 package de.uniks.stp.net.udp;
 
-public class AudioStreamReceiver {
+import de.uniks.stp.builder.ModelBuilder;
+
+import java.net.InetAddress;
+
+public class AudioStreamReceiver implements Runnable {
+
+    private final ModelBuilder builder;
+    private final InetAddress address;
+    private final int port;
+
+    public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port) {
+        this.builder = builder;
+        this.address = address;
+        this.port = port;
+    }
 
     public void init() {
+
+    }
+
+    @Override
+    public void run() {
 
     }
 }
