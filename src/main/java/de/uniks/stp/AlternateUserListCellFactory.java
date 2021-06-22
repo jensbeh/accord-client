@@ -17,10 +17,11 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
+
     @Override
     public ListCell<User> call(ListView<User> param) {
         return new UserListCell();
@@ -33,7 +34,6 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
             Circle circle = new Circle(15);
             Label name = new Label();
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
@@ -44,11 +44,9 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
                 }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
-                name.setTextFill(Paint.valueOf("#FFFFFF"));
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
-                cell.setStyle("-fx-background-color: #23272a;");
                 cell.getChildren().addAll(circle, name);
             }
             this.setGraphic(cell);

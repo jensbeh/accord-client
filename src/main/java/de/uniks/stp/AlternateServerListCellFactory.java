@@ -24,7 +24,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
     public static void setCurrentServer(Server currentServer) {
         AlternateServerListCellFactory.currentServer = currentServer;
     }
-
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -39,7 +38,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
     public ListCell<Server> call(ListView<Server> param) {
         return new AlternateServerListCellFactory.ServerListCell();
     }
-
     private static class ServerListCell extends ListCell<Server> {
         protected void updateItem(Server item, boolean empty) {
             // creates a HBox for each cell of the listView
@@ -47,7 +45,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             Circle circle = new Circle(34);
             Label serverName = new Label();
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
@@ -67,7 +64,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
                 serverName.setTextAlignment(TextAlignment.CENTER);
                 serverName.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 serverName.setWrapText(true);
-                cell.setStyle("-fx-background-color: #23272a;");
                 cell.getChildren().addAll(circle, serverName);
             }
             this.setGraphic(cell);

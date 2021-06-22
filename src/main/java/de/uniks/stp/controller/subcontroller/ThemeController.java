@@ -34,12 +34,9 @@ public class ThemeController extends SubSetting {
     private void onThemeChanged(ActionEvent actionEvent) {
         // get selected language and change
         String selectedTheme = this.themeSelector.getValue();
-        if (selectedTheme.equals("Bright")) {
-            StageManager.setWhiteMode();
-        } else {
-            StageManager.setDarkMode();
-        }
         builder.setTheme(selectedTheme);
+        builder.saveSettings();
+        StageManager.setTheme();
     }
 
     /**

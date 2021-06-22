@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import util.ResourceManager;
@@ -40,6 +41,7 @@ public class PrivateViewController {
 
     private final Parent view;
     private final ModelBuilder builder;
+    private HBox root;
     private VBox currentUserBox;
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
@@ -64,11 +66,13 @@ public class PrivateViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        root = (HBox) view.lookup("#root");
         ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
+        AlternatePrivateChatListCellFactory.setTheme(builder.getTheme());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
@@ -276,5 +280,23 @@ public class PrivateViewController {
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
         ChatViewController.onLanguageChanged();
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/PrivateView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
     }
 }

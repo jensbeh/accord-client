@@ -1,0 +1,76 @@
+#loginButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+.scroll-pane {
+    -fx-background-color:transparent;
+}
+
+#serverList .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #e3e5e8;
+}
+
+#serverList  {
+    -fx-border-color: #e3e5e8;
+    -fx-background-insets: 0 ;
+    -fx-background-color: #e3e5e8;
+    -fx-padding: 1;
+}
+
+#serverList .list-cell {
+    -fx-border-color: #e3e5e8;
+    -fx-background-insets: 0 ;
+    -fx-background-color: #e3e5e8;
+    -fx-padding: 1;
+}
+
+#privateChatList .list-cell {
+    -fx-padding: 0 0 0 0;
+}
+
+#signinButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+#logoutButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+#settingsButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+#connectionLabel{
+    -fx-text-fill: #7da6df;
+}
+
+#passwordTextField {
+    -fx-text-box-border: #7da6df;
+}
+
+#rememberMeCheckbox {
+    -fx-text-fill: BLACK;
+}
+
+#loginAsTempUser {
+    -fx-text-fill: BLACK;
+}
+
+#usernameTextfield {
+    -fx-text-box-border: #7da6df;
+}
+
+#root {
+    -fx-background-color: #ffffff;
+}
+
+#homeViewVBox {
+    -fx-background-color: #e3e5e8;
+}

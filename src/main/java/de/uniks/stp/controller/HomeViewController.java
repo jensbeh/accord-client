@@ -12,10 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -34,6 +31,7 @@ import java.util.ResourceBundle;
 public class HomeViewController {
     private final RestClient restClient;
     private HBox root;
+    private HBox homeView;
     private ScrollPane scrollPaneServerBox;
     private final Parent view;
     private ListView<Server> serverList;
@@ -62,6 +60,7 @@ public class HomeViewController {
     public void init() {
         builder.loadSettings();
         // Load all view references
+        homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -156,6 +155,7 @@ public class HomeViewController {
                 privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("PrivateView.fxml")), StageManager.getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
+                privateViewController.setTheme();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
             } else {
@@ -465,13 +465,21 @@ public class HomeViewController {
     }
 
 
-    public void setWhiteMode() {
-        logoutButton.getStylesheets().clear();
-        logoutButton.setId("logoutButton");
-        logoutButton.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/white-mode.css")).toExternalForm());
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
     }
 
-    public void setDarkMode() {
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/dark-mode.css")).toExternalForm());
+    private void setWhiteMode() {
+        homeView.getStylesheets().clear();
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/HomeView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        homeView.getStylesheets().clear();
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
     }
 }

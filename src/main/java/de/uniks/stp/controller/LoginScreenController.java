@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -317,5 +318,24 @@ public class LoginScreenController {
         ResourceBundle lang = StageManager.getLangBundle();
         connectionError = connectionErrorMsg;
         connectionLabel.setText(lang.getString(connectionError));
+    }
+
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/Login.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/Login.css")).toExternalForm());
     }
 }
