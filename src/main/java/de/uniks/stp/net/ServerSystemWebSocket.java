@@ -2,6 +2,7 @@ package de.uniks.stp.net;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
@@ -121,7 +122,7 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        if (!userAction.equals("audioJoined")) {
+        if (!userAction.equals("audioJoined") && !userAction.equals("messageUpdated")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
         }
@@ -174,6 +175,10 @@ public class ServerSystemWebSocket extends Endpoint {
             joinVoiceChannel(jsonData);
         }
 
+        if (userAction.equals("messageUpdated")) {
+            updateMessage(jsonData);
+        }
+
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
@@ -218,6 +223,22 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+    /**
+     * set new message Text and refresh the ListView
+     */
+    private void updateMessage(JsonObject jsonData) {
+        String msgId = jsonData.getString("id");
+        String text = jsonData.getString("text");
+
+        for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
+            if (msg.getId().equals(msgId)) {
+                msg.setMessage(text);
+                ChatViewController.refreshMessageListView();
+                break;
+            }
+        }
+    }
+
 
     /**
      * Build a serverUser with this instance of server.
@@ -256,7 +277,6 @@ public class ServerSystemWebSocket extends Endpoint {
             alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
             alert.showAndWait();
         });
-
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }
 
