@@ -21,12 +21,9 @@ public class AudioStreamSender implements Runnable {
     private final ServerChannel currentAudioChannel;
     private final InetAddress address;
     private final int port;
-    private Microphone sender;
+    private Microphone microphone;
     private DatagramSocket socket;
     private boolean senderActive;
-    private byte[] sendData;
-    private byte[] data;
-    private DatagramPacket packet;
 
     public AudioStreamSender(ModelBuilder builder, ServerChannel currentAudioChannel, InetAddress address, int port) {
         this.builder = builder;
@@ -37,8 +34,8 @@ public class AudioStreamSender implements Runnable {
 
     public void init() {
         // Create the audio capture object to read information in.
-        sender = new Microphone();
-        sender.init();
+        microphone = new Microphone();
+        microphone.init();
 
         // Create the socket on which to send data.
         try {
@@ -69,7 +66,7 @@ public class AudioStreamSender implements Runnable {
         obj.put("name", builder.getPersonalUser().getName());
 
         // start recording audio
-        sender.startRecording();
+        microphone.startRecording();
 
         // set 255 with jsonObject - sendData is automatically init with zeros
         byte[] jsonData = new byte[255];
@@ -81,14 +78,14 @@ public class AudioStreamSender implements Runnable {
 
         // start sending
         while (senderActive) {
-            data = sender.readData();
+            byte[] data = microphone.readData();
 
             // put both byteArrays in one
             byte[] sendData = new byte[AUDIO_DATAGRAM_PAKET_SIZE];
             System.arraycopy(jsonData,0, sendData,0, jsonData.length);
             System.arraycopy(data,0, sendData, jsonData.length, data.length);
 
-            packet = new DatagramPacket(sendData, AUDIO_DATAGRAM_PAKET_SIZE, address, port);
+            DatagramPacket packet = new DatagramPacket(sendData, AUDIO_DATAGRAM_PAKET_SIZE, address, port);
 
             try {
                 // send to address
@@ -99,7 +96,7 @@ public class AudioStreamSender implements Runnable {
         }
 
         // stop if senderActive is set to false in stop method in this class
-        sender.stopRecording();
+        microphone.stopRecording();
     }
 
     public void stop() {

@@ -9,6 +9,7 @@ public class AudioStreamReceiver implements Runnable {
     private final ModelBuilder builder;
     private final InetAddress address;
     private final int port;
+    private Speaker speaker;
 
     public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port) {
         this.builder = builder;
@@ -17,7 +18,8 @@ public class AudioStreamReceiver implements Runnable {
     }
 
     public void init() {
-
+        speaker = new Speaker();
+        speaker.init();
     }
 
     @Override
