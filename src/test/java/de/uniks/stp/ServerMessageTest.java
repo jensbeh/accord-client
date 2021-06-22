@@ -10,7 +10,12 @@ import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,6 +37,8 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
+
+import java.awt.*;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -344,15 +351,20 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertTrue(contextMenu.getItems().get(1).isVisible());
         Assert.assertTrue(contextMenu.getItems().get(2).isVisible());
 
-        FxRobot robot = new FxRobot();
-
-        clickOn("#copy");
+        moveBy(0, 25);
+        write("\n");
         clickOn(messageField);
-        robot.press(KeyCode.CONTROL);
-        robot.press(KeyCode.V);
-        robot.release(KeyCode.V);
-        robot.release(KeyCode.CONTROL);
-        Assert.assertEquals(messageField.getText(), privateChatMessageList.getItems().get(0).getMessage());
+
+        rightClickOn(messageField);
+        moveBy(10, 115);
+        write("\n");
+        write("\n");
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", privateChatMessageList.getItems().get(0).getMessage()).put("from", testUserMainName).put("id", testServerId);
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(privateChatMessageList.getItems().get(2).getMessage(), privateChatMessageList.getItems().get(0).getMessage());
 
         String text = "test";
         messageField.setText(text);
@@ -361,10 +373,10 @@ public class ServerMessageTest extends ApplicationTest {
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
-
-        privateChatMessageList.getSelectionModel().select(2);
+        privateChatMessageList.getSelectionModel().select(3);
         rightClickOn(privateChatMessageList);
-        clickOn("#delete");
+        moveBy(5, 75);
+        write("\n");
         Label msg = lookup("#delete").query();
         Assert.assertEquals(msg.getText(), "are you sure you want to delete " + "\n" + "the following message:");
         Button no = lookup("#chooseCancle").query();
@@ -390,7 +402,8 @@ public class ServerMessageTest extends ApplicationTest {
 
         privateChatMessageList.getSelectionModel().select(0);
         rightClickOn(privateChatMessageList);
-        clickOn("#edit");
+        moveBy(5, 50);
+        write("\n");
         Button edit = lookup("#edit").query();
         Assert.assertEquals(edit.getText(), "edit");
         Button abort = lookup("#abort").query();
