@@ -85,9 +85,9 @@ public class LoginScreenController {
                 } else {
                     //if remember me selected then username and password is saved in a user.txt
                     if (rememberCheckBox.isSelected()) {
-                        saveRememberMe(username, password);
+                        saveRememberMe(username, password, true);
                     } else {
-                        saveRememberMe("", "");
+                        saveRememberMe("", "", false);
                     }
                     //signIn Post
                     if (!noConnectionTest) {
@@ -134,9 +134,9 @@ public class LoginScreenController {
                     setError("error.field_is_empty");
                 } else {
                     if (rememberCheckBox.isSelected()) {
-                        saveRememberMe(username, password);
+                        saveRememberMe(username, password, true);
                     } else {
-                        saveRememberMe("", "");
+                        saveRememberMe("", "", false);
                     }
                     //login Post
                     if (!noConnectionTest) {
@@ -164,7 +164,7 @@ public class LoginScreenController {
                     }
                 }
             } else if (tempUserCheckBox.isSelected()) {
-                saveRememberMe("", "");
+                saveRememberMe("", "", false);
                 if (!noConnectionTest) {
                     restClient.loginTemp(response -> {
                         JsonNode body = response.getBody();
@@ -208,7 +208,7 @@ public class LoginScreenController {
     /**
      * save username and password in text file
      */
-    public void saveRememberMe(String username, String password) {
+    public void saveRememberMe(String username, String password, Boolean rememberMe) {
         String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
         try {
             BufferedWriter out = new BufferedWriter(
@@ -218,6 +218,8 @@ public class LoginScreenController {
             out.newLine();
             String encodedPassword = encode(password);
             out.write(encodedPassword);
+            out.newLine();
+            out.write(rememberMe.toString());
             out.close();
         } catch (Exception e) {
             System.out.println("Error while saving userdata.");
@@ -244,6 +246,9 @@ public class LoginScreenController {
                     }
                     if (i == 1) {
                         passwordTextField.setText(decode(scanner.nextLine()));
+                    }
+                    if (i == 2) {
+                        rememberCheckBox.setSelected(Boolean.parseBoolean(scanner.nextLine()));
                     }
                     i++;
                 }

@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.SubSetting;
+import de.uniks.stp.controller.subcontroller.ThemeController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -27,6 +28,7 @@ public class SettingsController {
     private VBox settingsContainer;
     private List<Button> itemList;
     private static Button languageButton;
+    private Button themeButton;
 
     private SubSetting subController;
 
@@ -76,6 +78,11 @@ public class SettingsController {
         // add categories
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
+
+        themeButton = addItem("Theme");
+        themeButton.setText("Dark/Bright - Mode");
+        addAction(themeButton, "Theme");
+
         if (builder.getPersonalUser() != null) {
             Button doNotDisturbButton = addItem("DnD");
             doNotDisturbButton.setText("Do Not Disturb");
@@ -150,6 +157,9 @@ public class SettingsController {
                     break;
                 case "DoNotDisturb":
                     subController = new DoNotDisturbController(settingsField, builder);
+                    subController.init();
+                case "Theme":
+                    subController = new ThemeController(settingsField, builder);
                     subController.init();
             }
 

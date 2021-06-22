@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<HBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<HBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefWidth="100.0">
          <children>
@@ -40,7 +40,7 @@
             </VBox>
             <ScrollPane id="scrollPaneServerBox" hbarPolicy="NEVER" style="-fx-background-color: #23272a; -fx-background: #23272a;" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                <content>
-                  <VBox id="serverBox" alignment="CENTER" style="-fx-background-color: #23272a;">
+                  <VBox id="serverBox" alignment="CENTER">
                      <children>
                         <ListView id="serverList" prefHeight="1000.0" prefWidth="100.0" style="-fx-background-color: #23272a;" stylesheets="@styles/ListViewStyle.css" VBox.vgrow="ALWAYS" />
                      </children>
@@ -62,7 +62,7 @@
                         <Font name="System Bold" size="19.0" />
                      </font>
                   </Button>
-                  <Button id="logoutButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="69.0" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-padding: 0 0 0 0;" text="%button.logout" textFill="WHITE">
+                  <Button id="logoutButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="69.0" style="-fx-background-radius: 80; -fx-padding: 0 0 0 0;" text="%button.logout" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

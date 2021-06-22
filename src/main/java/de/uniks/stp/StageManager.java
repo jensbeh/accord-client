@@ -356,4 +356,12 @@ public class StageManager extends Application {
         HomeViewController.onLanguageChanged();
         InviteUsersController.onLanguageChanged();
     }
+
+    public static void setDarkMode() {
+        homeViewController.setDarkMode();
+    }
+
+    public static void setWhiteMode() {
+        homeViewController.setWhiteMode();
+    }
 }

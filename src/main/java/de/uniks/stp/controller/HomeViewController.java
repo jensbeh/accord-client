@@ -463,4 +463,15 @@ public class HomeViewController {
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();
     }
+
+
+    public void setWhiteMode() {
+        logoutButton.getStylesheets().clear();
+        logoutButton.setId("logoutButton");
+        logoutButton.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/white-mode.css")).toExternalForm());
+    }
+
+    public void setDarkMode() {
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/dark-mode.css")).toExternalForm());
+    }
 }
