@@ -31,6 +31,7 @@ public class AudioStreamReceiver implements Runnable {
         // Create the socket on which to receive data.
         try {
             socket = new DatagramSocket(port);
+//            socket = new DatagramSocket(4445);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -52,7 +53,7 @@ public class AudioStreamReceiver implements Runnable {
                 e.printStackTrace();
             }
             System.out.println("received: " + packet);
-            //speaker.writeData(data);
+//            speaker.writeData(data);
         }
         speaker.stopPlayback();
         socket.close();

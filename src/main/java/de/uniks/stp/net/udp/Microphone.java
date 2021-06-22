@@ -23,6 +23,7 @@ public class Microphone {
         try {
             // get microphoneLine
             microphone = (TargetDataLine) AudioSystem.getLine(info);
+
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }

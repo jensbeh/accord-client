@@ -35,6 +35,7 @@ public class Speaker {
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
+
         // start output
         speaker.start();
     }
