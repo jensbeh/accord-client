@@ -3,6 +3,7 @@ package de.uniks.stp.net.udp;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.ServerChannel;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -65,27 +66,44 @@ public class AudioStreamSender implements Runnable {
         obj.put("channel", currentAudioChannel.getId());
         obj.put("name", builder.getPersonalUser().getName());
 
-        // start recording audio
-        microphone.startRecording();
+        JSONObject obj1 = new JSONObject().put("channel", currentAudioChannel.getId()).put("name", builder.getPersonalUser().getName());
+
 
         // set 255 with jsonObject - sendData is automatically init with zeros
         byte[] jsonData = new byte[255];
-        byte[] objData = obj.toString().getBytes(StandardCharsets.UTF_8);
+        System.out.println("obj: " + obj1.toString());
+        byte[] objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
+//        String objData1 = "{\"channel\":\""+ currentAudioChannel.getId() +"\",\"name\":\""+ builder.getPersonalUser().getName() +"\"}";
+//        System.out.println(objData3);
+//        byte[] objData = objData1.getBytes(StandardCharsets.UTF_8);
         // set every byte new which is from jsonObject and let the rest be still 0
         for (int i = 0; i < objData.length; i++) {
-            Arrays.fill(jsonData, i, i+1, objData[i]);
+            Arrays.fill(jsonData, i, i + 1, objData[i]);
         }
+
+        // start recording audio
+        microphone.startRecording();
 
         // start sending
         while (senderActive) {
+//            int port = 4445; // destination port
+//            InetAddress address = null;
+//            try {
+//                address = InetAddress.getByName("localhost");
+//            } catch (UnknownHostException e) {
+//                e.printStackTrace();
+//            }
+
             byte[] data = microphone.readData();
 
             // put both byteArrays in one
             byte[] sendData = new byte[AUDIO_DATAGRAM_PAKET_SIZE];
-            System.arraycopy(jsonData,0, sendData,0, jsonData.length);
-            System.arraycopy(data,0, sendData, jsonData.length, data.length);
+            System.arraycopy(jsonData, 0, sendData, 0, jsonData.length);
+            System.arraycopy(data, 0, sendData, jsonData.length, data.length);
+            JSONObject testV = new JSONObject(new String(jsonData));
 
             DatagramPacket packet = new DatagramPacket(sendData, AUDIO_DATAGRAM_PAKET_SIZE, address, port);
+//            DatagramPacket packet = new DatagramPacket(data, 1024, address, port);
 
             try {
                 // send to address

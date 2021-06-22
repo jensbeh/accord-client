@@ -14,11 +14,11 @@ public class AudioStreamClient {
 
     private final ModelBuilder builder;
     private final ServerChannel currentAudioChannel;
-    private AudioStreamSender sender;
     private AudioStreamReceiver receiver;
+    private AudioStreamSender sender;
     private InetAddress address;
-    private Thread senderThread;
     private Thread receiverThread;
+    private Thread senderThread;
     private int port;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
@@ -31,26 +31,34 @@ public class AudioStreamClient {
             address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
             port = AUDIO_STREAM_PORT;
 
-            sender = new AudioStreamSender(builder, currentAudioChannel, address, port);
-            sender.init();
+            //init first receiver and then sender
             receiver = new AudioStreamReceiver(builder, address, port);
             receiver.init();
+            sender = new AudioStreamSender(builder, currentAudioChannel, address, port);
+            sender.init();
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
-        senderThread = new Thread(sender);
+        //set both on threads so that quality is better
         receiverThread = new Thread(receiver);
+        senderThread = new Thread(sender);
     }
 
+    /**
+     * starts the threads with receiver and sender
+     */
     public void startStream() {
-        senderThread.start();
         receiverThread.start();
+        senderThread.start();
     }
 
+    /**
+     * stops the threads with receiver and sender
+     */
     public void stopStream() {
-        //senderThread.stop(); //TODO should be stop safer!
-        //receiverThread.stop(); //TODO should be stop safer!
+        receiverThread.stop(); //TODO should be stop safer!
+        senderThread.stop(); //TODO should be stop safer!
     }
 }

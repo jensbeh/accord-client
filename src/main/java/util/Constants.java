@@ -39,7 +39,7 @@ public class Constants {
     // AudioStream
     public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de";
     public static int AUDIO_STREAM_PORT = 33100;
-    public static int AUDIO_BITRATE = 48000;
+    public static float AUDIO_BITRATE = 48000.0f;
     public static int AUDIO_SAMPLE_SIZE = 16;
     public static int AUDIO_CHANNELS = 1;
     public static boolean AUDIO_SIGNING = true;

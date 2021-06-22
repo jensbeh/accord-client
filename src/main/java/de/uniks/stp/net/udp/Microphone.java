@@ -45,6 +45,9 @@ public class Microphone {
         microphone.start();
     }
 
+    /**
+     * the method returns the data which the microphone is reading
+     */
     public byte[] readData() {
         // store audio in data
         microphone.read(data, 0, data.length);

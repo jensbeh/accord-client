@@ -3,7 +3,10 @@ package de.uniks.stp.net.udp;
 import de.uniks.stp.builder.ModelBuilder;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 public class AudioStreamReceiver implements Runnable {
 
@@ -13,7 +16,6 @@ public class AudioStreamReceiver implements Runnable {
     private Speaker speaker;
     private boolean receiverActive;
     private byte[] data;
-    private DatagramPacket packet;
     private DatagramSocket socket;
 
     public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port) {
@@ -33,7 +35,7 @@ public class AudioStreamReceiver implements Runnable {
             e.printStackTrace();
         }
 
-        data = new byte[(int) speaker.getFormat().getSampleRate()];
+        data = new byte[1024];
     }
 
     @Override
@@ -42,15 +44,15 @@ public class AudioStreamReceiver implements Runnable {
         speaker.startPlayback();
 
         while (receiverActive) {
-            packet = new DatagramPacket(data, data.length);
+            DatagramPacket packet = new DatagramPacket(data, data.length);
 
             try {
                 socket.receive(packet);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            speaker.writeData(data);
+            System.out.println("received: " + packet);
+            //speaker.writeData(data);
         }
         speaker.stopPlayback();
         socket.close();
