@@ -97,6 +97,7 @@ public class AudioStreamSender implements Runnable {
 
         // stop if senderActive is set to false in stop method in this class
         microphone.stopRecording();
+        socket.close();
     }
 
     public void stop() {

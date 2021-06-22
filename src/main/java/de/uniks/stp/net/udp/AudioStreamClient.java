@@ -50,7 +50,7 @@ public class AudioStreamClient {
     }
 
     public void stopStream() {
-        senderThread.stop(); //TODO should be stop safer!
-        receiverThread.stop(); //TODO should be stop safer!
+        //senderThread.stop(); //TODO should be stop safer!
+        //receiverThread.stop(); //TODO should be stop safer!
     }
 }
