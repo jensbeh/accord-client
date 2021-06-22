@@ -92,6 +92,9 @@ public class ServerMessageTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response8;
 
+    @Mock
+    private HttpResponse<JsonNode> response9;
+
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
@@ -116,6 +119,9 @@ public class ServerMessageTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
 
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
+
     @InjectMocks
     StageManager mockApp = new StageManager();
     private ModelBuilder builder;
@@ -123,7 +129,7 @@ public class ServerMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -273,6 +279,21 @@ public class ServerMessageTest extends ApplicationTest {
         }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
     }
 
+    public void mockUpdateMessage() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03dr458").put("channel", "60adc8aec77d3f78988b57a0").put("timestamp", "1616935874361")
+                        .put("from", "Hendry Bracken").put("text", "Okay?"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
+        }).when(restClient).updateMessage(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
+    }
+
     public void loginInit(boolean emptyServers) throws InterruptedException {
         mockPostServer();
         if (!emptyServers)
@@ -283,6 +304,7 @@ public class ServerMessageTest extends ApplicationTest {
         mockGetServerCategories();
         mockGetCategoryChannels();
         mockGetChannelMessages();
+        mockUpdateMessage();
 
         mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
@@ -415,6 +437,13 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertFalse(messageBox.getChildren().contains(send));
 
         //TODO test edit functionality
+        messageField.setText("Okay?");
+        write("\n");
+
+        Assert.assertEquals("Okay?", privateChatMessageList.getItems().get(0).getMessage());
+        Assert.assertFalse(messageBox.getChildren().contains(edit));
+        Assert.assertFalse(messageBox.getChildren().contains(abort));
+        Assert.assertTrue(messageBox.getChildren().contains(send));
 
         Thread.sleep(2000);
 
