@@ -15,19 +15,19 @@ public class Microphone {
 
     public void init() {
         // audio format
-        this.format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
+        format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
         // audio object (microphone information?)
-        this.info = new DataLine.Info(TargetDataLine.class, this.format);
+        info = new DataLine.Info(TargetDataLine.class, format);
 
         try {
             // get microphoneLine
-            this.microphone = (TargetDataLine) AudioSystem.getLine(this.info);
+            microphone = (TargetDataLine) AudioSystem.getLine(info);
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
 
-        this.data = new byte[1024]; // TODO 1024 Byte ???
+        data = new byte[1024]; // TODO 1024 Byte ???
     }
 
     /**
@@ -36,21 +36,27 @@ public class Microphone {
     public void startRecording() {
         try {
             // open microphone line
-            this.microphone.open(this.format);
+            microphone.open(format);
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
 
         // start reading
-        this.microphone.start();
+        microphone.start();
+    }
+
+    public byte[] readData() {
+        // store audio in data
+        microphone.read(data, 0, data.length);
+        return data;
     }
 
     /**
      * the method stops the microphone
      */
     public void stopRecording() {
-        this.microphone.drain();
-        this.microphone.stop();
-        this.microphone.close();
+        microphone.drain();
+        microphone.stop();
+        microphone.close();
     }
 }

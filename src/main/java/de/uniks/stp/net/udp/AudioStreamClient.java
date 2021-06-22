@@ -25,29 +25,29 @@ public class AudioStreamClient {
 
     public void init() {
         try {
-            this.address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
-            this.port = AUDIO_STREAM_PORT;
+            address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
+            port = AUDIO_STREAM_PORT;
 
-            this.sender = new AudioStreamSender(builder, address, port);
-            this.sender.init();
-            this.receiver = new AudioStreamReceiver(builder, address, port);
-            this.receiver.init();
+            sender = new AudioStreamSender(builder, address, port);
+            sender.init();
+            receiver = new AudioStreamReceiver(builder, address, port);
+            receiver.init();
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
-        this.senderThread = new Thread(this.sender);
-        this.receiverThread = new Thread(this.receiver);
+        senderThread = new Thread(sender);
+        receiverThread = new Thread(receiver);
     }
 
     public void startStream() {
-        this.senderThread.start();
-        this.receiverThread.start();
+        senderThread.start();
+        receiverThread.start();
     }
 
     public void stopStream() {
-        this.senderThread.stop(); //TODO should be stop safer!
-        this.receiverThread.stop(); //TODO should be stop safer!
+        senderThread.stop(); //TODO should be stop safer!
+        receiverThread.stop(); //TODO should be stop safer!
     }
 }
