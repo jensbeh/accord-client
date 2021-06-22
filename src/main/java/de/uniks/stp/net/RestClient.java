@@ -1,9 +1,6 @@
 package de.uniks.stp.net;
 
-import kong.unirest.Callback;
-import kong.unirest.HttpRequest;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.json.JSONObject;
 
 import static util.Constants.*;
@@ -165,6 +162,11 @@ public class RestClient {
 
     public void getChannelMessages(long timestamp, String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
         HttpRequest<?> request = Unirest.get(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGES_PATH + timestamp).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void joinVoiceChannel(String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_JOIN).header("userKey", userKey);
         sendRequest(request, callback);
     }
 

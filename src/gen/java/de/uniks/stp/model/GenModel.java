@@ -28,6 +28,11 @@ public class GenModel implements ClassModelDecorator {
 
         mm.associate(categories, "channel", 3, channel, "categories", 1);
 
+        Clazz audioMember = mm.haveClass("AudioMember");
+        mm.haveAttribute(audioMember, "id", Type.STRING);
+
+        mm.associate(channel, "audioMember", 3, audioMember, "channel", 1);
+
         Clazz privateChat = mm.haveClass("PrivateChat");
         mm.haveAttribute(privateChat, "name", Type.STRING);
         mm.haveAttribute(privateChat, "id", Type.STRING);
@@ -45,6 +50,7 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(currentUser, "name", Type.STRING);
         mm.haveAttribute(currentUser, "userKey", Type.STRING);
         mm.haveAttribute(currentUser, "password", Type.STRING);
+        mm.haveAttribute(currentUser, "id", Type.STRING);
 
         mm.associate(currentUser, "user", 3, user, "currentUser", 1);
         mm.associate(currentUser, "server", 3, server, "currentUser", 1);

@@ -6,6 +6,7 @@ import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
+import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -121,11 +122,10 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        if (!userAction.equals("messageUpdated")) {
+        if (!userAction.equals("audioJoined") && !userAction.equals("messageUpdated")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
         }
-
         if (userAction.equals("categoryCreated")) {
             createCategory(jsonData);
         }
@@ -170,12 +170,56 @@ public class ServerSystemWebSocket extends Endpoint {
             updateServer(userName);
         }
 
+        // audioChannel
+        if (userAction.equals("audioJoined")) {
+            joinVoiceChannel(jsonData);
+        }
+
         if (userAction.equals("messageUpdated")) {
             updateMessage(jsonData);
         }
 
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
+        }
+    }
+
+    /**
+     * refreshes the current category view and starts a new udp session
+     */
+    private void joinVoiceChannel(JsonObject jsonData) {
+        String userId = jsonData.getString("id");
+        for (Categories category : this.serverViewController.getServer().getCategories()) {
+            if (jsonData.getString("category").equals(category.getId())) {
+                for (ServerChannel serverChannel : category.getChannel()) {
+                    if (jsonData.getString("channel").equals(serverChannel.getId())) {
+
+                        serverChannel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
+
+                        if (serverViewController.getCurrentAudioChannel() != null) {
+                            AudioMember toRemove = null;
+                            for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
+                                if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
+                                    toRemove = audioMember;
+                                    break;
+                                }
+                            }
+                            serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
+                        }
+
+                        serverViewController.setCurrentAudioChannel(serverChannel);
+                        serverViewController.refreshAllChannelLists();
+
+
+                        // create new UDP-connection for personalUser when joined
+                        if (userId.equals(builder.getPersonalUser().getId())) {
+                            AudioStreamClient audiostreamClient = new AudioStreamClient();
+                            builder.setAudioStreamClient(audiostreamClient);
+                            audiostreamClient.init();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -258,6 +302,7 @@ public class ServerSystemWebSocket extends Endpoint {
                     if (builder.getCurrentServer() == serverViewController.getServer()) {
                         serverViewController.generateCategoryChannelView(category);
                     }
+                    serverViewController.refreshAllChannelLists();
                 }
             }
         }
@@ -299,6 +344,7 @@ public class ServerSystemWebSocket extends Endpoint {
             if (deletedCategory.getChannel().contains(serverViewController.getCurrentChannel()) || serverViewController.getServer().getCategories().size() == 0) {
                 serverViewController.throwOutUserFromChatView();
             }
+            serverViewController.refreshAllChannelLists();
         }
     }
 
@@ -342,6 +388,7 @@ public class ServerSystemWebSocket extends Endpoint {
                     if (builder.getCurrentServer() == serverViewController.getServer()) {
                         Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
                     }
+                    serverViewController.refreshAllChannelLists();
                     break;
                 }
             }
@@ -370,6 +417,7 @@ public class ServerSystemWebSocket extends Endpoint {
                                     serverViewController.throwOutUserFromChatView();
                                 }
                             }
+                            serverViewController.refreshAllChannelLists();
                             return;
                         }
                     }

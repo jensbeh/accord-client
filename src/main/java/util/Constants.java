@@ -20,6 +20,7 @@ public class Constants {
     public static final String SERVER_MESSAGES_PATH = "/messages?timestamp=";
     public static final String SERVER_MESSAGE_PATH = "/messages";
     public static final String SERVER_INVITES = "/invites";
+    public static final String SERVER_AUDIO_JOIN = "/join";
 
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";
@@ -35,4 +36,12 @@ public class Constants {
     public static String PRIVATE_CHAT_PATH = "/private";
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
+
+    // VoIP
+    public static String VOIP_ADDRESS = "cranberry.uniks.de:33100";
+    public static int VOIP_PORT = 33100;
+    public static int AUDIO_SAMPLE_RATE = 48000;
+    public static int AUDIO_SAMPLE_SIZE = 16;
+    public static boolean AUDIO_SIGNED = true;
+    public static boolean AUDIO_BIG_ENDIAN = false;
 }

@@ -1,5 +1,5 @@
 - c: 	org.fulib.classmodel.ClassModel
-  classes: 	server 	categories 	serverChannel 	privateChat 	user 	currentUser 	message
+  classes: 	server 	categories 	serverChannel 	audioMember 	privateChat 	user 	currentUser 	message
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
   defaultRoleType: 	"java.util.ArrayList<%s>"
@@ -29,7 +29,15 @@
   modified: 	false
   name: 	ServerChannel
   propertyStyle: 	Bean
-  roles: 	serverChannel_categories 	serverChannel_privilegedUsers 	serverChannel_currentUser 	serverChannel_message
+  roles: 	serverChannel_categories 	serverChannel_audioMember 	serverChannel_privilegedUsers 	serverChannel_currentUser 	serverChannel_message
+
+- audioMember: 	org.fulib.classmodel.Clazz
+  attributes: 	audioMember_id
+  model: 	c
+  modified: 	false
+  name: 	AudioMember
+  propertyStyle: 	Bean
+  roles: 	audioMember_channel
 
 - privateChat: 	org.fulib.classmodel.Clazz
   attributes: 	privateChat_name 	privateChat_id 	privateChat_unreadMessagesCounter
@@ -48,7 +56,7 @@
   roles: 	user_privileged 	user_server 	user_currentUser
 
 - currentUser: 	org.fulib.classmodel.Clazz
-  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password
+  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password 	currentUser_id
   model: 	c
   modified: 	false
   name: 	CurrentUser
@@ -226,6 +234,18 @@
   other: 	categories_channel
   propertyStyle: 	Bean
 
+- serverChannel_audioMember: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	3
+  clazz: 	serverChannel
+  collectionType: 	c1
+  id: 	ServerChannel_audioMember
+  modified: 	false
+  name: 	audioMember
+  other: 	audioMember_channel
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
+
 - serverChannel_privilegedUsers: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	3
@@ -259,6 +279,25 @@
   other: 	message_serverChannel
   propertyStyle: 	Bean
   roleType: 	"java.util.ArrayList<%s>"
+
+- audioMember_id: 	org.fulib.classmodel.Attribute
+  clazz: 	audioMember
+  id: 	AudioMember_id
+  modified: 	false
+  name: 	id
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- audioMember_channel: 	org.fulib.classmodel.AssocRole
+  aggregation: 	false
+  cardinality: 	1
+  clazz: 	audioMember
+  id: 	AudioMember_channel
+  modified: 	false
+  name: 	channel
+  other: 	serverChannel_audioMember
+  propertyStyle: 	Bean
 
 - privateChat_name: 	org.fulib.classmodel.Attribute
   clazz: 	privateChat
@@ -393,6 +432,15 @@
   id: 	CurrentUser_password
   modified: 	false
   name: 	password
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_id: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_id
+  modified: 	false
+  name: 	id
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String
