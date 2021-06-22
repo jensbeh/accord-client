@@ -10,12 +10,6 @@ import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,13 +26,10 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-
-import java.awt.*;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -129,7 +120,7 @@ public class ServerMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -397,6 +388,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         privateChatMessageList.getSelectionModel().select(3);
         rightClickOn(privateChatMessageList);
+        //clickOn("delete");
         moveBy(5, 75);
         write("\n");
         Label msg = lookup("#delete").query();
@@ -436,8 +428,8 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertTrue(messageBox.getChildren().contains(abort));
         Assert.assertFalse(messageBox.getChildren().contains(send));
 
-        //TODO test edit functionality
         messageField.setText("Okay?");
+        clickOn(messageField);
         write("\n");
 
         Assert.assertEquals("Okay?", privateChatMessageList.getItems().get(0).getMessage());
