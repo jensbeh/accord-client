@@ -209,6 +209,7 @@ public class ChatViewController {
             item1.setId("copy");
             item2.setId("edit");
             item3.setId("delete");
+            Button item = new Button();
             contextMenu.getItems().addAll(item1, item2, item3);
         }
         if (messageList.getSelectionModel().getSelectedItem() == null) {
@@ -349,12 +350,6 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
-        for (Message msg : messages) {
-            if (msg.getMessage().equals(text)) {
-                msg.setMessage(messageTextField.getText());
-            }
-        }
-        refreshMessageListView();
         abortEdit(actionEvent);
     }
 
