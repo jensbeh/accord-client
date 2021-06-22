@@ -207,7 +207,7 @@ public class ServerSystemWebSocket extends Endpoint {
 
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
-                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder);
+                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
                             builder.setAudioStreamClient(audiostreamClient);
                             audiostreamClient.init();
                             audiostreamClient.startStream();

@@ -1,6 +1,7 @@
 package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.ServerChannel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -12,6 +13,7 @@ public class AudioStreamClient {
 
 
     private final ModelBuilder builder;
+    private final ServerChannel currentAudioChannel;
     private AudioStreamSender sender;
     private AudioStreamReceiver receiver;
     private InetAddress address;
@@ -19,8 +21,9 @@ public class AudioStreamClient {
     private Thread receiverThread;
     private int port;
 
-    public AudioStreamClient(ModelBuilder builder) {
+    public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;
+        this.currentAudioChannel = currentAudioChannel;
     }
 
     public void init() {
@@ -28,7 +31,7 @@ public class AudioStreamClient {
             address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
             port = AUDIO_STREAM_PORT;
 
-            sender = new AudioStreamSender(builder, address, port);
+            sender = new AudioStreamSender(builder, currentAudioChannel, address, port);
             sender.init();
             receiver = new AudioStreamReceiver(builder, address, port);
             receiver.init();
