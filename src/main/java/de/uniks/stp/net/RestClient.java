@@ -1,6 +1,9 @@
 package de.uniks.stp.net;
 
-import kong.unirest.*;
+import kong.unirest.Callback;
+import kong.unirest.HttpRequest;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.json.JSONObject;
 
 import static util.Constants.*;
@@ -162,6 +165,15 @@ public class RestClient {
 
     public void getChannelMessages(long timestamp, String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
         HttpRequest<?> request = Unirest.get(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGES_PATH + timestamp).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void updateMessage(String serverId, String catId, String channelId, String msgId, String text, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("text", text);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId
+                + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGE_PATH
+                + "/" + msgId).body(body).header("userKey", userKey);
         sendRequest(request, callback);
     }
 }

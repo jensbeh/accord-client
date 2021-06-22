@@ -9,6 +9,7 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
+import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,14 +64,13 @@ public class ChatViewController {
     private ContextMenu contextMenu;
     private ResourceBundle lang;
     private HBox messageBox;
-    private Button No;
-    private Button Yes;
-    private EmojiTextFlow deleteMsg;
-    private Label msg;
     private Stage stage;
     private EmojiTextFlowParameters emojiTextFlowParameters;
     private Button editButton;
     private Button abortButton;
+    private String textWrote;
+    private RestClient restClient;
+    private Message selectedMsg;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -85,6 +85,7 @@ public class ChatViewController {
 
     @SuppressWarnings("unchecked")
     public void init() throws JsonException, IOException {
+        restClient = builder.getRestClient();
 
         emojiTextFlowParameters = new EmojiTextFlowParameters();
         emojiTextFlowParameters.setEmojiScaleFactor(1D);
@@ -228,6 +229,7 @@ public class ChatViewController {
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
+        selectedMsg = messageList.getSelectionModel().getSelectedItem();
         messageList.getSelectionModel().select(null);
     }
 
@@ -308,6 +310,7 @@ public class ChatViewController {
 
     /**
      * load edit and abort button and save text from textField
+     * add enter functionality for editButton
      */
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
@@ -322,19 +325,37 @@ public class ChatViewController {
             messageBox.getChildren().remove(sendButton);
             messageBox.getChildren().add(editButton);
             messageBox.getChildren().add(abortButton);
+            textWrote = messageTextField.getText();
         }
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);
         abortButton.setOnAction(this::abortEdit);
         editButton.setOnAction(this::editMessage);
-        //TODO disable enter to send
+        messageTextField.setOnKeyReleased(key -> {//messageList?
+            if (key.getCode() == KeyCode.ENTER) {
+                editButton.fire();
+            }
+        });
     }
 
     /**
      * edit message and refresh the ListView
      */
     private void editMessage(ActionEvent actionEvent) {
-
+        String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
+        String catId = selectedMsg.getServerChannel().getCategories().getId();
+        String channelId = selectedMsg.getServerChannel().getId();
+        String userKey = builder.getPersonalUser().getUserKey();
+        String msgId = selectedMsg.getId();
+        restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
+        });
+        for (Message msg : messages) {
+            if (msg.getMessage().equals(text)) {
+                msg.setMessage(messageTextField.getText());
+            }
+        }
+        refreshMessageListView();
+        abortEdit(actionEvent);
     }
 
     /**
@@ -344,8 +365,12 @@ public class ChatViewController {
         messageBox.getChildren().remove(editButton);
         messageBox.getChildren().remove(abortButton);
         messageBox.getChildren().add(sendButton);
-        messageTextField.clear();
-        //TODO enable enter to send
+        messageTextField.setText(textWrote);
+        messageTextField.setOnKeyReleased(key -> {//messageList?
+            if (key.getCode() == KeyCode.ENTER) {
+                sendButton.fire();
+            }
+        });
     }
 
     /**

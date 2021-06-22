@@ -2,12 +2,10 @@ package de.uniks.stp.net;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.ServerViewController;
 import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
-import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.*;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -121,8 +119,12 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
-        String userName = jsonData.getString("name");
-        String userId = jsonData.getString("id");
+        String userName = "";
+        String userId = "";
+        if (!userAction.equals("messageUpdated")) {
+            userName = jsonData.getString("name");
+            userId = jsonData.getString("id");
+        }
 
         if (userAction.equals("categoryCreated")) {
             createCategory(jsonData);
@@ -168,8 +170,28 @@ public class ServerSystemWebSocket extends Endpoint {
             updateServer(userName);
         }
 
+        if (userAction.equals("messageUpdated")) {
+            updateMessage(jsonData);
+        }
+
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
+        }
+    }
+
+    /**
+     * set new message Text and refresh the ListView
+     */
+    private void updateMessage(JsonObject jsonData) {
+        String msgId = jsonData.getString("id");
+        String text = jsonData.getString("text");
+
+        for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
+            if (msg.getId().equals(msgId)) {
+                msg.setMessage(text);
+                ChatViewController.refreshMessageListView();
+                break;
+            }
         }
     }
 
@@ -211,7 +233,6 @@ public class ServerSystemWebSocket extends Endpoint {
             alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
             alert.showAndWait();
         });
-
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }
 
@@ -246,8 +267,8 @@ public class ServerSystemWebSocket extends Endpoint {
      * deletes a category with controller and view
      */
     private void deleteCategory(JsonObject jsonData) {
-        Server currentServer=null;
-        Categories deletedCategory=null;
+        Server currentServer = null;
+        Categories deletedCategory = null;
         Node deletedNode = null;
         String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
@@ -255,7 +276,7 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
                 for (Categories categories : server.getCategories()) {
-                    currentServer=server;
+                    currentServer = server;
                     if (categories.getId().equals(categoryId)) {
                         if (builder.getCurrentServer() == serverViewController.getServer()) {
                             for (Node view : serverViewController.getCategoryBox().getChildren()) {
@@ -269,7 +290,7 @@ public class ServerSystemWebSocket extends Endpoint {
                 }
             }
         }
-        if (deletedNode!=null){
+        if (deletedNode != null) {
             currentServer.withoutCategories(deletedCategory);
             Node finalDeletedNode = deletedNode;
             Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(finalDeletedNode));

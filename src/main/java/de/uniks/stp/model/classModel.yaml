@@ -56,7 +56,7 @@
   roles: 	currentUser_user 	currentUser_server 	currentUser_privateChat 	currentUser_channel
 
 - message: 	org.fulib.classmodel.Clazz
-  attributes: 	message_from 	message_timestamp 	message_message
+  attributes: 	message_from 	message_timestamp 	message_message 	message_id
   model: 	c
   modified: 	false
   name: 	Message
@@ -468,6 +468,15 @@
   id: 	Message_message
   modified: 	false
   name: 	message
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- message_id: 	org.fulib.classmodel.Attribute
+  clazz: 	message
+  id: 	Message_id
+  modified: 	false
+  name: 	id
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String

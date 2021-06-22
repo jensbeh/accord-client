@@ -427,7 +427,8 @@ public class ServerViewController {
                     String from = jsonData.getString("from");
                     long timestamp = jsonData.getLong("timestamp");
                     String text = jsonData.getString("text");
-                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp);
+                    String id = jsonData.getString("id");
+                    Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp).setId(id);
                     channel.withMessage(message);
                 }
                 messagesLoadedCallback.onSuccess(status);
