@@ -19,7 +19,7 @@
             </Label>
          </children>
       </HBox>
-      <VBox id="deleteMsg" maxHeight="100.0" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: transparent #4a4a4a;">
+      <VBox maxHeight="100.0" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: transparent #4a4a4a;">
          <children>
             <ScrollPane id="deleteMsgScroll" prefHeight="200.0" prefWidth="480.0" style="-fx-background-color: #ff0000;" />
          </children>

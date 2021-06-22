@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
@@ -7,10 +8,11 @@ import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -332,6 +335,73 @@ public class ServerMessageTest extends ApplicationTest {
             }
         }
         Assert.assertTrue(msgArrived);
+
+        privateChatMessageList.getSelectionModel().select(0);
+        rightClickOn(privateChatMessageList);
+        ContextMenu contextMenu = lookup("#messageListView").queryListView().getContextMenu();
+        Assert.assertEquals(3, contextMenu.getItems().size());
+        Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
+        Assert.assertTrue(contextMenu.getItems().get(1).isVisible());
+        Assert.assertTrue(contextMenu.getItems().get(2).isVisible());
+
+        FxRobot robot = new FxRobot();
+
+        clickOn("#copy");
+        clickOn(messageField);
+        robot.press(KeyCode.CONTROL);
+        robot.press(KeyCode.V);
+        robot.release(KeyCode.V);
+        robot.release(KeyCode.CONTROL);
+        Assert.assertEquals(messageField.getText(), privateChatMessageList.getItems().get(0).getMessage());
+
+        String text = "test";
+        messageField.setText(text);
+        write("\n");
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", text).put("from", testUserMainName).put("id", testServerId);
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        privateChatMessageList.getSelectionModel().select(2);
+        rightClickOn(privateChatMessageList);
+        clickOn("#delete");
+        Label msg = lookup("#delete").query();
+        Assert.assertEquals(msg.getText(), "are you sure you want to delete " + "\n" + "the following message:");
+        Button no = lookup("#chooseCancle").query();
+        Assert.assertEquals(no.getText(), "NO");
+        Button yes = lookup("#chooseDelete").query();
+        Assert.assertEquals(yes.getText(), "YES");
+        ScrollPane pane = lookup("#deleteMsgScroll").query();
+        EmojiTextFlow emojiTextFlow = (EmojiTextFlow) pane.getContent();
+        StringBuilder sb = new StringBuilder();
+        for (Node node : emojiTextFlow.getChildren()) {
+            if (node instanceof Text) {
+                sb.append(((Text) node).getText());
+            }
+        }
+        String fullText = sb.toString();
+        Assert.assertEquals(fullText, text);
+        clickOn("#chooseCancle");
+
+        //TODO test delete Message functionality
+
+        Button send = lookup("#sendButton").query();
+        Assert.assertEquals(send.getText(), "send");
+
+        privateChatMessageList.getSelectionModel().select(0);
+        rightClickOn(privateChatMessageList);
+        clickOn("#edit");
+        Button edit = lookup("#edit").query();
+        Assert.assertEquals(edit.getText(), "edit");
+        Button abort = lookup("#abort").query();
+        Assert.assertEquals(abort.getText(), "abort");
+
+        HBox messageBox = lookup("#messageBox").query();
+        Assert.assertTrue(messageBox.getChildren().contains(edit));
+        Assert.assertTrue(messageBox.getChildren().contains(abort));
+        Assert.assertFalse(messageBox.getChildren().contains(send));
+
+        //TODO test edit functionality
 
         Thread.sleep(2000);
 

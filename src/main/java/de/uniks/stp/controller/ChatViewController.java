@@ -197,6 +197,7 @@ public class ChatViewController {
     private void chatClicked(MouseEvent mouseEvent) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
+            contextMenu.setId("contextMenu");
             contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
             final MenuItem item1 = new MenuItem("copy");
             final MenuItem item2 = new MenuItem("edit");
@@ -204,6 +205,9 @@ public class ChatViewController {
             item1.setStyle("-fx-text-fill: #FFFFFF");
             item2.setStyle("-fx-text-fill: #FFFFFF");
             item3.setStyle("-fx-text-fill: #FFFFFF");
+            item1.setId("copy");
+            item2.setId("edit");
+            item3.setId("delete");
             contextMenu.getItems().addAll(item1, item2, item3);
         }
         if (messageList.getSelectionModel().getSelectedItem() == null) {
@@ -212,7 +216,8 @@ public class ChatViewController {
             messageList.setContextMenu(contextMenu);
             text = messageList.getSelectionModel().getSelectedItem().getMessage();
 
-            if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())) {
+            if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())
+                    || !HomeViewController.inServerChat) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
             } else {
@@ -226,26 +231,31 @@ public class ChatViewController {
         messageList.getSelectionModel().select(null);
     }
 
+    /**
+     * load delete pop-up
+     */
     private void delete(ActionEvent actionEvent) {
         try {
-            Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
+            Parent subview = FXMLLoader.load(Objects.requireNonNull(
+                    StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.setTitle("Delete Message");
-            msg = (Label) subview.lookup("#delete");
+            Label msg = (Label) subview.lookup("#delete");
             msg.setText("are you sure you want to delete " + "\n" + "the following message:");
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
-            deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
+            EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setStyle("-fx-background-color: #4a4a4a;");
+            deleteMsg.setId("#deleteMsg");
             pane.setStyle("-fx-background:  #4a4a4a;");
             String msgText = formattedText(text);
             deleteMsg.parseAndAppend(msgText);
             deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
-            No = (Button) subview.lookup("#chooseCancle");
-            Yes = (Button) subview.lookup("#chooseDelete");
-            Yes.setOnAction(this::deleteMessage);
-            No.setOnAction(this::cancelDelete);
+            Button no = (Button) subview.lookup("#chooseCancle");
+            Button yes = (Button) subview.lookup("#chooseDelete");
+            yes.setOnAction(this::deleteMessage);
+            no.setOnAction(this::cancelDelete);
             stage.setScene(scene);
             stage.setResizable(false);
             stage.initOwner(messageBox.getScene().getWindow());
@@ -256,6 +266,9 @@ public class ChatViewController {
         }
     }
 
+    /**
+     * formatted a text so the teyt is not too long in a row
+     */
     private String formattedText(String text) {
         String str = text;
         int point = 0;
@@ -293,14 +306,19 @@ public class ChatViewController {
         //TODO delete Message
     }
 
+    /**
+     * load edit and abort button and save text from textField
+     */
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
             editButton = new Button();
             editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             editButton.setText("edit");
+            editButton.setId("edit");
             abortButton = new Button();
             abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             abortButton.setText("abort");
+            abortButton.setId("abort");
             messageBox.getChildren().remove(sendButton);
             messageBox.getChildren().add(editButton);
             messageBox.getChildren().add(abortButton);
@@ -312,10 +330,16 @@ public class ChatViewController {
         //TODO disable enter to send
     }
 
+    /**
+     * edit message and refresh the ListView
+     */
     private void editMessage(ActionEvent actionEvent) {
 
     }
 
+    /**
+     * show normal chatView and text before click edit
+     */
     private void abortEdit(ActionEvent actionEvent) {
         messageBox.getChildren().remove(editButton);
         messageBox.getChildren().remove(abortButton);
@@ -380,7 +404,7 @@ public class ChatViewController {
         }
     }
 
-    private static void refreshMessageListView() {
+    public static void refreshMessageListView() {
         Platform.runLater(() -> messageList.setItems(FXCollections.observableArrayList(messages)));
     }
 
