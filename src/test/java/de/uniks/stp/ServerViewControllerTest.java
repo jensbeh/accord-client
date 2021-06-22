@@ -38,7 +38,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     private Stage stage;
     private StageManager app;
     private static final String testUserOneName = "Peter";
-    private static final String testUserOnePw= "1234";
+    private static final String testUserOnePw = "1234";
 
 
     @Mock
@@ -270,20 +270,20 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
-        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar").put("online",true)).toString();
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true)).toString();
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar")).toString();
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
         MenuButton serverNameText = lookup("#serverMenuButton").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameText.getText());
 
-        message = new JSONObject().put("action", "serverDeleted").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","TestServer Team Bit Shift")).toString();
+        message = new JSONObject().put("action", "serverDeleted").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "TestServer Team Bit Shift")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
     }
@@ -296,7 +296,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
 
-        String message = new JSONObject().put("action", "userJoined").put("data", new JSONObject().put("id","5e2fbd8770dd077d03df505").put("name","Natasha Yar").put("online",true)).toString();
+        String message = new JSONObject().put("action", "userJoined").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true)).toString();
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
