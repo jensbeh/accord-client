@@ -1,5 +1,6 @@
 package de.uniks.stp;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
@@ -7,10 +8,11 @@ import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -311,6 +314,10 @@ public class ServerMessageTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
         serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
         loginInit(true);
 
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
@@ -365,19 +372,22 @@ public class ServerMessageTest extends ApplicationTest {
 
         moveBy(0, 25);
         write("\n");
+        //interact(() -> contextMenu.getItems().get(2).fire());
         clickOn(messageField);
 
-        rightClickOn(messageField);
-        moveBy(10, 115);
-        write("\n");
+        //rightClickOn(messageField);
+        //moveBy(0, 125);
+        //write("\n");
+        //write("\n");
         write("\n");
         message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", privateChatMessageList.getItems().get(0).getMessage()).put("from", testUserMainName).put("id", testServerId);
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
+        //Assert.assertEquals(messageField.getText(), privateChatMessageList.getItems().get(0).getMessage());
         Assert.assertEquals(privateChatMessageList.getItems().get(2).getMessage(), privateChatMessageList.getItems().get(0).getMessage());
-/*
+
         String text = "test";
         messageField.setText(text);
         write("\n");
@@ -387,12 +397,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         privateChatMessageList.getSelectionModel().select(3);
         rightClickOn(privateChatMessageList);
-
-        //moveBy(5, 75);
-        //write("\n");
-        //interact(() -> contextMenu.getItems().get(2));
-
-
+        interact(() -> contextMenu.getItems().get(2).fire());
         Label msg = lookup("#delete").query();
         Assert.assertEquals(msg.getText(), "are you sure you want to delete " + "\n" + "the following message:");
         Button no = lookup("#chooseCancle").query();
@@ -418,8 +423,7 @@ public class ServerMessageTest extends ApplicationTest {
 
         privateChatMessageList.getSelectionModel().select(0);
         rightClickOn(privateChatMessageList);
-        moveBy(5, 50);
-        write("\n");
+        interact(() -> contextMenu.getItems().get(1).fire());
         Button edit = lookup("#edit").query();
         Assert.assertEquals(edit.getText(), "edit");
         Button abort = lookup("#abort").query();
@@ -433,12 +437,19 @@ public class ServerMessageTest extends ApplicationTest {
         messageField.setText("Okay?");
         clickOn(messageField);
         write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "messageUpdated").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03dr458")
+                .put("channel", "60adc8aec77d3f78988b57a0").put("timestamp", "1616935874361")
+                .put("from", "Hendry Bracken").put("text", "Okay?"));
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverSystemWebSocket.handleMessage(jsonObject);
 
         Assert.assertEquals("Okay?", privateChatMessageList.getItems().get(0).getMessage());
         Assert.assertFalse(messageBox.getChildren().contains(edit));
         Assert.assertFalse(messageBox.getChildren().contains(abort));
         Assert.assertTrue(messageBox.getChildren().contains(send));
-*/
+
         Thread.sleep(2000);
 
         //Emoji List test
