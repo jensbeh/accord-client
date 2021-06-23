@@ -1,43 +1,43 @@
 #loginButton {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7da6df;
     -fx-background-radius: 80;
 }
 
 #signinButton {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7da6df;
     -fx-background-radius: 80;
 }
 
 #logoutButton {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7da6df;
     -fx-background-radius: 80;
 }
 
 #settingsButton {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7da6df;
     -fx-background-radius: 80;
 }
 
 #connectionLabel{
-    -fx-text-fill: #ff9999;
+    -fx-text-fill: #7da6df;
 }
 
 #passwordTextField {
-    -fx-text-box-border: #ff9999;
+    -fx-text-box-border: #7da6df;
 }
 
 #rememberMeCheckbox {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #loginAsTempUser {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #usernameTextfield {
-    -fx-text-box-border: #ff9999;
+    -fx-text-box-border: #7da6df;
 }
 
 #root {
-    -fx-background-color: #636363;
+    -fx-background-color: #ffffff;
 }

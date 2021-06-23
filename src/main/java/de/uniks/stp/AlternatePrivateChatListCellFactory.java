@@ -107,7 +107,7 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
                     if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #a4a4a4; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
+                        cell.setStyle("-fx-background-color: #bfbfbf; -fx-border-color: #7c7c7c; -fx-border-width: 2px; -fx-border-radius: 13px; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
                     } else if (theme.equals("Dark")) {
                         cell.setStyle("-fx-background-color: #999999; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
                     }
@@ -115,7 +115,7 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                 } else {
                     //Unselected Chat Color
                     if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #c3c3c3; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
+                        cell.setStyle("-fx-background-color: #e2e2e2; -fx-border-color: #c1c1c1; -fx-border-width: 1.5px; -fx-border-radius: 13px; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
                     } else if (theme.equals("Dark")) {
                         cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
                     }

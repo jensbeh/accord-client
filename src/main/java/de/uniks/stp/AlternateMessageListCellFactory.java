@@ -59,10 +59,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
+            //Background for the messages
             if (theme.equals("Bright")) {
-                this.setStyle("-fx-background-color: white;");
+                this.setStyle("-fx-background-color: WHITE;");
             } else {
-                this.setStyle("-fx-background-color: grey;");
+                this.setStyle("-fx-background-color: GREY;");
             }
             if (!empty) {
                 VBox vbox = new VBox();
@@ -88,14 +89,12 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                         emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
                         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
-                        if (theme.equals("Bright")) {
-                            emojiTextFlowParameters.setTextColor(Color.BLACK);
-                        } else {
-                            emojiTextFlowParameters.setTextColor(Color.WHITE);
-                        }
+                        //Text color
+                        emojiTextFlowParameters.setTextColor(Color.WHITE);
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
-                    message.setStyle("-fx-background-color: #e3e5e8;" + "-fx-background-radius: 4;");
+                    //Message background own user
+                    message.setStyle("-fx-background-color: #7da6df;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
@@ -108,7 +107,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                         emojiTextFlowParameters.setTextColor(Color.BLACK);
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
-                    message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
+                    //Message background
+                    message.setStyle("-fx-background-color: #d4d4d4;" + "-fx-background-radius: 4;");
                 }
                 message.setId("messageLabel");
                 message.setMaxWidth(320);
