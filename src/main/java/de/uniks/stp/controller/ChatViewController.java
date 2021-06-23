@@ -88,6 +88,7 @@ public class ChatViewController {
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
+        AlternateMessageListCellFactory.setTheme(builder.getTheme());
         messages = new ArrayList<>();
 
         AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
