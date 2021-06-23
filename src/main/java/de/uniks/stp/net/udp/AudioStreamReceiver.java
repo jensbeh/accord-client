@@ -53,8 +53,9 @@ public class AudioStreamReceiver implements Runnable {
 
             JSONObject jsonData = new JSONObject(new String(receivedJson));
 //            System.out.println(jsonData);
-
-            speaker.writeData(receivedData);
+            if (!jsonData.getString("name").equals(builder.getPersonalUser().getName())) {
+                speaker.writeData(receivedData);
+            }
         }
         speaker.stopPlayback();
         socket.close();
