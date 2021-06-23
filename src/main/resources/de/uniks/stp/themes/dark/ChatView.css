@@ -1,0 +1,38 @@
+#root {
+    -fx-background-color: WHITE;
+}
+
+#messageListView .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: WHITE;
+}
+
+#messageListView .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: WHITE;
+}
+
+#messageListView  {
+    -fx-border-color: WHITE;
+    -fx-background-insets: 0 ;
+    -fx-background-color: WHITE;
+    -fx-padding: 1;
+    -fx-text-fill: BLACK;
+}
+
+#messageBox {
+    -fx-background-color: WHITE;
+}
+
+#emojiButton {
+    -fx-background-color: WHITE;
+}
+
+#sendButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}

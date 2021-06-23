@@ -475,7 +475,7 @@ public class HomeViewController {
 
     private void setWhiteMode() {
         homeView.getStylesheets().clear();
-        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/HomeView.css")).toExternalForm());
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
     }
 
     private void setDarkMode() {

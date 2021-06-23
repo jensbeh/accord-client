@@ -43,6 +43,7 @@ public class ChatViewController {
     private static ModelBuilder builder;
     private static ServerChannel currentChannel;
     private final Parent view;
+    private VBox root;
     private static Button sendButton;
     private TextField messageTextField;
     private static ListView<Message> messageList;
@@ -74,6 +75,7 @@ public class ChatViewController {
         }
 
         // Load all view references
+        root = (VBox) view.lookup("#root");
         sendButton = (Button) view.lookup("#sendButton");
         this.messageTextField = (TextField) view.lookup("#messageTextField");
         messageTextField.setText("");
@@ -260,5 +262,23 @@ public class ChatViewController {
 
     public void stop() {
         sendButton.setOnAction(null);
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/Login.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/Login.css")).toExternalForm());
     }
 }

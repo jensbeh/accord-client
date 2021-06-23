@@ -179,6 +179,7 @@ public class PrivateViewController {
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
+            messageViewController.setTheme();
             this.chatBox.getChildren().add(root);
 
             if (PrivateViewController.getSelectedChat() != null) {
@@ -294,7 +295,7 @@ public class PrivateViewController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/PrivateView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
     }
 
     private void setDarkMode() {

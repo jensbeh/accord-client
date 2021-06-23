@@ -59,7 +59,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: grey;");
+            if (theme.equals("Bright")) {
+                this.setStyle("-fx-background-color: white;");
+            } else {
+                this.setStyle("-fx-background-color: grey;");
+            }
             if (!empty) {
                 VBox vbox = new VBox();
                 Label userName = new Label();
@@ -83,10 +87,15 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                         emojiTextFlowParameters.setEmojiScaleFactor(1D);
                         emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
                         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                        emojiTextFlowParameters.setTextColor(Color.WHITE);
+
+                        if (theme.equals("Bright")) {
+                            emojiTextFlowParameters.setTextColor(Color.BLACK);
+                        } else {
+                            emojiTextFlowParameters.setTextColor(Color.WHITE);
+                        }
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
-                    message.setStyle("-fx-background-color: ff9999;" + "-fx-background-radius: 4;");
+                    message.setStyle("-fx-background-color: #e3e5e8;" + "-fx-background-radius: 4;");
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
