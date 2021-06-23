@@ -1,12 +1,12 @@
 package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 public class AudioStreamReceiver implements Runnable {
 
@@ -18,25 +18,18 @@ public class AudioStreamReceiver implements Runnable {
     private byte[] data;
     private DatagramSocket socket;
 
-    public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port) {
+    public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port, DatagramSocket socket) {
         this.builder = builder;
         this.address = address;
         this.port = port;
+        this.socket = socket;
     }
 
     public void init() {
         speaker = new Speaker();
         speaker.init();
 
-        // Create the socket on which to receive data.
-        try {
-            socket = new DatagramSocket(port);
-//            socket = new DatagramSocket(4445);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
-        data = new byte[1024];
+        data = new byte[1279];
     }
 
     @Override
@@ -52,8 +45,17 @@ public class AudioStreamReceiver implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("received: " + packet);
-//            speaker.writeData(data);
+
+            byte[] receivedJson = new byte[255];
+            byte[] receivedData = new byte[1024];
+            System.arraycopy(data, 0, receivedJson, 0, receivedJson.length);
+            System.arraycopy(data, receivedJson.length, receivedData, 0, receivedData.length);
+
+            JSONObject jsonData = new JSONObject(new String(receivedJson));
+            System.out.println(jsonData);
+
+
+            speaker.writeData(receivedData);
         }
         speaker.stopPlayback();
         socket.close();

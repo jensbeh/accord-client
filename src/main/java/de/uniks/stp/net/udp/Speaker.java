@@ -56,8 +56,4 @@ public class Speaker {
         speaker.stop();
         speaker.close();
     }
-
-    public AudioFormat getFormat() {
-        return format;
-    }
 }

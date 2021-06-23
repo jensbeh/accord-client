@@ -28,7 +28,7 @@ public class Microphone {
             e.printStackTrace();
         }
 
-        data = new byte[1024]; // TODO 1024 Byte ???
+        data = new byte[1024];
     }
 
     /**
