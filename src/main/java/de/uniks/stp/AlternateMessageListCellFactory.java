@@ -45,6 +45,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         AlternateMessageListCellFactory.currentUser = currentUser;
     }
 
+    private static String theme;
+
+    public static void setTheme(String theme) {
+        AlternateMessageListCellFactory.theme = theme;
+    }
 
     private static class MessageListCell extends ListCell<Message> {
 
@@ -59,7 +64,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 VBox vbox = new VBox();
                 Label userName = new Label();
                 userName.setId("userNameLabel");
-                userName.setTextFill(Color.WHITE);
+                if (theme.equals("Bright")) {
+                    userName.setTextFill(Color.BLACK);
+                } else {
+                    userName.setTextFill(Color.WHITE);
+                }
                 EmojiTextFlow message;
 
                 //right alignment if User is currentUser else left

@@ -158,9 +158,11 @@ public class SettingsController {
                 case "DoNotDisturb":
                     subController = new DoNotDisturbController(settingsField, builder);
                     subController.init();
+                    break;
                 case "Theme":
                     subController = new ThemeController(settingsField, builder);
                     subController.init();
+                    break;
             }
 
             this.settingsContainer.getChildren().add(settingsField);

@@ -85,7 +85,6 @@ public class ChatViewController {
 
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageList.setStyle("-fx-background-color: grey;");
         messageList.setCellFactory(new AlternateMessageListCellFactory());
         messages = new ArrayList<>();
 

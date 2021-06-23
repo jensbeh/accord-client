@@ -1,0 +1,20 @@
+#root {
+    -fx-background-color: #e3e5e8;
+}
+
+#messageListView {
+    -fx-background-color: WHITE;
+}
+
+#messageBox {
+    -fx-background-color: #e3e5e8;
+}
+
+#emojiButton {
+    -fx-background-color: #e3e5e8;
+}
+
+#sendButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}

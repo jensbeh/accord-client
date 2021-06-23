@@ -176,7 +176,7 @@ public class ModelBuilder {
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
             settings.put("playSound", playSound);
-
+            settings.put("theme", theme);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -192,6 +192,7 @@ public class ModelBuilder {
                 doNotDisturb = false;
                 showNotifications = true;
                 playSound = true;
+                theme = "Dark";
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -199,7 +200,7 @@ public class ModelBuilder {
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");
             playSound = (boolean) parsedSettings.get("playSound");
-
+            theme = (String) parsedSettings.get("theme");
             reader.close();
 
         } catch (Exception e) {

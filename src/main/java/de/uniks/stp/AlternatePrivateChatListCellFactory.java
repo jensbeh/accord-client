@@ -3,7 +3,6 @@ package de.uniks.stp;
 import de.uniks.stp.controller.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -21,7 +20,7 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
@@ -82,7 +81,13 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                 name.setId(item.getId());
                 name.setText(item.getName());
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
-                name.setTextFill(Paint.valueOf("#FFFFFF"));
+
+                if (theme.equals("Bright")) {
+                    name.setTextFill(Paint.valueOf(String.valueOf(Color.BLACK)));
+                } else {
+                    name.setTextFill(Paint.valueOf("#FFFFFF"));
+                }
+
                 nameCell.getChildren().add(name);
 
                 // set lastMessage
@@ -91,24 +96,27 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                     message.setPrefWidth(USE_COMPUTED_SIZE);
                     message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
                     message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    message.setTextFill(Paint.valueOf("#D0D0D0"));
+                    if (theme.equals("Bright")) {
+                        message.setTextFill(Paint.valueOf("#3b3b3b"));
+                    } else {
+                        message.setTextFill(Paint.valueOf("#D0D0D0"));
+                    }
                     lastMessageCell.getChildren().add(message);
                 }
 
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    //cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
                     if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #999999; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
-                    } else {
+                        cell.setStyle("-fx-background-color: #a4a4a4; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
+                    } else if (theme.equals("Dark")) {
                         cell.setStyle("-fx-background-color: #999999; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
                     }
 
                 } else {
-                    //cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
+                    //Unselected Chat Color
                     if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
-                    } else {
+                        cell.setStyle("-fx-background-color: #c3c3c3; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
+                    } else if (theme.equals("Dark")) {
                         cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
                     }
                 }
