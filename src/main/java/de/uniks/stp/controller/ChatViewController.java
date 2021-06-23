@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static util.Constants.*;
 
@@ -165,6 +167,34 @@ public class ChatViewController {
         stackPane.setPadding(new Insets(3));
         stackPane.getChildren().add(getEmojiImage(fileEntry));
         return stackPane;
+    }
+
+    private void searchUrl(String message) {
+
+    }
+
+    private String validateUrl(String url){
+        String urlRegex = "((http:\\/\\/|https:\\/\\/)?(www.)?(([a-zA-Z0-9-]){2,}\\.){1,4}([a-zA-Z]){2,6}(\\/([a-zA-Z-_\\/\\.0-9#:?=&;,]*)?)?)";
+        Pattern pattern = Pattern.compile(urlRegex);
+        Matcher matcher = pattern.matcher(url);
+        String returnText = "";
+        if (matcher.find()){
+            returnText = matcher.toMatchResult().group();
+        }
+        return returnText;
+
+    }
+
+    private Image getImage(String url){
+        Image image = new Image(url);
+        if(image.isError()) {
+            System.out.println("Errir loading image from " + url);
+        }else {
+            if(true) {
+                System.out.println("url conversion succesfull");
+            }
+        }
+        return image;
     }
 
     /**
@@ -383,6 +413,7 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
+        validateUrl(textMessage);
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
