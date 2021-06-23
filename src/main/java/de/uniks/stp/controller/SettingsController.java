@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.subcontroller.CustomNotificationsController;
 import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
 import de.uniks.stp.controller.subcontroller.LanguageController;
 import de.uniks.stp.controller.subcontroller.SubSetting;
@@ -80,6 +81,9 @@ public class SettingsController {
             Button doNotDisturbButton = addItem("DnD");
             doNotDisturbButton.setText("Do Not Disturb");
             addAction(doNotDisturbButton, "DoNotDisturb");
+            Button customNotifications = addItem("CN");
+            customNotifications.setText("Custom Notifications");
+            addAction(customNotifications, "CustomNotifications");
         }
 
         onLanguageChanged(); // needs to be called because new buttons added
@@ -151,6 +155,8 @@ public class SettingsController {
                 case "DoNotDisturb":
                     subController = new DoNotDisturbController(settingsField, builder);
                     subController.init();
+                case "CustomNotifications":
+                    subController = new CustomNotificationsController(settingsField, builder);
             }
 
             this.settingsContainer.getChildren().add(settingsField);
