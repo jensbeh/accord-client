@@ -60,11 +60,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
             //Background for the messages
-            if (theme.equals("Bright")) {
-                this.setStyle("-fx-background-color: WHITE;");
-            } else {
-                this.setStyle("-fx-background-color: GREY;");
-            }
+
+            this.setId("messagesBox");
             if (!empty) {
                 VBox vbox = new VBox();
                 Label userName = new Label();
@@ -82,6 +79,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     userName.setText((formatterTime.format(date)) + " " + item.getFrom());
+
                     EmojiTextFlowParameters emojiTextFlowParameters;
                     {
                         emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -94,7 +92,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     //Message background own user
-                    message.setStyle("-fx-background-color: #7da6df;" + "-fx-background-radius: 4;");
+                    message.setId("messageLabelTo");
+
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
@@ -108,9 +107,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     //Message background
-                    message.setStyle("-fx-background-color: #d4d4d4;" + "-fx-background-radius: 4;");
+                    message.setId("messageLabelFrom");
                 }
-                message.setId("messageLabel");
                 message.setMaxWidth(320);
                 message.setPrefWidth(item.getMessage().length());
 

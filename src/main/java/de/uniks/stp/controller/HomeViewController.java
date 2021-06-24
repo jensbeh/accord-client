@@ -464,6 +464,9 @@ public class HomeViewController {
         ServerViewController.onLanguageChanged();
     }
 
+    public PrivateViewController getPrivateViewController() {
+        return privateViewController;
+    }
 
     public void setTheme() {
         if (builder.getTheme().equals("Bright")) {
@@ -475,11 +478,13 @@ public class HomeViewController {
 
     private void setWhiteMode() {
         homeView.getStylesheets().clear();
-        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/HomeView.css")).toExternalForm());
+        privateViewController.setTheme();
     }
 
     private void setDarkMode() {
         homeView.getStylesheets().clear();
         homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
+        privateViewController.setTheme();
     }
 }

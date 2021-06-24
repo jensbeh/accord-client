@@ -67,8 +67,8 @@ public class PrivateViewController {
     @SuppressWarnings("unchecked")
     public void init() {
         root = (HBox) view.lookup("#root");
-        ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        currentUserBox = (VBox) view.lookup("#currentUserBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
@@ -76,7 +76,7 @@ public class PrivateViewController {
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
-        onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
+        onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -295,11 +295,17 @@ public class PrivateViewController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
     }
 }

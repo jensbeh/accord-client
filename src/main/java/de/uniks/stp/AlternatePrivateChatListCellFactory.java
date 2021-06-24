@@ -78,47 +78,27 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                 notificationCell.setStyle("-fx-padding: 15 15 0 0;");
 
                 // set userName
-                name.setId(item.getId());
+                name.setId("name");
                 name.setText(item.getName());
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
-
-                if (theme.equals("Bright")) {
-                    name.setTextFill(Paint.valueOf(String.valueOf(Color.BLACK)));
-                } else {
-                    name.setTextFill(Paint.valueOf("#FFFFFF"));
-                }
 
                 nameCell.getChildren().add(name);
 
                 // set lastMessage
                 if (item.getMessage().size() > 0) {
-                    message.setId("msg_" + item.getId());
+                    message.setId("msg");
                     message.setPrefWidth(USE_COMPUTED_SIZE);
                     message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
                     message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    if (theme.equals("Bright")) {
-                        message.setTextFill(Paint.valueOf("#3b3b3b"));
-                    } else {
-                        message.setTextFill(Paint.valueOf("#D0D0D0"));
-                    }
                     lastMessageCell.getChildren().add(message);
                 }
 
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #bfbfbf; -fx-border-color: #7c7c7c; -fx-border-width: 2px; -fx-border-radius: 13px; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
-                    } else if (theme.equals("Dark")) {
-                        cell.setStyle("-fx-background-color: #999999; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
-                    }
-
+                    cell.setId("selectedChat");
                 } else {
                     //Unselected Chat Color
-                    if (theme.equals("Bright")) {
-                        cell.setStyle("-fx-background-color: #e2e2e2; -fx-border-color: #c1c1c1; -fx-border-width: 1.5px; -fx-border-radius: 13px; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
-                    } else if (theme.equals("Dark")) {
-                        cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
-                    }
+                    cell.setId("unselectedChat");
                 }
 
                 // set notification color & count
@@ -128,15 +108,15 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                     Circle foreground = null;
 
                     if (theme.equals("Bright")) {
-                        background = new Circle(notificationCircleSize / 2, Paint.valueOf("#5e7da8"));
-                        foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#7da6df"));
-                        background.setId("notificationCounterBackground_" + item.getId());
-                        foreground.setId("notificationCounterForeground_" + item.getId());
+                        background = new Circle(notificationCircleSize / 2);
+                        foreground = new Circle(notificationCircleSize / 2 - 1);
+                        background.setId("notificationCounterBackground");
+                        foreground.setId("notificationCounterForeground");
                     } else {
-                        background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
-                        foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
-                        background.setId("notificationCounterBackground_" + item.getId());
-                        foreground.setId("notificationCounterForeground_" + item.getId());
+                        background = new Circle(notificationCircleSize / 2);
+                        foreground = new Circle(notificationCircleSize / 2 - 1);
+                        background.setId("notificationCounterBackground");
+                        foreground.setId("notificationCounterForeground");
                     }
 
                     Label numberText = new Label();
