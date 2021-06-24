@@ -8,18 +8,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="161.0" prefWidth="196.0" spacing="20.0" style="-fx-background-color: #737373;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" prefHeight="161.0" prefWidth="196.0" spacing="20.0" style="-fx-background-color: #737373;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label alignment="CENTER" prefHeight="20.0" prefWidth="130.0" text="Selected Sound:" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <ComboBox prefHeight="25.0" prefWidth="140.0" promptText="saved sounds" stylesheets="@../IdeaProjects/STPST21TeamB/src/main/resources/de/uniks/stp/styles/ServerSettingsStyles.css" />
+      <ComboBox id="comboBox" prefHeight="25.0" prefWidth="140.0" promptText="saved sounds" />
       <HBox alignment="CENTER" prefHeight="30.0" prefWidth="100.0" spacing="20.0">
          <children>
-            <Button mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: ff9999; -fx-background-radius: 10;" text="Add" textFill="WHITE" />
-            <Button mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: ff9999; -fx-background-radius: 10;" text="Delete" textFill="RED" />
+            <Button id="add" mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: ff9999; -fx-background-radius: 10;" text="Add" textFill="WHITE" />
+            <Button id="delete" mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: ff9999; -fx-background-radius: 10;" text="Delete" textFill="RED" />
          </children>
       </HBox>
    </children>

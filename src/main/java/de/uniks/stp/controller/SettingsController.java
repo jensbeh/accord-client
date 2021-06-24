@@ -157,6 +157,7 @@ public class SettingsController {
                     subController.init();
                 case "CustomNotifications":
                     subController = new CustomNotificationsController(settingsField, builder);
+                    subController.init();
             }
 
             this.settingsContainer.getChildren().add(settingsField);
@@ -174,3 +175,4 @@ public class SettingsController {
         languageButton.setText(lang.getString("button.Language"));
     }
 }
+
