@@ -24,6 +24,13 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
         this.serverViewController = serverViewController;
     }
 
+    private static String theme;
+
+    public static void setTheme(String theme) {
+        AlternateServerChannelListCellFactory.theme = theme;
+    }
+
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -136,7 +143,7 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 notificationCell.setStyle("-fx-padding: 3 0 0 0;");
 
                 // set channelName
-                name.setId(item.getId());
+                name.setId("serverName");
                 if (item.getType() != null) {
                     if (item.getType().equals("text")) {
                         name.setText("\uD83D\uDD8A  " + item.getName());
@@ -147,7 +154,6 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                     name.setText("\uD83D\uDD8A  " + item.getName());
                 }
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
-                name.setTextFill(Paint.valueOf("#FFFFFF"));
                 channelNameCell.getChildren().add(name);
 
                 // channel is audioChannel
@@ -158,7 +164,8 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                         for (User user : item.getCategories().getServer().getUser()) {
                             if (audioMember.getId().equals(user.getId())) {
                                 Label audioMemberName = new Label();
-                                audioMemberName.setStyle("-fx-font-size: 14; -fx-text-fill: white");
+                                audioMemberName.setId("audioMember");
+                                audioMemberName.setStyle("-fx-font-size: 14");
                                 HBox audioMemberCell = new HBox();
                                 audioMemberCell.setPrefHeight(25);
                                 audioMemberName.setText(user.getName());
@@ -179,13 +186,23 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
-                    Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
-                    Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
-                    background.setId("notificationCounterBackground_" + item.getId());
-                    foreground.setId("notificationCounterForeground_" + item.getId());
+                    Circle background = null;
+                    Circle foreground = null;
+
+                    if (theme.equals("Bright")) {
+                        background = new Circle(notificationCircleSize / 2);
+                        foreground = new Circle(notificationCircleSize / 2 - 1);
+                        background.setId("notificationCounterBackground");
+                        foreground.setId("notificationCounterForeground");
+                    } else {
+                        background = new Circle(notificationCircleSize / 2);
+                        foreground = new Circle(notificationCircleSize / 2 - 1);
+                        background.setId("notificationCounterBackground");
+                        foreground.setId("notificationCounterForeground");
+                    }
 
                     Label numberText = new Label();
-                    numberText.setId("notificationCounter_" + item.getId());
+                    numberText.setId("notificationCounter");
                     numberText.setAlignment(Pos.CENTER);
                     numberText.setTextFill(Color.BLACK);
                     numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));

@@ -1,17 +1,21 @@
+#categoryName {
+    -fx-text-fill: BLACK;
+}
+
 #serverName {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #audioMember {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #channelList #notificationCounterBackground {
-    -fx-fill: #bd7b78;
+    -fx-fill: #5e7da8;
 }
 
 #channelList #notificationCounterForeground {
-    -fx-fill: #f3cdcd;
+    -fx-fill: #7da6df;
 }
 
 #categoryVbox #notificationCounter {
@@ -19,32 +23,19 @@
 }
 
 #categoryVbox {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
-/*#categoryVbox .label {*/
-/*    -fx-text-fill: WHITE;*/
-/*}*/
-
 #channelList {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #channelList .cell {
-    -fx-background-color: #2f3136;
-}
-
-#channelList #selected {
-    -fx-background-color: #666666;
-    -fx-background-radius: 13px;
-}
-
-#channelList #unselected {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #channelList #textChannelScrollbarTrueSelected {
-    -fx-background-color: #666666;
+    -fx-background-color: #bfbfbf;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
@@ -52,7 +43,7 @@
 }
 
 #channelList #textChannelScrollbarFalseSelected {
-    -fx-background-color: #666666;
+    -fx-background-color: #bfbfbf;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
@@ -60,14 +51,14 @@
 }
 
 #channelList #audioChannelScrollbarTrueSelected {
-    -fx-background-color: #666666;
+    -fx-background-color: #bfbfbf;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
     -fx-background-insets: 0 10 0 0;
 }
 #channelList #audioChannelScrollbarFalseSelected {
-    -fx-background-color: #666666;
+    -fx-background-color: #bfbfbf;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
@@ -75,7 +66,7 @@
 }
 
 #channelList #textChannelScrollbarFalseUnselected {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
@@ -83,7 +74,7 @@
 }
 
 #channelList #textChannelScrollbarTrueUnselected {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
@@ -91,14 +82,14 @@
 }
 
 #channelList #audioChannelScrollbarTrueUnselected {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;
     -fx-background-insets: 0 10 0 0;
 }
 #channelList #audioChannelScrollbarFalseUnselected {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
     -fx-background-radius: 13px;
     -fx-padding: 0 10 0 0;
     -fx-border-insets: 0 10 0 0;

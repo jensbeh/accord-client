@@ -1,100 +1,100 @@
 #root {
-    -fx-background-color: #2f3136;
-    -fx-border-color: #2f3136;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
 }
 
 #serverMenuButton {
-    -fx-background-color: #2f3136;
-    -fx-border-color: #2f3136;
-    -fx-text-fill: WHITE;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+    -fx-text-fill: BLACK;
 }
 
 #serverMenuButton .menu-item .label {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #serverMenuButton .menu-item:focused {
-    -fx-background-color: #2f3136;
-    -fx-border-color: white;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: BLACK;
 }
 
 #serverMenuButton .context-menu {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #userName {
-    -fx-text-fill: WHITE;
-    -fx-background-color: #2f3136;
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
 }
 
 #userBox {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #ServerSettings {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #InviteUsers {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #channelBox {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #chatBox {
-    -fx-background-color: #36393f;
+    -fx-background-color: WHITE;
 }
 
 #categoryVbox {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #scrollPaneUserBox {
-    -fx-background-color: #2f3136;
-    -fx-background: #2f3136;
-    -fx-border-color: #2f3136;
+    -fx-background-color: #f2f3f5;
+    -fx-background: #f2f3f5;
+    -fx-border-color: #f2f3f5;
 }
 
 #currentUserBox {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers .list-cell {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers .cell {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers .cell .label {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 #offlineUsers {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #offlineUsers .list-cell {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #offlineUsers .cell {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #offlineUsers .cell .label {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 
 
@@ -102,8 +102,8 @@
 
 #scrollPaneCategories .scroll-bar:horizontal .track,
 #scrollPaneCategories .scroll-bar:vertical .track {
-    -fx-background-color: #2f3136;
-    -fx-border-color: #2f3136;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
     -fx-background-radius: 0em;
     -fx-border-radius: 2em;
 }
@@ -141,12 +141,12 @@
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
-    -fx-border-color:  #2f3136;
+    -fx-border-color:  #f2f3f5;
 }
 
 .list-view .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
-    -fx-border-color:  #2f3136;
+    -fx-border-color:  #f2f3f5;
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox alignment="CENTER_LEFT">
          <children>

@@ -578,13 +578,24 @@ public class ServerViewController {
         if (messageViewController != null) {
             messageViewController.setTheme();
         }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
+        }
     }
+
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerView.css")).toExternalForm());
         if (messageViewController != null) {
             messageViewController.setTheme();
+        }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
         }
     }
 }

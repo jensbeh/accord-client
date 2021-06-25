@@ -41,6 +41,7 @@ public class CategorySubController {
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channelList");
         AlternateServerChannelListCellFactory channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
+        AlternateServerChannelListCellFactory.setTheme(builder.getTheme());
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         //PCL

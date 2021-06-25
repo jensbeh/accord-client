@@ -4,6 +4,7 @@ import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.subcontroller.CreateServerController;
+import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
@@ -290,6 +291,7 @@ public class HomeViewController {
                 builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
                 updateServerListColor();
                 showServerView();
+                serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
     }
@@ -483,11 +485,21 @@ public class HomeViewController {
         homeView.getStylesheets().clear();
         homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/HomeView.css")).toExternalForm());
         privateViewController.setTheme();
+        if (builder.getCurrentServer() != null) {
+            if (serverController.size() != 0) {
+                serverController.get(builder.getCurrentServer()).setTheme();
+            }
+        }
     }
 
     private void setDarkMode() {
         homeView.getStylesheets().clear();
         homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
         privateViewController.setTheme();
+        if (builder.getCurrentServer() != null) {
+            if (serverController.size() != 0) {
+                serverController.get(builder.getCurrentServer()).setTheme();
+            }
+        }
     }
 }
