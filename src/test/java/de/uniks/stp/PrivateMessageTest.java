@@ -5,6 +5,7 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -15,6 +16,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
@@ -304,5 +306,13 @@ public class PrivateMessageTest extends ApplicationTest {
         rightClickOn("#userNameLabel");
         moveBy(0,15);
         write("\n");
+
+        messageList.getSelectionModel().select(0);
+        rightClickOn(messageList);
+        ContextMenu contextMenu = lookup("#messageListView").queryListView().getContextMenu();
+        Assert.assertEquals(3, contextMenu.getItems().size());
+        Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
+        Assert.assertFalse(contextMenu.getItems().get(1).isVisible());
+        Assert.assertFalse(contextMenu.getItems().get(2).isVisible());
     }
 }

@@ -103,12 +103,14 @@ public class ServerChatWebSocket extends Endpoint {
             String channelId = jsonObject.getString("channel");
             String from = jsonObject.getString("from");
             String text = jsonObject.getString("text");
+            String id = jsonObject.getString("id");
             long timestamp = new Date().getTime();
             // currentUser send
             if (from.equals(builder.getPersonalUser().getName())) {
                 message = new Message().setMessage(text).
                         setFrom(from).
                         setTimestamp(timestamp).
+                        setId(id).
                         setServerChannel(serverViewController.getCurrentChannel());
                 if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                     Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
@@ -119,6 +121,7 @@ public class ServerChatWebSocket extends Endpoint {
                 message = new Message().setMessage(text).
                         setFrom(from).
                         setTimestamp(timestamp).
+                        setId(id).
                         setServerChannel(serverViewController.getCurrentChannel());
                 if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                     Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
