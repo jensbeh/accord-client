@@ -155,6 +155,7 @@ public class SettingsController {
                 case "DoNotDisturb":
                     subController = new DoNotDisturbController(settingsField, builder);
                     subController.init();
+                    break;
                 case "CustomNotifications":
                     subController = new CustomNotificationsController(settingsField, builder);
                     subController.init();

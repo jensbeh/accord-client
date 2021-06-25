@@ -10,10 +10,13 @@ import javafx.scene.image.Image;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,6 +26,7 @@ import static util.Constants.*;
 public class ResourceManager {
 
     private static final String ROOT_PATH = "/de/uniks/stp";
+    private static String comboValue = "";
 
     /**
      * load highScore from file
@@ -227,5 +231,75 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void saveNotifications(File file) {
+        try {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName()))) {
+                if(!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))){
+                    Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
+                }
+                InputStream in;
+                String targetPath;
+                if(file.getName().equals("open-ended.wav")){
+                    URL fileURL = Thread.currentThread().getContextClassLoader().getResource(file.getPath());
+                    targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/open-ended.wav";
+                    assert fileURL != null;
+                    File fileUrl = new File(fileURL.toURI());
+                    in = new FileInputStream(fileUrl);
+                }else{
+                    targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
+                    in = new FileInputStream(file);
+                }
+                OutputStream out = new FileOutputStream(targetPath);
+                // Copy the bits from instream to outstream
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+            }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<File> getNotificationSoundFiles(){
+        List<File> listOfFiles = new ArrayList<>();
+        if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+            File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
+            System.out.println(folder);
+            listOfFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(folder.listFiles())));
+            return listOfFiles;
+        }
+        return listOfFiles;
+    }
+
+    public static void deleteNotificationSound(String name){
+        File deleteFile = null;
+        if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+            File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
+            for(File file : Objects.requireNonNull(folder.listFiles())){
+                String fileName = file.getName().substring(0, file.getName().length() - 4);
+                if(fileName.equals(name)){
+                    deleteFile = file;
+                    if(file.exists()){
+                        deleteFile.delete();
+                    }else{
+                        System.out.println("File does not exist!");
+                    }
+                }
+            }
+        }
+    }
+
+    public static String getComboValue() {
+        return comboValue;
+    }
+
+    public static void setComboValue(String comboValue) {
+        ResourceManager.comboValue = comboValue;
     }
 }

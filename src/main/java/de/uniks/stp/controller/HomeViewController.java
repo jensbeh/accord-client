@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.ResourceManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,8 @@ public class HomeViewController {
         serverController = new HashMap<>();
 
         ResourceManager.extractEmojis();
+        File file = new File("de/uniks/stp/sounds/open-ended.wav");
+        ResourceManager.saveNotifications(file);
 
         showPrivateView();
         showServers(() -> {
