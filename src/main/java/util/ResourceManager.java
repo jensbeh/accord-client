@@ -233,40 +233,27 @@ public class ResourceManager {
         }
     }
 
+    /**
+     * save fileName
+     */
     public static void saveNotifications(File file) {
         try {
             if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName()))) {
-                if(!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))){
+                if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
                     Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
                 }
-                InputStream in;
-                String targetPath;
-                if(file.getName().equals("open-ended.wav")){
-                    URL fileURL = Thread.currentThread().getContextClassLoader().getResource(file.getPath());
-                    targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/open-ended.wav";
-                    assert fileURL != null;
-                    File fileUrl = new File(fileURL.toURI());
-                    in = new FileInputStream(fileUrl);
-                }else{
-                    targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
-                    in = new FileInputStream(file);
-                }
-                OutputStream out = new FileOutputStream(targetPath);
-                // Copy the bits from instream to outstream
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                out.close();
+                String targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
+                copyFile(file, targetPath);
             }
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
-    public static List<File> getNotificationSoundFiles(){
+    /**
+     * save fileName
+     */
+    public static List<File> getNotificationSoundFiles() {
         List<File> listOfFiles = new ArrayList<>();
         if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
             File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
@@ -277,17 +264,20 @@ public class ResourceManager {
         return listOfFiles;
     }
 
-    public static void deleteNotificationSound(String name){
+    /**
+     * save fileName
+     */
+    public static void deleteNotificationSound(String name) {
         File deleteFile = null;
         if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
             File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
-            for(File file : Objects.requireNonNull(folder.listFiles())){
+            for (File file : Objects.requireNonNull(folder.listFiles())) {
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
-                if(fileName.equals(name)){
+                if (fileName.equals(name)) {
                     deleteFile = file;
-                    if(file.exists()){
+                    if (file.exists()) {
                         deleteFile.delete();
-                    }else{
+                    } else {
                         System.out.println("File does not exist!");
                     }
                 }
@@ -295,11 +285,82 @@ public class ResourceManager {
         }
     }
 
-    public static String getComboValue() {
+    /**
+     * save fileName
+     */
+    public static String getComboValue(String currentUserName) {
+        comboValue = "";
+        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+            try {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
+                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+                comboValue = (String) parser.get("fileName");
+                reader.close();
+            } catch (JsonException |
+                    IOException e) {
+                e.printStackTrace();
+            }
+        }
         return comboValue;
     }
 
-    public static void setComboValue(String comboValue) {
+    /**
+     * save fileName
+     */
+    public static void setComboValue(String userName, String comboValue) {
         ResourceManager.comboValue = comboValue;
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
+            }
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + comboValue + ".wav"))) {
+                for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH
+                        + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
+                    if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
+                        saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
+                    }
+                }
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    /**
+     * save fileName
+     */
+    private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
+        InputStream in;
+        if (file.getName().equals("default.wav")) {
+            URL fileURL = new File(file.getPath()).toURI().toURL();
+            File fileUrl = new File(fileURL.toURI());
+            in = new FileInputStream(fileUrl);
+        } else {
+            in = new FileInputStream(file);
+        }
+        OutputStream out = new FileOutputStream(targetPath);
+        // Copy the bits from instream to outstream
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+
+    /**
+     * save fileName
+     */
+    public static void saveUserNameAndSound(String currentUserName, String fileName) {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
+            JsonObject obj = new JsonObject();
+            obj.put("fileName", fileName);
+            Jsoner.serialize(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -161,7 +161,7 @@ public class ModelBuilder {
 
     public void playSound() {
         if (soundFile == null){
-            setSoundFile(ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/open-ended.wav"));
+            setSoundFile(ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/default.wav"));
         }
         System.out.println("getSound: " + getSoundFile());
         if (clip != null) {

@@ -59,7 +59,7 @@ public class SettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -187,5 +187,27 @@ public class SettingsControllerTest extends ApplicationTest {
         if (!showNotifications.isSelected()) {
             clickOn(showNotifications);
         }
+    }
+
+    @Test
+    public void notificationTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_CN");
+
+        ComboBox<String> customSoundComboBox = lookup("#comboBox").query();
+        Button deleteButton = lookup("#delete").query();
+
+        clickOn(customSoundComboBox);
+        clickOn(customSoundComboBox.getItems().get(0));
+
+        clickOn(deleteButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertFalse(customSoundComboBox.getItems().contains("default"));
+
+        clickOn("#settingsButton");
+        clickOn("#button_DnD");
+
+
     }
 }

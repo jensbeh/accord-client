@@ -83,7 +83,7 @@ public class HomeViewController {
         serverController = new HashMap<>();
 
         ResourceManager.extractEmojis();
-        File file = new File("de/uniks/stp/sounds/open-ended.wav");
+        File file = new File("de/uniks/stp/sounds/default.wav");
         ResourceManager.saveNotifications(file);
 
         showPrivateView();

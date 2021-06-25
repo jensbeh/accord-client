@@ -10,6 +10,8 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import util.ResourceManager;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +47,10 @@ public class CustomNotificationsController extends SubSetting {
         files = new ArrayList<>();
         addButton.setOnAction(this::add);
         deleteButton.setOnAction(this::delete);
-        customSoundComboBox.getItems().add("default");
         fileNames = new ArrayList<>();
         ob = FXCollections.observableList(ResourceManager.getNotificationSoundFiles());
-        if(!ResourceManager.getComboValue().equals("")){
-            customSoundComboBox.setPromptText(ResourceManager.getComboValue());
+        if(!ResourceManager.getComboValue(builder.getPersonalUser().getName()).equals("")){
+            customSoundComboBox.setPromptText(ResourceManager.getComboValue(builder.getPersonalUser().getName()));
         }
 
         for(File file : ob){
@@ -59,9 +60,10 @@ public class CustomNotificationsController extends SubSetting {
             customSoundComboBox.getItems().add(fileName);
         }
         customSoundComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            ResourceManager.setComboValue(newValue);
+            ResourceManager.setComboValue(builder.getPersonalUser().getName(), newValue);
             for(File file : files){
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
+                fileNames.add(fileName);
                 if(fileName.equals(newValue)){
                     try {
                         stream = new FileInputStream(file);
@@ -79,20 +81,21 @@ public class CustomNotificationsController extends SubSetting {
             cleanUp();
         }
         if(customSoundComboBox.getValue() != null){
-            ResourceManager.deleteNotificationSound(customSoundComboBox.getValue());
-            fileNames.remove(customSoundComboBox.getValue());
-            customSoundComboBox.getItems().remove(customSoundComboBox.getValue());
+            String newValue = customSoundComboBox.getValue();
+            ResourceManager.deleteNotificationSound(newValue);
+            fileNames.remove(newValue);
+            customSoundComboBox.getItems().remove(newValue);
             customSoundComboBox.setPromptText("saved sounds");
         }
     }
 
     private void add(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Documents", "*.wav"));
         File selectedFile = fileChooser.showOpenDialog(null);
-        fileChooser.setTitle("Select Sound");
-        if(selectedFile != null){
+        if(selectedFile != null && !fileNames.contains(selectedFile.getName().substring(0, selectedFile.getName().length() - 4))){
             files.add(selectedFile);
-            addedFiles.add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
+            fileNames.add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
             customSoundComboBox.getItems().add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
             File file = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + selectedFile.getName());
             ResourceManager.saveNotifications(selectedFile);
