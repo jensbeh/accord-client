@@ -1,9 +1,13 @@
 package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.builder.ModelBuilder;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
+import util.ResourceManager;
 
 public class DoNotDisturbController extends SubSetting {
 
@@ -12,6 +16,7 @@ public class DoNotDisturbController extends SubSetting {
     private CheckBox doNotDisturbSelected;
     private CheckBox showNotifications;
     private CheckBox playSound;
+    private Slider volume;
 
     public DoNotDisturbController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -25,6 +30,7 @@ public class DoNotDisturbController extends SubSetting {
         doNotDisturbSelected.setSelected(builder.isDoNotDisturb());
         showNotifications = (CheckBox) view.lookup("#ShowNotifications");
         showNotifications.setSelected(builder.isShowNotifications());
+        volume = (Slider) view.lookup("#volume");
         playSound = (CheckBox) view.lookup("#playSound");
         playSound.setSelected(builder.isPlaySound());
         checkIfDoNotDisturbIsSelected(null);
@@ -32,6 +38,9 @@ public class DoNotDisturbController extends SubSetting {
         doNotDisturbSelected.setOnAction(this::checkIfDoNotDisturbIsSelected);
         showNotifications.setOnAction(this::updateSettings);
         playSound.setOnAction(this::updateSettings);
+
+        volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        volume.valueProperty().addListener((observable, oldValue, newValue) -> builder.setVolume(newValue.floatValue()));
     }
 
     private void checkIfDoNotDisturbIsSelected(ActionEvent actionEvent) {

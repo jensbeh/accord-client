@@ -234,7 +234,7 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * save sound
      */
     public static void saveNotifications(File file) {
         try {
@@ -251,7 +251,7 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * get sound
      */
     public static List<File> getNotificationSoundFiles() {
         List<File> listOfFiles = new ArrayList<>();
@@ -265,7 +265,7 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * delete sound
      */
     public static void deleteNotificationSound(String name) {
         File deleteFile = null;
@@ -286,7 +286,7 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * get value of comboBox
      */
     public static String getComboValue(String currentUserName) {
         comboValue = "";
@@ -305,7 +305,7 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * set value of comboBox
      */
     public static void setComboValue(String userName, String comboValue) {
         ResourceManager.comboValue = comboValue;
@@ -327,14 +327,14 @@ public class ResourceManager {
     }
 
     /**
-     * save fileName
+     * copy file
      */
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
         InputStream in;
         if (file.getName().equals("default.wav")) {
-            URL fileURL = new File(file.getPath()).toURI().toURL();
-            File fileUrl = new File(fileURL.toURI());
-            in = new FileInputStream(fileUrl);
+            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
+            assert fileUrl != null;
+            in = fileUrl.openStream();
         } else {
             in = new FileInputStream(file);
         }
@@ -362,5 +362,43 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * save volume
+     */
+    public static void saveVolume(String currentUserName, Float volume) {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"));
+            }
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
+            JsonObject obj = new JsonObject();
+            obj.put("volume", volume);
+            Jsoner.serialize(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * get value of comboBox
+     */
+    public static Float getVolume(String currentUserName) {
+        Float volume = 0.0f;
+        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+            try {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
+                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+                comboValue = (String) parser.get("volume");
+                reader.close();
+            } catch (JsonException |
+                    IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return volume;
     }
 }
