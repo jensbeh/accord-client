@@ -1,0 +1,89 @@
+#categoryVbox {
+    -fx-background-color: #2f3136;
+}
+
+#categoryVbox .label {
+    -fx-text-fill: WHITE;
+}
+
+#channelList {
+    -fx-background-color: #2f3136;
+}
+
+#channelList .cell {
+    -fx-background-color: #2f3136;
+}
+
+#channelList #selected {
+    -fx-background-color: #666666;
+    -fx-background-radius: 13px;
+}
+
+#channelList #unselected {
+    -fx-background-color: #2f3136;
+}
+
+#channelList #textChannelScrollbarTrueSelected {
+    -fx-background-color: #666666;
+    -fx-background-radius: 13px;
+    -fx-padding: 0 10 0 0;
+    -fx-border-insets: 0 10 0 0;
+    -fx-background-insets: 0 10 0 0;
+}
+
+#channelList #textChannelScrollbarFalseSelected {
+    -fx-background-color: #666666;
+    -fx-background-radius: 13px;
+    -fx-padding: 0 10 0 0;
+    -fx-border-insets: 0 10 0 0;
+    -fx-background-insets: 0 10 0 0;
+}
+
+#channelList #audioChannelScrollbarTrueSelected {
+    -fx-background-color: #666666;
+    -fx-background-radius: 13px;
+    -fx-padding: 0 10 0 0;
+    -fx-border-insets: 0 10 0 0;
+    -fx-background-insets: 0 10 0 0;
+}
+#channelList #audioChannelScrollbarFalseSelected {
+    -fx-background-color: #666666;
+    -fx-background-radius: 13px;
+    -fx-padding: 0 10 0 0;
+    -fx-border-insets: 0 10 0 0;
+    -fx-background-insets: 0 10 0 0;
+}
+
+#channelList #textChannelScrollbarFalseUnselected {
+    -fx-background-color: #2f3136;
+    -fx-background-radius: 13px;
+}
+
+#channelList #textChannelScrollbarTrueUnselected {
+    -fx-background-color: #2f3136;
+    -fx-background-radius: 13px;
+}
+
+#channelList #audioChannelScrollbarTrueUnselected {
+    -fx-background-color: #2f3136;
+    -fx-background-radius: 13px;
+}
+#channelList #audioChannelScrollbarFalseUnselected {
+    -fx-background-color: #2f3136;
+    -fx-background-radius: 13px;
+}
+
+
+#channelList .scroll-bar:horizontal .increment-arrow,
+#channelList .scroll-bar:horizontal .decrement-arrow,
+#channelList .scroll-bar:horizontal .increment-button,
+#channelList .scroll-bar:horizontal .decrement-button {
+    -fx-padding: 0;
+}
+
+#channelList .scroll-bar:vertical .increment-arrow,
+#channelList .scroll-bar:vertical .decrement-arrow,
+#channelList .scroll-bar:vertical .increment-button,
+#channelList .scroll-bar:vertical .decrement-button {
+    -fx-padding: 0;
+}

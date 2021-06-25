@@ -73,20 +73,38 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
             }
 
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
-                if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
-                }
-                if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+
+                if (item == serverViewController.getCurrentChannel()) {
+                    if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
+                        this.setId("textChannelScrollbarTrueSelected");
+                    }
+                    if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
+                        this.setId("textChannelScrollbarFalseSelected");
+                    }
+                } else {
+                    if (item != serverViewController.getCurrentChannel() && isScrollBarVisible) {
+                        this.setId("textChannelScrollbarTrueUnselected");
+                    }
+                    if (item != serverViewController.getCurrentChannel() && !isScrollBarVisible) {
+                        this.setId("textChannelScrollbarFalseUnselected");
+                    }
                 }
 
-                if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
-                }
-                if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+                if (item == serverViewController.getCurrentAudioChannel()) {
+                    if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarTrueSelected");
+                    }
+                    if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarFalseSelected");
+                    }
+                } else {
+                    if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarTrueUnselected");
+                    }
+                    if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarFalseUnselected");
+                    }
                 }
                 // init complete cell
                 cell.setId("cell_" + item.getId());

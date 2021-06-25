@@ -93,6 +93,7 @@ public class HomeViewController {
                         // TODO start here homeView -> from loginView this!
                         System.out.println("loaded Server " + server.getName());
                     });
+                    serverController.get(server).setTheme();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -232,6 +233,7 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+                            serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -262,6 +264,7 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+                            serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

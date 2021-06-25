@@ -1,0 +1,151 @@
+#root {
+    -fx-background-color: #2f3136;
+    -fx-border-color: #2f3136;
+}
+
+#serverMenuButton {
+    -fx-background-color: #2f3136;
+    -fx-border-color: #2f3136;
+}
+
+#serverMenuButton .menu-item .label {
+    -fx-text-fill: white;
+}
+
+#serverMenuButton .menu-item:focused {
+    -fx-background-color: #2f3136;
+    -fx-border-color: white;
+}
+
+#serverMenuButton .context-menu {
+    -fx-background-color: #2f3136;
+}
+
+#userName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#userBox {
+    -fx-background-color: #2f3136;
+}
+
+#ServerSettings {
+    -fx-text-fill: WHITE;
+}
+
+#InviteUsers {
+    -fx-text-fill: WHITE;
+}
+
+#channelBox {
+    -fx-background-color: #2f3136;
+}
+
+#chatBox {
+    -fx-background-color: #36393f;
+}
+
+#categoryVbox {
+    -fx-background-color: #2f3136;
+}
+
+#scrollPaneUserBox {
+    -fx-background-color: #2f3136;
+    -fx-background: #2f3136;
+    -fx-border-color: #2f3136;
+}
+
+#currentUserBox {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers .list-cell {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers .cell {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers .cell .label {
+    -fx-text-fill: WHITE;
+}
+
+#offlineUsers {
+    -fx-background-color: #2f3136;
+}
+
+#offlineUsers .list-cell {
+    -fx-background-color: #2f3136;
+}
+
+#offlineUsers .cell {
+    -fx-background-color: #2f3136;
+}
+
+#offlineUsers .cell .label {
+    -fx-text-fill: WHITE;
+}
+
+
+/* Credits: https://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/ */
+
+#scrollPaneCategories .scroll-bar:horizontal .track,
+#scrollPaneCategories .scroll-bar:vertical .track {
+    -fx-background-color: #2f3136;
+    -fx-border-color: #2f3136;
+    -fx-background-radius: 0em;
+    -fx-border-radius: 2em;
+}
+
+#scrollPaneCategories .scroll-bar:horizontal .increment-button,
+#scrollPaneCategories .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 0 10 0;
+
+}
+
+#scrollPaneCategories .scroll-bar:vertical .increment-button,
+#scrollPaneCategories .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+
+}
+
+#scrollPaneCategories .scroll-bar .increment-arrow,
+#scrollPaneCategories .scroll-bar .decrement-arrow {
+    -fx-padding: 0;
+}
+
+#scrollPaneCategories .scroll-bar:horizontal .thumb,
+#scrollPaneCategories .scroll-bar:vertical .thumb {
+    -fx-background-color: #626262;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color:  #2f3136;
+}
+
+.list-view .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color:  #2f3136;
+}
