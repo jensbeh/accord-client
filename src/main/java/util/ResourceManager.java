@@ -10,10 +10,13 @@ import javafx.scene.image.Image;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,6 +26,7 @@ import static util.Constants.*;
 public class ResourceManager {
 
     private static final String ROOT_PATH = "/de/uniks/stp";
+    private static String comboValue = "";
 
     /**
      * load highScore from file
@@ -227,5 +231,174 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * save sound
+     */
+    public static void saveNotifications(File file) {
+        try {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName()))) {
+                if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+                    Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
+                }
+                String targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
+                copyFile(file, targetPath);
+            }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * get sound
+     */
+    public static List<File> getNotificationSoundFiles() {
+        List<File> listOfFiles = new ArrayList<>();
+        if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+            File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
+            System.out.println(folder);
+            listOfFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(folder.listFiles())));
+            return listOfFiles;
+        }
+        return listOfFiles;
+    }
+
+    /**
+     * delete sound
+     */
+    public static void deleteNotificationSound(String name) {
+        File deleteFile = null;
+        if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+            File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
+            for (File file : Objects.requireNonNull(folder.listFiles())) {
+                String fileName = file.getName().substring(0, file.getName().length() - 4);
+                if (fileName.equals(name)) {
+                    deleteFile = file;
+                    if (file.exists()) {
+                        deleteFile.delete();
+                    } else {
+                        System.out.println("File does not exist!");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * get value of comboBox
+     */
+    public static String getComboValue(String currentUserName) {
+        comboValue = "";
+        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+            try {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
+                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+                comboValue = (String) parser.get("fileName");
+                reader.close();
+            } catch (JsonException |
+                    IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return comboValue;
+    }
+
+    /**
+     * set value of comboBox
+     */
+    public static void setComboValue(String userName, String comboValue) {
+        ResourceManager.comboValue = comboValue;
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
+            }
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + comboValue + ".wav"))) {
+                for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH
+                        + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
+                    if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
+                        saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
+                    }
+                }
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    /**
+     * copy file
+     */
+    private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
+        InputStream in;
+        if (file.getName().equals("default.wav")) {
+            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
+            assert fileUrl != null;
+            in = fileUrl.openStream();
+        } else {
+            in = new FileInputStream(file);
+        }
+        OutputStream out = new FileOutputStream(targetPath);
+        // Copy the bits from instream to outstream
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+
+    /**
+     * save fileName
+     */
+    public static void saveUserNameAndSound(String currentUserName, String fileName) {
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
+            JsonObject obj = new JsonObject();
+            obj.put("fileName", fileName);
+            Jsoner.serialize(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * save volume
+     */
+    public static void saveVolume(String currentUserName, Float volume) {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"));
+            }
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
+            JsonObject obj = new JsonObject();
+            obj.put("volume", volume);
+            Jsoner.serialize(obj, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * get value of comboBox
+     */
+    public static Float getVolume(String currentUserName) {
+        Float volume = 0.0f;
+        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+            try {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
+                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+                comboValue = (String) parser.get("volume");
+                reader.close();
+            } catch (JsonException |
+                    IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return volume;
     }
 }
