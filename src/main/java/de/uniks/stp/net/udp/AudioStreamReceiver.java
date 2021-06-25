@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class AudioStreamReceiver implements Runnable {
 
@@ -16,9 +17,9 @@ public class AudioStreamReceiver implements Runnable {
     private Speaker speaker;
     private boolean receiverActive;
     private byte[] data;
-    private DatagramSocket socket;
+    private MulticastSocket socket;
 
-    public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port, DatagramSocket socket) {
+    public AudioStreamReceiver(ModelBuilder builder, InetAddress address, int port, MulticastSocket socket) {
         this.builder = builder;
         this.address = address;
         this.port = port;
@@ -53,9 +54,9 @@ public class AudioStreamReceiver implements Runnable {
 
             JSONObject jsonData = new JSONObject(new String(receivedJson));
 //            System.out.println(jsonData);
-            if (!jsonData.getString("name").equals(builder.getPersonalUser().getName())) {
+//            if (!jsonData.getString("name").equals(builder.getPersonalUser().getName())) {
                 speaker.writeData(receivedData);
-            }
+//            }
         }
         speaker.stopPlayback();
         socket.close();

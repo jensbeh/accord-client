@@ -3,10 +3,8 @@ package de.uniks.stp.net.udp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.ServerChannel;
 
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
 
 import static util.Constants.AUDIO_STREAM_ADDRESS;
 import static util.Constants.AUDIO_STREAM_PORT;
@@ -22,7 +20,7 @@ public class AudioStreamClient {
     private Thread receiverThread;
     private Thread senderThread;
     private int port;
-    private DatagramSocket socket;
+    private MulticastSocket socket;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;
@@ -36,8 +34,9 @@ public class AudioStreamClient {
 
             // Create the socket on which to send data.
             try {
-                socket = new DatagramSocket();
-            } catch (SocketException e) {
+//                socket = new DatagramSocket();
+                socket = new MulticastSocket();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
