@@ -205,6 +205,9 @@ public class ServerSystemWebSocket extends Endpoint {
                         if (!userName.equals("")) {
                             AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
                             serverChannel.withAudioMember(audioMemberUser);
+                            if (builder.getAudioStreamClient() != null)  {
+                                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
+                            }
                         }
 
 
