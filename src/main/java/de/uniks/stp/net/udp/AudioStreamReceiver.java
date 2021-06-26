@@ -78,11 +78,6 @@ public class AudioStreamReceiver implements Runnable {
 //            System.out.println(jsonData);
             if (receiverMap.size() == 1) {
                 speaker.writeData(receivedData);
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             } else if (receiverMap.size() > 1) {
                 // convert to samples
                 final int[] aSamples = toSamples(receiverMap.get(currentAudioChannel.getAudioMember().get(0).getName()));
