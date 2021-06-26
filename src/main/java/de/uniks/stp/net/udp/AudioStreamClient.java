@@ -23,7 +23,7 @@ public class AudioStreamClient {
     private Thread receiverThread;
     private Thread senderThread;
     private int port;
-    private DatagramSocket socket;
+    private static DatagramSocket socket;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;
@@ -37,7 +37,9 @@ public class AudioStreamClient {
 
             // Create the socket on which to send data.
             try {
-                socket = new DatagramSocket();
+                if (socket == null) {
+                    socket = new DatagramSocket();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -75,5 +77,9 @@ public class AudioStreamClient {
 
     public void setNewAudioMemberReceiver(AudioMember audioMemberPersonalUser) {
         receiver.newConnectedUser(audioMemberPersonalUser);
+    }
+
+    public static void setSocket(DatagramSocket newSocket) {
+        socket = newSocket;
     }
 }

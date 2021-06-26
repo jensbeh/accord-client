@@ -49,6 +49,7 @@ public class AudioStreamReceiver implements Runnable {
 
             try {
                 socket.receive(packet);
+                data = packet.getData(); // important to set because of testing - there is no manipulation of packet in test
             } catch (IOException e) {
                 e.printStackTrace();
             }

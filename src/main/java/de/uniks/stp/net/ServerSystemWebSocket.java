@@ -210,20 +210,6 @@ public class ServerSystemWebSocket extends Endpoint {
                             }
                         }
 
-
-                        // TODO for disconnect
-//                        if (serverViewController.getCurrentAudioChannel() != null && userId.equals(builder.getPersonalUser().getId())) {
-//                            AudioMember toRemove = null;
-//                            for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
-//                                if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
-//                                    toRemove = audioMember;
-//                                    break;
-//                                }
-//                            }
-//                            serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
-//                        }
-
-
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
                             AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
