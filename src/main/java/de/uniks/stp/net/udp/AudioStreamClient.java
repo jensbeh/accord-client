@@ -37,7 +37,6 @@ public class AudioStreamClient {
 
             // Create the socket on which to send data.
             try {
-//                socket = new DatagramSocket();
                 socket = new DatagramSocket();
             } catch (IOException e) {
                 e.printStackTrace();
