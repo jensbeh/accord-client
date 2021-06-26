@@ -194,7 +194,20 @@ public class ServerSystemWebSocket extends Endpoint {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
 
-                        serverChannel.withAudioMember(new AudioMember().setId(userId));
+                        // put name and id
+                        String userName = "";
+                        for (User user : builder.getPersonalUser().getUser()) {
+                            if (user.getId().equals(userId)) {
+                                userName = user.getName();
+                                break;
+                            }
+                        }
+                        if (userName.equals("")) {
+                            serverChannel.withAudioMember(new AudioMember().setId(userId).setName(builder.getPersonalUser().getName()));
+                        } else {
+                            serverChannel.withAudioMember(new AudioMember().setId(userId).setName(userName));
+                        }
+
 
 //                        if (serverViewController.getCurrentAudioChannel() != null && userId.equals(builder.getPersonalUser().getId())) {
 //                            AudioMember toRemove = null;
