@@ -202,10 +202,10 @@ public class ServerSystemWebSocket extends Endpoint {
                                 break;
                             }
                         }
-                        if (userName.equals("")) {
-                            serverChannel.withAudioMember(new AudioMember().setId(userId).setName(builder.getPersonalUser().getName()));
-                        } else {
-                            serverChannel.withAudioMember(new AudioMember().setId(userId).setName(userName));
+                        if (!userName.equals("")) {
+                            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
+                            serverChannel.withAudioMember(audioMemberUser);
+                            builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
                         }
 
 
@@ -224,10 +224,14 @@ public class ServerSystemWebSocket extends Endpoint {
 
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
+                            AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
+                            serverChannel.withAudioMember(audioMemberPersonalUser);
+
                             serverViewController.setCurrentAudioChannel(serverChannel);
                             AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
                             builder.setAudioStreamClient(audiostreamClient);
                             audiostreamClient.init();
+                            audiostreamClient.setNewAudioMemberReceiver(audioMemberPersonalUser);
                             audiostreamClient.startStream();
                         }
                     }

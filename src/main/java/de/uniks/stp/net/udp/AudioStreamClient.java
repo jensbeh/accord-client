@@ -1,6 +1,7 @@
 package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
 
 import java.io.IOException;
@@ -71,5 +72,9 @@ public class AudioStreamClient {
     public void stopStream() {
         receiverThread.stop(); //TODO should be stop safer!
         senderThread.stop(); //TODO should be stop safer!
+    }
+
+    public void setNewAudioMemberReceiver(AudioMember audioMemberPersonalUser) {
+        receiver.newConnectedUser(audioMemberPersonalUser);
     }
 }
