@@ -78,11 +78,6 @@ public class AudioStreamSender implements Runnable {
             try {
                 // send to address
                 socket.send(packet);
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
