@@ -223,7 +223,6 @@ public class ServerSystemWebSocket extends Endpoint {
 //                            serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
 //                        }
 
-                        serverViewController.refreshAllChannelLists();
 
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
@@ -239,6 +238,7 @@ public class ServerSystemWebSocket extends Endpoint {
                             }
                             audiostreamClient.startStream();
                         }
+                        serverViewController.refreshAllChannelLists();
                     }
                 }
             }
