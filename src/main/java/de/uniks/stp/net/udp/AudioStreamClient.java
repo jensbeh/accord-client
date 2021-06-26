@@ -4,7 +4,9 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.ServerChannel;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static util.Constants.AUDIO_STREAM_ADDRESS;
 import static util.Constants.AUDIO_STREAM_PORT;
@@ -20,7 +22,7 @@ public class AudioStreamClient {
     private Thread receiverThread;
     private Thread senderThread;
     private int port;
-    private MulticastSocket socket;
+    private DatagramSocket socket;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;
@@ -35,7 +37,7 @@ public class AudioStreamClient {
             // Create the socket on which to send data.
             try {
 //                socket = new DatagramSocket();
-                socket = new MulticastSocket();
+                socket = new DatagramSocket();
             } catch (IOException e) {
                 e.printStackTrace();
             }
