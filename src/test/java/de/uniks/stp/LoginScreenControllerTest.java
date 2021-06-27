@@ -357,12 +357,15 @@ public class LoginScreenControllerTest extends ApplicationTest {
                 int i = 0;
                 while (scanner.hasNext()) {
                     if (i == 0) {
-                        String firstLine = scanner.next();
+                        String firstLine = scanner.nextLine();
                         Assert.assertEquals("", firstLine);
                     }
                     if (i == 1) {
-                        String secondLine = scanner.next();
+                        String secondLine = scanner.nextLine();
                         Assert.assertEquals("", secondLine);
+                    }
+                    if (i == 2) {
+                        Assert.assertFalse(Boolean.parseBoolean(scanner.nextLine()));
                     }
                     i++;
                 }
@@ -398,6 +401,9 @@ public class LoginScreenControllerTest extends ApplicationTest {
                     if (i == 1) {
                         String secondLine = scanner.nextLine();
                         Assert.assertEquals(testUserPw, decode(secondLine));
+                    }
+                    if (i == 2) {
+                        Assert.assertTrue(Boolean.parseBoolean(scanner.nextLine()));
                     }
                     i++;
                 }

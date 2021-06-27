@@ -80,7 +80,7 @@ public class ThemeControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -245,7 +245,6 @@ public class ThemeControllerTest extends ApplicationTest {
         privateChatWebSocket.handleMessage(jsonObject);
     }
 
-
     @Test
     public void changeThemeLogin() {
         VBox root = lookup("#root").query();
@@ -258,11 +257,11 @@ public class ThemeControllerTest extends ApplicationTest {
         clickOn(comboBox_themeSelect);
         clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         clickOn(comboBox_themeSelect);
         clickOn("Dark");
-        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
     @Test
@@ -278,11 +277,11 @@ public class ThemeControllerTest extends ApplicationTest {
         clickOn(comboBox_themeSelect);
         clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         clickOn(comboBox_themeSelect);
         clickOn("Dark");
-        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
 
@@ -295,7 +294,7 @@ public class ThemeControllerTest extends ApplicationTest {
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();
 
-        VBox privateChatCell = lookup("#cell").query();
+        VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         doubleClickOn(privateChatCell);
         TextField textField = lookup("#messageTextField").query();
         String msg1 = "Moin Gusti altes Haus!";
@@ -313,16 +312,46 @@ public class ThemeControllerTest extends ApplicationTest {
         clickOn(themeButton);
         ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
 
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+    }
+
+    @Test
+    public void changeThemeServerView() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true)).toString();
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        HBox root = lookup("#root").query();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
 
         clickOn(comboBox_themeSelect);
         clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         clickOn(comboBox_themeSelect);
         clickOn("Dark");
-        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
-
 }

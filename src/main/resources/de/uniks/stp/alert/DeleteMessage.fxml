@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="rootDelete" alignment="BOTTOM_CENTER" minHeight="260.0" minWidth="565.0" prefHeight="260.0" prefWidth="560.0" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootDelete" alignment="BOTTOM_CENTER" minHeight="260.0" minWidth="565.0" prefHeight="260.0" prefWidth="560.0" spacing="20.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="warningMessageText" alignment="CENTER" fillHeight="false" minHeight="45.0" minWidth="480.0" prefHeight="45.0" prefWidth="540.0">
          <children>
