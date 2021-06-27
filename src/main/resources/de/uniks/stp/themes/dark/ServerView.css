@@ -1,24 +1,29 @@
+
 #root {
     -fx-background-color: #2f3136;
     -fx-border-color: #2f3136;
 }
 
-#serverMenuButton {
+.serverMenuButton {
     -fx-background-color: #2f3136;
     -fx-border-color: #2f3136;
     -fx-text-fill: WHITE;
 }
 
-#serverMenuButton .menu-item .label {
+.serverMenuButton .label {
     -fx-text-fill: WHITE;
 }
 
-#serverMenuButton .menu-item:focused {
+.serverMenuButton .menu-item .label {
+    -fx-text-fill: WHITE;
+}
+
+.serverMenuButton .menu-item:focused {
     -fx-background-color: #2f3136;
     -fx-border-color: white;
 }
 
-#serverMenuButton .context-menu {
+.serverMenuButton .context-menu {
     -fx-background-color: #2f3136;
 }
 
@@ -31,11 +36,11 @@
     -fx-background-color: #2f3136;
 }
 
-#ServerSettings {
+.ServerSettings {
     -fx-text-fill: WHITE;
 }
 
-#InviteUsers {
+.InviteUsers {
     -fx-text-fill: WHITE;
 }
 

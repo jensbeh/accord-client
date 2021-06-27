@@ -1,14 +1,10 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Message;
-import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -35,8 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class PrivateMessageTest extends ApplicationTest {
-
+public class ThemeControllerTest extends ApplicationTest {
     @Mock
     private RestClient restClient;
 
@@ -250,21 +245,57 @@ public class PrivateMessageTest extends ApplicationTest {
         privateChatWebSocket.handleMessage(jsonObject);
     }
 
-    @Test
-    public void testMessageHandling() throws InterruptedException {
-        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
 
+    @Test
+    public void changeThemeLogin() {
+        VBox root = lookup("#root").query();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+    }
+
+    @Test
+    public void changeThemeHomeView() throws InterruptedException {
+        loginInit();
+        HBox root = lookup("#root").query();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+    }
+
+
+    @Test
+    public void changeThemePrivateView() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
-
         ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();
 
-        VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
+        VBox privateChatCell = lookup("#cell").query();
         doubleClickOn(privateChatCell);
         TextField textField = lookup("#messageTextField").query();
         String msg1 = "Moin Gusti altes Haus!";
@@ -275,44 +306,23 @@ public class PrivateMessageTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         privateChatWebSocket.handleMessage(jsonObject);
 
-        String msg2 = "Moin Peter lange nix mehr gehoert von dir";
-        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg2).put("to", "Peter").put("from", "Gustav");
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
-        privateChatWebSocket.handleMessage(jsonObject);
+        HBox root = lookup("#root").query();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
 
-        ListView<Message> messageList = lookup("#messageListView").query();
-
-        //Assert.assertEquals(2, messageList.getItems().size());
-        //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
-        //Assert.assertEquals(msg2, messageList.getItems().get(1).getMessage());
-
-        ListView<PrivateChat> privateChat = lookup("#privateChatList").query();
-
-        doubleClickOn("#cell_" + privateChat.getItems().get(0).getId());
-        WaitForAsyncUtils.waitForFxEvents();
-        messageList = lookup("#messageListView").query();
-
-        //Assert.assertEquals("Hallo", messageList.getItems().get(0).getMessage());
-
-        doubleClickOn("#cell_" + privateChat.getItems().get(1).getId());
-        WaitForAsyncUtils.waitForFxEvents();
-        messageList = lookup("#messageListView").query();
-
-        //Assert.assertEquals(2, messageList.getItems().size());
-        //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
-        //Assert.assertEquals(msg2, messageList.getItems().get(1).getMessage());
-
-        rightClickOn("#userNameLabel");
-        moveBy(0,15);
-        write("\n");
-
-        messageList.getSelectionModel().select(0);
-        rightClickOn(messageList);
-        ContextMenu contextMenu = lookup("#messageListView").queryListView().getContextMenu();
-        Assert.assertEquals(3, contextMenu.getItems().size());
-        Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
-        Assert.assertFalse(contextMenu.getItems().get(1).isVisible());
-        Assert.assertFalse(contextMenu.getItems().get(2).isVisible());
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
     }
+
 }

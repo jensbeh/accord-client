@@ -2,6 +2,41 @@
     -fx-background-color: WHITE;
 }
 
+#editButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#abortButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#deleteMsgScroll {
+    -fx-background-color: WHITE;
+}
+
+#deleteWarning {
+    -fx-text-fill: BLACK;
+}
+
+#deleteMsg .color{
+    -fx-text-fill: BLACK;
+    -fx-background-color: BLACK;
+}
+
+#chooseDelete {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+#chooseCancel {
+    -fx-background-radius: 80;
+    -fx-background-color: #717177;
+}
+
 #messageListView #messageListView {
     -fx-background-color: WHITE;
 }
@@ -31,7 +66,7 @@
     -fx-background-color: WHITE;
 }
 
-#messageListView .list-cell #messageLabelTo {
+#messageListView .list-cell .messageLabelTo {
     -fx-background-color: #7da6df;
     -fx-background-radius: 4;
 }
@@ -40,7 +75,7 @@
     -fx-text-fill: BLACK;
 }
 
-#messageListView .list-cell #messageLabelFrom {
+#messageListView .list-cell .messageLabelFrom {
     -fx-background-color: #d4d4d4;
     -fx-background-radius: 4;
 }

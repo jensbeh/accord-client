@@ -8,16 +8,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0" minWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <VBox id="channelBox" minWidth="190.0" HBox.hgrow="ALWAYS">
             <children>
                 <VBox>
                     <children>
-                        <MenuButton id="serverMenuButton" prefHeight="25.0" prefWidth="190.0" style="-fx-alignment: center;" text="ServerName" textFill="WHITE">
+                        <MenuButton id="serverMenuButton" prefHeight="25.0" prefWidth="190.0" style="-fx-alignment: center;" styleClass="serverMenuButton" text="ServerName" textFill="WHITE">
                             <items>
-                                <MenuItem id="ServerSettings" style="-fx-pref-width: 172;" text="menuItem.serverSettings" />
-                                <MenuItem id="InviteUsers" style="-fx-pref-width: 172;" text="menuItem.inviteUsers" />
+                                <MenuItem id="ServerSettings" style="-fx-pref-width: 172;" styleClass="ServerSettings" text="menuItem.serverSettings" />
+                                <MenuItem id="InviteUsers" style="-fx-pref-width: 172;" styleClass="InviteUsers" text="menuItem.inviteUsers" />
                             </items>
                         </MenuButton>
                         <Line endX="190.0" fill="#9e9e9e" stroke="#9e9e9e" />

@@ -143,7 +143,9 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                 notificationCell.setStyle("-fx-padding: 3 0 0 0;");
 
                 // set channelName
-                name.setId("serverName");
+                name.setId(item.getId());
+                name.getStyleClass().clear();
+                name.getStyleClass().add("channelName");
                 if (item.getType() != null) {
                     if (item.getType().equals("text")) {
                         name.setText("\uD83D\uDD8A  " + item.getName());
@@ -165,6 +167,8 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                             if (audioMember.getId().equals(user.getId())) {
                                 Label audioMemberName = new Label();
                                 audioMemberName.setId("audioMember");
+                                audioMemberName.getStyleClass().clear();
+                                audioMemberName.getStyleClass().add("audioMember");
                                 audioMemberName.setStyle("-fx-font-size: 14");
                                 HBox audioMemberCell = new HBox();
                                 audioMemberCell.setPrefHeight(25);
@@ -186,23 +190,20 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
-                    Circle background = null;
-                    Circle foreground = null;
-
-                    if (theme.equals("Bright")) {
-                        background = new Circle(notificationCircleSize / 2);
-                        foreground = new Circle(notificationCircleSize / 2 - 1);
-                        background.setId("notificationCounterBackground");
-                        foreground.setId("notificationCounterForeground");
-                    } else {
-                        background = new Circle(notificationCircleSize / 2);
-                        foreground = new Circle(notificationCircleSize / 2 - 1);
-                        background.setId("notificationCounterBackground");
-                        foreground.setId("notificationCounterForeground");
-                    }
+                    Circle background = new Circle(notificationCircleSize / 2);
+                    Circle foreground = new Circle(notificationCircleSize / 2 - 1);
+                    //IDs to use CSS styling
+                    background.getStyleClass().clear();
+                    foreground.getStyleClass().clear();
+                    background.getStyleClass().add("notificationCounterBackground");
+                    foreground.getStyleClass().add("notificationCounterForeground");
+                    background.setId("notificationCounterBackground_" + item.getId());
+                    foreground.setId("notificationCounterForeground_" + item.getId());
 
                     Label numberText = new Label();
-                    numberText.setId("notificationCounter");
+                    numberText.setId("notificationCounter_" + item.getId());
+                    numberText.getStyleClass().clear();
+                    numberText.getStyleClass().add("notificationCounter");
                     numberText.setAlignment(Pos.CENTER);
                     numberText.setTextFill(Color.BLACK);
                     numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));

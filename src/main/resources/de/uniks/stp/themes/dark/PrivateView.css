@@ -92,35 +92,33 @@
     -fx-padding: 0 0 0 0;
 }
 
-
-#privateChatList #selectedChat {
+#privateChatList .selectedChat {
     -fx-background-color: #999999;
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
 
-
-#privateChatList #unselectedChat {
+#privateChatList .unselectedChat {
     -fx-background-color: #404040;
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
 
-#privateChatList #notificationCounterBackground {
+#privateChatList .notificationCounterBackground {
     -fx-fill: #bd7b78;
 }
 
-#privateChatList #notificationCounterForeground {
+#privateChatList .notificationCounterForeground {
     -fx-fill: #f3cdcd;
 }
 
-#privateChatList #msg {
+#privateChatList .msg {
     -fx-text-fill: #D0D0D0;
 }
 
-#privateChatList #name {
+#privateChatList .name {
     -fx-text-fill: #FFFFFF;
 }
 

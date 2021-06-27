@@ -242,21 +242,30 @@ public class ChatViewController {
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.setTitle("Delete Message");
-            Label msg = (Label) subview.lookup("#delete");
-            msg.setText("are you sure you want to delete " + "\n" + "the following message:");
+            VBox root = (VBox) subview.lookup("#root");
+            Label msg = (Label) subview.lookup("#deleteWarning");
+            msg.setText("Are you sure you want to delete " + "\n" + "the following message:");
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
+            if (builder.getTheme().equals("Bright")) {
+                emojiTextFlowParameters.setTextColor(Color.BLACK);
+            } else {
+                emojiTextFlowParameters.setTextColor(Color.WHITE);
+            }
             EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
-            deleteMsg.setStyle("-fx-background-color: #4a4a4a;");
-            deleteMsg.setId("#deleteMsg");
-            pane.setStyle("-fx-background:  #4a4a4a;");
+            deleteMsg.setId("deleteMsg");
             String msgText = formattedText(text);
             deleteMsg.parseAndAppend(msgText);
             deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
-            Button no = (Button) subview.lookup("#chooseCancle");
+            Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
             yes.setOnAction(this::deleteMessage);
             no.setOnAction(this::cancelDelete);
+            if (builder.getTheme().equals("Bright")) {
+                scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ChatView.css")).toExternalForm());
+            } else {
+                scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ChatView.css")).toExternalForm());
+            }
             stage.setScene(scene);
             stage.setResizable(false);
             stage.initOwner(messageBox.getScene().getWindow());
@@ -314,17 +323,16 @@ public class ChatViewController {
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
             editButton = new Button();
-            editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             editButton.setText("edit");
             editButton.setId("editButton");
             abortButton = new Button();
-            abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             abortButton.setText("abort");
             abortButton.setId("abortButton");
             messageBox.getChildren().remove(sendButton);
             messageBox.getChildren().add(editButton);
             messageBox.getChildren().add(abortButton);
             textWrote = messageTextField.getText();
+            setTheme();
         }
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);

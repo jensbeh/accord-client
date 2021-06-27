@@ -2,23 +2,23 @@
     -fx-text-fill: BLACK;
 }
 
-#serverName {
+.serverName {
     -fx-text-fill: BLACK;
 }
 
-#audioMember {
+.audioMember {
     -fx-text-fill: BLACK;
 }
 
-#channelList #notificationCounterBackground {
+#channelList .notificationCounterBackground {
     -fx-fill: #5e7da8;
 }
 
-#channelList #notificationCounterForeground {
+#channelList .notificationCounterForeground {
     -fx-fill: #7da6df;
 }
 
-#categoryVbox #notificationCounter {
+#categoryVbox .notificationCounter {
     -fx-text-fill: BLACK;
 }
 

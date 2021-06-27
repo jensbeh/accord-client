@@ -1,20 +1,20 @@
-#serverName {
+.channelName {
     -fx-text-fill: WHITE;
 }
 
-#audioMember {
+.audioMember {
     -fx-text-fill: WHITE;
 }
 
-#channelList #notificationCounterBackground {
+#channelList .notificationCounterBackground {
     -fx-fill: #bd7b78;
 }
 
-#channelList #notificationCounterForeground {
+#channelList .notificationCounterForeground {
     -fx-fill: #f3cdcd;
 }
 
-#categoryVbox #notificationCounter {
+#categoryVbox .notificationCounter {
     -fx-text-fill: BLACK;
 }
 

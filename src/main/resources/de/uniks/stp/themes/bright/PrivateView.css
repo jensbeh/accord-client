@@ -7,15 +7,15 @@
 }
 
 #scrollPaneUserBox {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
 }
 
 #currentUserBox {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
 }
 
 #box {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
 }
 
 #chatBox {
@@ -23,36 +23,36 @@
 }
 
 #userBox {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
 }
 
 #onlineUsers .scroll-bar:vertical {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
-    -fx-border-color: #e3e5e8;
+    -fx-border-color: #f2f3f5;
 }
 
 #onlineUsers .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
-    -fx-border-color: #e3e5e8;
+    -fx-border-color: #f2f3f5;
 }
 
 #onlineUsers {
-    -fx-border-color: #e3e5e8;
+    -fx-border-color:  #f2f3f5;
     -fx-background-insets: 0;
-    -fx-background-color: #e3e5e8;
+    -fx-background-color:  #f2f3f5;
     -fx-padding: 1;
     -fx-text-fill: BLACK;
 }
 
 
 #onlineUsers .list-cell {
-    -fx-border-color: #e3e5e8;
+    -fx-border-color:  #f2f3f5;
     -fx-background-insets: 0;
-    -fx-background-color: #e3e5e8;
+    -fx-background-color:  #f2f3f5;
     -fx-padding: 1;
     -fx-text-fill: BLACK;
 }
@@ -91,7 +91,7 @@
     -fx-padding: 0 0 0 0;
 }
 
-#privateChatList #selectedChat {
+#privateChatList .selectedChat {
     -fx-background-color: #bfbfbf;
     -fx-border-color: #7c7c7c;
     -fx-border-width: 2px;
@@ -101,7 +101,7 @@
     -fx-max-width: 183
 }
 
-#privateChatList #unselectedChat {
+#privateChatList .unselectedChat {
     -fx-background-color: #e2e2e2;
     -fx-border-color: #c1c1c1;
     -fx-border-width: 1.5px;
@@ -111,19 +111,19 @@
     -fx-max-width: 183
 }
 
-#privateChatList #notificationCounterBackground {
+#privateChatList .notificationCounterBackground {
     -fx-fill: #5e7da8;
 }
 
-#privateChatList #notificationCounterForeground {
+#privateChatList .notificationCounterForeground {
     -fx-fill: #7da6df;
 }
 
-#privateChatList #msg {
+#privateChatList .msg {
     -fx-text-fill: #3b3b3b;
 }
 
-#privateChatList #name {
+#privateChatList .name {
     -fx-text-fill: BLACK;
 }
 
@@ -132,9 +132,11 @@
 }
 
 #root {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
 }
 
 #homeViewVBox {
-    -fx-background-color: #e3e5e8;
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
 }

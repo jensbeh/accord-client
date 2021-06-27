@@ -92,7 +92,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     //Message background own user
-                    message.setId("messageLabelTo");
+                    message.getStyleClass().clear();
+                    message.getStyleClass().add("messageLabelTo");
 
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
@@ -107,8 +108,10 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     }
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     //Message background
-                    message.setId("messageLabelFrom");
+                    message.getStyleClass().clear();
+                    message.getStyleClass().add("messageLabelFrom");
                 }
+                message.setId("messageLabel");
                 message.setMaxWidth(320);
                 message.setPrefWidth(item.getMessage().length());
 

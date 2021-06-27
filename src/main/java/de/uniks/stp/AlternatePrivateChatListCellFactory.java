@@ -78,7 +78,9 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                 notificationCell.setStyle("-fx-padding: 15 15 0 0;");
 
                 // set userName
-                name.setId("name");
+                name.setId(item.getId());
+                name.getStyleClass().clear();
+                name.getStyleClass().add("name");
                 name.setText(item.getName());
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
 
@@ -86,7 +88,9 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
 
                 // set lastMessage
                 if (item.getMessage().size() > 0) {
-                    message.setId("msg");
+                    message.setId("msg_" + item.getId());
+                    message.getStyleClass().clear();
+                    message.getStyleClass().add("msg");
                     message.setPrefWidth(USE_COMPUTED_SIZE);
                     message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
                     message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
@@ -95,10 +99,12 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
 
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    cell.setId("selectedChat");
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("selectedChat");
                 } else {
                     //Unselected Chat Color
-                    cell.setId("unselectedChat");
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("unselectedChat");
                 }
 
                 // set notification color & count
@@ -107,17 +113,15 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
                     Circle background = null;
                     Circle foreground = null;
 
-                    if (theme.equals("Bright")) {
-                        background = new Circle(notificationCircleSize / 2);
-                        foreground = new Circle(notificationCircleSize / 2 - 1);
-                        background.setId("notificationCounterBackground");
-                        foreground.setId("notificationCounterForeground");
-                    } else {
-                        background = new Circle(notificationCircleSize / 2);
-                        foreground = new Circle(notificationCircleSize / 2 - 1);
-                        background.setId("notificationCounterBackground");
-                        foreground.setId("notificationCounterForeground");
-                    }
+                    background = new Circle(notificationCircleSize / 2);
+                    foreground = new Circle(notificationCircleSize / 2 - 1);
+                    //IDs to use CSS styling
+                    background.getStyleClass().clear();
+                    foreground.getStyleClass().clear();
+                    background.getStyleClass().add("notificationCounterBackground");
+                    foreground.getStyleClass().add("notificationCounterForeground");
+                    background.setId("notificationCounterBackground_" + item.getId());
+                    foreground.setId("notificationCounterForeground_" + item.getId());
 
                     Label numberText = new Label();
                     numberText.setId("notificationCounter_" + item.getId());
