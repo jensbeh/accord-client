@@ -99,8 +99,8 @@ public class PrivateChatWebSocket extends Endpoint {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
                 alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
                 alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
+                alert.setOnCloseRequest(e -> StageManager.showLoginScreen());
                 Optional<ButtonType> result = alert.showAndWait();
-                alert.setOnCloseRequest(e -> {StageManager.showLoginScreen();});
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     StageManager.showLoginScreen();
                 }
