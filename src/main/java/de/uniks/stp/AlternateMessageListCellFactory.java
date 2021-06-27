@@ -19,6 +19,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -56,6 +60,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
     private static class MessageListCell extends ListCell<Message> {
         private boolean loadImage;
+        private boolean use_web = true;
 
         /**
          * shows message in cell of ListView
@@ -77,10 +82,20 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 String url = searchUrl(item.getMessage());
                 loadImage = false;
                 WebView webView = new WebView();
-                webView.autosize();
-                if (!url.equals("") && !url.contains("https://ac.uniks.de/api/servers/")) {
-                    setImage(url, webView.getEngine());
+                ImageView imageView = new ImageView();
+                if(use_web) {
+
+                    if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                        setImage(url, webView.getEngine());
+                        //webView.setMaxWidth(vbox.getWidth());
+                    }
+                } else {
+
+                    if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                        setImage(url, imageView);
+                    }
                 }
+
 
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
@@ -119,7 +134,12 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 if(!loadImage) {
                     vbox.getChildren().addAll(userName, message);
                 } else {
-                    vbox.getChildren().addAll(userName, webView);
+                    if(use_web){
+                        vbox.getChildren().addAll(userName, webView);
+                    }
+                    else {
+                        vbox.getChildren().addAll(userName, imageView);
+                    }
                 }
 
                 cell.setAlignment(Pos.CENTER_RIGHT);
@@ -169,21 +189,27 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         }
 
         private void setImage(String url, WebEngine engine){
-
-            try {
-//                URLConnection conn = new URL(url).openConnection();
-//                InputStream stream = conn.getInputStream();
+            if(url.contains(".png") || url.contains(".jpg") || url.contains(".bmp")) {
                 engine.load(url);
-//                imageView.setFitWidth(512);
-//                imageView.setFitWidth(512);
                 loadImage = true;
+            } else if (url.contains(".gif")) {
+                engine.loadContent("<html><body style=\"background-color:#121212\"><img src=" + url + "></body></html>");
+                loadImage = true;
+            }
+        }
 
+        private void setImage(String url, ImageView imageView){
+            try {
+                URLConnection conn = new URL(url).openConnection();
+                conn.setRequestProperty("User-Agent", "Wget/1.13.4 (linux-gnu)");
+                InputStream stream = conn.getInputStream();
+                Image image = new Image(stream);
 
+                imageView.setImage(image);
+                loadImage = true;
             } catch (Exception e){
                 e.printStackTrace();
             }
-
-
         }
     }
 }
