@@ -153,6 +153,7 @@ public class StageManager extends Application {
             // init controller
             settingsController = new SettingsController(builder, root);
             settingsController.init();
+            settingsController.setTheme();
 
             subStage = new Stage();
             setSubStageTitle("window_title_settings");
@@ -367,6 +368,9 @@ public class StageManager extends Application {
         }
         if (loginCtrl != null) {
             loginCtrl.setTheme();
+        }
+        if (settingsController != null) {
+            settingsController.setTheme();
         }
     }
 }

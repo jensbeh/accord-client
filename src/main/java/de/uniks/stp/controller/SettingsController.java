@@ -10,6 +10,7 @@ import de.uniks.stp.controller.subcontroller.ThemeController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
@@ -25,6 +26,7 @@ import java.util.*;
 public class SettingsController {
     private final ModelBuilder builder;
     private final Parent view;
+    private Pane root;
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
@@ -69,6 +71,7 @@ public class SettingsController {
 
     public void init() {
         //init view
+        root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");
         this.settingsItems.getChildren().clear();
         this.settingsContainer = (VBox) view.lookup("#settingsContainer");
@@ -186,6 +189,24 @@ public class SettingsController {
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/SettingsView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/SettingsView.css")).toExternalForm());
     }
 }
 
