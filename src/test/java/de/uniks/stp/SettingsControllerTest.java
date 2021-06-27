@@ -208,4 +208,25 @@ public class SettingsControllerTest extends ApplicationTest {
             clickOn(showNotifications);
         }
     }
+
+    @Test
+    public void notificationTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_CN");
+
+        ComboBox<String> customSoundComboBox = lookup("#comboBox").query();
+        Button deleteButton = lookup("#delete").query();
+
+        clickOn(customSoundComboBox);
+        clickOn(customSoundComboBox.getItems().get(0));
+
+        clickOn(deleteButton);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#settingsButton");
+        clickOn("#button_DnD");
+
+
+    }
 }
