@@ -19,10 +19,8 @@ public class AudioStreamClient {
     private final ServerChannel currentAudioChannel;
     private AudioStreamReceiver receiver;
     private AudioStreamSender sender;
-    private InetAddress address;
     private Thread receiverThread;
     private Thread senderThread;
-    private int port;
     private static DatagramSocket socket;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
@@ -32,8 +30,8 @@ public class AudioStreamClient {
 
     public void init() {
         try {
-            address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
-            port = AUDIO_STREAM_PORT;
+            InetAddress address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
+            int port = AUDIO_STREAM_PORT;
 
             // Create the socket on which to send data.
             try {
@@ -45,7 +43,7 @@ public class AudioStreamClient {
             }
 
             //init first receiver and then sender
-            receiver = new AudioStreamReceiver(builder, currentAudioChannel, address, port, socket);
+            receiver = new AudioStreamReceiver(builder, currentAudioChannel, socket);
             receiver.init();
             sender = new AudioStreamSender(builder, currentAudioChannel, address, port, socket);
             sender.init();

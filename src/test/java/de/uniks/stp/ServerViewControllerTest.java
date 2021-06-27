@@ -95,8 +95,6 @@ public class ServerViewControllerTest extends ApplicationTest {
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
     private ModelBuilder builder;
-    private DatagramPacket mockPacket;
-
 
     @BeforeClass
     public static void setupHeadlessMode() {

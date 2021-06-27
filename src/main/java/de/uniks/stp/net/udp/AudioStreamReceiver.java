@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,20 +15,16 @@ import java.util.HashMap;
 public class AudioStreamReceiver implements Runnable {
 
     private final ModelBuilder builder;
-    private final InetAddress address;
-    private final int port;
     private final ServerChannel currentAudioChannel;
+    private final DatagramSocket socket;
     private boolean receiverActive;
     private byte[] data;
-    private DatagramSocket socket;
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
 
-    public AudioStreamReceiver(ModelBuilder builder, ServerChannel currentAudioChannel, InetAddress address, int port, DatagramSocket socket) {
+    public AudioStreamReceiver(ModelBuilder builder, ServerChannel currentAudioChannel, DatagramSocket socket) {
         this.builder = builder;
         this.currentAudioChannel = currentAudioChannel;
-        this.address = address;
-        this.port = port;
         this.socket = socket;
     }
 

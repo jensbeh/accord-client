@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static util.Constants.AUDIO_DATAGRAM_PAKET_SIZE;
@@ -20,8 +21,8 @@ public class AudioStreamSender implements Runnable {
     private final ServerChannel currentAudioChannel;
     private final InetAddress address;
     private final int port;
+    private final DatagramSocket socket;
     private Microphone microphone;
-    private DatagramSocket socket;
     private boolean senderActive;
 
     public AudioStreamSender(ModelBuilder builder, ServerChannel currentAudioChannel, InetAddress address, int port, DatagramSocket socket) {
@@ -49,11 +50,7 @@ public class AudioStreamSender implements Runnable {
         // set 255 with jsonObject - sendData is automatically init with zeros
         byte[] jsonData = new byte[255];
         byte[] objData = new byte[0];
-        try {
-            objData = obj1.toString().getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
 
         // set every byte new which is from jsonObject and let the rest be still 0
         for (int i = 0; i < objData.length; i++) {

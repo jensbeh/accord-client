@@ -6,7 +6,6 @@ import static util.Constants.*;
 
 public class Microphone {
     private AudioFormat format;
-    private DataLine.Info info;
     private TargetDataLine microphone;
     private byte[] data;
 
@@ -18,7 +17,7 @@ public class Microphone {
         format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
         // audio object (microphone information?)
-        info = new DataLine.Info(TargetDataLine.class, format);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
         try {
             // get microphoneLine
