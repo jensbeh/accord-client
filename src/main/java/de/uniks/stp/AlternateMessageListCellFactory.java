@@ -79,20 +79,26 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
-                String url = searchUrl(item.getMessage());
+                String textMessage = item.getMessage();
+                String url = searchUrl(textMessage);
                 loadImage = false;
                 WebView webView = new WebView();
                 ImageView imageView = new ImageView();
-                if(use_web) {
 
+                if(use_web) {
                     if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
                         setImage(url, webView.getEngine());
+                        if(loadImage) {
+                            textMessage = textMessage.replace(url, "");
+                        }
                         //webView.setMaxWidth(vbox.getWidth());
                     }
                 } else {
-
                     if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
                         setImage(url, imageView);
+                        if(loadImage) {
+                            textMessage = textMessage.replace(url, "");
+                        }
                     }
                 }
 
@@ -124,21 +130,25 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
-                message.setId("messageLabel");
-                message.setMaxWidth(320);
-                message.setPrefWidth(item.getMessage().length());
-                String str = handleSpacing(item.getMessage());
+                if(!textMessage.equals("")) {
+                    message.setId("messageLabel");
+                    message.setMaxWidth(320);
+                    message.setPrefWidth(textMessage.length());
+                    String str = handleSpacing(textMessage);
+                    message.parseAndAppend(" " + str + " ");
+                }
 
-                message.parseAndAppend(" " + str + " ");
+
+
 
                 if(!loadImage) {
                     vbox.getChildren().addAll(userName, message);
                 } else {
                     if(use_web){
-                        vbox.getChildren().addAll(userName, webView);
+                        vbox.getChildren().addAll(userName, message, webView);
                     }
                     else {
-                        vbox.getChildren().addAll(userName, imageView);
+                        vbox.getChildren().addAll(userName, message, imageView);
                     }
                 }
 
