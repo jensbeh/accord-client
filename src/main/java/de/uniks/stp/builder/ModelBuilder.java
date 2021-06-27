@@ -7,10 +7,12 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
+import util.ResourceManager;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -27,7 +29,7 @@ public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
     private static final String ROOT_PATH = "/de/uniks/stp";
-    private final InputStream soundFile = ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/open-ended.wav");
+    private InputStream soundFile;
 
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
@@ -97,6 +99,9 @@ public class ModelBuilder {
         this.restClient = restClient;
     }
 
+    public void setSoundFile(InputStream soundFile) {
+        this.soundFile = soundFile;
+    }
 
     /////////////////////////////////////////
     //  Getter
@@ -117,6 +122,10 @@ public class ModelBuilder {
 
     public ServerSystemWebSocket getServerSystemWebSocket() {
         return serverSystemWebSocket;
+    }
+
+    private InputStream getSoundFile() {
+        return soundFile;
     }
 
     public void setSERVER_USER(ServerSystemWebSocket serverSystemWebSocket) {
@@ -153,11 +162,14 @@ public class ModelBuilder {
     }
 
     public void playSound() {
+        if (soundFile == null) {
+            setSoundFile(ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/default.wav"));
+        }
         if (clip != null) {
             clip.stop();
         }
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(soundFile));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
@@ -166,6 +178,13 @@ public class ModelBuilder {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setVolume(Float number) {
+    }
+
+    private float getVolume() {
+        return ResourceManager.getVolume(personalUser.getName());
     }
 
     public void saveSettings() {
