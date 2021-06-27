@@ -207,9 +207,8 @@ public class ChatViewController {
             item2.setStyle("-fx-text-fill: #FFFFFF");
             item3.setStyle("-fx-text-fill: #FFFFFF");
             item1.setId("copy");
-            item2.setId("edit");
-            item3.setId("delete");
-            Button item = new Button();
+            item2.setId("editItem");
+            item3.setId("deleteItem");
             contextMenu.getItems().addAll(item1, item2, item3);
         }
         if (messageList.getSelectionModel().getSelectedItem() == null) {
@@ -318,11 +317,11 @@ public class ChatViewController {
             editButton = new Button();
             editButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             editButton.setText("edit");
-            editButton.setId("edit");
+            editButton.setId("editButton");
             abortButton = new Button();
             abortButton.setStyle("-fx-background-radius: 6;" + "-fx-background-color: ff9999;" + "-fx-text-fill: white;");
             abortButton.setText("abort");
-            abortButton.setId("abort");
+            abortButton.setId("abortButton");
             messageBox.getChildren().remove(sendButton);
             messageBox.getChildren().add(editButton);
             messageBox.getChildren().add(abortButton);
@@ -350,6 +349,7 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
+        refreshMessageListView();
         abortEdit(actionEvent);
     }
 
