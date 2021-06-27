@@ -17,11 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,6 +42,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         return new AlternateMessageListCellFactory.MessageListCell();
     }
 
+
     private static CurrentUser currentUser;
 
     public static CurrentUser getCurrentUser() {
@@ -57,6 +55,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
 
     private static class MessageListCell extends ListCell<Message> {
+        private boolean loadImage;
 
         /**
          * shows message in cell of ListView
@@ -71,15 +70,18 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 userName.setId("userNameLabel");
                 userName.setTextFill(Color.WHITE);
                 EmojiTextFlow message;
-                ImageView imageView = new ImageView();
 
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 String url = searchUrl(item.getMessage());
-                if (!url.equals("")) {
-                    setImage(url, imageView);
+                loadImage = false;
+                WebView webView = new WebView();
+                webView.autosize();
+                if (!url.equals("") && !url.contains("https://ac.uniks.de/api/servers/")) {
+                    setImage(url, webView.getEngine());
                 }
+
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     userName.setText((formatterTime.format(date)) + " " + item.getFrom());
@@ -107,17 +109,19 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message = new EmojiTextFlow(emojiTextFlowParameters);
                     message.setStyle("-fx-background-color: white;" + "-fx-background-radius: 4;");
                 }
-
                 message.setId("messageLabel");
                 message.setMaxWidth(320);
                 message.setPrefWidth(item.getMessage().length());
-
-
-
                 String str = handleSpacing(item.getMessage());
 
                 message.parseAndAppend(" " + str + " ");
-                vbox.getChildren().addAll(userName, message, imageView);
+
+                if(!loadImage) {
+                    vbox.getChildren().addAll(userName, message);
+                } else {
+                    vbox.getChildren().addAll(userName, webView);
+                }
+
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);
             }
@@ -164,20 +168,17 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             return url;
         }
 
-        private void setImage(String url, ImageView imageView){
+        private void setImage(String url, WebEngine engine){
 
             try {
-                URLConnection conn = new URL(url).openConnection();
-                InputStream stream = conn.getInputStream();
+//                URLConnection conn = new URL(url).openConnection();
+//                InputStream stream = conn.getInputStream();
+                engine.load(url);
+//                imageView.setFitWidth(512);
+//                imageView.setFitWidth(512);
+                loadImage = true;
 
-                Image image = new Image(stream);
-//                Stage stage = new Stage();
-//                VBox vBox = new VBox();
-//                vBox.getChildren().add(imageView);
-//                Scene scene = new Scene(vBox);
-//                stage.setScene(scene);
-//                stage.show();
-                imageView.setImage(image);
+
             } catch (Exception e){
                 e.printStackTrace();
             }
