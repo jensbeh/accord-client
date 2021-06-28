@@ -6,10 +6,11 @@
 <!-- AudioMember -->
 <g id="node1" class="node">
 <title>AudioMember</title>
-<polygon fill="none" stroke="black" points="207.5,-51.5 207.5,-73.5 295.5,-73.5 295.5,-51.5 207.5,-51.5"/>
-<text text-anchor="start" x="210.29" y="-57.9" font-family="Times,serif" font-size="14.00">AudioMember</text>
-<polygon fill="none" stroke="black" points="207.5,-29.5 207.5,-51.5 295.5,-51.5 295.5,-29.5 207.5,-29.5"/>
-<text text-anchor="start" x="225.25" y="-35.9" font-family="Times,serif" font-size="14.00">id :String</text>
+<polygon fill="none" stroke="black" points="207.5,-59.5 207.5,-81.5 295.5,-81.5 295.5,-59.5 207.5,-59.5"/>
+<text text-anchor="start" x="210.29" y="-65.9" font-family="Times,serif" font-size="14.00">AudioMember</text>
+<polygon fill="none" stroke="black" points="207.5,-20.5 207.5,-59.5 295.5,-59.5 295.5,-20.5 207.5,-20.5"/>
+<text text-anchor="start" x="215.53" y="-43.9" font-family="Times,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="215.53" y="-27.1" font-family="Times,serif" font-size="14.00">name :String</text>
 </g>
 <!-- ServerChannel -->
 <g id="node7" class="node">
@@ -26,9 +27,9 @@
 <!-- AudioMember&#45;&gt;ServerChannel -->
 <g id="edge1" class="edge">
 <title>AudioMember&#45;&gt;ServerChannel</title>
-<path fill="none" stroke="black" d="M251.5,-77.51C251.5,-94.41 251.5,-117.47 251.5,-138.89"/>
-<text text-anchor="middle" x="229.73" y="-126.29" font-family="Times,serif" font-size="14.00">channel</text>
-<text text-anchor="middle" x="273.76" y="-81.71" font-family="Times,serif" font-size="14.00">audioMember *</text>
+<path fill="none" stroke="black" d="M251.5,-86.25C251.5,-101.86 251.5,-120.88 251.5,-138.77"/>
+<text text-anchor="middle" x="229.73" y="-126.17" font-family="Times,serif" font-size="14.00">channel</text>
+<text text-anchor="middle" x="296.02" y="-90.45" font-family="Times,serif" font-size="14.00">audioMember *</text>
 </g>
 <!-- Categories -->
 <g id="node2" class="node">

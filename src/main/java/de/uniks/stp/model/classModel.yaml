@@ -32,7 +32,7 @@
   roles: 	serverChannel_categories 	serverChannel_audioMember 	serverChannel_privilegedUsers 	serverChannel_currentUser 	serverChannel_message
 
 - audioMember: 	org.fulib.classmodel.Clazz
-  attributes: 	audioMember_id
+  attributes: 	audioMember_id 	audioMember_name
   model: 	c
   modified: 	false
   name: 	AudioMember
@@ -285,6 +285,15 @@
   id: 	AudioMember_id
   modified: 	false
   name: 	id
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- audioMember_name: 	org.fulib.classmodel.Attribute
+  clazz: 	audioMember
+  id: 	AudioMember_name
+  modified: 	false
+  name: 	name
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String
