@@ -194,29 +194,37 @@ public class ServerSystemWebSocket extends Endpoint {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
 
-                        serverChannel.withAudioMember(new AudioMember().setId(builder.getPersonalUser().getId()));
-
-                        if (serverViewController.getCurrentAudioChannel() != null) {
-                            AudioMember toRemove = null;
-                            for (AudioMember audioMember : serverViewController.getCurrentAudioChannel().getAudioMember()) {
-                                if (audioMember.getId().equals(builder.getPersonalUser().getId())) {
-                                    toRemove = audioMember;
-                                    break;
-                                }
+                        // put name and id
+                        String userName = "";
+                        for (User user : builder.getPersonalUser().getUser()) {
+                            if (user.getId().equals(userId)) {
+                                userName = user.getName();
+                                break;
                             }
-                            serverViewController.getCurrentAudioChannel().withoutAudioMember(toRemove);
                         }
-
-                        serverViewController.setCurrentAudioChannel(serverChannel);
-                        serverViewController.refreshAllChannelLists();
-
+                        if (!userName.equals("")) {
+                            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
+                            serverChannel.withAudioMember(audioMemberUser);
+                            if (builder.getAudioStreamClient() != null) {
+                                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
+                            }
+                        }
 
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
-                            AudioStreamClient audiostreamClient = new AudioStreamClient();
+                            AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
+                            serverChannel.withAudioMember(audioMemberPersonalUser);
+
+                            serverViewController.setCurrentAudioChannel(serverChannel);
+                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
                             builder.setAudioStreamClient(audiostreamClient);
                             audiostreamClient.init();
+                            for (AudioMember audioMember : serverChannel.getAudioMember()) {
+                                audiostreamClient.setNewAudioMemberReceiver(audioMember);
+                            }
+                            audiostreamClient.startStream();
                         }
+                        serverViewController.refreshAllChannelLists();
                     }
                 }
             }

@@ -6,9 +6,11 @@ public class AudioMember
 {
    public static final String PROPERTY_CHANNEL = "channel";
    public static final String PROPERTY_ID = "id";
+   public static final String PROPERTY_NAME = "name";
    private ServerChannel channel;
    protected PropertyChangeSupport listeners;
    private String id;
+   private String name;
 
    public ServerChannel getChannel()
    {
@@ -55,6 +57,24 @@ public class AudioMember
       return this;
    }
 
+   public String getName()
+   {
+      return this.name;
+   }
+
+   public AudioMember setName(String value)
+   {
+      if (Objects.equals(value, this.name))
+      {
+         return this;
+      }
+
+      final String oldValue = this.name;
+      this.name = value;
+      this.firePropertyChange(PROPERTY_NAME, oldValue, value);
+      return this;
+   }
+
    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -84,6 +104,7 @@ public class AudioMember
    {
       final StringBuilder result = new StringBuilder();
       result.append(' ').append(this.getId());
+      result.append(' ').append(this.getName());
       return result.substring(1);
    }
 }
