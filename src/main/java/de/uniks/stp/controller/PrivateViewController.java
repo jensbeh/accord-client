@@ -84,10 +84,6 @@ public class PrivateViewController {
         showCurrentUser();
         showUsers();
 
-        if (builder.getCurrentAudioChannel() != null) {
-            showAudioConnectedBox();
-        }
-
         if (privateChatWebSocket == null) {
             privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                     getPersonalUser().getName().replace(" ", "+")), builder.getPersonalUser().getUserKey());
@@ -158,16 +154,18 @@ public class PrivateViewController {
     /**
      * Display AudioConnectedBox
      */
-    private void showAudioConnectedBox() {
+    public void showAudioConnectedBox() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
             AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
             audioConnectedBoxController.init();
-            audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
+            audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
             audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
 
-            this.audioConnectionBox.getChildren().clear();
-            this.audioConnectionBox.getChildren().add(root);
+            Platform.runLater(() -> {
+                this.audioConnectionBox.getChildren().clear();
+                this.audioConnectionBox.getChildren().add(root);
+            });
 
         } catch (IOException e) {
             e.printStackTrace();

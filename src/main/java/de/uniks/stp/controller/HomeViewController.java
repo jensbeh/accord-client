@@ -167,6 +167,9 @@ public class HomeViewController {
                 this.root.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
+                if (builder.getCurrentAudioChannel() != null) {
+                    this.privateViewController.showAudioConnectedBox();
+                }
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
                 if (PrivateViewController.getSelectedChat() != null) {

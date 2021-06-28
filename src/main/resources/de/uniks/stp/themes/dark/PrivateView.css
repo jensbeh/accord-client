@@ -134,3 +134,13 @@
 #homeViewVBox {
     -fx-background-color: #2f3136;
 }
+
+#label_serverName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#label_audioChannelName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}

@@ -73,6 +73,12 @@ public class AudioStreamClient {
         senderThread.stop(); //TODO should be stop safer!
     }
 
+    public void disconnectStream() {
+        builder.setCurrentAudioChannel(null);
+
+        stopStream();
+    }
+
     /**
      * set new audioReceiverUser for new Speaker
      */
