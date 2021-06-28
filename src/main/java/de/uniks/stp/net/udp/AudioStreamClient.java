@@ -43,7 +43,7 @@ public class AudioStreamClient {
             }
 
             //init first receiver and then sender
-            receiver = new AudioStreamReceiver(builder, currentAudioChannel, socket);
+            receiver = new AudioStreamReceiver(builder, socket);
             receiver.init();
             sender = new AudioStreamSender(builder, currentAudioChannel, address, port, socket);
             sender.init();

@@ -454,6 +454,10 @@ public class HomeViewController {
             }
             serverController.remove(server);
         }
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
+        }
     }
 
     /**

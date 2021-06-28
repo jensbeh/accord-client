@@ -58,7 +58,6 @@ public class ServerViewController {
     private ServerChannel currentChannel;
     private ServerSystemWebSocket serverSystemWebSocket;
     private ServerChatWebSocket chatWebSocketClient;
-    private ServerChannel currentAudioChannel;
     private VBox audioConnectionBox;
     private Button disconnectAudioButton;
 
@@ -278,7 +277,7 @@ public class ServerViewController {
                 Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
                 AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
                 audioConnectedBoxController.init();
-                audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
+                audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
                 audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
 
                 Platform.runLater(() -> {
@@ -310,9 +309,7 @@ public class ServerViewController {
             this.disconnectAudioButton.setOnAction(null);
         });
 
-        Platform.runLater(() -> {
-            this.audioConnectionBox.getChildren().clear();
-        });
+        Platform.runLater(() -> this.audioConnectionBox.getChildren().clear());
     }
 
     /**
@@ -525,6 +522,10 @@ public class ServerViewController {
 
         for (CategorySubController categorySubController : this.categorySubControllerList.values()) {
             categorySubController.stop();
+        }
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
         }
     }
 

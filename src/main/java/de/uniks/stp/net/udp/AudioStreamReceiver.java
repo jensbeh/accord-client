@@ -2,12 +2,12 @@ package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
-import de.uniks.stp.model.ServerChannel;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,16 +15,15 @@ import java.util.HashMap;
 public class AudioStreamReceiver implements Runnable {
 
     private final ModelBuilder builder;
-    private final ServerChannel currentAudioChannel;
-    private DatagramSocket socket;
+    private final DatagramSocket socket;
     private boolean receiverActive;
     private byte[] data;
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
+    private volatile boolean stopped;
 
-    public AudioStreamReceiver(ModelBuilder builder, ServerChannel currentAudioChannel, DatagramSocket socket) {
+    public AudioStreamReceiver(ModelBuilder builder, DatagramSocket socket) {
         this.builder = builder;
-        this.currentAudioChannel = currentAudioChannel;
         this.socket = socket;
     }
 
@@ -33,11 +32,18 @@ public class AudioStreamReceiver implements Runnable {
         receiverSpeakerMap = new HashMap<>();
 
         data = new byte[1279];
+
+        try {
+            this.socket.setSoTimeout(1000);
+        } catch (SocketException e) {
+            System.out.println("Socket Received Timeout");
+        }
     }
 
     @Override
     public void run() {
         receiverActive = true;
+        stopped = false;
 
         while (receiverActive) {
             if (!socket.isClosed()) {
@@ -48,7 +54,7 @@ public class AudioStreamReceiver implements Runnable {
                     socket.receive(packet);
                     data = packet.getData(); // important to set because of testing - there is no manipulation of packet in test
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    stopped = true; // set to true when connection get lost
                 }
 
                 byte[] receivedJson = new byte[255];
@@ -69,20 +75,23 @@ public class AudioStreamReceiver implements Runnable {
                     String senderName = jsonData.getString("name");
 
                     // set receivedData to speaker of the senderName
-//            if (!senderName.equals(builder.getPersonalUser().getName())) {
-                    if (receiverSpeakerMap != null) {
-                        receiverSpeakerMap.get(senderName).writeData(receivedData);
+                    if (!senderName.equals(builder.getPersonalUser().getName())) {
+                        if (receiverSpeakerMap != null) {
+                            receiverSpeakerMap.get(senderName).writeData(receivedData);
+                        }
                     }
-//            }
                 }
             }
         }
         // stop speaker from all connectedUser
         for (AudioMember audioMember : connectedUser) {
-            receiverSpeakerMap.get(audioMember.getName()).stopPlayback();
+            if (receiverSpeakerMap != null) {
+                receiverSpeakerMap.get(audioMember.getName()).stopPlayback();
+            }
         }
 
         socket.close();
+        stopped = true;
     }
 
     /**
@@ -106,8 +115,15 @@ public class AudioStreamReceiver implements Runnable {
         receiverSpeakerMap.remove(removeMember.getName());
     }
 
+
+    /**
+     * var stopped is for waiting till the current while is completed, to stop Receiver
+     */
     public void stop() {
         receiverActive = false;
+        while (!stopped) {
+            Thread.onSpinWait();
+        }
     }
 
 }

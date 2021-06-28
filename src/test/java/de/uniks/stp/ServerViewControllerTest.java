@@ -27,10 +27,10 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.channels.Channel;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -99,7 +99,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -418,12 +418,17 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-//    @Test
+    @Test
     public void audioStreamTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
         doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
         serverSystemWebSocket.setBuilder(builder);
+
+        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
+        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
+        privateChatWebSocket.setBuilder(builder);
 
         loginInit(testUserOneName, testUserOnePw);
         builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
@@ -443,11 +448,7 @@ public class ServerViewControllerTest extends ApplicationTest {
                 // set 255 with jsonObject - sendData is automatically init with zeros
                 byte[] jsonData = new byte[255];
                 byte[] objData = new byte[0];
-                try {
-                    objData = obj1.toString().getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
 
                 // set every byte new which is from jsonObject and let the rest be still 0
                 for (int i = 0; i < objData.length; i++) {
@@ -485,6 +486,19 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
-        // TODO test stop when disconnect
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+
+        clickOn("#button_disconnectAudio");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 0);
     }
 }

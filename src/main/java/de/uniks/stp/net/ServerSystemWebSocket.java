@@ -215,6 +215,9 @@ public class ServerSystemWebSocket extends Endpoint {
 
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
+                            if (builder.getAudioStreamClient() != null) {
+                                builder.getAudioStreamClient().disconnectStream();
+                            }
                             AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
                             serverChannel.withAudioMember(audioMemberPersonalUser);
 
@@ -256,10 +259,14 @@ public class ServerSystemWebSocket extends Endpoint {
                                     builder.getAudioStreamClient().disconnectStream();
 
                                     builder.setAudioStreamClient(null);
+
+
                                 }
                                 // other user disconnects
                                 else {
-                                    builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
+                                    if (builder.getAudioStreamClient() != null) {
+                                        builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
+                                    }
                                 }
                                 break;
                             }
@@ -299,10 +306,7 @@ public class ServerSystemWebSocket extends Endpoint {
      * update server
      */
     private void updateServer(String serverName) {
-        boolean audioIsOpen = false;
-        if (builder.getCurrentAudioChannel() != null && serverViewController.getServer().getName().equals(builder.getCurrentAudioChannel().getCategories().getServer().getName())) {
-            audioIsOpen = true;
-        }
+        boolean audioIsOpen = builder.getCurrentAudioChannel() != null && serverViewController.getServer().getName().equals(builder.getCurrentAudioChannel().getCategories().getServer().getName());
 
         serverViewController.getServer().setName(serverName);
         if (builder.getCurrentServer() == serverViewController.getServer()) {
