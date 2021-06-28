@@ -38,6 +38,8 @@ public class Microphone {
             // open microphone line
             if (microphone.getFormat() != format) {
                 microphone.open(format);
+            } else {
+                microphone.open();
             }
         } catch (LineUnavailableException e) {
             e.printStackTrace();
