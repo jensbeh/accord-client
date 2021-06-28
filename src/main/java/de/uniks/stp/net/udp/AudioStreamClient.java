@@ -73,6 +73,9 @@ public class AudioStreamClient {
         senderThread.stop(); //TODO should be stop safer!
     }
 
+    /**
+     * set new audioReceiverUser for new Speaker
+     */
     public void setNewAudioMemberReceiver(AudioMember audioMemberPersonalUser) {
         receiver.newConnectedUser(audioMemberPersonalUser);
     }
