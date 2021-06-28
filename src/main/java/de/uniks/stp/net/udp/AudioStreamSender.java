@@ -23,6 +23,7 @@ public class AudioStreamSender implements Runnable {
     private final DatagramSocket socket;
     private Microphone microphone;
     private boolean senderActive;
+    private volatile boolean stopped;
 
     public AudioStreamSender(ModelBuilder builder, ServerChannel currentAudioChannel, InetAddress address, int port, DatagramSocket socket) {
         this.builder = builder;
@@ -41,6 +42,7 @@ public class AudioStreamSender implements Runnable {
     @Override
     public void run() {
         senderActive = true;
+        stopped = false;
 
         JSONObject obj1 = new JSONObject().put("channel", currentAudioChannel.getId())
                 .put("name", builder.getPersonalUser().getName());
@@ -73,18 +75,26 @@ public class AudioStreamSender implements Runnable {
 
             try {
                 // send to address
-                socket.send(packet);
+                if (!socket.isClosed()) {
+                    socket.send(packet);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                stopped = true; // set to true when connection get lost
             }
         }
 
         // stop if senderActive is set to false in stop method in this class
         microphone.stopRecording();
-        socket.close();
+        stopped = true;
     }
 
+    /**
+     * var stopped is for waiting till the current while is completed, to stop Sender
+     */
     public void stop() {
         senderActive = false;
+        while (!stopped) {
+            Thread.onSpinWait();
+        }
     }
 }

@@ -68,14 +68,33 @@ public class CategorySubController {
         }
 
         // AudioChannel
-        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
-            builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    System.out.println(body);
-                }
-            });
+        // when no other is connected
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && builder.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
+            if (builder.getCurrentAudioChannel() == null) {
+                builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        System.out.println(body);
+                    }
+                });
+            }
+            // when audioChannel is connected - leave old one, join new one
+            else {
+                builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response2 -> {
+                            JsonNode body2 = response2.getBody();
+                            String status2 = body2.getObject().getString("status");
+                            if (status2.equals("success")) {
+                                System.out.println(body2);
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 

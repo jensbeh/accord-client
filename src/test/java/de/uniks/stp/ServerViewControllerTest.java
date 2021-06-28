@@ -27,10 +27,10 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.channels.Channel;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -206,6 +206,13 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("members", members))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
+                        .put("name", "audioChannel")
+                        .put("type", "audio")
+                        .put("privileged", false)
+                        .put("category", "60b77ba0026b3534ca5a61ae")
+                        .put("members", members))
+                .put(new JSONObject()
+                        .put("id", "60b77ba0026423ad521awd2")
                         .put("name", "audioChannel")
                         .put("type", "audio")
                         .put("privileged", false)
@@ -418,7 +425,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-//    @Test
+    @Test
     public void audioStreamTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
@@ -443,11 +450,7 @@ public class ServerViewControllerTest extends ApplicationTest {
                 // set 255 with jsonObject - sendData is automatically init with zeros
                 byte[] jsonData = new byte[255];
                 byte[] objData = new byte[0];
-                try {
-                    objData = obj1.toString().getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
 
                 // set every byte new which is from jsonObject and let the rest be still 0
                 for (int i = 0; i < objData.length; i++) {
@@ -467,10 +470,12 @@ public class ServerViewControllerTest extends ApplicationTest {
         }
 
         doubleClickOn("#60b77ba0026b3534ca5a61dd");
+        WaitForAsyncUtils.waitForFxEvents();
 
         String message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         ServerChannel audioChannel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(1);
         Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
@@ -482,9 +487,48 @@ public class ServerViewControllerTest extends ApplicationTest {
         message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
-        // TODO test stop when disconnect
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+
+        doubleClickOn("#60b77ba0026423ad521awd2");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel audioChannel2 = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(2);
+
+        message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
+
+        clickOn("#homeButton");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#button_disconnectAudio");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 0);
     }
 }

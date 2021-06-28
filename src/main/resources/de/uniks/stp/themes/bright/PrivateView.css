@@ -140,3 +140,18 @@
     -fx-background-color: #f2f3f5;
     -fx-border-color: #f2f3f5;
 }
+
+#label_serverName {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
+}
+
+#label_audioChannelName {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
+}
+
+#button_disconnectAudio {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}

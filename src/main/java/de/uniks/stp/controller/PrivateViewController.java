@@ -15,13 +15,16 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import util.ResourceManager;
 import util.SortUser;
@@ -42,6 +45,8 @@ public class PrivateViewController {
     private final ModelBuilder builder;
     private HBox root;
     private VBox currentUserBox;
+    private VBox audioConnectionBox;
+    private Button disconnectAudioButton;
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
@@ -68,6 +73,7 @@ public class PrivateViewController {
         root = (HBox) view.lookup("#root");
         //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) view.lookup("#currentUserBox");
+        audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
@@ -90,7 +96,6 @@ public class PrivateViewController {
         privateChatWebSocket.setPrivateViewController(this);
         builder.setPrivateChatWebSocketClient(privateChatWebSocket);
     }
-
 
     private void startWebSocketConnection() {
         if (privateSystemWebSocketClient == null) {
@@ -147,6 +152,52 @@ public class PrivateViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Display AudioConnectedBox
+     */
+    public void showAudioConnectedBox() {
+        if (builder.getCurrentAudioChannel() != null) {
+            try {
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+                audioConnectedBoxController.init();
+                audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
+                audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+
+                Platform.runLater(() -> {
+                    this.audioConnectionBox.getChildren().clear();
+                    this.audioConnectionBox.getChildren().add(root);
+                    disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
+                    disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
+        }
+    }
+
+    /**
+     * when audio disconnect button is clicked
+     */
+    private void onAudioDisconnectClicked(ActionEvent actionEvent) {
+        builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            this.disconnectAudioButton.setOnAction(null);
+
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                System.out.println(body);
+            }
+        });
+
+        Platform.runLater(() -> {
+            this.audioConnectionBox.getChildren().clear();
+        });
     }
 
     /**

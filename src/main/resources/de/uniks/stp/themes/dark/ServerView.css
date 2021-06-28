@@ -102,6 +102,21 @@
     -fx-text-fill: WHITE;
 }
 
+#label_serverName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#label_audioChannelName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#button_disconnectAudio {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
 
 /* Credits: https://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/ */
 

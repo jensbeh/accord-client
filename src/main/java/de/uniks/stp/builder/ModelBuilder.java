@@ -4,6 +4,7 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -43,6 +44,7 @@ public class ModelBuilder {
     private Clip clip;
 
     private AudioStreamClient audioStreamClient;
+    private ServerChannel currentAudioChannel;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -265,5 +267,13 @@ public class ModelBuilder {
 
     public void setTheme(String theme) {
         this.theme = theme;
+    }
+
+    public void setCurrentAudioChannel(ServerChannel currentAudioChannel) {
+        this.currentAudioChannel = currentAudioChannel;
+    }
+
+    public ServerChannel getCurrentAudioChannel() {
+        return this.currentAudioChannel;
     }
 }

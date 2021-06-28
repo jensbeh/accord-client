@@ -167,6 +167,9 @@ public class HomeViewController {
                 this.root.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
+
+                this.privateViewController.showAudioConnectedBox();
+
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
                 if (PrivateViewController.getSelectedChat() != null) {
@@ -450,6 +453,10 @@ public class HomeViewController {
                 }
             }
             serverController.remove(server);
+        }
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
         }
     }
 

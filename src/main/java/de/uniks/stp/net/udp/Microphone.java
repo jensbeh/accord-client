@@ -58,7 +58,6 @@ public class Microphone {
      * the method stops the microphone
      */
     public void stopRecording() {
-        microphone.drain();
         microphone.stop();
         microphone.close();
     }
