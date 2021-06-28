@@ -42,6 +42,7 @@ public class PrivateViewController {
     private final ModelBuilder builder;
     private HBox root;
     private VBox currentUserBox;
+    private VBox audioConnectionBox;
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
@@ -68,6 +69,7 @@ public class PrivateViewController {
         root = (HBox) view.lookup("#root");
         //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) view.lookup("#currentUserBox");
+        audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
@@ -81,6 +83,10 @@ public class PrivateViewController {
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
         showUsers();
+
+        if (builder.getCurrentAudioChannel() != null) {
+            showAudioConnectedBox();
+        }
 
         if (privateChatWebSocket == null) {
             privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
@@ -143,6 +149,25 @@ public class PrivateViewController {
             userProfileController.setOnline();
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Display AudioConnectedBox
+     */
+    private void showAudioConnectedBox() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+            AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+            audioConnectedBoxController.init();
+            audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
+            audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+
+            this.audioConnectionBox.getChildren().clear();
+            this.audioConnectionBox.getChildren().add(root);
 
         } catch (IOException e) {
             e.printStackTrace();

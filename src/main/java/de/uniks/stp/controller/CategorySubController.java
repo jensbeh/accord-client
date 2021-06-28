@@ -68,7 +68,7 @@ public class CategorySubController {
         }
 
         // AudioChannel
-        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && builder.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
             builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");

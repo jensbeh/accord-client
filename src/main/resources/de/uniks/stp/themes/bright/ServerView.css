@@ -97,6 +97,16 @@
     -fx-text-fill: BLACK;
 }
 
+#label_serverName {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
+}
+
+#label_audioChannelName {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
+}
+
 
 /* Credits: https://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/ */
 

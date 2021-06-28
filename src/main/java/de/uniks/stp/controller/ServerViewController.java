@@ -59,6 +59,7 @@ public class ServerViewController {
     private ServerSystemWebSocket serverSystemWebSocket;
     private ServerChatWebSocket chatWebSocketClient;
     private ServerChannel currentAudioChannel;
+    private VBox audioConnectionBox;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -101,10 +102,6 @@ public class ServerViewController {
         this.currentChannel = channel;
     }
 
-    public void setCurrentAudioChannel(ServerChannel channel) {
-        this.currentAudioChannel = channel;
-    }
-
     public ServerSystemWebSocket getServerSystemWebSocket() {
         return serverSystemWebSocket;
     }
@@ -114,7 +111,7 @@ public class ServerViewController {
     }
 
     public ServerChannel getCurrentAudioChannel() {
-        return this.currentAudioChannel;
+        return builder.getCurrentAudioChannel();
     }
 
 
@@ -139,6 +136,7 @@ public class ServerViewController {
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
@@ -178,6 +176,10 @@ public class ServerViewController {
 
         showCurrentUser();
         showOnlineOfflineUsers();
+
+        if (builder.getCurrentAudioChannel() != null) {
+            showAudioConnectedBox();
+        }
 
         Platform.runLater(this::generateCategoriesChannelViews);
         if (currentChannel != null) {
@@ -259,6 +261,27 @@ public class ServerViewController {
             userProfileController.setOnline();
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Display AudioConnectedBox
+     */
+    public void showAudioConnectedBox() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+            AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+            audioConnectedBoxController.init();
+            audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
+            audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+
+            Platform.runLater(() -> {
+                this.audioConnectionBox.getChildren().clear();
+                this.audioConnectionBox.getChildren().add(root);
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
