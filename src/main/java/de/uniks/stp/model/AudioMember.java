@@ -1,21 +1,21 @@
 package de.uniks.stp.model;
+
 import java.beans.PropertyChangeSupport;
 import java.util.Objects;
 
-public class AudioMember
-{
-   public static final String PROPERTY_CHANNEL = "channel";
-   public static final String PROPERTY_ID = "id";
-   private ServerChannel channel;
-   protected PropertyChangeSupport listeners;
-   private String id;
+public class AudioMember {
+    public static final String PROPERTY_CHANNEL = "channel";
+    public static final String PROPERTY_ID = "id";
+    private ServerChannel channel;
+    protected PropertyChangeSupport listeners;
+    private String id;
 
-   public ServerChannel getChannel()
+    public ServerChannel getChannel()
    {
       return this.channel;
    }
 
-   public AudioMember setChannel(ServerChannel value)
+    public AudioMember setChannel(ServerChannel value)
    {
       if (this.channel == value)
       {
@@ -37,12 +37,12 @@ public class AudioMember
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public AudioMember setId(String value)
+    public AudioMember setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -55,7 +55,7 @@ public class AudioMember
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -65,7 +65,7 @@ public class AudioMember
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -74,12 +74,12 @@ public class AudioMember
       return this.listeners;
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.setChannel(null);
    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();

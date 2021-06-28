@@ -24,13 +24,14 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
     public static void setCurrentServer(Server currentServer) {
         AlternateServerListCellFactory.currentServer = currentServer;
     }
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     * determined.
+     *              determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
@@ -38,6 +39,7 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
     public ListCell<Server> call(ListView<Server> param) {
         return new AlternateServerListCellFactory.ServerListCell();
     }
+
     private static class ServerListCell extends ListCell<Server> {
         protected void updateItem(Server item, boolean empty) {
             // creates a HBox for each cell of the listView

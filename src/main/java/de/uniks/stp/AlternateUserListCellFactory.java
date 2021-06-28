@@ -17,7 +17,7 @@ public class AlternateUserListCellFactory implements javafx.util.Callback<ListVi
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     * determined.
+     *              determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */

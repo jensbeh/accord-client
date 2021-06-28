@@ -31,7 +31,7 @@ public class LanguageController extends SubSetting {
             Locale.setDefault(currentLocale);
             StageManager.resetLangBundle();
         } catch (Exception e) {
-            System.err.println(e+"");
+            System.err.println(e + "");
             e.printStackTrace();
         }
     }
@@ -90,7 +90,7 @@ public class LanguageController extends SubSetting {
             prop.setProperty("LANGUAGE", language);
             prop.store(op, null);
         } catch (Exception e) {
-            System.err.println(e+"");
+            System.err.println(e + "");
             e.printStackTrace();
         }
     }

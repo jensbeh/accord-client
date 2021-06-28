@@ -2,11 +2,7 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.subcontroller.CustomNotificationsController;
-import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
-import de.uniks.stp.controller.subcontroller.LanguageController;
-import de.uniks.stp.controller.subcontroller.SubSetting;
-import de.uniks.stp.controller.subcontroller.ThemeController;
+import de.uniks.stp.controller.subcontroller.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -56,7 +52,7 @@ public class SettingsController {
                     prop.store(op, null);
                 }
             } catch (Exception e) {
-                System.out.println(e+"");
+                System.out.println(e + "");
                 e.printStackTrace();
             }
         }

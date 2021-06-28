@@ -1,6 +1,9 @@
 package de.uniks.stp.net;
 
-import kong.unirest.*;
+import kong.unirest.Callback;
+import kong.unirest.HttpRequest;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.json.JSONObject;
 
 import static util.Constants.*;

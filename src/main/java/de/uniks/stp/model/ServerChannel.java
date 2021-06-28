@@ -1,42 +1,43 @@
 package de.uniks.stp.model;
+
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.Collection;
-import java.beans.PropertyChangeSupport;
 
-public class ServerChannel
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
-   public static final String PROPERTY_PRIVILEGE = "privilege";
-   public static final String PROPERTY_TYPE = "type";
-   public static final String PROPERTY_CATEGORIES = "categories";
-   public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
-   public static final String PROPERTY_CURRENT_USER = "currentUser";
-   public static final String PROPERTY_MESSAGE = "message";
-   public static final String PROPERTY_AUDIO_MEMBER = "audioMember";
-   private String name;
-   private String id;
-   private int unreadMessagesCounter;
-   private boolean privilege;
-   private String type;
-   private Categories categories;
-   private List<User> privilegedUsers;
-   private CurrentUser currentUser;
-   protected PropertyChangeSupport listeners;
-   private List<Message> message;
-   private List<AudioMember> audioMember;
+public class ServerChannel {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
+    public static final String PROPERTY_PRIVILEGE = "privilege";
+    public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_CATEGORIES = "categories";
+    public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
+    public static final String PROPERTY_CURRENT_USER = "currentUser";
+    public static final String PROPERTY_MESSAGE = "message";
+    public static final String PROPERTY_AUDIO_MEMBER = "audioMember";
+    private String name;
+    private String id;
+    private int unreadMessagesCounter;
+    private boolean privilege;
+    private String type;
+    private Categories categories;
+    private List<User> privilegedUsers;
+    private CurrentUser currentUser;
+    protected PropertyChangeSupport listeners;
+    private List<Message> message;
+    private List<AudioMember> audioMember;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public ServerChannel setName(String value)
+    public ServerChannel setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -49,12 +50,12 @@ public class ServerChannel
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public ServerChannel setId(String value)
+    public ServerChannel setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -67,12 +68,12 @@ public class ServerChannel
       return this;
    }
 
-   public int getUnreadMessagesCounter()
+    public int getUnreadMessagesCounter()
    {
       return this.unreadMessagesCounter;
    }
 
-   public ServerChannel setUnreadMessagesCounter(int value)
+    public ServerChannel setUnreadMessagesCounter(int value)
    {
       if (value == this.unreadMessagesCounter)
       {
@@ -85,12 +86,12 @@ public class ServerChannel
       return this;
    }
 
-   public boolean isPrivilege()
+    public boolean isPrivilege()
    {
       return this.privilege;
    }
 
-   public ServerChannel setPrivilege(boolean value)
+    public ServerChannel setPrivilege(boolean value)
    {
       if (value == this.privilege)
       {
@@ -103,12 +104,12 @@ public class ServerChannel
       return this;
    }
 
-   public String getType()
+    public String getType()
    {
       return this.type;
    }
 
-   public ServerChannel setType(String value)
+    public ServerChannel setType(String value)
    {
       if (Objects.equals(value, this.type))
       {
@@ -121,12 +122,12 @@ public class ServerChannel
       return this;
    }
 
-   public Categories getCategories()
+    public Categories getCategories()
    {
       return this.categories;
    }
 
-   public ServerChannel setCategories(Categories value)
+    public ServerChannel setCategories(Categories value)
    {
       if (this.categories == value)
       {
@@ -148,12 +149,12 @@ public class ServerChannel
       return this;
    }
 
-   public List<User> getPrivilegedUsers()
+    public List<User> getPrivilegedUsers()
    {
       return this.privilegedUsers != null ? Collections.unmodifiableList(this.privilegedUsers) : Collections.emptyList();
    }
 
-   public ServerChannel withPrivilegedUsers(User value)
+    public ServerChannel withPrivilegedUsers(User value)
    {
       if (this.privilegedUsers == null)
       {
@@ -168,7 +169,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withPrivilegedUsers(User... value)
+    public ServerChannel withPrivilegedUsers(User... value)
    {
       for (final User item : value)
       {
@@ -177,7 +178,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withPrivilegedUsers(Collection<? extends User> value)
+    public ServerChannel withPrivilegedUsers(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -186,7 +187,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutPrivilegedUsers(User value)
+    public ServerChannel withoutPrivilegedUsers(User value)
    {
       if (this.privilegedUsers != null && this.privilegedUsers.remove(value))
       {
@@ -196,7 +197,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutPrivilegedUsers(User... value)
+    public ServerChannel withoutPrivilegedUsers(User... value)
    {
       for (final User item : value)
       {
@@ -205,7 +206,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutPrivilegedUsers(Collection<? extends User> value)
+    public ServerChannel withoutPrivilegedUsers(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -214,12 +215,12 @@ public class ServerChannel
       return this;
    }
 
-   public CurrentUser getCurrentUser()
+    public CurrentUser getCurrentUser()
    {
       return this.currentUser;
    }
 
-   public ServerChannel setCurrentUser(CurrentUser value)
+    public ServerChannel setCurrentUser(CurrentUser value)
    {
       if (this.currentUser == value)
       {
@@ -241,12 +242,12 @@ public class ServerChannel
       return this;
    }
 
-   public List<Message> getMessage()
+    public List<Message> getMessage()
    {
       return this.message != null ? Collections.unmodifiableList(this.message) : Collections.emptyList();
    }
 
-   public ServerChannel withMessage(Message value)
+    public ServerChannel withMessage(Message value)
    {
       if (this.message == null)
       {
@@ -261,7 +262,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withMessage(Message... value)
+    public ServerChannel withMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -270,7 +271,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withMessage(Collection<? extends Message> value)
+    public ServerChannel withMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -279,7 +280,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutMessage(Message value)
+    public ServerChannel withoutMessage(Message value)
    {
       if (this.message != null && this.message.remove(value))
       {
@@ -289,7 +290,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutMessage(Message... value)
+    public ServerChannel withoutMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -298,7 +299,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutMessage(Collection<? extends Message> value)
+    public ServerChannel withoutMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -307,12 +308,12 @@ public class ServerChannel
       return this;
    }
 
-   public List<AudioMember> getAudioMember()
+    public List<AudioMember> getAudioMember()
    {
       return this.audioMember != null ? Collections.unmodifiableList(this.audioMember) : Collections.emptyList();
    }
 
-   public ServerChannel withAudioMember(AudioMember value)
+    public ServerChannel withAudioMember(AudioMember value)
    {
       if (this.audioMember == null)
       {
@@ -327,7 +328,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withAudioMember(AudioMember... value)
+    public ServerChannel withAudioMember(AudioMember... value)
    {
       for (final AudioMember item : value)
       {
@@ -336,7 +337,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withAudioMember(Collection<? extends AudioMember> value)
+    public ServerChannel withAudioMember(Collection<? extends AudioMember> value)
    {
       for (final AudioMember item : value)
       {
@@ -345,7 +346,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutAudioMember(AudioMember value)
+    public ServerChannel withoutAudioMember(AudioMember value)
    {
       if (this.audioMember != null && this.audioMember.remove(value))
       {
@@ -355,7 +356,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutAudioMember(AudioMember... value)
+    public ServerChannel withoutAudioMember(AudioMember... value)
    {
       for (final AudioMember item : value)
       {
@@ -364,7 +365,7 @@ public class ServerChannel
       return this;
    }
 
-   public ServerChannel withoutAudioMember(Collection<? extends AudioMember> value)
+    public ServerChannel withoutAudioMember(Collection<? extends AudioMember> value)
    {
       for (final AudioMember item : value)
       {
@@ -373,7 +374,7 @@ public class ServerChannel
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -383,7 +384,7 @@ public class ServerChannel
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -392,24 +393,24 @@ public class ServerChannel
       return this.listeners;
    }
 
-   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners == null) {
-         this.listeners = new PropertyChangeSupport(this);
-      }
-      this.listeners.addPropertyChangeListener(propertyName, listener);
-      return true;
-   }
+    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners == null) {
+            this.listeners = new PropertyChangeSupport(this);
+        }
+        this.listeners.addPropertyChangeListener(propertyName, listener);
+        return true;
+    }
 
-   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners != null) {
-         this.listeners.removePropertyChangeListener(listener);
-      }
-      return true;
-   }
+    public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners != null) {
+            this.listeners.removePropertyChangeListener(listener);
+        }
+        return true;
+    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -419,7 +420,7 @@ public class ServerChannel
       return result.substring(1);
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.setCategories(null);
       this.withoutAudioMember(new ArrayList<>(this.getAudioMember()));
