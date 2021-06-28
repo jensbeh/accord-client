@@ -259,8 +259,6 @@ public class ServerSystemWebSocket extends Endpoint {
                                     builder.getAudioStreamClient().disconnectStream();
 
                                     builder.setAudioStreamClient(null);
-
-
                                 }
                                 // other user disconnects
                                 else {

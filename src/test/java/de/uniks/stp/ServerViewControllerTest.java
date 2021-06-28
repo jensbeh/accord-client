@@ -99,7 +99,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -206,6 +206,13 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("members", members))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
+                        .put("name", "audioChannel")
+                        .put("type", "audio")
+                        .put("privileged", false)
+                        .put("category", "60b77ba0026b3534ca5a61ae")
+                        .put("members", members))
+                .put(new JSONObject()
+                        .put("id", "60b77ba0026423ad521awd2")
                         .put("name", "audioChannel")
                         .put("type", "audio")
                         .put("privileged", false)
@@ -425,11 +432,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
         serverSystemWebSocket.setBuilder(builder);
 
-        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
-        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
-        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
-        privateChatWebSocket.setBuilder(builder);
-
         loginInit(testUserOneName, testUserOnePw);
         builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
 
@@ -468,10 +470,12 @@ public class ServerViewControllerTest extends ApplicationTest {
         }
 
         doubleClickOn("#60b77ba0026b3534ca5a61dd");
+        WaitForAsyncUtils.waitForFxEvents();
 
         String message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         ServerChannel audioChannel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(1);
         Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
@@ -483,22 +487,48 @@ public class ServerViewControllerTest extends ApplicationTest {
         message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
 
-        clickOn("#button_disconnectAudio");
+        doubleClickOn("#60b77ba0026423ad521awd2");
         WaitForAsyncUtils.waitForFxEvents();
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 0);
+        ServerChannel audioChannel2 = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(2);
+
+        message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
+
+        clickOn("#homeButton");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#button_disconnectAudio");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 0);
     }
 }
