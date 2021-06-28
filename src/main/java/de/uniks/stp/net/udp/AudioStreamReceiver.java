@@ -70,7 +70,9 @@ public class AudioStreamReceiver implements Runnable {
 
                     // set receivedData to speaker of the senderName
 //            if (!senderName.equals(builder.getPersonalUser().getName())) {
-                    receiverSpeakerMap.get(senderName).writeData(receivedData);
+                    if (receiverSpeakerMap != null) {
+                        receiverSpeakerMap.get(senderName).writeData(receivedData);
+                    }
 //            }
                 }
             }
