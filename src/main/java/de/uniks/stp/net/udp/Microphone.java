@@ -36,7 +36,9 @@ public class Microphone {
     public void startRecording() {
         try {
             // open microphone line
-            microphone.open(format);
+            if (microphone.getFormat() != format) {
+                microphone.open(format);
+            }
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
