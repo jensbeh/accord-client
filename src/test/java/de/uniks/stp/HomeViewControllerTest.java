@@ -9,6 +9,7 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -268,7 +269,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         loginTestUser("Gustav", "60c8b3fb44453702009c07b3");
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        ListView<User> userList = lookup("#onlineUsers").query();
         ObservableList<User> itemList = userList.getItems();
         String userName = "";
         for (User user : itemList) {
@@ -314,7 +315,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();
@@ -373,7 +374,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        ListView<User> userList = lookup("#onlineUsers").query();
 
         // Use the first two Users in Online-User-List as test Users
         User testUserOne = userList.getItems().get(0);
@@ -392,16 +393,15 @@ public class HomeViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
-
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
 
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183", privateChatCell.getStyle());
+        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
     }
 }

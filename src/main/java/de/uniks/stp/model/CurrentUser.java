@@ -1,37 +1,38 @@
 package de.uniks.stp.model;
+
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.Collection;
-import java.beans.PropertyChangeSupport;
 
-public class CurrentUser
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_USER_KEY = "userKey";
-   public static final String PROPERTY_USER = "user";
-   public static final String PROPERTY_SERVER = "server";
-   public static final String PROPERTY_PASSWORD = "password";
-   public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
-   public static final String PROPERTY_CHANNEL = "channel";
-   public static final String PROPERTY_ID = "id";
-   private String name;
-   private String userKey;
-   private List<User> user;
-   protected PropertyChangeSupport listeners;
-   private List<Server> server;
-   private String password;
-   private List<PrivateChat> privateChat;
-   private List<ServerChannel> channel;
-   private String id;
+public class CurrentUser {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_USER_KEY = "userKey";
+    public static final String PROPERTY_USER = "user";
+    public static final String PROPERTY_SERVER = "server";
+    public static final String PROPERTY_PASSWORD = "password";
+    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+    public static final String PROPERTY_CHANNEL = "channel";
+    public static final String PROPERTY_ID = "id";
+    private String name;
+    private String userKey;
+    private List<User> user;
+    protected PropertyChangeSupport listeners;
+    private List<Server> server;
+    private String password;
+    private List<PrivateChat> privateChat;
+    private List<ServerChannel> channel;
+    private String id;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public CurrentUser setName(String value)
+    public CurrentUser setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -44,12 +45,12 @@ public class CurrentUser
       return this;
    }
 
-   public String getUserKey()
+    public String getUserKey()
    {
       return this.userKey;
    }
 
-   public CurrentUser setUserKey(String value)
+    public CurrentUser setUserKey(String value)
    {
       if (Objects.equals(value, this.userKey))
       {
@@ -62,12 +63,12 @@ public class CurrentUser
       return this;
    }
 
-   public List<User> getUser()
+    public List<User> getUser()
    {
       return this.user != null ? Collections.unmodifiableList(this.user) : Collections.emptyList();
    }
 
-   public CurrentUser withUser(User value)
+    public CurrentUser withUser(User value)
    {
       if (this.user == null)
       {
@@ -82,7 +83,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withUser(User... value)
+    public CurrentUser withUser(User... value)
    {
       for (final User item : value)
       {
@@ -91,7 +92,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withUser(Collection<? extends User> value)
+    public CurrentUser withUser(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -100,7 +101,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutUser(User value)
+    public CurrentUser withoutUser(User value)
    {
       if (this.user != null && this.user.remove(value))
       {
@@ -110,7 +111,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutUser(User... value)
+    public CurrentUser withoutUser(User... value)
    {
       for (final User item : value)
       {
@@ -119,7 +120,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutUser(Collection<? extends User> value)
+    public CurrentUser withoutUser(Collection<? extends User> value)
    {
       for (final User item : value)
       {
@@ -128,12 +129,12 @@ public class CurrentUser
       return this;
    }
 
-   public List<Server> getServer()
+    public List<Server> getServer()
    {
       return this.server != null ? Collections.unmodifiableList(this.server) : Collections.emptyList();
    }
 
-   public CurrentUser withServer(Server value)
+    public CurrentUser withServer(Server value)
    {
       if (this.server == null)
       {
@@ -148,7 +149,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withServer(Server... value)
+    public CurrentUser withServer(Server... value)
    {
       for (final Server item : value)
       {
@@ -157,7 +158,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withServer(Collection<? extends Server> value)
+    public CurrentUser withServer(Collection<? extends Server> value)
    {
       for (final Server item : value)
       {
@@ -166,7 +167,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutServer(Server value)
+    public CurrentUser withoutServer(Server value)
    {
       if (this.server != null && this.server.remove(value))
       {
@@ -176,7 +177,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutServer(Server... value)
+    public CurrentUser withoutServer(Server... value)
    {
       for (final Server item : value)
       {
@@ -185,7 +186,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutServer(Collection<? extends Server> value)
+    public CurrentUser withoutServer(Collection<? extends Server> value)
    {
       for (final Server item : value)
       {
@@ -194,12 +195,12 @@ public class CurrentUser
       return this;
    }
 
-   public String getPassword()
+    public String getPassword()
    {
       return this.password;
    }
 
-   public CurrentUser setPassword(String value)
+    public CurrentUser setPassword(String value)
    {
       if (Objects.equals(value, this.password))
       {
@@ -212,12 +213,12 @@ public class CurrentUser
       return this;
    }
 
-   public List<PrivateChat> getPrivateChat()
+    public List<PrivateChat> getPrivateChat()
    {
       return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
    }
 
-   public CurrentUser withPrivateChat(PrivateChat value)
+    public CurrentUser withPrivateChat(PrivateChat value)
    {
       if (this.privateChat == null)
       {
@@ -232,7 +233,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withPrivateChat(PrivateChat... value)
+    public CurrentUser withPrivateChat(PrivateChat... value)
    {
       for (final PrivateChat item : value)
       {
@@ -241,7 +242,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withPrivateChat(Collection<? extends PrivateChat> value)
+    public CurrentUser withPrivateChat(Collection<? extends PrivateChat> value)
    {
       for (final PrivateChat item : value)
       {
@@ -250,7 +251,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutPrivateChat(PrivateChat value)
+    public CurrentUser withoutPrivateChat(PrivateChat value)
    {
       if (this.privateChat != null && this.privateChat.remove(value))
       {
@@ -260,7 +261,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutPrivateChat(PrivateChat... value)
+    public CurrentUser withoutPrivateChat(PrivateChat... value)
    {
       for (final PrivateChat item : value)
       {
@@ -269,7 +270,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutPrivateChat(Collection<? extends PrivateChat> value)
+    public CurrentUser withoutPrivateChat(Collection<? extends PrivateChat> value)
    {
       for (final PrivateChat item : value)
       {
@@ -278,12 +279,12 @@ public class CurrentUser
       return this;
    }
 
-   public List<ServerChannel> getChannel()
+    public List<ServerChannel> getChannel()
    {
       return this.channel != null ? Collections.unmodifiableList(this.channel) : Collections.emptyList();
    }
 
-   public CurrentUser withChannel(ServerChannel value)
+    public CurrentUser withChannel(ServerChannel value)
    {
       if (this.channel == null)
       {
@@ -298,7 +299,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withChannel(ServerChannel... value)
+    public CurrentUser withChannel(ServerChannel... value)
    {
       for (final ServerChannel item : value)
       {
@@ -307,7 +308,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withChannel(Collection<? extends ServerChannel> value)
+    public CurrentUser withChannel(Collection<? extends ServerChannel> value)
    {
       for (final ServerChannel item : value)
       {
@@ -316,7 +317,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutChannel(ServerChannel value)
+    public CurrentUser withoutChannel(ServerChannel value)
    {
       if (this.channel != null && this.channel.remove(value))
       {
@@ -326,7 +327,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutChannel(ServerChannel... value)
+    public CurrentUser withoutChannel(ServerChannel... value)
    {
       for (final ServerChannel item : value)
       {
@@ -335,7 +336,7 @@ public class CurrentUser
       return this;
    }
 
-   public CurrentUser withoutChannel(Collection<? extends ServerChannel> value)
+    public CurrentUser withoutChannel(Collection<? extends ServerChannel> value)
    {
       for (final ServerChannel item : value)
       {
@@ -344,12 +345,12 @@ public class CurrentUser
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public CurrentUser setId(String value)
+    public CurrentUser setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -362,7 +363,7 @@ public class CurrentUser
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -372,7 +373,7 @@ public class CurrentUser
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -381,7 +382,7 @@ public class CurrentUser
       return this.listeners;
    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -392,7 +393,7 @@ public class CurrentUser
       return result.substring(1);
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.withoutUser(new ArrayList<>(this.getUser()));
       this.withoutServer(new ArrayList<>(this.getServer()));

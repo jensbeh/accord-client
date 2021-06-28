@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
@@ -42,7 +43,7 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
-
+    private HBox root;
     private VBox chatBox;
     private ChatViewController messageViewController;
     private static MenuItem serverSettings;
@@ -129,6 +130,7 @@ public class ServerViewController {
      */
     @SuppressWarnings("unchecked")
     public void startController(ServerReadyCallback serverReadyCallback) {
+        root = (HBox) view.lookup("#root");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         ScrollPane scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
         categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
@@ -232,6 +234,7 @@ public class ServerViewController {
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
             this.chatBox.getChildren().add(root);
+            messageViewController.setTheme();
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
@@ -524,6 +527,7 @@ public class ServerViewController {
             view.setId(categories.getId());
             CategorySubController tempCategorySubController = new CategorySubController(view, builder, this, categories);
             tempCategorySubController.init();
+            tempCategorySubController.setTheme();
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
@@ -557,6 +561,41 @@ public class ServerViewController {
     public void refreshAllChannelLists() {
         for (Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
             entry.getValue().refreshChannelList();
+        }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
+        }
+    }
+
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
         }
     }
 }

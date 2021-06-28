@@ -8,7 +8,7 @@
 
 <VBox prefHeight="161.0" prefWidth="196.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="label_langSelect" layoutX="22.0" style="-fx-font-size: 16;" text="%label.select_language">
+      <Label id="label_themeSelect" layoutX="22.0" style="-fx-font-size: 16;" text="%label.select_theme">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -16,7 +16,7 @@
             <Insets bottom="5.0" />
          </VBox.margin>
       </Label>
-      <ComboBox id="comboBox_langSelect" prefHeight="25.0" prefWidth="137.0" promptText="English" />
+      <ComboBox id="comboBox_themeSelect" prefHeight="25.0" prefWidth="137.0" promptText="Themes" />
    </children>
    <opaqueInsets>
       <Insets />

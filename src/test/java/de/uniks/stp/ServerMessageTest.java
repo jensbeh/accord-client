@@ -330,7 +330,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
-        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channellist").query();
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
         doubleClickOn(channelList.lookup("#" + channel.getId()));
 
         TextField messageField = lookup("#messageTextField").query();
@@ -401,9 +401,9 @@ public class ServerMessageTest extends ApplicationTest {
         privateChatMessageList.getSelectionModel().select(3);
         rightClickOn(privateChatMessageList);
         interact(() -> contextMenu.getItems().get(2).fire());
-        Label msg = lookup("#delete").query();
-        Assert.assertEquals(msg.getText(), "are you sure you want to delete " + "\n" + "the following message:");
-        Button no = lookup("#chooseCancle").query();
+        Label msg = lookup("#deleteWarning").query();
+        Assert.assertEquals(msg.getText(), "Are you sure you want to delete " + "\n" + "the following message:");
+        Button no = lookup("#chooseCancel").query();
         Assert.assertEquals(no.getText(), "NO");
         Button yes = lookup("#chooseDelete").query();
         Assert.assertEquals(yes.getText(), "YES");
@@ -418,7 +418,7 @@ public class ServerMessageTest extends ApplicationTest {
         String fullText = sb.toString();
         fullText = fullText.replace("\n", "");
         Assert.assertEquals(fullText, text);
-        clickOn("#chooseCancle");
+        clickOn("#chooseCancel");
 
         //TODO test delete Message functionality
 

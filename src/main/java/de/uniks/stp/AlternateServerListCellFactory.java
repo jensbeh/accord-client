@@ -31,7 +31,7 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     * determined.
+     *              determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
@@ -47,7 +47,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
             Circle circle = new Circle(34);
             Label serverName = new Label();
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
@@ -67,7 +66,6 @@ public class AlternateServerListCellFactory implements javafx.util.Callback<List
                 serverName.setTextAlignment(TextAlignment.CENTER);
                 serverName.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 serverName.setWrapText(true);
-                cell.setStyle("-fx-background-color: #23272a;");
                 cell.getChildren().addAll(circle, serverName);
             }
             this.setGraphic(cell);

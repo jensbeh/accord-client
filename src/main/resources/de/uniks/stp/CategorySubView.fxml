@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="186.0" spacing="5.0" style="-fx-background-color: #23272a;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox alignment="CENTER_LEFT">
          <children>
@@ -24,10 +25,11 @@
             <Insets left="10.0" />
          </padding>
       </HBox>
-      <ListView id="channellist" maxWidth="170.0" minHeight="50.0" minWidth="170.0" prefHeight="50.0" prefWidth="170.0" style="-fx-background-color: #23272a;" styleClass="category-list-view" stylesheets="@styles/ServerViewStyles.css">
+      <ListView id="channelList" prefHeight="3433.0" prefWidth="174.0" VBox.vgrow="ALWAYS">
          <VBox.margin>
             <Insets bottom="10.0" />
-         </VBox.margin></ListView>
+         </VBox.margin>
+      </ListView>
    </children>
    <padding>
       <Insets right="16.0" top="5.0" />

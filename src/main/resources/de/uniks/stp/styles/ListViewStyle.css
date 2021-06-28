@@ -2,6 +2,7 @@
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
+    -fx-border-color: WHITE;
 }
 
 #privateChatList .list-cell {

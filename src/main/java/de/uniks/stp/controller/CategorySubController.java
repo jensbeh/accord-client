@@ -10,10 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 public class CategorySubController {
     private final ServerViewController serverViewController;
@@ -24,6 +26,7 @@ public class CategorySubController {
     private ListView<ServerChannel> channelList;
     private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
+    private VBox categoryVbox;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -36,8 +39,9 @@ public class CategorySubController {
     public void init() {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
-        channelList = (ListView<ServerChannel>) view.lookup("#channellist");
+        channelList = (ListView<ServerChannel>) view.lookup("#channelList");
         AlternateServerChannelListCellFactory channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
+        AlternateServerChannelListCellFactory.setTheme(builder.getTheme());
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         //PCL
@@ -47,7 +51,6 @@ public class CategorySubController {
         for (ServerChannel channel : category.getChannel()) {
             channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
         }
-
         refreshChannelList();
     }
 
@@ -133,5 +136,23 @@ public class CategorySubController {
         }
 
         Platform.runLater(() -> this.channelList.setItems(FXCollections.observableList(category.getChannel())));
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/CategorySubView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/CategorySubView.css")).toExternalForm());
     }
 }

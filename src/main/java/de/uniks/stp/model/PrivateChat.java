@@ -1,32 +1,33 @@
 package de.uniks.stp.model;
+
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Collections;
 import java.util.Collection;
-import java.beans.PropertyChangeSupport;
 
-public class PrivateChat
-{
-   public static final String PROPERTY_NAME = "name";
-   public static final String PROPERTY_ID = "id";
-   public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
-   public static final String PROPERTY_CURRENT_USER = "currentUser";
-   public static final String PROPERTY_MESSAGE = "message";
-   private String name;
-   private String id;
-   private int unreadMessagesCounter;
-   private CurrentUser currentUser;
-   private List<Message> message;
-   protected PropertyChangeSupport listeners;
+public class PrivateChat {
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
+    public static final String PROPERTY_CURRENT_USER = "currentUser";
+    public static final String PROPERTY_MESSAGE = "message";
+    private String name;
+    private String id;
+    private int unreadMessagesCounter;
+    private CurrentUser currentUser;
+    private List<Message> message;
+    protected PropertyChangeSupport listeners;
 
-   public String getName()
+    public String getName()
    {
       return this.name;
    }
 
-   public PrivateChat setName(String value)
+    public PrivateChat setName(String value)
    {
       if (Objects.equals(value, this.name))
       {
@@ -39,12 +40,12 @@ public class PrivateChat
       return this;
    }
 
-   public String getId()
+    public String getId()
    {
       return this.id;
    }
 
-   public PrivateChat setId(String value)
+    public PrivateChat setId(String value)
    {
       if (Objects.equals(value, this.id))
       {
@@ -57,12 +58,12 @@ public class PrivateChat
       return this;
    }
 
-   public int getUnreadMessagesCounter()
+    public int getUnreadMessagesCounter()
    {
       return this.unreadMessagesCounter;
    }
 
-   public PrivateChat setUnreadMessagesCounter(int value)
+    public PrivateChat setUnreadMessagesCounter(int value)
    {
       if (value == this.unreadMessagesCounter)
       {
@@ -75,12 +76,12 @@ public class PrivateChat
       return this;
    }
 
-   public CurrentUser getCurrentUser()
+    public CurrentUser getCurrentUser()
    {
       return this.currentUser;
    }
 
-   public PrivateChat setCurrentUser(CurrentUser value)
+    public PrivateChat setCurrentUser(CurrentUser value)
    {
       if (this.currentUser == value)
       {
@@ -102,12 +103,12 @@ public class PrivateChat
       return this;
    }
 
-   public List<Message> getMessage()
+    public List<Message> getMessage()
    {
       return this.message != null ? Collections.unmodifiableList(this.message) : Collections.emptyList();
    }
 
-   public PrivateChat withMessage(Message value)
+    public PrivateChat withMessage(Message value)
    {
       if (this.message == null)
       {
@@ -122,7 +123,7 @@ public class PrivateChat
       return this;
    }
 
-   public PrivateChat withMessage(Message... value)
+    public PrivateChat withMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -131,7 +132,7 @@ public class PrivateChat
       return this;
    }
 
-   public PrivateChat withMessage(Collection<? extends Message> value)
+    public PrivateChat withMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -140,7 +141,7 @@ public class PrivateChat
       return this;
    }
 
-   public PrivateChat withoutMessage(Message value)
+    public PrivateChat withoutMessage(Message value)
    {
       if (this.message != null && this.message.remove(value))
       {
@@ -150,7 +151,7 @@ public class PrivateChat
       return this;
    }
 
-   public PrivateChat withoutMessage(Message... value)
+    public PrivateChat withoutMessage(Message... value)
    {
       for (final Message item : value)
       {
@@ -159,7 +160,7 @@ public class PrivateChat
       return this;
    }
 
-   public PrivateChat withoutMessage(Collection<? extends Message> value)
+    public PrivateChat withoutMessage(Collection<? extends Message> value)
    {
       for (final Message item : value)
       {
@@ -168,7 +169,7 @@ public class PrivateChat
       return this;
    }
 
-   public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
       {
@@ -178,7 +179,7 @@ public class PrivateChat
       return false;
    }
 
-   public PropertyChangeSupport listeners()
+    public PropertyChangeSupport listeners()
    {
       if (this.listeners == null)
       {
@@ -187,24 +188,24 @@ public class PrivateChat
       return this.listeners;
    }
 
-   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners == null) {
-         this.listeners = new PropertyChangeSupport(this);
-      }
-      this.listeners.addPropertyChangeListener(propertyName, listener);
-      return true;
-   }
+    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners == null) {
+            this.listeners = new PropertyChangeSupport(this);
+        }
+        this.listeners.addPropertyChangeListener(propertyName, listener);
+        return true;
+    }
 
-   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners != null) {
-         this.listeners.removePropertyChangeListener(listener);
-      }
-      return true;
-   }
+    public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners != null) {
+            this.listeners.removePropertyChangeListener(listener);
+        }
+        return true;
+    }
 
-   @Override
+    @Override
    public String toString()
    {
       final StringBuilder result = new StringBuilder();
@@ -213,7 +214,7 @@ public class PrivateChat
       return result.substring(1);
    }
 
-   public void removeYou()
+    public void removeYou()
    {
       this.setCurrentUser(null);
       this.withoutMessage(new ArrayList<>(this.getMessage()));

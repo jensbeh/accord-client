@@ -12,7 +12,6 @@ import util.ResourceManager;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -40,6 +39,7 @@ public class ModelBuilder {
     private boolean playSound;
     private boolean doNotDisturb;
     private boolean showNotifications;
+    private String theme;
     private Clip clip;
 
     private AudioStreamClient audioStreamClient;
@@ -194,7 +194,7 @@ public class ModelBuilder {
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
             settings.put("playSound", playSound);
-
+            settings.put("theme", theme);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -210,6 +210,7 @@ public class ModelBuilder {
                 doNotDisturb = false;
                 showNotifications = true;
                 playSound = true;
+                theme = "Dark";
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -217,7 +218,7 @@ public class ModelBuilder {
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");
             playSound = (boolean) parsedSettings.get("playSound");
-
+            theme = (String) parsedSettings.get("theme");
             reader.close();
 
         } catch (Exception e) {
@@ -256,5 +257,13 @@ public class ModelBuilder {
 
     public AudioStreamClient getAudioStreamClient() {
         return this.audioStreamClient;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 }

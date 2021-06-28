@@ -2,13 +2,11 @@ package de.uniks.stp.controller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.subcontroller.CustomNotificationsController;
-import de.uniks.stp.controller.subcontroller.DoNotDisturbController;
-import de.uniks.stp.controller.subcontroller.LanguageController;
-import de.uniks.stp.controller.subcontroller.SubSetting;
+import de.uniks.stp.controller.subcontroller.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
@@ -24,10 +22,12 @@ import java.util.*;
 public class SettingsController {
     private final ModelBuilder builder;
     private final Parent view;
+    private Pane root;
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
     private static Button languageButton;
+    private Button themeButton;
 
     private SubSetting subController;
 
@@ -52,7 +52,7 @@ public class SettingsController {
                     prop.store(op, null);
                 }
             } catch (Exception e) {
-                System.out.println(e+"");
+                System.out.println(e + "");
                 e.printStackTrace();
             }
         }
@@ -67,6 +67,7 @@ public class SettingsController {
 
     public void init() {
         //init view
+        root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");
         this.settingsItems.getChildren().clear();
         this.settingsContainer = (VBox) view.lookup("#settingsContainer");
@@ -77,6 +78,11 @@ public class SettingsController {
         // add categories
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
+
+        themeButton = addItem("Theme");
+        themeButton.setText("Dark/Bright - Mode");
+        addAction(themeButton, "Theme");
+
         if (builder.getPersonalUser() != null) {
             Button doNotDisturbButton = addItem("DnD");
             doNotDisturbButton.setText("Do Not Disturb");
@@ -156,9 +162,14 @@ public class SettingsController {
                     subController = new DoNotDisturbController(settingsField, builder);
                     subController.init();
                     break;
+                case "Theme":
+                    subController = new ThemeController(settingsField, builder);
+                    subController.init();
+                    break;
                 case "CustomNotifications":
                     subController = new CustomNotificationsController(settingsField, builder);
                     subController.init();
+                    break;
             }
 
             this.settingsContainer.getChildren().add(settingsField);
@@ -174,6 +185,24 @@ public class SettingsController {
     public static void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/SettingsView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/SettingsView.css")).toExternalForm());
     }
 }
 

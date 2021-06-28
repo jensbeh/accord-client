@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" style="-fx-background-color: grey;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <StackPane id="stack" prefHeight="2074.0" prefWidth="200.0">
          <children>
@@ -22,19 +22,19 @@
                      </children>
                   </HBox>
                </children></VBox>
-            <VBox id="container" prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: grey;">
+            <VBox id="container" prefHeight="200.0" prefWidth="400.0">
                <children>
-                  <ListView fx:id="messageListView" prefHeight="200.0" prefWidth="390.0" style="-fx-background-color: grey;" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="messageListView" prefHeight="200.0" prefWidth="390.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </children>
       </StackPane>
-      <HBox id="container" alignment="CENTER_LEFT" prefHeight="1.0" prefWidth="3469.0" style="-fx-background-color: white;" />
-      <HBox id="messageBox" alignment="CENTER" maxHeight="35.0" prefHeight="35.0" prefWidth="400.0" spacing="20.0" style="-fx-background-color: grey;">
+      <HBox id="container" alignment="CENTER_LEFT" prefHeight="1.0" prefWidth="3469.0" />
+      <HBox id="messageBox" alignment="CENTER" maxHeight="35.0" prefHeight="35.0" prefWidth="400.0" spacing="20.0">
          <children>
             <HBox prefHeight="35.0" prefWidth="4.0" />
-            <TextField fx:id="messageTextField" style="-fx-border-color: pink; -fx-background-radius: 6; -fx-border-radius: 6;" />
-            <Button id="emojiButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0" style="-fx-background-radius: 20; -fx-background-color: grey;">
+            <TextField fx:id="messageTextField" style="-fx-background-radius: 6; -fx-border-radius: 6;" />
+            <Button id="emojiButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0" style="-fx-background-radius: 20;">
                <graphic>
                   <ImageView id="imageView" fitHeight="19.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -43,7 +43,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="sendButton" mnemonicParsing="false" style="-fx-background-radius: 6; -fx-background-color: ff9999;" text="%button.send" textFill="WHITE" />
+            <Button id="sendButton" fx:id="sendButton" mnemonicParsing="false" text="%button.send" textFill="WHITE" />
             <HBox prefHeight="35.0" prefWidth="4.0" />
          </children>
       </HBox>

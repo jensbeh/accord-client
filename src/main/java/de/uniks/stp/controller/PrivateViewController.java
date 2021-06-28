@@ -19,8 +19,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import util.ResourceManager;
@@ -40,6 +40,7 @@ public class PrivateViewController {
 
     private final Parent view;
     private final ModelBuilder builder;
+    private HBox root;
     private VBox currentUserBox;
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
@@ -64,15 +65,17 @@ public class PrivateViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
-        ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        root = (HBox) view.lookup("#root");
+        //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        currentUserBox = (VBox) view.lookup("#currentUserBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
+        AlternatePrivateChatListCellFactory.setTheme(builder.getTheme());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
-        onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
+        onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -175,6 +178,7 @@ public class PrivateViewController {
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
+            messageViewController.setTheme();
             this.chatBox.getChildren().add(root);
 
             if (PrivateViewController.getSelectedChat() != null) {
@@ -278,5 +282,29 @@ public class PrivateViewController {
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
         ChatViewController.onLanguageChanged();
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
     }
 }

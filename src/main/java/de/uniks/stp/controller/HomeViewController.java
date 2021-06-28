@@ -35,6 +35,7 @@ import java.util.ResourceBundle;
 public class HomeViewController {
     private final RestClient restClient;
     private HBox root;
+    private HBox homeView;
     private ScrollPane scrollPaneServerBox;
     private final Parent view;
     private ListView<Server> serverList;
@@ -63,6 +64,7 @@ public class HomeViewController {
     public void init() {
         builder.loadSettings();
         // Load all view references
+        homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -97,6 +99,7 @@ public class HomeViewController {
                         // TODO start here homeView -> from loginView this!
                         System.out.println("loaded Server " + server.getName());
                     });
+                    serverController.get(server).setTheme();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -159,6 +162,7 @@ public class HomeViewController {
                 privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("PrivateView.fxml")), StageManager.getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
+                privateViewController.setTheme();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
             } else {
@@ -235,6 +239,7 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+                            serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -265,6 +270,7 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+                            serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -290,6 +296,7 @@ public class HomeViewController {
                 builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
                 updateServerListColor();
                 showServerView();
+                serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
     }
@@ -465,5 +472,39 @@ public class HomeViewController {
         CreateServerController.onLanguageChanged();
         PrivateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();
+    }
+
+    public PrivateViewController getPrivateViewController() {
+        return privateViewController;
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        homeView.getStylesheets().clear();
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/HomeView.css")).toExternalForm());
+        privateViewController.setTheme();
+        if (builder.getCurrentServer() != null) {
+            if (serverController.size() != 0) {
+                serverController.get(builder.getCurrentServer()).setTheme();
+            }
+        }
+    }
+
+    private void setDarkMode() {
+        homeView.getStylesheets().clear();
+        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/HomeView.css")).toExternalForm());
+        privateViewController.setTheme();
+        if (builder.getCurrentServer() != null) {
+            if (serverController.size() != 0) {
+                serverController.get(builder.getCurrentServer()).setTheme();
+            }
+        }
     }
 }

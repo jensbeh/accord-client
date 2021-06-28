@@ -1,0 +1,43 @@
+.scroll-pane {
+    -fx-background-color:transparent;
+}
+
+#serverList .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #202225;
+}
+
+#serverList  {
+    -fx-border-color: #202225;
+    -fx-background-insets: 0 ;
+    -fx-background-color: #202225;
+    -fx-padding: 1;
+}
+
+#serverList .list-cell {
+    -fx-border-color: #202225;
+    -fx-background-insets: 0 ;
+    -fx-background-color: #202225;
+    -fx-padding: 1;
+}
+
+#settingsButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#logoutButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#root {
+    -fx-background-color: #36393f;
+    -fx-border-color: #36393f ;
+}
+
+#homeViewVBox {
+    -fx-background-color: #202225;
+}

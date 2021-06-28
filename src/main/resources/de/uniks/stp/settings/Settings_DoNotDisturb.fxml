@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_RIGHT" prefHeight="161.0" prefWidth="196.0" spacing="5.0" style="-fx-background-color: #737373;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="161.0" prefWidth="196.0" spacing="5.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <CheckBox id="doNotDisturbSelected" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Do not disturb :" textFill="WHITE">
          <font>

@@ -1,0 +1,98 @@
+#root {
+    -fx-background-color: WHITE;
+}
+
+#editButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#abortButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#deleteMsgScroll {
+    -fx-background-color: WHITE;
+}
+
+#deleteWarning {
+    -fx-text-fill: BLACK;
+}
+
+#deleteMsg .color{
+    -fx-text-fill: BLACK;
+    -fx-background-color: BLACK;
+}
+
+#chooseDelete {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}
+
+#chooseCancel {
+    -fx-background-radius: 80;
+    -fx-background-color: #717177;
+}
+
+#messageListView #messageListView {
+    -fx-background-color: WHITE;
+}
+
+#messageListView .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: WHITE;
+}
+
+#messageListView .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: WHITE;
+}
+
+#messageListView  {
+    -fx-border-color: WHITE;
+    -fx-background-insets: 0 ;
+    -fx-background-color: WHITE;
+    -fx-padding: 1;
+}
+
+#messageListView .list-cell {
+    -fx-background-color: WHITE;
+}
+
+#messageListView .list-cell .messageLabelTo {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 4;
+}
+
+#messageListView .list-cell #userNameLabel {
+    -fx-text-fill: BLACK;
+}
+
+#messageListView .list-cell .messageLabelFrom {
+    -fx-background-color: #d4d4d4;
+    -fx-background-radius: 4;
+}
+
+#messageBox {
+    -fx-background-color: WHITE;
+}
+
+#emojiButton {
+    -fx-background-color: WHITE;
+}
+
+#messageTextField {
+    -fx-border-color: #7da6df;
+}
+
+#sendButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+}

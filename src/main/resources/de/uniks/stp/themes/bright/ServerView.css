@@ -1,0 +1,152 @@
+#root {
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+}
+
+#serverMenuButton {
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+    -fx-text-fill: BLACK;
+}
+
+#serverMenuButton .menu-item .label {
+    -fx-text-fill: BLACK;
+}
+
+#serverMenuButton .menu-item:focused {
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: BLACK;
+}
+
+#serverMenuButton .context-menu {
+    -fx-background-color: #f2f3f5;
+}
+
+#userName {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #f2f3f5;
+}
+
+#userBox {
+    -fx-background-color: #f2f3f5;
+}
+
+#ServerSettings {
+    -fx-text-fill: BLACK;
+}
+
+#InviteUsers {
+    -fx-text-fill: BLACK;
+}
+
+#channelBox {
+    -fx-background-color: #f2f3f5;
+}
+
+#chatBox {
+    -fx-background-color: WHITE;
+}
+
+#categoryVbox {
+    -fx-background-color: #f2f3f5;
+}
+
+#scrollPaneUserBox {
+    -fx-background-color: #f2f3f5;
+    -fx-background: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+}
+
+#currentUserBox {
+    -fx-background-color: #f2f3f5;
+}
+
+#onlineUsers {
+    -fx-background-color: #f2f3f5;
+}
+
+#onlineUsers {
+    -fx-background-color: #f2f3f5;
+}
+
+#onlineUsers .list-cell {
+    -fx-background-color: #f2f3f5;
+}
+
+#onlineUsers .cell {
+    -fx-background-color: #f2f3f5;
+}
+
+#onlineUsers .cell .label {
+    -fx-text-fill: BLACK;
+}
+
+#offlineUsers {
+    -fx-background-color: #f2f3f5;
+}
+
+#offlineUsers .list-cell {
+    -fx-background-color: #f2f3f5;
+}
+
+#offlineUsers .cell {
+    -fx-background-color: #f2f3f5;
+}
+
+#offlineUsers .cell .label {
+    -fx-text-fill: BLACK;
+}
+
+
+/* Credits: https://blog.ngopal.com.np/2012/07/11/customize-scrollbar-via-css/ */
+
+#scrollPaneCategories .scroll-bar:horizontal .track,
+#scrollPaneCategories .scroll-bar:vertical .track {
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+    -fx-background-radius: 0em;
+    -fx-border-radius: 2em;
+}
+
+#scrollPaneCategories .scroll-bar:horizontal .increment-button,
+#scrollPaneCategories .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 0 10 0;
+
+}
+
+#scrollPaneCategories .scroll-bar:vertical .increment-button,
+#scrollPaneCategories .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+
+}
+
+#scrollPaneCategories .scroll-bar .increment-arrow,
+#scrollPaneCategories .scroll-bar .decrement-arrow {
+    -fx-padding: 0;
+}
+
+#scrollPaneCategories .scroll-bar:horizontal .thumb,
+#scrollPaneCategories .scroll-bar:vertical .thumb {
+    -fx-background-color: #626262;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color:  #f2f3f5;
+}
+
+.list-view .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color:  #f2f3f5;
+}
