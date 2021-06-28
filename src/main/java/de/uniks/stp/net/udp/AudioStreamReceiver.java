@@ -83,12 +83,6 @@ public class AudioStreamReceiver implements Runnable {
                 }
             }
         }
-        // stop speaker from all connectedUser
-        for (AudioMember audioMember : connectedUser) {
-            if (receiverSpeakerMap != null) {
-                receiverSpeakerMap.get(audioMember.getName()).stopPlayback();
-            }
-        }
 
         socket.close();
         stopped = true;
