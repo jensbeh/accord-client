@@ -16,7 +16,7 @@ public class AudioStreamReceiver implements Runnable {
 
     private final ModelBuilder builder;
     private final ServerChannel currentAudioChannel;
-    private final DatagramSocket socket;
+    private DatagramSocket socket;
     private boolean receiverActive;
     private byte[] data;
     private ArrayList<AudioMember> connectedUser;
@@ -40,39 +40,46 @@ public class AudioStreamReceiver implements Runnable {
         receiverActive = true;
 
         while (receiverActive) {
-            DatagramPacket packet = new DatagramPacket(data, data.length);
+            if (!socket.isClosed()) {
 
-            try {
-                socket.receive(packet);
-                data = packet.getData(); // important to set because of testing - there is no manipulation of packet in test
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                DatagramPacket packet = new DatagramPacket(data, data.length);
 
-            byte[] receivedJson = new byte[255];
-            byte[] receivedData = new byte[1024];
-
-            // get all information from data
-            for (int i = 0; i < data.length; i++) {
-                if (i < 255) {
-                    Arrays.fill(receivedJson, i, i + 1, data[i]);
-                } else {
-                    Arrays.fill(receivedData, i - 255, i - 255 + 1, data[i]);
+                try {
+                    socket.receive(packet);
+                    data = packet.getData(); // important to set because of testing - there is no manipulation of packet in test
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
 
-            JSONObject jsonData = new JSONObject(new String(receivedJson));
-            String senderName = jsonData.getString("name");
+                byte[] receivedJson = new byte[255];
+                byte[] receivedData = new byte[1024];
 
-            // set receivedData to speaker of the senderName
-            if (!senderName.equals(builder.getPersonalUser().getName())) {
-                receiverSpeakerMap.get(senderName).writeData(receivedData);
+                // get all information from data
+                for (int i = 0; i < data.length; i++) {
+                    if (i < 255) {
+                        Arrays.fill(receivedJson, i, i + 1, data[i]);
+                    } else {
+                        Arrays.fill(receivedData, i - 255, i - 255 + 1, data[i]);
+                    }
+                }
+
+                String jsonStr = new String(receivedJson);
+                if (jsonStr.contains("{")) {
+                    JSONObject jsonData = new JSONObject(jsonStr);
+                    String senderName = jsonData.getString("name");
+
+                    // set receivedData to speaker of the senderName
+//            if (!senderName.equals(builder.getPersonalUser().getName())) {
+                    receiverSpeakerMap.get(senderName).writeData(receivedData);
+//            }
+                }
             }
         }
         // stop speaker from all connectedUser
         for (AudioMember audioMember : connectedUser) {
             receiverSpeakerMap.get(audioMember.getName()).stopPlayback();
         }
+
         socket.close();
     }
 
@@ -87,7 +94,18 @@ public class AudioStreamReceiver implements Runnable {
         receiverSpeakerMap.get(newMember.getName()).startPlayback();
     }
 
+    /**
+     * the method stops the speaker for the user which disconnects and delete the user
+     */
+    public void removeConnectedUser(AudioMember removeMember) {
+        connectedUser.remove(removeMember);
+
+        receiverSpeakerMap.get(removeMember.getName()).stopPlayback();
+        receiverSpeakerMap.remove(removeMember.getName());
+    }
+
     public void stop() {
         receiverActive = false;
     }
+
 }

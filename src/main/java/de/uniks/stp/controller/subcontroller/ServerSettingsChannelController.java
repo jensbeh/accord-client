@@ -238,7 +238,7 @@ public class ServerSettingsChannelController extends SubSetting {
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
                     System.out.println("--> SUCCESS: channel created");
-                    createChannelTextField.setText("");
+                    createChannelTextField.setText(""); // TODO maybe Platform.runlater?
                 } else {
                     System.out.println(status);
                     System.out.println(body.getObject().getString("message"));

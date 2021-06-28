@@ -60,6 +60,7 @@ public class ServerViewController {
     private ServerChatWebSocket chatWebSocketClient;
     private ServerChannel currentAudioChannel;
     private VBox audioConnectionBox;
+    private Button disconnectAudioButton;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -146,7 +147,6 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
-        currentAudioChannel = null;
 
         loadServerInfo(status -> {
             if (status.equals("success")) {
@@ -179,6 +179,8 @@ public class ServerViewController {
 
         if (builder.getCurrentAudioChannel() != null) {
             showAudioConnectedBox();
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
         }
 
         Platform.runLater(this::generateCategoriesChannelViews);
@@ -271,21 +273,46 @@ public class ServerViewController {
      * Display AudioConnectedBox
      */
     public void showAudioConnectedBox() {
-        try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
-            AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
-            audioConnectedBoxController.init();
-            audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
-            audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+        if (builder.getCurrentAudioChannel() != null) {
+            try {
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+                audioConnectedBoxController.init();
+                audioConnectedBoxController.setServerName(builder.getCurrentServer().getName());
+                audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
 
-            Platform.runLater(() -> {
-                this.audioConnectionBox.getChildren().clear();
-                this.audioConnectionBox.getChildren().add(root);
-            });
+                Platform.runLater(() -> {
+                    this.audioConnectionBox.getChildren().clear();
+                    this.audioConnectionBox.getChildren().add(root);
+                    disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
+                    disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                });
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
         }
+    }
+
+    /**
+     * when audio disconnect button is clicked
+     */
+    private void onAudioDisconnectClicked(ActionEvent actionEvent) {
+        builder.getRestClient().leaveVoiceChannel(builder.getCurrentServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                System.out.println(body);
+            }
+
+            this.disconnectAudioButton.setOnAction(null);
+        });
+
+        Platform.runLater(() -> {
+            this.audioConnectionBox.getChildren().clear();
+        });
     }
 
     /**

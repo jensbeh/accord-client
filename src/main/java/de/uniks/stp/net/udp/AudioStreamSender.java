@@ -73,7 +73,9 @@ public class AudioStreamSender implements Runnable {
 
             try {
                 // send to address
-                socket.send(packet);
+                if (!socket.isClosed()) {
+                    socket.send(packet);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -81,7 +83,6 @@ public class AudioStreamSender implements Runnable {
 
         // stop if senderActive is set to false in stop method in this class
         microphone.stopRecording();
-        socket.close();
     }
 
     public void stop() {

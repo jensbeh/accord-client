@@ -35,7 +35,7 @@ public class AudioStreamClient {
 
             // Create the socket on which to send data.
             try {
-                if (socket == null) {
+                if (socket == null || socket.isClosed()) {
                     socket = new DatagramSocket();
                 }
             } catch (IOException e) {
@@ -68,22 +68,23 @@ public class AudioStreamClient {
     /**
      * stops the threads with receiver and sender
      */
-    public void stopStream() {
-        receiverThread.stop(); //TODO should be stop safer!
-        senderThread.stop(); //TODO should be stop safer!
-    }
-
     public void disconnectStream() {
-        builder.setCurrentAudioChannel(null);
-
-        stopStream();
+        sender.stop();
+        receiver.stop();
     }
 
     /**
      * set new audioReceiverUser for new Speaker
      */
-    public void setNewAudioMemberReceiver(AudioMember audioMemberPersonalUser) {
-        receiver.newConnectedUser(audioMemberPersonalUser);
+    public void setNewAudioMemberReceiver(AudioMember audioMember) {
+        receiver.newConnectedUser(audioMember);
+    }
+
+    /**
+     * removes audioReceiverUser with Speaker
+     */
+    public void removeAudioMemberReceiver(AudioMember audioMember) {
+        receiver.removeConnectedUser(audioMember);
     }
 
     public static void setSocket(DatagramSocket newSocket) {

@@ -173,6 +173,11 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
+    public void leaveVoiceChannel(String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_LEAVE).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
     public void updateMessage(String serverId, String catId, String channelId, String msgId, String text, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("text", text);
         String body = JSONObject.valueToString(jsonObj);

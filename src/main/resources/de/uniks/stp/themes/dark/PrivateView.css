@@ -144,3 +144,8 @@
     -fx-text-fill: WHITE;
     -fx-background-color: #2f3136;
 }
+
+#button_disconnectAudio {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}

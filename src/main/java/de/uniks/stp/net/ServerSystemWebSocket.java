@@ -122,7 +122,7 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        if (!userAction.equals("audioJoined") && !userAction.equals("messageUpdated")) {
+        if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
         }
@@ -173,6 +173,9 @@ public class ServerSystemWebSocket extends Endpoint {
         // audioChannel
         if (userAction.equals("audioJoined")) {
             joinVoiceChannel(jsonData);
+        }
+        if (userAction.equals("audioLeft")) {
+            leaveVoiceChannel(jsonData);
         }
 
         if (userAction.equals("messageUpdated")) {
@@ -233,6 +236,42 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     /**
+     * refreshes the current category view and stops the udp session
+     */
+    private void leaveVoiceChannel(JsonObject jsonData) {
+        String userId = jsonData.getString("id");
+        for (Categories category : this.serverViewController.getServer().getCategories()) {
+            if (jsonData.getString("category").equals(category.getId())) {
+                for (ServerChannel serverChannel : category.getChannel()) {
+                    if (jsonData.getString("channel").equals(serverChannel.getId())) {
+
+                        // which audioMember disconnects?
+                        for (AudioMember audioMember : serverChannel.getAudioMember()) {
+                            if (audioMember.getId().equals(userId)) {
+                                serverChannel.withoutAudioMember(audioMember);
+
+                                // personalUser disconnects
+                                if (userId.equals(builder.getPersonalUser().getId())) {
+                                    builder.setCurrentAudioChannel(null);
+                                    builder.getAudioStreamClient().disconnectStream();
+
+                                    builder.setAudioStreamClient(null);
+                                }
+                                // other user disconnects
+                                else {
+                                    builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
+                                }
+                                break;
+                            }
+                        }
+                        serverViewController.refreshAllChannelLists();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * set new message Text and refresh the ListView
      */
     private void updateMessage(JsonObject jsonData) {
@@ -260,11 +299,21 @@ public class ServerSystemWebSocket extends Endpoint {
      * update server
      */
     private void updateServer(String serverName) {
+        boolean audioIsOpen = false;
+        if (builder.getCurrentAudioChannel() != null && serverViewController.getServer().getName().equals(builder.getCurrentAudioChannel().getCategories().getServer().getName())) {
+            audioIsOpen = true;
+        }
+
         serverViewController.getServer().setName(serverName);
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             Platform.runLater(serverViewController::changeServerName);
         }
         serverViewController.getHomeViewController().showServerUpdate();
+
+        if (audioIsOpen) {
+            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
+            serverViewController.showAudioConnectedBox();
+        }
     }
 
     /**
@@ -487,6 +536,7 @@ public class ServerSystemWebSocket extends Endpoint {
         String memberId;
         boolean hasChannel = false;
         ArrayList<User> member = new ArrayList<>();
+
         for (int j = 0; j < jsonArray.size(); j++) {
             memberId = jsonArray.getString(j);
             for (User user : serverViewController.getServer().getUser()) {
@@ -521,6 +571,11 @@ public class ServerSystemWebSocket extends Endpoint {
                     }
                 }
             }
+        }
+
+        if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
+            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
+            serverViewController.showAudioConnectedBox();
         }
     }
 
