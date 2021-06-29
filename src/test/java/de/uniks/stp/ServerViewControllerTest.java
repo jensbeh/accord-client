@@ -196,6 +196,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     public void mockGetChannels() {
         JSONArray members = new JSONArray();
+        JSONArray audioMembers = new JSONArray();
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
                 .put("id", "60b77ba0026b3534ca5a61af")
@@ -203,21 +204,24 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("type", "text")
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members))
+                .put("members", members)
+                .put("audioMembers", audioMembers))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
                         .put("name", "audioChannel")
                         .put("type", "audio")
                         .put("privileged", false)
                         .put("category", "60b77ba0026b3534ca5a61ae")
-                        .put("members", members))
+                        .put("members", members)
+                        .put("audioMembers", audioMembers))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026423ad521awd2")
                         .put("name", "audioChannel")
                         .put("type", "audio")
                         .put("privileged", false)
                         .put("category", "60b77ba0026b3534ca5a61ae")
-                        .put("members", members));
+                        .put("members", members)
+                        .put("audioMembers", audioMembers));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")

@@ -199,6 +199,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
     public void mockGetChannels() {
         JSONArray members = new JSONArray();
+        JSONArray audioMembers = new JSONArray();
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
                 .put("id", "60b77ba0026b3534ca5a61af")
@@ -206,7 +207,8 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 .put("type", "text")
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members));
+                .put("members", members)
+                .put("audioMembers", audioMembers));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
