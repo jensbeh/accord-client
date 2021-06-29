@@ -379,7 +379,7 @@ public class LoginScreenControllerTest extends ApplicationTest {
     @Test
     public void rememberMeTest() {
         loginInit(true);
-
+        
         Assert.assertEquals("Accord - Main", stage.getTitle());
         WaitForAsyncUtils.waitForFxEvents();
 
