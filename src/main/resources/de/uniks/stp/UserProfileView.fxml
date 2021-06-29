@@ -20,7 +20,7 @@
             </Label>
          </children>
       </HBox>
-      <HBox alignment="CENTER" minHeight="45.0" prefHeight="45.0" prefWidth="180.0" spacing="10.0">
+      <HBox id="headset" alignment="CENTER" minHeight="45.0" prefHeight="45.0" prefWidth="180.0" spacing="10.0">
          <children>
             <StackPane>
                <children>

@@ -149,3 +149,13 @@
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
 }
+
+#mute_headphone {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#mute_microphone {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
