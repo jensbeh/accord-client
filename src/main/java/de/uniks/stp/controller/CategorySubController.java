@@ -146,7 +146,7 @@ public class CategorySubController {
             int AUDIO_CHANNEL_HEIGHT = 0;
             for (ServerChannel audioChannel : category.getChannel()) {
                 if (audioChannel.getAudioMember().size() > 0) {
-                    AUDIO_CHANNEL_HEIGHT = 25 * audioChannel.getAudioMember().size();
+                    AUDIO_CHANNEL_HEIGHT = AUDIO_CHANNEL_HEIGHT + 25 * audioChannel.getAudioMember().size();
                 }
             }
             this.channelList.setPrefHeight(10 + category.getChannel().size() * CHANNEL_HEIGHT + AUDIO_CHANNEL_HEIGHT);

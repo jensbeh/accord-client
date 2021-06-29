@@ -447,9 +447,20 @@ public class ServerViewController {
                     channel.setPrivilege(boolPrivilege);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
+                    JSONArray jsonAudioMembers = json.getJSONArray("audioMembers");
                     JSONArray jsonArray = json.getJSONArray("members");
-                    String memberId;
 
+                    for (int j = 0; j < jsonAudioMembers.length(); j++) {
+                        String AudioMemberId = jsonAudioMembers.getString(j);
+                        for (User user : this.server.getUser()) {
+                            if (user.getId().equals(AudioMemberId)) {
+                                AudioMember audioMemberUser = new AudioMember().setId(AudioMemberId).setName(user.getName());
+                                channel.withAudioMember(audioMemberUser);
+                            }
+                        }
+                    }
+
+                    String memberId;
                     for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : this.server.getUser()) {
@@ -458,13 +469,15 @@ public class ServerViewController {
                             }
                         }
                     }
-                    loadChannelMessages(channel, status1 -> {
-                        loadedChannel++;
-                        if (loadedChannel == data.length()) {
-                            loadedChannel = 0;
-                            channelLoadedCallback.onSuccess(status1);
-                        }
-                    });
+                    if (channel.getType().equals("text")) {
+                        loadChannelMessages(channel, status1 -> {
+                            loadedChannel++;
+                            if (loadedChannel == data.length()) {
+                                loadedChannel = 0;
+                                channelLoadedCallback.onSuccess(status1);
+                            }
+                        });
+                    }
                 }
             }
         });
