@@ -398,7 +398,6 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the Home Button
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
-        System.out.println(builder.getPersonalUser().getName() + " : " + builder.getPersonalUser().getUserKey());
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
