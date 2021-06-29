@@ -252,7 +252,7 @@ public class ServerViewController {
     }
 
     /**
-     * Display Current User
+     * Display Current User and the headsetButtons
      */
     private void showCurrentUser() {
         try {
@@ -269,28 +269,46 @@ public class ServerViewController {
             microphoneButton = (Button) view.lookup("#mute_microphone");
             headphoneLabel = (Label) view.lookup("#unmute_headphone");
             microphoneLabel = (Label) view.lookup("#unmute_microphone");
+            //load headset settings
             microphoneLabel.setVisible(!builder.getMuteMicrophone());
+            headphoneLabel.setVisible(!builder.getMuteHeadphones());
             headphoneButton.setOnAction(this::muteHeadphone);
             microphoneButton.setOnAction(this::muteMicrophone);
+            //unMute microphone
             microphoneLabel.setOnMouseClicked(event -> {
                 microphoneLabel.setVisible(false);
                 builder.muteMicrophone(true);
+                if (!builder.getMuteHeadphones()) {
+                    builder.muteHeadphones(true);
+                    headphoneLabel.setVisible(false);
+                }
+            });
+            //unMute headphone
+            headphoneLabel.setOnMouseClicked(event -> {
+                headphoneLabel.setVisible(false);
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+                builder.muteHeadphones(true);
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+    /**
+     * change microphone setting
+     */
     private void muteMicrophone(ActionEvent actionEvent) {
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }
-
+    /**
+     * change headphone setting
+     */
     private void muteHeadphone(ActionEvent actionEvent) {
         headphoneLabel.setVisible(true);
-        headphoneLabel.setOnMouseClicked(event -> {
-            headphoneLabel.setVisible(false);
-        });
+        microphoneLabel.setVisible(true);
+        builder.muteHeadphones(false);
+        builder.muteMicrophone(false);
     }
 
     /**
