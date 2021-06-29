@@ -39,7 +39,10 @@
          <children>
             <VBox id="box" spacing="8.0">
                <children>
-                  <VBox id="currentUserBox" alignment="CENTER" prefHeight="100.0" prefWidth="185.0" />
+                  <VBox id="currentUserBox" alignment="CENTER" prefHeight="100.0" prefWidth="180.0">
+                     <children>
+                        <fx:include source="UserProfileView.fxml" />
+                     </children></VBox>
                   <Line startX="-185.0" stroke="#9e9e9e" />
                </children>
             </VBox>
