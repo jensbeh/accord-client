@@ -314,9 +314,13 @@ public class CreateServerControllerTest extends ApplicationTest {
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         TabPane tapPane = lookup("#tabView").query();
-        tapPane.getSelectionModel().select( tapPane.getTabs().get(1));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(0));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         Label errorLabel = lookup("#join_errorLabel").query();
-        clickOn("#joinServer");
+        //clickOn("#joinServer");
+        clickOn("#inviteLink");
+        write("\n");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Insert invite link first", errorLabel.getText());
     }
@@ -331,7 +335,9 @@ public class CreateServerControllerTest extends ApplicationTest {
         TextField serverName = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
         serverName.setText("TestServer Team Bit Shift");
-        clickOn(createServer);
+        //clickOn(createServer);
+        clickOn(serverName);
+        write("\n");
         WaitForAsyncUtils.waitForFxEvents();
 
         MenuButton serverNameText = lookup("#serverMenuButton").query();

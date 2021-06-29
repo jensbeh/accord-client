@@ -2,14 +2,18 @@ package de.uniks.stp.controller.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -61,10 +65,32 @@ public class CreateServerController {
         tapPane = (TabPane) view.lookup("#tabView");
         create_tab = tapPane.getTabs().get(0);
         join_tab = tapPane.getTabs().get(1);
+        create_tab.setOnSelectionChanged(this::changeEnter);
+        tapPane.setOnKeyReleased(key -> {
+            if (key.getCode() == KeyCode.ENTER) {
+                createServer.fire();
+            }
+        });
         try {
             load_tab_content();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void changeEnter(Event event) {
+        if (tapPane.getTabs().get(0).isSelected()) {
+            tapPane.setOnKeyReleased(key -> {
+                if (key.getCode() == KeyCode.ENTER) {
+                    createServer.fire();
+                }
+            });
+        } else {
+            tapPane.setOnKeyReleased(key -> {
+                if (key.getCode() == KeyCode.ENTER) {
+                    joinServer.fire();
+                }
+            });
         }
     }
 
@@ -134,10 +160,10 @@ public class CreateServerController {
             serverName.setText(lang.getString("textField.server_name"));
 
         if (error != null && !error.equals("")) {
-            if(last_error_type.equals("join")){
+            if (last_error_type.equals("join")) {
                 join_errorLabel.setText(lang.getString(error));
             }
-            if(last_error_type.equals("create")){
+            if (last_error_type.equals("create")) {
                 create_errorLabel.setText(lang.getString(error));
             }
         }
