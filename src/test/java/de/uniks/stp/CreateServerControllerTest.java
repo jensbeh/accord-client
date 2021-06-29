@@ -366,7 +366,7 @@ public class CreateServerControllerTest extends ApplicationTest {
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         TabPane tapPane = lookup("#tabView").query();
-        tapPane.getSelectionModel().select( tapPane.getTabs().get(1));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         TextField invLink = lookup("#inviteLink").query();
         invLink.setText("https://ac.uniks.de/api/servers/5e2fbd8770dd077d03df505/invites/60b7db05026b3534ca5be39b");
         mockGetServers();
