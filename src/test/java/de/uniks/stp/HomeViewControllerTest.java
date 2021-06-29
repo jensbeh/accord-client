@@ -97,6 +97,8 @@ public class HomeViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         app.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         this.stage.centerOnScreen();
     }

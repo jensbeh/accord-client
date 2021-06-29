@@ -103,6 +103,8 @@ public class PrivateViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         this.stage.centerOnScreen();
     }

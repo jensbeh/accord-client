@@ -47,6 +47,9 @@ public class ModelBuilder {
     private ServerChannel currentAudioChannel;
     private boolean muteMicrophone;
     private boolean muteHeadphones;
+    private AudioInputStream audioInputStream;
+
+    private boolean loadUserData = true;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -299,6 +302,15 @@ public class ModelBuilder {
 
     public boolean getMuteHeadphones() {
         return muteHeadphones;
+    }
+
+
+    public void setLoadUserData(boolean loadUserData) {
+        this.loadUserData = loadUserData;
+    }
+
+    public boolean getLoadUserData() {
+        return loadUserData;
     }
 
 }

@@ -86,9 +86,9 @@ public class LoginScreenController {
                 } else {
                     //if remember me selected then username and password is saved in a user.txt
                     if (rememberCheckBox.isSelected()) {
-                        saveRememberMe(username, password, true);
+                        saveRememberMe(username, password, true, false);
                     } else {
-                        saveRememberMe("", "", false);
+                        saveRememberMe("", "", false, false);
                     }
                     //signIn Post
                     if (!noConnectionTest) {
@@ -135,9 +135,9 @@ public class LoginScreenController {
                     setError("error.field_is_empty");
                 } else {
                     if (rememberCheckBox.isSelected()) {
-                        saveRememberMe(username, password, true);
+                        saveRememberMe(username, password, true, false);
                     } else {
-                        saveRememberMe("", "", false);
+                        saveRememberMe("", "", false, false);
                     }
                     //login Post
                     if (!noConnectionTest) {
@@ -165,7 +165,7 @@ public class LoginScreenController {
                     }
                 }
             } else if (tempUserCheckBox.isSelected()) {
-                saveRememberMe("", "", false);
+                saveRememberMe("", "", false, true);
                 if (!noConnectionTest) {
                     restClient.loginTemp(response -> {
                         JsonNode body = response.getBody();
@@ -181,8 +181,33 @@ public class LoginScreenController {
                                 setError("error.login_success");
                                 usernameTextField.setText(name);
                                 passwordTextField.setText(pass);
-                                tempUserCheckBox.setSelected(false);
-                                loginButtonOnClick(actionEvent);
+                            });
+                            if (rememberCheckBox.isSelected()) {
+                                saveRememberMe(name, pass, true, true);
+                            } else {
+                                saveRememberMe("", "", false, true);
+                            }
+                            //login Post
+                            restClient.login(name, pass, responseLogin -> {
+                                JsonNode bodyLogin = responseLogin.getBody();
+                                String statusLogin = bodyLogin.getObject().getString("status");
+                                if (statusLogin.equals("success")) {
+                                    //build user with key
+                                    String userKey = bodyLogin.getObject().getJSONObject("data").getString("userKey");
+                                    builder.buildPersonalUser(name, pass, userKey);
+                                    //show message on screen
+                                    this.message = bodyLogin.getObject().getString("status");
+                                    Platform.runLater(() -> setError("error.login_success"));
+                                    Platform.runLater(StageManager::showHome); //TODO load here server, then showHome
+                                } else if (statusLogin.equals("failure")) {
+                                    //show message on screen
+                                    this.message = bodyLogin.getObject().getString("message");
+                                    if (message.equals("Invalid credentials")) {
+                                        Platform.runLater(() -> setError("error.invalid_credentials"));
+                                    } else {
+                                        Platform.runLater(() -> setError("error.login_failure"));
+                                    }
+                                }
                             });
                         } else if (status.equals("failure")) {
                             //show message on screen
@@ -209,7 +234,7 @@ public class LoginScreenController {
     /**
      * save username and password in text file
      */
-    public void saveRememberMe(String username, String password, Boolean rememberMe) {
+    public void saveRememberMe(String username, String password, Boolean rememberMe, Boolean tempCheckBox) {
         String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
         try {
             BufferedWriter out = new BufferedWriter(
@@ -221,6 +246,8 @@ public class LoginScreenController {
             out.write(encodedPassword);
             out.newLine();
             out.write(rememberMe.toString());
+            out.newLine();
+            out.write(tempCheckBox.toString());
             out.close();
         } catch (Exception e) {
             System.out.println("Error while saving userdata.");
@@ -231,7 +258,11 @@ public class LoginScreenController {
     /**
      * First check if there is a userData file already in user local directory - if not, create
      */
-    public static void setup() {
+    public void setup() {
+        if (!builder.getLoadUserData()) {
+            return;
+        }
+
         AppDirs appDirs = AppDirsFactory.getInstance();
         Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
 
@@ -250,6 +281,9 @@ public class LoginScreenController {
                     }
                     if (i == 2) {
                         rememberCheckBox.setSelected(Boolean.parseBoolean(scanner.nextLine()));
+                    }
+                    if (i == 3) {
+                        tempUserCheckBox.setSelected(Boolean.parseBoolean(scanner.nextLine()));
                     }
                     i++;
                 }

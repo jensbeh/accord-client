@@ -86,6 +86,8 @@ public class SnakeControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         stage.centerOnScreen();
     }
