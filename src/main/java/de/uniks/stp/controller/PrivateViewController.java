@@ -12,7 +12,6 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.PrivateChatWebSocket;
 import de.uniks.stp.net.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.RestClient;
-import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
