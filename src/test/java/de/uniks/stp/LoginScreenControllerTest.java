@@ -149,6 +149,11 @@ public class LoginScreenControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
+    public void clearCheckBoxes() {
+        CheckBox tempUser = lookup("#loginAsTempUser").query();
+        tempUser.setSelected(false);
+    }
+
     @Test()
     public void logInTest() throws InterruptedException {
         mockLogin();
@@ -367,6 +372,9 @@ public class LoginScreenControllerTest extends ApplicationTest {
                     if (i == 2) {
                         Assert.assertFalse(Boolean.parseBoolean(scanner.nextLine()));
                     }
+                    if (i == 3) {
+                        Assert.assertFalse(Boolean.parseBoolean(scanner.nextLine()));
+                    }
                     i++;
                 }
             }
@@ -378,8 +386,9 @@ public class LoginScreenControllerTest extends ApplicationTest {
 
     @Test
     public void rememberMeTest() {
+        clearCheckBoxes();
         loginInit(true);
-        
+
         Assert.assertEquals("Accord - Main", stage.getTitle());
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -404,6 +413,9 @@ public class LoginScreenControllerTest extends ApplicationTest {
                     }
                     if (i == 2) {
                         Assert.assertTrue(Boolean.parseBoolean(scanner.nextLine()));
+                    }
+                    if (i == 3) {
+                        Assert.assertFalse(Boolean.parseBoolean(scanner.nextLine()));
                     }
                     i++;
                 }
