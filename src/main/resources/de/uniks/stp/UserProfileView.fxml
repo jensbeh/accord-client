@@ -1,17 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox id="root" alignment="CENTER" minHeight="55.0" prefWidth="220.0" spacing="10.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" maxHeight="-Infinity" minHeight="100.0" minWidth="-Infinity" prefWidth="180.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Circle id="onlineStatus" fill="#7289da" radius="17.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-      <Label id="userName" prefHeight="30.0" prefWidth="115.0" text="User Name" textFill="WHITE" wrapText="true">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
+      <HBox id="root" alignment="CENTER" minHeight="55.0" prefWidth="220.0" spacing="10.0">
+         <children>
+            <Circle id="onlineStatus" fill="#7289da" radius="17.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+            <Label id="userName" prefHeight="30.0" prefWidth="115.0" text="User Name" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" minHeight="45.0" prefHeight="45.0" prefWidth="180.0" spacing="10.0">
+         <children>
+            <StackPane>
+               <children>
+                  <Button id="mute_microphone" mnemonicParsing="false" text=" 🎤 ">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Label id="unmute_microphone" alignment="CENTER" prefHeight="53.0" prefWidth="46.0" text="╳" textAlignment="CENTER" textFill="RED" visible="false">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+            <StackPane>
+               <children>
+                  <Button id="mute_headphone" mnemonicParsing="false" prefHeight="28.0" prefWidth="47.0" text=" 🎧 ">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <Label id="unmute_headphone" alignment="CENTER" prefHeight="53.0" prefWidth="44.0" text="╳" textAlignment="CENTER" textFill="RED" visible="false">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
    </children>
-</HBox>
+</VBox>

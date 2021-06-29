@@ -167,7 +167,7 @@ public class HomeViewController {
                 this.root.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
-
+                this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
 
                 this.root.getChildren().clear();
@@ -349,6 +349,7 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
+        builder.saveSettings();
         if (stage != null) {
             this.stage.close();
             stage = null;

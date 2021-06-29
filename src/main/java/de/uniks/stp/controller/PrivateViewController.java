@@ -12,6 +12,7 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.PrivateChatWebSocket;
 import de.uniks.stp.net.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,6 +56,10 @@ public class PrivateViewController {
     private ChatViewController messageViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     private PrivateChatWebSocket privateChatWebSocket;
+    private Button headphoneButton;
+    private Button microphoneButton;
+    private Label headphoneLabel;
+    private Label microphoneLabel;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -148,10 +153,36 @@ public class PrivateViewController {
             userProfileController.setOnline();
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
-
+            headsetSettings();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void headsetSettings() {
+        headphoneButton = (Button) view.lookup("#mute_headphone");
+        microphoneButton = (Button) view.lookup("#mute_microphone");
+        headphoneLabel = (Label) view.lookup("#unmute_headphone");
+        microphoneLabel = (Label) view.lookup("#unmute_microphone");
+        microphoneLabel.setVisible(!builder.getMuteMicrophone());
+        headphoneButton.setOnAction(this::muteHeadphone);
+        microphoneButton.setOnAction(this::muteMicrophone);
+        microphoneLabel.setOnMouseClicked(event -> {
+            microphoneLabel.setVisible(false);
+            builder.muteMicrophone(true);
+        });
+    }
+
+    private void muteMicrophone(ActionEvent actionEvent) {
+        microphoneLabel.setVisible(true);
+        builder.muteMicrophone(false);
+    }
+
+    private void muteHeadphone(ActionEvent actionEvent) {
+        headphoneLabel.setVisible(true);
+        headphoneLabel.setOnMouseClicked(event -> {
+            headphoneLabel.setVisible(false);
+        });
     }
 
     /**
