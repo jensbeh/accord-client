@@ -258,7 +258,11 @@ public class LoginScreenController {
     /**
      * First check if there is a userData file already in user local directory - if not, create
      */
-    public static void setup() {
+    public void setup() {
+        if (!builder.getLoadUserData()) {
+            return;
+        }
+
         AppDirs appDirs = AppDirsFactory.getInstance();
         Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
 

@@ -116,6 +116,9 @@ public class ServerViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
         AudioStreamClient.setSocket(mockAudioSocket);
+
+        builder.setLoadUserData(false);
+
         app.start(stage);
         stage.centerOnScreen();
     }
