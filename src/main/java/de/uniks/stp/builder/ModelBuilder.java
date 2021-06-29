@@ -45,6 +45,7 @@ public class ModelBuilder {
 
     private AudioStreamClient audioStreamClient;
     private ServerChannel currentAudioChannel;
+    private AudioInputStream audioInputStream;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
