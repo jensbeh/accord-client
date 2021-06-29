@@ -46,6 +46,8 @@ public class ModelBuilder {
     private AudioStreamClient audioStreamClient;
     private ServerChannel currentAudioChannel;
     private AudioInputStream audioInputStream;
+
+    private boolean loadUserData = true;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -277,4 +279,13 @@ public class ModelBuilder {
     public ServerChannel getCurrentAudioChannel() {
         return this.currentAudioChannel;
     }
+
+    public void setLoadUserData(boolean loadUserData) {
+        this.loadUserData = loadUserData;
+    }
+
+    public boolean getLoadUserData() {
+        return loadUserData;
+    }
+
 }
