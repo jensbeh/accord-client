@@ -631,12 +631,14 @@ public class InviteUsersControllerTest extends ApplicationTest {
         }
 
         clickOn(addServer);
-        clickOn("#chooseJoin");
+        WaitForAsyncUtils.waitForFxEvents();
+        TabPane tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         TextField insertInviteLink = lookup("#inviteLink").query();
         insertInviteLink.setText(inviteLink);
         mockJoinServerError("You already joined the server");
         clickOn("#joinServer");
-        Label errorLabel = lookup("#errorLabel").query();
+        Label errorLabel = lookup("#join_errorLabel").query();
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(errorLabel.getText(), "You already joined the server");
 
