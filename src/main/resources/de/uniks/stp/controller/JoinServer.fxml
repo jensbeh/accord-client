@@ -9,7 +9,7 @@
 
 <VBox id="createServerBox" alignment="CENTER" prefWidth="480.0" spacing="15.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="errorLabel" textFill="#fc0000" VBox.vgrow="ALWAYS">
+      <Label id="join_errorLabel" textFill="#fc0000" VBox.vgrow="ALWAYS">
          <font>
             <Font size="14.0" />
          </font>

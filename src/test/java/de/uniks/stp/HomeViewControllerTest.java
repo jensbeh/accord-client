@@ -226,7 +226,9 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
-        clickOn("#chooseCreate");
+        WaitForAsyncUtils.waitForFxEvents();
+        TabPane tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(0));
         WaitForAsyncUtils.waitForFxEvents();
 
 
