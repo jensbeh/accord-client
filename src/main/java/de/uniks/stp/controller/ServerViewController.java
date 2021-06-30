@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
@@ -42,7 +43,7 @@ public class ServerViewController {
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
-
+    private HBox root;
     private VBox chatBox;
     private ChatViewController messageViewController;
     private static MenuItem serverSettings;
@@ -57,7 +58,12 @@ public class ServerViewController {
     private ServerChannel currentChannel;
     private ServerSystemWebSocket serverSystemWebSocket;
     private ServerChatWebSocket chatWebSocketClient;
-    private ServerChannel currentAudioChannel;
+    private VBox audioConnectionBox;
+    private Button disconnectAudioButton;
+    private Button headphoneButton;
+    private Button microphoneButton;
+    private Label headphoneLabel;
+    private Label microphoneLabel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -100,10 +106,6 @@ public class ServerViewController {
         this.currentChannel = channel;
     }
 
-    public void setCurrentAudioChannel(ServerChannel channel) {
-        this.currentAudioChannel = channel;
-    }
-
     public ServerSystemWebSocket getServerSystemWebSocket() {
         return serverSystemWebSocket;
     }
@@ -113,7 +115,7 @@ public class ServerViewController {
     }
 
     public ServerChannel getCurrentAudioChannel() {
-        return this.currentAudioChannel;
+        return builder.getCurrentAudioChannel();
     }
 
 
@@ -129,6 +131,7 @@ public class ServerViewController {
      */
     @SuppressWarnings("unchecked")
     public void startController(ServerReadyCallback serverReadyCallback) {
+        root = (HBox) view.lookup("#root");
         serverMenuButton = (MenuButton) view.lookup("#serverMenuButton");
         ScrollPane scrollPaneCategories = (ScrollPane) view.lookup("#scrollPaneCategories");
         categoryBox = (VBox) scrollPaneCategories.getContent().lookup("#categoryVbox");
@@ -136,7 +139,8 @@ public class ServerViewController {
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        currentUserBox = (VBox) view.lookup("#currentUserBox");
+        audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
@@ -146,8 +150,6 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
-        currentAudioChannel = null;
-
         loadServerInfo(status -> {
             if (status.equals("success")) {
                 if (getServer().getCategories().size() == 0) {
@@ -177,6 +179,11 @@ public class ServerViewController {
         showCurrentUser();
         showOnlineOfflineUsers();
 
+        if (builder.getCurrentAudioChannel() != null) {
+            showAudioConnectedBox();
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
+        }
         Platform.runLater(this::generateCategoriesChannelViews);
         if (currentChannel != null) {
             showMessageView();
@@ -232,6 +239,7 @@ public class ServerViewController {
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
             this.chatBox.getChildren().add(root);
+            messageViewController.setTheme();
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
@@ -244,7 +252,7 @@ public class ServerViewController {
     }
 
     /**
-     * Display Current User
+     * Display Current User and the headsetButtons
      */
     private void showCurrentUser() {
         try {
@@ -257,9 +265,94 @@ public class ServerViewController {
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
+            headphoneButton = (Button) view.lookup("#mute_headphone");
+            microphoneButton = (Button) view.lookup("#mute_microphone");
+            headphoneLabel = (Label) view.lookup("#unmute_headphone");
+            microphoneLabel = (Label) view.lookup("#unmute_microphone");
+            //load headset settings
+            microphoneLabel.setVisible(!builder.getMuteMicrophone());
+            headphoneLabel.setVisible(!builder.getMuteHeadphones());
+            headphoneButton.setOnAction(this::muteHeadphone);
+            microphoneButton.setOnAction(this::muteMicrophone);
+            //unMute microphone
+            microphoneLabel.setOnMouseClicked(event -> {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+                if (!builder.getMuteHeadphones()) {
+                    builder.muteHeadphones(true);
+                    headphoneLabel.setVisible(false);
+                }
+            });
+            //unMute headphone
+            headphoneLabel.setOnMouseClicked(event -> {
+                headphoneLabel.setVisible(false);
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+                builder.muteHeadphones(true);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    /**
+     * change microphone setting
+     */
+    private void muteMicrophone(ActionEvent actionEvent) {
+        microphoneLabel.setVisible(true);
+        builder.muteMicrophone(false);
+    }
+    /**
+     * change headphone setting
+     */
+    private void muteHeadphone(ActionEvent actionEvent) {
+        headphoneLabel.setVisible(true);
+        microphoneLabel.setVisible(true);
+        builder.muteHeadphones(false);
+        builder.muteMicrophone(false);
+    }
+
+    /**
+     * Display AudioConnectedBox
+     */
+    public void showAudioConnectedBox() {
+        if (builder.getCurrentAudioChannel() != null) {
+            try {
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+                audioConnectedBoxController.init();
+                audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
+                audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+
+                Platform.runLater(() -> {
+                    this.audioConnectionBox.getChildren().clear();
+                    this.audioConnectionBox.getChildren().add(root);
+                    disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
+                    disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
+        }
+    }
+
+    /**
+     * when audio disconnect button is clicked
+     */
+    private void onAudioDisconnectClicked(ActionEvent actionEvent) {
+        builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                System.out.println(body);
+            }
+
+            this.disconnectAudioButton.setOnAction(null);
+        });
+
+        Platform.runLater(() -> this.audioConnectionBox.getChildren().clear());
     }
 
     /**
@@ -397,9 +490,20 @@ public class ServerViewController {
                     channel.setPrivilege(boolPrivilege);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
+                    JSONArray jsonAudioMembers = json.getJSONArray("audioMembers");
                     JSONArray jsonArray = json.getJSONArray("members");
-                    String memberId;
 
+                    for (int j = 0; j < jsonAudioMembers.length(); j++) {
+                        String AudioMemberId = jsonAudioMembers.getString(j);
+                        for (User user : this.server.getUser()) {
+                            if (user.getId().equals(AudioMemberId)) {
+                                AudioMember audioMemberUser = new AudioMember().setId(AudioMemberId).setName(user.getName());
+                                channel.withAudioMember(audioMemberUser);
+                            }
+                        }
+                    }
+
+                    String memberId;
                     for (int j = 0; j < jsonArray.length(); j++) {
                         memberId = jsonArray.getString(j);
                         for (User user : this.server.getUser()) {
@@ -408,13 +512,15 @@ public class ServerViewController {
                             }
                         }
                     }
-                    loadChannelMessages(channel, status1 -> {
-                        loadedChannel++;
-                        if (loadedChannel == data.length()) {
-                            loadedChannel = 0;
-                            channelLoadedCallback.onSuccess(status1);
-                        }
-                    });
+                    if (channel.getType().equals("text")) {
+                        loadChannelMessages(channel, status1 -> {
+                            loadedChannel++;
+                            if (loadedChannel == data.length()) {
+                                loadedChannel = 0;
+                                channelLoadedCallback.onSuccess(status1);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -473,6 +579,10 @@ public class ServerViewController {
         for (CategorySubController categorySubController : this.categorySubControllerList.values()) {
             categorySubController.stop();
         }
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
+        }
     }
 
     /**
@@ -524,6 +634,7 @@ public class ServerViewController {
             view.setId(categories.getId());
             CategorySubController tempCategorySubController = new CategorySubController(view, builder, this, categories);
             tempCategorySubController.init();
+            tempCategorySubController.setTheme();
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
@@ -557,6 +668,41 @@ public class ServerViewController {
     public void refreshAllChannelLists() {
         for (Map.Entry<Categories, CategorySubController> entry : categorySubControllerList.entrySet()) {
             entry.getValue().refreshChannelList();
+        }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
+        }
+    }
+
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+        for (Categories categories : server.getCategories()) {
+            if (categorySubControllerList.size() != 0) {
+                categorySubControllerList.get(categories).setTheme();
+            }
         }
     }
 }

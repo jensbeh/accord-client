@@ -15,13 +15,16 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import util.ResourceManager;
 import util.SortUser;
@@ -40,7 +43,10 @@ public class PrivateViewController {
 
     private final Parent view;
     private final ModelBuilder builder;
+    private HBox root;
     private VBox currentUserBox;
+    private VBox audioConnectionBox;
+    private Button disconnectAudioButton;
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
@@ -49,6 +55,10 @@ public class PrivateViewController {
     private ChatViewController messageViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     private PrivateChatWebSocket privateChatWebSocket;
+    private Button headphoneButton;
+    private Button microphoneButton;
+    private Label headphoneLabel;
+    private Label microphoneLabel;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -64,15 +74,18 @@ public class PrivateViewController {
 
     @SuppressWarnings("unchecked")
     public void init() {
-        ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        root = (HBox) view.lookup("#root");
+        //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
+        currentUserBox = (VBox) view.lookup("#currentUserBox");
+        audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new AlternatePrivateChatListCellFactory());
+        AlternatePrivateChatListCellFactory.setTheme(builder.getTheme());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
-        onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
+        onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
@@ -87,7 +100,6 @@ public class PrivateViewController {
         privateChatWebSocket.setPrivateViewController(this);
         builder.setPrivateChatWebSocketClient(privateChatWebSocket);
     }
-
 
     private void startWebSocketConnection() {
         if (privateSystemWebSocketClient == null) {
@@ -140,10 +152,104 @@ public class PrivateViewController {
             userProfileController.setOnline();
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
-
+            headsetSettings();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * set and synchronize headsetButtons
+     */
+    public void headsetSettings() {
+        headphoneButton = (Button) view.lookup("#mute_headphone");
+        microphoneButton = (Button) view.lookup("#mute_microphone");
+        headphoneLabel = (Label) view.lookup("#unmute_headphone");
+        microphoneLabel = (Label) view.lookup("#unmute_microphone");
+        //load headset settings
+        microphoneLabel.setVisible(!builder.getMuteMicrophone());
+        headphoneLabel.setVisible(!builder.getMuteHeadphones());
+        headphoneButton.setOnAction(this::muteHeadphone);
+        microphoneButton.setOnAction(this::muteMicrophone);
+        //unMute microphone
+        microphoneLabel.setOnMouseClicked(event -> {
+            microphoneLabel.setVisible(false);
+            builder.muteMicrophone(true);
+            if (!builder.getMuteHeadphones()) {
+                builder.muteHeadphones(true);
+                headphoneLabel.setVisible(false);
+            }
+        });
+        //unMute headphone
+        headphoneLabel.setOnMouseClicked(event -> {
+            headphoneLabel.setVisible(false);
+            microphoneLabel.setVisible(false);
+            builder.muteMicrophone(true);
+            builder.muteHeadphones(true);
+        });
+    }
+
+    /**
+     * change microphone setting
+     */
+    private void muteMicrophone(ActionEvent actionEvent) {
+        microphoneLabel.setVisible(true);
+        builder.muteMicrophone(false);
+    }
+    /**
+     * change headphone setting
+     */
+    private void muteHeadphone(ActionEvent actionEvent) {
+        headphoneLabel.setVisible(true);
+        microphoneLabel.setVisible(true);
+        builder.muteHeadphones(false);
+        builder.muteMicrophone(false);
+    }
+
+    /**
+     * Display AudioConnectedBox
+     */
+    public void showAudioConnectedBox() {
+        if (builder.getCurrentAudioChannel() != null) {
+            try {
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
+                audioConnectedBoxController.init();
+                audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
+                audioConnectedBoxController.setAudioChannelName(builder.getCurrentAudioChannel().getName());
+
+                Platform.runLater(() -> {
+                    this.audioConnectionBox.getChildren().clear();
+                    this.audioConnectionBox.getChildren().add(root);
+                    disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
+                    disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (this.audioConnectionBox.getChildren().size() > 0) {
+            this.audioConnectionBox.getChildren().clear();
+        }
+    }
+
+    /**
+     * when audio disconnect button is clicked
+     */
+    private void onAudioDisconnectClicked(ActionEvent actionEvent) {
+        builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+            this.disconnectAudioButton.setOnAction(null);
+
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            if (status.equals("success")) {
+                System.out.println(body);
+            }
+        });
+
+        Platform.runLater(() -> {
+            this.audioConnectionBox.getChildren().clear();
+        });
     }
 
     /**
@@ -175,6 +281,7 @@ public class PrivateViewController {
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
+            messageViewController.setTheme();
             this.chatBox.getChildren().add(root);
 
             if (PrivateViewController.getSelectedChat() != null) {
@@ -278,5 +385,29 @@ public class PrivateViewController {
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
         ChatViewController.onLanguageChanged();
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/PrivateView.css")).toExternalForm());
+        if (messageViewController != null) {
+            messageViewController.setTheme();
+        }
     }
 }

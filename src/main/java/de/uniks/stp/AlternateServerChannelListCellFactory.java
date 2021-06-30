@@ -11,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.lang.reflect.Field;
@@ -23,6 +22,13 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
     public AlternateServerChannelListCellFactory(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
     }
+
+    private static String theme;
+
+    public static void setTheme(String theme) {
+        AlternateServerChannelListCellFactory.theme = theme;
+    }
+
 
     /**
      * The <code>call</code> method is called when required, and is given a
@@ -73,20 +79,38 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
             }
 
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #23272a;");
             if (!empty) {
-                if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
-                }
-                if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+
+                if (item == serverViewController.getCurrentChannel()) {
+                    if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
+                        this.setId("textChannelScrollbarTrueSelected");
+                    }
+                    if (item == serverViewController.getCurrentChannel() && !isScrollBarVisible) {
+                        this.setId("textChannelScrollbarFalseSelected");
+                    }
+                } else {
+                    if (item != serverViewController.getCurrentChannel() && isScrollBarVisible) {
+                        this.setId("textChannelScrollbarTrueUnselected");
+                    }
+                    if (item != serverViewController.getCurrentChannel() && !isScrollBarVisible) {
+                        this.setId("textChannelScrollbarFalseUnselected");
+                    }
                 }
 
-                if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px; -fx-padding: 0 10 0 0; -fx-border-insets: 0 10 0 0; -fx-background-insets: 0 10 0 0;");
-                }
-                if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
-                    this.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;");
+                if (item == serverViewController.getCurrentAudioChannel()) {
+                    if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarTrueSelected");
+                    }
+                    if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarFalseSelected");
+                    }
+                } else {
+                    if (item == serverViewController.getCurrentAudioChannel() && isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarTrueUnselected");
+                    }
+                    if (item == serverViewController.getCurrentAudioChannel() && !isScrollBarVisible) {
+                        this.setId("audioChannelScrollbarFalseUnselected");
+                    }
                 }
                 // init complete cell
                 cell.setId("cell_" + item.getId());
@@ -119,6 +143,8 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set channelName
                 name.setId(item.getId());
+                name.getStyleClass().clear();
+                name.getStyleClass().add("channelName");
                 if (item.getType() != null) {
                     if (item.getType().equals("text")) {
                         name.setText("\uD83D\uDD8A  " + item.getName());
@@ -129,7 +155,6 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                     name.setText("\uD83D\uDD8A  " + item.getName());
                 }
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
-                name.setTextFill(Paint.valueOf("#FFFFFF"));
                 channelNameCell.getChildren().add(name);
 
                 // channel is audioChannel
@@ -140,7 +165,10 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
                         for (User user : item.getCategories().getServer().getUser()) {
                             if (audioMember.getId().equals(user.getId())) {
                                 Label audioMemberName = new Label();
-                                audioMemberName.setStyle("-fx-font-size: 14; -fx-text-fill: white");
+                                audioMemberName.setId("audioMember");
+                                audioMemberName.getStyleClass().clear();
+                                audioMemberName.getStyleClass().add("audioMember");
+                                audioMemberName.setStyle("-fx-font-size: 14");
                                 HBox audioMemberCell = new HBox();
                                 audioMemberCell.setPrefHeight(25);
                                 audioMemberName.setText(user.getName());
@@ -161,13 +189,20 @@ public class AlternateServerChannelListCellFactory implements javafx.util.Callba
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
-                    Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
-                    Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
+                    Circle background = new Circle(notificationCircleSize / 2);
+                    Circle foreground = new Circle(notificationCircleSize / 2 - 1);
+                    //IDs to use CSS styling
+                    background.getStyleClass().clear();
+                    foreground.getStyleClass().clear();
+                    background.getStyleClass().add("notificationCounterBackground");
+                    foreground.getStyleClass().add("notificationCounterForeground");
                     background.setId("notificationCounterBackground_" + item.getId());
                     foreground.setId("notificationCounterForeground_" + item.getId());
 
                     Label numberText = new Label();
                     numberText.setId("notificationCounter_" + item.getId());
+                    numberText.getStyleClass().clear();
+                    numberText.getStyleClass().add("notificationCounter");
                     numberText.setAlignment(Pos.CENTER);
                     numberText.setTextFill(Color.BLACK);
                     numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));

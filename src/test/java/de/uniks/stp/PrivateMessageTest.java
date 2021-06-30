@@ -101,6 +101,8 @@ public class PrivateMessageTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         stage.centerOnScreen();
     }
@@ -181,6 +183,7 @@ public class PrivateMessageTest extends ApplicationTest {
 
     public void mockGetChannels() {
         JSONArray members = new JSONArray();
+        JSONArray audioMembers = new JSONArray();
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
                 .put("id", "60b77ba0026b3534ca5a61af")
@@ -188,7 +191,8 @@ public class PrivateMessageTest extends ApplicationTest {
                 .put("type", "text")
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members));
+                .put("members", members)
+                .put("audioMembers", audioMembers));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -259,7 +263,7 @@ public class PrivateMessageTest extends ApplicationTest {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<User> userList = lookup("#scrollPaneUserBox").lookup("#onlineUsers").query();
+        ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();

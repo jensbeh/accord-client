@@ -10,9 +10,10 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import util.ResourceManager;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class CustomNotificationsController extends SubSetting {
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
         deleteButton = (Button) view.lookup("#delete");
-        if(addedFiles == null){
+        if (addedFiles == null) {
             addedFiles = new ArrayList<>();
         }
         files = new ArrayList<>();
@@ -49,11 +50,11 @@ public class CustomNotificationsController extends SubSetting {
         deleteButton.setOnAction(this::delete);
         fileNames = new ArrayList<>();
         ob = FXCollections.observableList(ResourceManager.getNotificationSoundFiles());
-        if(!ResourceManager.getComboValue(builder.getPersonalUser().getName()).equals("")){
+        if (!ResourceManager.getComboValue(builder.getPersonalUser().getName()).equals("")) {
             customSoundComboBox.setPromptText(ResourceManager.getComboValue(builder.getPersonalUser().getName()));
         }
 
-        for(File file : ob){
+        for (File file : ob) {
             String fileName = file.getName().substring(0, file.getName().length() - 4);
             fileNames.add(fileName);
             files.add(file);
@@ -61,10 +62,10 @@ public class CustomNotificationsController extends SubSetting {
         }
         customSoundComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             ResourceManager.setComboValue(builder.getPersonalUser().getName(), newValue);
-            for(File file : files){
+            for (File file : files) {
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
                 fileNames.add(fileName);
-                if(fileName.equals(newValue)){
+                if (fileName.equals(newValue)) {
                     try {
                         stream = new FileInputStream(file);
                         builder.setSoundFile(stream);
@@ -76,11 +77,11 @@ public class CustomNotificationsController extends SubSetting {
         });
     }
 
-    private void delete(ActionEvent actionEvent){
-        if(stream != null){
+    private void delete(ActionEvent actionEvent) {
+        if (stream != null) {
             cleanUp();
         }
-        if(customSoundComboBox.getValue() != null){
+        if (customSoundComboBox.getValue() != null) {
             String newValue = customSoundComboBox.getValue();
             ResourceManager.deleteNotificationSound(newValue);
             fileNames.remove(newValue);
@@ -93,22 +94,22 @@ public class CustomNotificationsController extends SubSetting {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Documents", "*.wav"));
         File selectedFile = fileChooser.showOpenDialog(null);
-        if(selectedFile != null && !fileNames.contains(selectedFile.getName().substring(0, selectedFile.getName().length() - 4))){
+        if (selectedFile != null && !fileNames.contains(selectedFile.getName().substring(0, selectedFile.getName().length() - 4))) {
             files.add(selectedFile);
             fileNames.add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
             customSoundComboBox.getItems().add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
             File file = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + selectedFile.getName());
             ResourceManager.saveNotifications(selectedFile);
             ob.add(file);
-        }else{
+        } else {
             System.out.println("File is not valid!");
         }
     }
 
-    public void cleanUp(){
+    public void cleanUp() {
         try {
             stream.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

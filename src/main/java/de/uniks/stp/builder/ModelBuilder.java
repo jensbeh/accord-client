@@ -4,6 +4,7 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -12,7 +13,6 @@ import util.ResourceManager;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -40,9 +40,16 @@ public class ModelBuilder {
     private boolean playSound;
     private boolean doNotDisturb;
     private boolean showNotifications;
+    private String theme;
     private Clip clip;
 
     private AudioStreamClient audioStreamClient;
+    private ServerChannel currentAudioChannel;
+    private boolean muteMicrophone;
+    private boolean muteHeadphones;
+    private AudioInputStream audioInputStream;
+
+    private boolean loadUserData = true;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -194,7 +201,9 @@ public class ModelBuilder {
             settings.put("doNotDisturb", doNotDisturb);
             settings.put("showNotifications", showNotifications);
             settings.put("playSound", playSound);
-
+            settings.put("theme", theme);
+            settings.put("muteMicrophone", muteMicrophone);
+            settings.put("muteHeadphones", muteHeadphones);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -210,6 +219,9 @@ public class ModelBuilder {
                 doNotDisturb = false;
                 showNotifications = true;
                 playSound = true;
+                theme = "Dark";
+                muteMicrophone = true;
+                muteHeadphones = true;
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -217,7 +229,9 @@ public class ModelBuilder {
             doNotDisturb = (boolean) parsedSettings.get("doNotDisturb");
             showNotifications = (boolean) parsedSettings.get("showNotifications");
             playSound = (boolean) parsedSettings.get("playSound");
-
+            theme = (String) parsedSettings.get("theme");
+            muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
+            muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
             reader.close();
 
         } catch (Exception e) {
@@ -257,4 +271,46 @@ public class ModelBuilder {
     public AudioStreamClient getAudioStreamClient() {
         return this.audioStreamClient;
     }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public void setCurrentAudioChannel(ServerChannel currentAudioChannel) {
+        this.currentAudioChannel = currentAudioChannel;
+    }
+
+    public ServerChannel getCurrentAudioChannel() {
+        return this.currentAudioChannel;
+    }
+
+    public void muteMicrophone(boolean muteMicrophone) {
+        this.muteMicrophone = muteMicrophone;
+    }
+
+    public boolean getMuteMicrophone() {
+        return muteMicrophone;
+    }
+
+    public void muteHeadphones(boolean muteHeadphones) {
+        this.muteHeadphones = muteHeadphones;
+    }
+
+    public boolean getMuteHeadphones() {
+        return muteHeadphones;
+    }
+
+
+    public void setLoadUserData(boolean loadUserData) {
+        this.loadUserData = loadUserData;
+    }
+
+    public boolean getLoadUserData() {
+        return loadUserData;
+    }
+
 }

@@ -1,0 +1,80 @@
+#settingsContainer {
+    -fx-background-color: #36393f;
+}
+
+#settingsItems {
+    -fx-background-color: #2f3136;
+}
+
+#add {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+}
+
+#delete {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 10;
+    -fx-text-fill: RED;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+}
+
+.check-box {
+    -fx-text-fill: WHITE;
+    -fx-border-radius: 3;
+}
+
+.label {
+    -fx-text-fill: WHITE;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+}
+
+.button {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #2f3136;
+}
+.button:hover {
+    -fx-background-color: #AAAAAA;
+}
+
+.combo-box {
+    /*-fx-background-image: url('image.jpg');*/
+    -fx-background-color: white;
+    -fx-background-radius: 7;
+}
+
+.combo-box-base > .arrow-button {
+    -fx-background-color: #ff9999;
+    -fx-padding: 0 8;
+    -fx-background-radius: 0 7 7 0;
+}
+
+.combo-box-base > .arrow-button > .arrow {
+    -fx-background-color: white;
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: 6 8;
+    -fx-border-radius: 10;
+    /*-fx-shape: "M 0 0 H 7 L 3.5 4 z";*/
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #9f9e9e;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #AAAAAA;
+}

@@ -68,8 +68,10 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("LoginScreenView.fxml")), getLangBundle());
             scene = new Scene(root);
             builder.setRestClient(restClient);
+            builder.loadSettings();
             loginCtrl = new LoginScreenController(root, builder);
             loginCtrl.init();
+            loginCtrl.setTheme();
             setStageTitle("window_title_login");
             stage.setResizable(false);
             stage.setScene(scene);
@@ -90,6 +92,7 @@ public class StageManager extends Application {
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             homeViewController.init();
+            homeViewController.setTheme();
             setStageTitle("window_title_home");
             stage.setScene(scene);
             stage.setResizable(true);
@@ -150,6 +153,7 @@ public class StageManager extends Application {
             // init controller
             settingsController = new SettingsController(builder, root);
             settingsController.init();
+            settingsController.setTheme();
 
             subStage = new Stage();
             setSubStageTitle("window_title_settings");
@@ -355,5 +359,18 @@ public class StageManager extends Application {
         LoginScreenController.onLanguageChanged();
         HomeViewController.onLanguageChanged();
         InviteUsersController.onLanguageChanged();
+    }
+
+
+    public static void setTheme() {
+        if (homeViewController != null) {
+            homeViewController.setTheme();
+        }
+        if (loginCtrl != null) {
+            loginCtrl.setTheme();
+        }
+        if (settingsController != null) {
+            settingsController.setTheme();
+        }
     }
 }

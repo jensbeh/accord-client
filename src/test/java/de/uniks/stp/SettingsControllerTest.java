@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -76,6 +77,8 @@ public class SettingsControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         stage.centerOnScreen();
     }
@@ -110,6 +113,25 @@ public class SettingsControllerTest extends ApplicationTest {
         passwordField.setText(testUserMainPw);
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void changeThemeLogin() {
+        VBox root = lookup("#root").query();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
     }
 
     @Test

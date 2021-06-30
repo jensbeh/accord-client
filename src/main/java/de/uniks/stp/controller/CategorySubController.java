@@ -10,10 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 
 public class CategorySubController {
     private final ServerViewController serverViewController;
@@ -24,6 +26,7 @@ public class CategorySubController {
     private ListView<ServerChannel> channelList;
     private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
+    private VBox categoryVbox;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -36,8 +39,9 @@ public class CategorySubController {
     public void init() {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
-        channelList = (ListView<ServerChannel>) view.lookup("#channellist");
+        channelList = (ListView<ServerChannel>) view.lookup("#channelList");
         AlternateServerChannelListCellFactory channelListCellFactory = new AlternateServerChannelListCellFactory(serverViewController);
+        AlternateServerChannelListCellFactory.setTheme(builder.getTheme());
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         //PCL
@@ -47,7 +51,6 @@ public class CategorySubController {
         for (ServerChannel channel : category.getChannel()) {
             channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
         }
-
         refreshChannelList();
     }
 
@@ -65,14 +68,33 @@ public class CategorySubController {
         }
 
         // AudioChannel
-        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && serverViewController.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
-            builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    System.out.println(body);
-                }
-            });
+        // when no other is connected
+        if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && builder.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
+            if (builder.getCurrentAudioChannel() == null) {
+                builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        System.out.println(body);
+                    }
+                });
+            }
+            // when audioChannel is connected - leave old one, join new one
+            else {
+                builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response2 -> {
+                            JsonNode body2 = response2.getBody();
+                            String status2 = body2.getObject().getString("status");
+                            if (status2.equals("success")) {
+                                System.out.println(body2);
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 
@@ -124,7 +146,7 @@ public class CategorySubController {
             int AUDIO_CHANNEL_HEIGHT = 0;
             for (ServerChannel audioChannel : category.getChannel()) {
                 if (audioChannel.getAudioMember().size() > 0) {
-                    AUDIO_CHANNEL_HEIGHT = 25 * audioChannel.getAudioMember().size();
+                    AUDIO_CHANNEL_HEIGHT = AUDIO_CHANNEL_HEIGHT + 25 * audioChannel.getAudioMember().size();
                 }
             }
             this.channelList.setPrefHeight(10 + category.getChannel().size() * CHANNEL_HEIGHT + AUDIO_CHANNEL_HEIGHT);
@@ -133,5 +155,23 @@ public class CategorySubController {
         }
 
         Platform.runLater(() -> this.channelList.setItems(FXCollections.observableList(category.getChannel())));
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/CategorySubView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/CategorySubView.css")).toExternalForm());
     }
 }

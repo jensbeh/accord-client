@@ -1,0 +1,165 @@
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+#userName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#scrollPaneUserBox {
+    -fx-background-color: #2f3136;
+}
+
+#currentUserBox {
+    -fx-background-color: #2f3136;
+}
+
+#box {
+    -fx-background-color: #2f3136;
+}
+
+#chatBox {
+    -fx-background-color: #36393f;
+}
+
+#userBox {
+    -fx-background-color: #2f3136;
+}
+
+#onlineUsers .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+#onlineUsers .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+#onlineUsers {
+    -fx-border-color: #2f3136;
+    -fx-background-insets: 0;
+    -fx-background-color: #2f3136;
+    -fx-padding: 1;
+    -fx-text-fill: WHITE;
+}
+
+
+#onlineUsers .list-cell {
+    -fx-border-color: #2f3136;
+    -fx-background-insets: 0;
+    -fx-background-color: #2f3136;
+    -fx-padding: 1;
+    -fx-text-fill: WHITE;
+}
+
+#onlineUsers .list-cell .label {
+    -fx-text-fill: WHITE;
+}
+
+#privateChatList .scroll-bar:vertical {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+#privateChatList .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+#privateChatList {
+    -fx-border-color: #2f3136;
+    -fx-background-insets: 0;
+    -fx-background-color: #2f3136;
+    -fx-padding: 2 2 2 2;
+    -fx-text-fill: WHITE;
+}
+
+#privateChatList .list-cell {
+    -fx-border-color: #2f3136;
+    -fx-background-insets: 0;
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-padding: 0 0 0 0;
+}
+
+#privateChatList .selectedChat {
+    -fx-background-color: #999999;
+    -fx-background-radius: 13px;
+    -fx-pref-height: 65;
+    -fx-max-width: 183
+}
+
+#privateChatList .unselectedChat {
+    -fx-background-color: #404040;
+    -fx-background-radius: 13px;
+    -fx-pref-height: 65;
+    -fx-max-width: 183
+}
+
+#privateChatList .notificationCounterBackground {
+    -fx-fill: #bd7b78;
+}
+
+#privateChatList .notificationCounterForeground {
+    -fx-fill: #f3cdcd;
+}
+
+#privateChatList .msg {
+    -fx-text-fill: #D0D0D0;
+}
+
+#privateChatList .name {
+    -fx-text-fill: #FFFFFF;
+}
+
+
+#welcomeToAccord {
+    -fx-text-fill: WHITE;
+}
+
+#root {
+    -fx-background-color: #2f3136;
+}
+
+#homeViewVBox {
+    -fx-background-color: #2f3136;
+}
+
+#label_serverName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#label_audioChannelName {
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
+#button_disconnectAudio {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#mute_headphone {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#mute_microphone {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+}
+
+#headset {
+    -fx-background-color: #2f3136;
+}

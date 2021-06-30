@@ -126,6 +126,8 @@ public class CreateServerControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
+        builder.setLoadUserData(false);
+
         app.start(stage);
         stage.centerOnScreen();
     }
@@ -298,9 +300,7 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
-        clickOn("#chooseCreate");
-        WaitForAsyncUtils.waitForFxEvents();
-        Label errorLabel = lookup("#errorLabel").query();
+        Label errorLabel = lookup("#create_errorLabel").query();
         clickOn("#createServer");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
@@ -313,15 +313,18 @@ public class CreateServerControllerTest extends ApplicationTest {
     public void emptyTextField() throws InterruptedException {
         loginInit(false);
         //mockPostServer();
-
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
-        clickOn("#chooseCreate");
+        TabPane tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(0));
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
+        Label errorLabel = lookup("#join_errorLabel").query();
+        //clickOn("#joinServer");
+        clickOn("#inviteLink");
+        write("\n");
         WaitForAsyncUtils.waitForFxEvents();
-        Label errorLabel = lookup("#errorLabel").query();
-        clickOn("#createServer");
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Error: Server name cannot be empty", errorLabel.getText());
+        Assert.assertEquals("Insert invite link first", errorLabel.getText());
     }
 
     @Test
@@ -330,13 +333,13 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
-        clickOn("#chooseCreate");
-        WaitForAsyncUtils.waitForFxEvents();
 
         TextField serverName = lookup("#serverName").query();
         Button createServer = lookup("#createServer").query();
         serverName.setText("TestServer Team Bit Shift");
-        clickOn(createServer);
+        //clickOn(createServer);
+        clickOn(serverName);
+        write("\n");
         WaitForAsyncUtils.waitForFxEvents();
 
         MenuButton serverNameText = lookup("#serverMenuButton").query();
@@ -364,7 +367,8 @@ public class CreateServerControllerTest extends ApplicationTest {
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
-        clickOn("#chooseJoin");
+        TabPane tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         TextField invLink = lookup("#inviteLink").query();
         invLink.setText("https://ac.uniks.de/api/servers/5e2fbd8770dd077d03df505/invites/60b7db05026b3534ca5be39b");
         mockGetServers();

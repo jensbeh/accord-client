@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="526.0" prefWidth="395.0" style="-fx-background-color: #555555;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="526.0" prefWidth="395.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox alignment="CENTER" prefHeight="196.0" prefWidth="395.0">
          <children>
@@ -31,14 +31,10 @@
                <children>
                   <VBox prefHeight="195.0" prefWidth="50.0">
                      <children>
-                        <Button fx:id="settingsButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="48.0" style="-fx-background-radius: 5em; -fx-background-color: #ea89c4;">
-                           <graphic>
-                              <ImageView fitHeight="39.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@settings.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
+                        <Button id="settingsButton" fx:id="settingsButton" mnemonicParsing="false" prefHeight="48.0" prefWidth="48.0" style="-fx-background-radius: 100;" text="⚙" textFill="WHITE" textOverrun="CLIP">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
                         </Button>
                      </children>
                   </VBox>
@@ -51,7 +47,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="59.0" prefWidth="395.0">
                <children>
-                  <TextField fx:id="usernameTextfield" prefHeight="50.0" prefWidth="260.0" promptText="%textField.prompt_username" style="-fx-border-color: #ea89c4;">
+                  <TextField fx:id="usernameTextfield" prefHeight="50.0" prefWidth="260.0" promptText="%textField.prompt_username">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -60,7 +56,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="63.0" prefWidth="395.0">
                <children>
-                  <PasswordField fx:id="passwordTextField" prefHeight="50.0" prefWidth="260.0" promptText="%textField.prompt_password" style="-fx-border-color: #ea89c4;">
+                  <PasswordField fx:id="passwordTextField" prefHeight="50.0" prefWidth="260.0" promptText="%textField.prompt_password">
                      <font>
                         <Font size="17.0" />
                      </font>
@@ -96,12 +92,12 @@
             <Label fx:id="connectionLabel" prefHeight="44.0" prefWidth="243.0" textFill="RED" />
             <HBox alignment="CENTER" prefHeight="76.0" prefWidth="395.0" spacing="40.0">
                <children>
-                  <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="%button.login" textFill="WHITE">
+                  <Button fx:id="loginButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-radius: 80;" text="%button.login" textFill="WHITE">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="signinButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ea89c4;" text="%button.signIn" textFill="WHITE">
+                  <Button fx:id="signinButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-radius: 80;" text="%button.signIn" textFill="WHITE">
                      <font>
                         <Font size="15.0" />
                      </font>

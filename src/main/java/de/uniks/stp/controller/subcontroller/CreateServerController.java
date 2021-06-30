@@ -7,16 +7,16 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -33,15 +33,17 @@ public class CreateServerController {
     private final Stage stage;
     private Button createServer;
     private Runnable create;
-    private static Label errorLabel;
     private static String error;
     private TextField linkTextField;
     private Button joinServer;
     private Runnable join;
     private Boolean serverIdTrue = false;
-    private Button joinButton;
-    private Button createButton;
-    private VBox window;
+    private TabPane tapPane;
+    private Tab create_tab;
+    private Tab join_tab;
+    private static Label create_errorLabel;
+    private static Label join_errorLabel;
+    private static String last_error_type;
 
 
     /**
@@ -58,45 +60,51 @@ public class CreateServerController {
      * Initialise all view parameters
      */
     public void init() {
-        // Load all view references
-        window = (VBox) view.lookup("#createServerBox");
-        joinButton = (Button) view.lookup("#chooseJoin");
-        createButton = (Button) view.lookup("#chooseCreate");
-
-        joinButton.setOnAction(this::joinChosen);
-        createButton.setOnAction(this::createChosen);
-    }
-
-    private void createChosen(ActionEvent actionEvent) {
+        tapPane = (TabPane) view.lookup("#tabView");
+        create_tab = tapPane.getTabs().get(0);
+        join_tab = tapPane.getTabs().get(1);
+        create_tab.setOnSelectionChanged(this::changeEnter);
+        tapPane.setOnKeyReleased(key -> {
+            if (key.getCode() == KeyCode.ENTER) {
+                createServer.fire();
+            }
+        });
         try {
-            Parent subView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateServer.fxml")), StageManager.getLangBundle());
-            stop();
-            window.getChildren().clear();
-            window.getChildren().add(subView);
-            stage.setTitle("Create a new Server");
-            serverName = (TextField) view.lookup("#serverName");
-            errorLabel = (Label) view.lookup("#errorLabel");
-            createServer = (Button) subView.lookup("#createServer");
-            createServer.setOnAction(this::onCreateServerClicked);
-        } catch (Exception e) {
+            load_tab_content();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void joinChosen(ActionEvent actionEvent) {
-        try {
-            Parent subView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/JoinServer.fxml")), StageManager.getLangBundle());
-            stop();
-            window.getChildren().clear();
-            window.getChildren().add(subView);
-            stage.setTitle("Join a new Server");
-            linkTextField = (TextField) view.lookup("#inviteLink");
-            errorLabel = (Label) view.lookup("#errorLabel");
-            joinServer = (Button) view.lookup("#joinServer");
-            joinServer.setOnAction(this::onServerJoinClicked);
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void changeEnter(Event event) {
+        if (tapPane.getTabs().get(0).isSelected()) {
+            tapPane.setOnKeyReleased(key -> {
+                if (key.getCode() == KeyCode.ENTER) {
+                    createServer.fire();
+                }
+            });
+        } else {
+            tapPane.setOnKeyReleased(key -> {
+                if (key.getCode() == KeyCode.ENTER) {
+                    joinServer.fire();
+                }
+            });
         }
+    }
+
+    private void load_tab_content() throws IOException {
+        Parent createView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateServer.fxml")), StageManager.getLangBundle());
+        Parent joinView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/JoinServer.fxml")), StageManager.getLangBundle());
+        create_tab.setContent(createView);
+        join_tab.setContent(joinView);
+        create_errorLabel = (Label) view.lookup("#create_errorLabel");
+        serverName = (TextField) view.lookup("#serverName");
+        createServer = (Button) view.lookup("#createServer");
+        createServer.setOnAction(this::onCreateServerClicked);
+        join_errorLabel = (Label) view.lookup("#join_errorLabel");
+        linkTextField = (TextField) view.lookup("#inviteLink");
+        joinServer = (Button) view.lookup("#joinServer");
+        joinServer.setOnAction(this::onServerJoinClicked);
     }
 
     /**
@@ -127,16 +135,16 @@ public class CreateServerController {
                         builder.setCurrentServer(builder.buildServer(serverName, serverId));
                         create.run();
                     } else if (status.equals(("failure"))) {
-                        setError("error.create_server_failure");
+                        setError("error.create_server_failure", "create");
                     }
                 });
             } else {
-                setError("error.server_name_field_empty");
+                setError("error.server_name_field_empty", "create");
             }
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().equals("java.net.NoRouteToHostException: No route to host: connect")) {
-                setError("error.create_server_no_connection");
+                setError("error.create_server_no_connection", "create");
             }
         }
     }
@@ -150,7 +158,12 @@ public class CreateServerController {
             serverName.setText(lang.getString("textField.server_name"));
 
         if (error != null && !error.equals("")) {
-            errorLabel.setText(lang.getString(error));
+            if (last_error_type.equals("join")) {
+                join_errorLabel.setText(lang.getString(error));
+            }
+            if (last_error_type.equals("create")) {
+                create_errorLabel.setText(lang.getString(error));
+            }
         }
     }
 
@@ -159,7 +172,7 @@ public class CreateServerController {
     }
 
     private void onServerJoinClicked(ActionEvent actionEvent) {
-        Platform.runLater(() -> errorLabel.setText(""));
+        Platform.runLater(() -> join_errorLabel.setText(""));
         serverIdTrue = false;
         String error = "";
         CurrentUser currentUser = builder.getPersonalUser();
@@ -175,7 +188,7 @@ public class CreateServerController {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     String message = body.getObject().getString("message");
-                    Platform.runLater(() -> errorLabel.setText(message));
+                    Platform.runLater(() -> join_errorLabel.setText(message));
                     if (status.equals("success")) {
                         findNewServer(serverId);
                     }
@@ -197,7 +210,7 @@ public class CreateServerController {
         }
         if (!error.equals("")) {
             String finalError = error;
-            Platform.runLater(() -> setError(finalError));
+            Platform.runLater(() -> setError(finalError, "join"));
         }
     }
 
@@ -223,20 +236,20 @@ public class CreateServerController {
      *
      * @param errorMsg the error text
      */
-    private void setError(String errorMsg) {
+    private void setError(String errorMsg, String selector) {
+        last_error_type = selector;
         ResourceBundle lang = StageManager.getLangBundle();
         error = errorMsg;
-        errorLabel.setText(lang.getString(error));
+        if (last_error_type.equals("join")) {
+            join_errorLabel.setText(lang.getString(error));
+        }
+        if (last_error_type.equals("create")) {
+            create_errorLabel.setText(lang.getString(error));
+        }
     }
 
     public void stop() {
-        joinButton.setOnAction(null);
-        createButton.setOnAction(null);
-        if (createServer != null) {
-            createServer.setOnAction(null);
-        }
-        if (joinServer != null) {
-            joinServer.setOnAction(null);
-        }
+        createServer.setOnAction(null);
+        joinServer.setOnAction(null);
     }
 }

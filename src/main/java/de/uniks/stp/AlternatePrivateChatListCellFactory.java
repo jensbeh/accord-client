@@ -10,7 +10,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 public class AlternatePrivateChatListCellFactory implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
@@ -20,10 +19,17 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
+
+    private static String theme;
+
+    public static void setTheme(String theme) {
+        AlternatePrivateChatListCellFactory.theme = theme;
+    }
+
     @Override
     public ListCell<PrivateChat> call(ListView<PrivateChat> param) {
         return new ChannelListCell();
@@ -40,8 +46,9 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
             Label name = new Label();
             Label message = new Label();
             HBox notificationCell = new HBox();
+            notificationCell.setId("notification");
             super.updateItem(item, empty);
-            this.setStyle("-fx-background-color: #2C2F33; -fx-padding: 2 2 2 2;");
+
             if (!empty) {
                 // init complete cell
                 cell.setId("cell_" + item.getId());
@@ -71,34 +78,47 @@ public class AlternatePrivateChatListCellFactory implements javafx.util.Callback
 
                 // set userName
                 name.setId(item.getId());
+                name.getStyleClass().clear();
+                name.getStyleClass().add("name");
                 name.setText(item.getName());
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
-                name.setTextFill(Paint.valueOf("#FFFFFF"));
+
                 nameCell.getChildren().add(name);
 
                 // set lastMessage
                 if (item.getMessage().size() > 0) {
                     message.setId("msg_" + item.getId());
+                    message.getStyleClass().clear();
+                    message.getStyleClass().add("msg");
                     message.setPrefWidth(USE_COMPUTED_SIZE);
                     message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
                     message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    message.setTextFill(Paint.valueOf("#D0D0D0"));
                     lastMessageCell.getChildren().add(message);
                 }
 
                 // set chatColor - if selected / else not selected
                 if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
-                    //cell.setStyle("-fx-background-color: #737373; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
-                    cell.setStyle("-fx-background-color: #666666; -fx-background-radius: 13px;  -fx-pref-height: 65; -fx-max-width: 183");
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("selectedChat");
                 } else {
-                    //cell.setStyle("-fx-background-color: #2C2F33; -fx-border-size: 2px; -fx-border-color: #AAAAAA; -fx-pref-height: 65; -fx-max-width: 183");
-                    cell.setStyle("-fx-background-color: #404040; -fx-background-radius: 13px; -fx-pref-height: 65; -fx-max-width: 183");
+                    //Unselected Chat Color
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("unselectedChat");
                 }
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
-                    Circle background = new Circle(notificationCircleSize / 2, Paint.valueOf("#bd7b78"));
-                    Circle foreground = new Circle(notificationCircleSize / 2 - 1, Paint.valueOf("#f3cdcd"));
+
+                    Circle background = null;
+                    Circle foreground = null;
+
+                    background = new Circle(notificationCircleSize / 2);
+                    foreground = new Circle(notificationCircleSize / 2 - 1);
+                    //IDs to use CSS styling
+                    background.getStyleClass().clear();
+                    foreground.getStyleClass().clear();
+                    background.getStyleClass().add("notificationCounterBackground");
+                    foreground.getStyleClass().add("notificationCounterForeground");
                     background.setId("notificationCounterBackground_" + item.getId());
                     foreground.setId("notificationCounterForeground_" + item.getId());
 

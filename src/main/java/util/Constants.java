@@ -21,6 +21,7 @@ public class Constants {
     public static final String SERVER_MESSAGE_PATH = "/messages";
     public static final String SERVER_INVITES = "/invites";
     public static final String SERVER_AUDIO_JOIN = "/join";
+    public static final String SERVER_AUDIO_LEAVE = "/leave";
 
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";
@@ -38,11 +39,13 @@ public class Constants {
     public static String USERDATA_FILE = "/userData.txt";
     public static String NOTIFICATION_PATH = "/soundNotifications";
 
-    // VoIP
-    public static String VOIP_ADDRESS = "cranberry.uniks.de:33100";
-    public static int VOIP_PORT = 33100;
-    public static int AUDIO_SAMPLE_RATE = 48000;
+    // AudioStream
+    public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de";
+    public static int AUDIO_STREAM_PORT = 33100;
+    public static float AUDIO_BITRATE = 48000.0f;
     public static int AUDIO_SAMPLE_SIZE = 16;
-    public static boolean AUDIO_SIGNED = true;
-    public static boolean AUDIO_BIG_ENDIAN = false;
+    public static int AUDIO_CHANNELS = 1;
+    public static boolean AUDIO_SIGNING = true;
+    public static boolean AUDIO_BYTE_ORDER = false;
+    public static int AUDIO_DATAGRAM_PAKET_SIZE = 1279;
 }

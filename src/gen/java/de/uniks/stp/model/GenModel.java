@@ -30,6 +30,7 @@ public class GenModel implements ClassModelDecorator {
 
         Clazz audioMember = mm.haveClass("AudioMember");
         mm.haveAttribute(audioMember, "id", Type.STRING);
+        mm.haveAttribute(audioMember, "name", Type.STRING);
 
         mm.associate(channel, "audioMember", 3, audioMember, "channel", 1);
 
