@@ -1,0 +1,163 @@
+#root {
+    -fx-background-color: #202225;
+}
+
+#rootChannel {
+    -fx-background-color: #202225;
+}
+
+#serverSettingsContainer {
+    -fx-background-color: #202225;
+}
+
+#select {
+    -fx-background-color: #36393f;
+}
+
+#settingsBox {
+    -fx-background-color: #202225;
+}
+
+#settingsItems {
+    -fx-background-color: #2f3136;
+}
+
+#channelChangeButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#channelDeleteButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: RED;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+}
+
+#channelCreateButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: WHITE;
+}
+
+.check-box {
+    -fx-text-fill: WHITE;
+    -fx-border-radius: 3;
+}
+
+.label {
+    -fx-text-fill: WHITE;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+}
+
+#overviewBtn {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #2f3136;
+}
+#overviewBtn:hover {
+    -fx-background-color: #AAAAAA;
+}
+
+#channelBtn {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #2f3136;
+}
+#channelBtn:hover {
+    -fx-background-color: #AAAAAA;
+}
+
+#categoryBtn {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #2f3136;
+}
+#categoryBtn:hover {
+    -fx-background-color: #AAAAAA;
+}
+
+#privilegeBtn {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #2f3136;
+}
+#privilegeBtn:hover {
+    -fx-background-color: #AAAAAA;
+}
+
+.combo-box-popup {
+    -fx-background-color: #2f3136;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #2f3136;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: center;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #2f3136;
+}
+
+.combo-box-base {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+}
+
+.combo-box-base .list-cell {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #2f3136;
+}
+
+.combo-box {
+    -fx-background-color: #2f3136;
+}
+
+.text-input {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #2f3136;
+    -fx-border-width: 2;
+}
+
+#channelTextRadioButton  {
+    -fx-content-display: BOTTOM;
+}

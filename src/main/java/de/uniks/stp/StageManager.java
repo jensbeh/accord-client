@@ -184,6 +184,7 @@ public class StageManager extends Application {
             // init controller
             serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
             serverSettingsController.init();
+            serverSettingsController.setTheme();
 
             //setting stage settings
             subStage = new Stage();

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class ServerSettingsController {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
+    private Pane root;
     private Button selectedButton;
     private Button overview;
     private Button channel;
@@ -26,6 +28,7 @@ public class ServerSettingsController {
     private SubSetting subController;
     private VBox settingsContainer;
     private String userId;
+    private VBox settingsBox;
 
 
     public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
@@ -36,11 +39,13 @@ public class ServerSettingsController {
 
     public void init() {
         //init of sideButtons
-        overview = (Button) view.lookup("#overview");
-        channel = (Button) view.lookup("#channel");
-        category = (Button) view.lookup("#category");
-        privilege = (Button) view.lookup("#privilege");
+        root = (Pane) view.lookup("#root");
+        overview = (Button) view.lookup("#overviewBtn");
+        channel = (Button) view.lookup("#channelBtn");
+        category = (Button) view.lookup("#categoryBtn");
+        privilege = (Button) view.lookup("#privilegeBtn");
         settingsContainer = (VBox) view.lookup("#serverSettingsContainer");
+        settingsBox = (VBox) view.lookup("#settingsBox");
 
         // userId from currentUser
         userId = "";
@@ -136,9 +141,9 @@ public class ServerSettingsController {
 
     private void newSelectedButton(Button button) {
         if (selectedButton != null) {
-            selectedButton.setStyle("-fx-background-color: #333333;-fx-border-color:#333333");
+            selectedButton.setStyle("-fx-background-color: #2f3136; -fx-border-color: #2f3136;");
         }
-        button.setStyle("-fx-background-color: #5c5c5c;-fx-border-color:#1a1a1a");
+        button.setStyle("-fx-background-color: #AAAAAA;-fx-border-color:#AAAAAA");
         selectedButton = button;
     }
 
@@ -162,6 +167,7 @@ public class ServerSettingsController {
                 case "Channel":
                     subController = new ServerSettingsChannelController(serverSettingsField, builder, server);
                     subController.init();
+                    subController.setTheme();
                     break;
                 case "Category":
                     subController = new ServerSettingsCategoryController(serverSettingsField, builder, server);
@@ -180,5 +186,23 @@ public class ServerSettingsController {
             System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
         }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }
