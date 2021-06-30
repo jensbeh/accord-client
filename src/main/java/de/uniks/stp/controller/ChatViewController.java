@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static util.Constants.*;
@@ -69,6 +70,8 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
+    private int counter;
+    private ArrayList<String> pngNames = new ArrayList<>();
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -134,6 +137,17 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
+        if(pngNames.isEmpty()) {
+            File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+            for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+                for (Emoji emoji : EmojiParser.getInstance().search("")) {
+                    if (emoji.getHex().equals(name)) {
+                        pngNames.add(name);
+                    }
+                }
+            }
+        }
         showEmojis();
     }
 
@@ -141,15 +155,14 @@ public class ChatViewController {
      * sets emojis on FlowPane
      */
     private void showEmojis() {
-        ArrayList<String> pngNames = new ArrayList<>();
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
         final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            pngNames.add(name);
-            flow.getChildren().add((getImageStack(fileEntry)));
+            if (pngNames.contains(name)) {
+                flow.getChildren().add((getImageStack(fileEntry)));
+            }
         }
     }
 

@@ -12,6 +12,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -213,7 +214,6 @@ public class ResourceManager {
                 ZipEntry entry = zipInputStream.getNextEntry();
                 while (entry != null) {
                     String filePath = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + File.separator + entry.getName();
-
                     // if the entry is a file, extracts it
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
                     byte[] bytesIn = new byte[4096];
@@ -330,23 +330,11 @@ public class ResourceManager {
      * copy file
      */
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
-        InputStream in;
-        if (file.getName().equals("default.wav")) {
-            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
-            assert fileUrl != null;
-            in = fileUrl.openStream();
-        } else {
-            in = new FileInputStream(file);
-        }
-        OutputStream out = new FileOutputStream(targetPath);
-        // Copy the bits from instream to outstream
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
+        FileChannel source = new FileInputStream(file).getChannel();
+        FileChannel desti = new FileOutputStream(targetPath).getChannel();
+        desti.transferFrom(source, 0, source.size());
+        source.close();
+        desti.close();
     }
 
     /**

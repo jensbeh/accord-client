@@ -114,7 +114,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -302,6 +302,60 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
+    public void mockJoinServer() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Successfully arrived at server")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
+        }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
+    }
+
+    public void mockGetServers2() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df504").put("name", testServerName)));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            return null;
+        }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
+    }
+
+    public void loginInitNotOwner(boolean emptyServers) throws InterruptedException {
+        mockPostServer();
+        if (!emptyServers)
+            mockGetServers2();
+        else
+            mockGetServersEmpty();
+        mockGetServerUsers();
+        mockGetServerCategories();
+        mockGetCategoryChannels();
+        mockGetChannelMessages();
+        mockJoinServer();
+        //mockCreateTempLink();
+        //mockGetInvLinks();
+        //mockDeleteInvLink();
+
+        mockLogin();
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        String testUserPw = "stp2021pw";
+        passwordField.setText(testUserPw);
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
     @Test
     public void openServerSettingsTest() throws InterruptedException {
         loginInit(false);
@@ -331,6 +385,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void clickOnOwnerOverview() throws InterruptedException {
         loginInit(false);
 
+        mockPutServer();
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#server"));
         WaitForAsyncUtils.waitForFxEvents();
@@ -340,6 +395,27 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         write("\n");
         Assert.assertNotEquals(1, this.listTargetWindows().size());
         clickOn("#overview");
+        clickOn("#deleteServer");
+        Label serverNameLabel = lookup("#serverName").query();
+        Button leaveButton = lookup("#deleteServer").query();
+        Assert.assertEquals("TestServer Team Bit Shift", serverNameLabel.getText());
+        Assert.assertEquals("Delete Server", leaveButton.getText());
+    }
+
+    @Test
+    public void clickOnNotOwnerOverview() throws InterruptedException {
+        loginInitNotOwner(false);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#server"));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        clickOn("#overview");
+        Thread.sleep(3000);
         clickOn("#deleteServer");
         Label serverNameLabel = lookup("#serverName").query();
         Button leaveButton = lookup("#deleteServer").query();

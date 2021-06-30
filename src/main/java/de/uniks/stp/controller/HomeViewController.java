@@ -1,5 +1,8 @@
 package de.uniks.stp.controller;
 
+import com.pavlobu.emojitextflow.Emoji;
+import com.pavlobu.emojitextflow.EmojiParser;
+import com.sun.glass.ui.Clipboard;
 import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -27,10 +30,9 @@ import util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+
+import static util.Constants.*;
 
 public class HomeViewController {
     private final RestClient restClient;

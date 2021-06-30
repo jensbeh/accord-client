@@ -8,6 +8,7 @@ import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -470,10 +471,16 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     for (ServerChannel channel : cat.getChannel()) {
                         if (channel.getId().equals(channelId)) {
+                            if(channel.getType().equals("audio")){
+                                if(builder.getAudioStreamClient() != null){
+                                    ActionEvent actionEvent = new ActionEvent();
+                                    serverViewController.onAudioDisconnectClicked(actionEvent);
+                                }
+                            }
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == serverViewController.getServer()) {
                                 Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
-                                if (serverViewController.getCurrentChannel().equals(channel)) {
+                                if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
                                     serverViewController.throwOutUserFromChatView();
                                 }
                             }
