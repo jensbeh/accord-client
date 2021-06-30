@@ -159,3 +159,7 @@
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
 }
+
+#headset {
+    -fx-background-color: #2f3136;
+}

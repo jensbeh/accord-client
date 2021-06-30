@@ -8,12 +8,12 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" minHeight="110.0" minWidth="-Infinity" prefWidth="186.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" alignment="CENTER" minHeight="110.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox id="root" alignment="CENTER" maxWidth="186.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
+      <HBox alignment="CENTER" maxWidth="188.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
          <children>
             <Circle id="onlineStatus" fill="#7289da" radius="17.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-            <Label id="userName" prefHeight="30.0" prefWidth="115.0" text="User Name" textFill="WHITE" wrapText="true">
+            <Label id="userName" prefHeight="30.0" prefWidth="115.0" textFill="WHITE" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
