@@ -8,6 +8,7 @@ public class Microphone {
     private AudioFormat format;
     private TargetDataLine microphone;
     private byte[] data;
+    private DataLine.Info info;
 
     public Microphone() {
     }
@@ -17,7 +18,7 @@ public class Microphone {
         format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
         // audio object (microphone information?)
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        info = new DataLine.Info(TargetDataLine.class, format);
 
         try {
             // get microphoneLine
@@ -60,5 +61,9 @@ public class Microphone {
     public void stopRecording() {
         microphone.stop();
         microphone.close();
+    }
+
+    public void mute(boolean mute) {
+
     }
 }

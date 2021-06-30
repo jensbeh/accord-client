@@ -59,12 +59,11 @@ public class AudioStreamSender implements Runnable {
         }
 
         // start recording audio
-
         microphone.startRecording();
 
         // start sending
-        while (senderActive) {
 
+        while (senderActive) {
             byte[] data = microphone.readData();
 
             // put both byteArrays in one
@@ -82,7 +81,9 @@ public class AudioStreamSender implements Runnable {
             } catch (IOException e) {
                 stopped = true; // set to true when connection get lost
             }
-
+            if (!builder.getMuteMicrophone()) {
+                senderActive = false;
+            }
         }
 
         // stop if senderActive is set to false in stop method in this class
@@ -98,5 +99,9 @@ public class AudioStreamSender implements Runnable {
         while (!stopped) {
             Thread.onSpinWait();
         }
+    }
+
+    public void mute(boolean mute) {
+        microphone.mute(mute);
     }
 }
