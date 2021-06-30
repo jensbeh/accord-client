@@ -60,6 +60,10 @@ public class ServerViewController {
     private ServerChatWebSocket chatWebSocketClient;
     private VBox audioConnectionBox;
     private Button disconnectAudioButton;
+    private Button headphoneButton;
+    private Button microphoneButton;
+    private Label headphoneLabel;
+    private Label microphoneLabel;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -135,7 +139,7 @@ public class ServerViewController {
         generalLabel = (Label) view.lookup("#general");
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
-        currentUserBox = (VBox) scrollPaneUserBox.getContent().lookup("#currentUserBox");
+        currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
         onlineUsersList.setCellFactory(new AlternateUserListCellFactory());
@@ -146,7 +150,6 @@ public class ServerViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
-
         loadServerInfo(status -> {
             if (status.equals("success")) {
                 if (getServer().getCategories().size() == 0) {
@@ -181,7 +184,6 @@ public class ServerViewController {
         } else if (this.audioConnectionBox.getChildren().size() > 0) {
             this.audioConnectionBox.getChildren().clear();
         }
-
         Platform.runLater(this::generateCategoriesChannelViews);
         if (currentChannel != null) {
             showMessageView();
@@ -250,7 +252,7 @@ public class ServerViewController {
     }
 
     /**
-     * Display Current User
+     * Display Current User and the headsetButtons
      */
     private void showCurrentUser() {
         try {
@@ -263,9 +265,50 @@ public class ServerViewController {
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
+            headphoneButton = (Button) view.lookup("#mute_headphone");
+            microphoneButton = (Button) view.lookup("#mute_microphone");
+            headphoneLabel = (Label) view.lookup("#unmute_headphone");
+            microphoneLabel = (Label) view.lookup("#unmute_microphone");
+            //load headset settings
+            microphoneLabel.setVisible(!builder.getMuteMicrophone());
+            headphoneLabel.setVisible(!builder.getMuteHeadphones());
+            headphoneButton.setOnAction(this::muteHeadphone);
+            microphoneButton.setOnAction(this::muteMicrophone);
+            //unMute microphone
+            microphoneLabel.setOnMouseClicked(event -> {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+                if (!builder.getMuteHeadphones()) {
+                    builder.muteHeadphones(true);
+                    headphoneLabel.setVisible(false);
+                }
+            });
+            //unMute headphone
+            headphoneLabel.setOnMouseClicked(event -> {
+                headphoneLabel.setVisible(false);
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+                builder.muteHeadphones(true);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    /**
+     * change microphone setting
+     */
+    private void muteMicrophone(ActionEvent actionEvent) {
+        microphoneLabel.setVisible(true);
+        builder.muteMicrophone(false);
+    }
+    /**
+     * change headphone setting
+     */
+    private void muteHeadphone(ActionEvent actionEvent) {
+        headphoneLabel.setVisible(true);
+        microphoneLabel.setVisible(true);
+        builder.muteHeadphones(false);
+        builder.muteMicrophone(false);
     }
 
     /**
