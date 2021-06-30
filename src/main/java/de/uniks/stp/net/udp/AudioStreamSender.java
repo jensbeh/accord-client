@@ -59,6 +59,7 @@ public class AudioStreamSender implements Runnable {
         }
 
         // start recording audio
+
         microphone.startRecording();
 
         // start sending
@@ -81,6 +82,7 @@ public class AudioStreamSender implements Runnable {
             } catch (IOException e) {
                 stopped = true; // set to true when connection get lost
             }
+
         }
 
         // stop if senderActive is set to false in stop method in this class

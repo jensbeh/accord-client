@@ -55,6 +55,9 @@ public class AudioStreamClient {
         //set both on threads so that quality is better
         receiverThread = new Thread(receiver);
         senderThread = new Thread(sender);
+        if(!builder.getMuteMicrophone()) {
+            sender.stop();
+        }
     }
 
     /**
@@ -89,6 +92,17 @@ public class AudioStreamClient {
 
     public static void setSocket(DatagramSocket newSocket) {
         socket = newSocket;
+    }
+
+    public void muteMicrophone(boolean mute) {
+        if (sender != null) {
+            if (mute) {
+                senderThread = new Thread(sender);
+                senderThread.start();
+            } else {
+                sender.stop();
+            }
+        }
     }
 
 }
