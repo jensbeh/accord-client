@@ -30,6 +30,8 @@ import util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static util.Constants.*;
@@ -63,7 +65,7 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() {
+    public void init() throws IOException {
         builder.loadSettings();
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
@@ -89,6 +91,24 @@ public class HomeViewController {
         ResourceManager.extractEmojis();
         File file = new File("de/uniks/stp/sounds/default.wav");
         ResourceManager.saveNotifications(file);
+
+        //create Saves.json if not already there
+        File file1 = null;
+
+        if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH))) {
+            Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH));
+        }
+        file1 = new File(APPDIR_ACCORD_PATH + "/Saves.json");
+        System.out.println(APPDIR_ACCORD_PATH + "/Saves.json");
+        /*if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"))) {
+             file1 = new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json");
+        }*/
+        assert file1 != null;
+        if(file1.exists()){
+            System.out.println("jo");
+        }else{
+            System.out.println("no");
+        }
 
         showPrivateView();
         showServers(() -> {

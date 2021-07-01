@@ -8,6 +8,7 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
 
+import javax.json.JsonStructure;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
@@ -353,7 +354,7 @@ public class ResourceManager {
     }
 
     /**
-     * save volume
+     * save volume of slider in jar file
      */
     public static void saveVolume(String currentUserName, Float volume) {
         try {
@@ -372,15 +373,21 @@ public class ResourceManager {
     }
 
     /**
-     * get value of comboBox
+     * get value of jar file
      */
     public static Float getVolume(String currentUserName) {
-        Float volume = 0.0f;
-        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+        try{
+            checkForUser(currentUserName);
+        }catch (JsonException | IOException e) {
+            e.printStackTrace();
+        }
+
+        float volume = 0.0f;
+        if(Files.isReadable(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"))){
             try {
                 Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
                 JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-                comboValue = (String) parser.get("volume");
+                volume = ((BigDecimal) parser.get("volume")).floatValue();
                 reader.close();
             } catch (JsonException |
                     IOException e) {
@@ -388,5 +395,15 @@ public class ResourceManager {
             }
         }
         return volume;
+    }
+
+    private static void checkForUser(String currentUserName) throws JsonException, IOException {
+        Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+        JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
+        if (parser.get(currentUserName) != null){
+            System.out.println("Jaaa");
+        }else{
+            System.out.println("Neiiin");
+        }
     }
 }

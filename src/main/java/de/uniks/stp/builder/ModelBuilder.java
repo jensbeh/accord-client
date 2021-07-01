@@ -13,6 +13,7 @@ import util.ResourceManager;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.InputStream;
@@ -179,6 +180,8 @@ public class ModelBuilder {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(getVolume());
             clip.start();
             // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
             // If you want to stop the sound, then use clip.stop();
@@ -188,6 +191,7 @@ public class ModelBuilder {
     }
 
     public void setVolume(Float number) {
+        ResourceManager.saveVolume(personalUser.getName(), number);
     }
 
     private float getVolume() {

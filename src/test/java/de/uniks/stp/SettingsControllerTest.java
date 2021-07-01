@@ -209,6 +209,18 @@ public class SettingsControllerTest extends ApplicationTest {
         if (!showNotifications.isSelected()) {
             clickOn(showNotifications);
         }
+        clickOn(doNotDisturb);
+
+        //volume slider test
+        Slider volume = lookup("#volume").query();
+        volume.setValue(20.0);
+        moveBy(65,-55);
+        clickOn();
+
+        clickOn("#settingsButton");
+        clickOn("#button_DnD");
+        Assert.assertEquals(20.0, volume.getValue(),0.001);
+        volume.setValue(0.0);
     }
 
     @Test
@@ -228,7 +240,5 @@ public class SettingsControllerTest extends ApplicationTest {
 
         clickOn("#settingsButton");
         clickOn("#button_DnD");
-
-
     }
 }
