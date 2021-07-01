@@ -44,6 +44,9 @@
 
 #serverSettingsContainer {
     -fx-background-color: WHITE;
+    -fx-border-width: 2 0 0 0 ;
+    -fx-border-color: #f2f3f5;
+    -fx-border-style: solid hidden hidden hidden;
 }
 
 #select {
