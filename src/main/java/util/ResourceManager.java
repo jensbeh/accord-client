@@ -380,7 +380,7 @@ public class ResourceManager {
             try {
                 Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
                 JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-                comboValue = (String) parser.get("volume");
+                //comboValue = parser.get("volume");
                 volume = ((BigDecimal) parser.get("volume")).floatValue();
                 reader.close();
             } catch (JsonException |
