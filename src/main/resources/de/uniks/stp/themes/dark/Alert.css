@@ -1,8 +1,8 @@
 .AlertStyle{
-    -fx-background-color: #333333;
+    -fx-background-color: #2f3136;
 }
 .AlertStyle > *.button-bar > *.container{
-    -fx-background-color: #333333;
+    -fx-background-color: #2f3136;
 
 }
 .AlertStyle > *.label.content{
@@ -10,12 +10,11 @@
     -fx-font-weight: bold;
 }
 .AlertStyle:header *.header-panel{
-    -fx-background-color: #333333;
+    -fx-background-color: #2f3136;
 }
 .AlertStyle:header *.header-panel *.label{
     -fx-font-size: 18px;
-    -fx-font-style: italic;
     -fx-fill: #333333;
-    -fx-text-fill: red;
+    -fx-text-fill: WHITE;
     -fx-alignment: TOP_CENTER;
 }

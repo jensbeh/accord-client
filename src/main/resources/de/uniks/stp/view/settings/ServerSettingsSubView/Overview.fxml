@@ -5,12 +5,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootOwner" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="CENTER" prefHeight="75.0" prefWidth="400.0">
          <children>
-            <Label id="serverName" prefHeight="17.0" prefWidth="320.0" text="Servername" textFill="WHITE">
+            <Label id="serverName" prefHeight="17.0" prefWidth="320.0" style="-fx-font-size: 16;" text="Servername" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
@@ -20,7 +19,7 @@
       <VBox prefHeight="250.0" prefWidth="400.0" />
       <VBox alignment="CENTER" prefHeight="75.0" prefWidth="400.0">
          <children>
-            <Button id="leaveServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" style="-fx-background-color: red;" text="%button.leaveServer" textFill="WHITE">
+            <Button id="leaveServer" mnemonicParsing="false" prefHeight="35.0" prefWidth="160.0" text="%button.leaveServer" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>

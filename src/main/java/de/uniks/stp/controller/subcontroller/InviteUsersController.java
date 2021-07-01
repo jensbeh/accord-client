@@ -22,6 +22,7 @@ public class InviteUsersController {
     private final Server server;
     private final ModelBuilder builder;
     private static Parent view;
+    private VBox root;
     private InviteUsersTempSubController inviteUsersTempSubController;
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;
 
@@ -32,6 +33,7 @@ public class InviteUsersController {
     }
 
     public void init() {
+        root = (VBox) view.lookup("#rootInvite");
         tempSelected = (RadioButton) view.lookup("#tempSelected");
         userLimitSelected = (RadioButton) view.lookup("#userLimitSelected");
         tempSelected.setOnAction(this::tempSelected);
@@ -103,5 +105,23 @@ public class InviteUsersController {
 
         InviteUsersTempSubController.onLanguageChanged();
         InviteUsersUserLimitSubController.onLanguageChanged();
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

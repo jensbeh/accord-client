@@ -10,10 +10,12 @@ import de.uniks.stp.net.RestClient;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ServerSettingsChannelController extends SubSetting {
@@ -34,6 +36,9 @@ public class ServerSettingsChannelController extends SubSetting {
     private RadioButton channelTextRadioButton;
     private RadioButton channelVoiceRadioButton;
     private Button channelCreateButton;
+    private VBox root;
+    private Label radioVoice;
+    private Label radioText;
 
     private static Categories selectedCategory;
     private static ServerChannel selectedChannel;
@@ -50,6 +55,7 @@ public class ServerSettingsChannelController extends SubSetting {
     @SuppressWarnings("unchecked")
     public void init() {
         // init view
+        root = (VBox) view.lookup("#rootChannel");
         this.categoryLabel = (Label) view.lookup("#categoryLabel");
         categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
@@ -62,6 +68,9 @@ public class ServerSettingsChannelController extends SubSetting {
         this.channelTextRadioButton = (RadioButton) view.lookup("#channelTextRadioButton");
         this.channelVoiceRadioButton = (RadioButton) view.lookup("#channelVoiceRadioButton");
         this.channelCreateButton = (Button) view.lookup("#channelCreateButton");
+        this.radioText = (Label) view.lookup("#radioText");
+        this.radioVoice = (Label) view.lookup("#radioVoice");
+
 
         ToggleGroup textVoiceToggle = new ToggleGroup();
         channelTextRadioButton.setToggleGroup(textVoiceToggle);
@@ -137,6 +146,8 @@ public class ServerSettingsChannelController extends SubSetting {
         channelTextRadioButton.setDisable(disable);
         channelVoiceRadioButton.setDisable(disable);
         channelCreateButton.setDisable(disable);
+        radioVoice.setDisable(disable);
+        radioText.setDisable(disable);
     }
 
     /**
@@ -284,4 +295,23 @@ public class ServerSettingsChannelController extends SubSetting {
     public static ServerChannel getSelectedChannel() {
         return selectedChannel;
     }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
+    }
 }
+

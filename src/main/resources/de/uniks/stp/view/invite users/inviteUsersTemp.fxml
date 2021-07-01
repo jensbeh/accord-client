@@ -8,22 +8,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" spacing="25.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button id="createLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="%button.create" textFill="WHITE" />
-      <TextField id="linkTextField" alignment="CENTER" style="-fx-background-color: #333333; -fx-text-fill: white;" text="link ..." />
-      <VBox prefHeight="200.0" prefWidth="610.0" spacing="25.0">
+      <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
+      <TextField id="linkTextField" alignment="CENTER" text="link ...">
+         <VBox.margin>
+            <Insets top="25.0" />
+         </VBox.margin></TextField>
+      <VBox>
          <children>
-            <Label id="inviteLinksLabel" text="%label.inviteLinks" textFill="WHITE" />
-            <HBox prefHeight="100.0" prefWidth="642.0" spacing="10.0">
+            <Label id="inviteLinksLabel" style="-fx-font-size: 16;" text="%label.inviteLinks" textFill="WHITE" />
+            <HBox alignment="CENTER" spacing="10.0">
                <children>
-                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="529.0" style="-fx-text-fill: white; -fx-background-color: #333333;" stylesheets="@../../styles/InviteComboBox.css" />
-                  <Button id="deleteLink" mnemonicParsing="false" prefWidth="70.0" style="-fx-background-color: #ff9999;" text="%button.delete" textFill="RED" />
+                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="504.0" />
+                  <Button id="deleteLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.delete" textFill="#fffefe" />
                </children>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
             </HBox>
          </children>
          <VBox.margin>
-            <Insets />
+            <Insets top="25.0" />
          </VBox.margin>
       </VBox>
    </children>

@@ -9,8 +9,10 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ServerSubSettingsPrivilegeController {
 
@@ -25,6 +27,7 @@ public class ServerSubSettingsPrivilegeController {
     private final RestClient restClient;
     private User selectedRemoveUser;
     private User selectedAddUser;
+    private VBox root;
 
     public ServerSubSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server, ServerChannel channel) {
         this.view = view;
@@ -36,6 +39,7 @@ public class ServerSubSettingsPrivilegeController {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        root = (VBox) view.lookup("#rootPrivilege");
         addUserMenu = (ComboBox<String>) view.lookup("#Add_User_to_Privilege");
         removeUserMenu = (ComboBox<String>) view.lookup("#Remove_User_from_Privilege");
         addUser = (Button) view.lookup("#User_to_Privilege");

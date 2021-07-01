@@ -8,27 +8,36 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" spacing="25.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootUserLimit" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="559.0" spacing="10.0">
+      <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="590.0" spacing="10.0">
          <children>
-            <Label id="userLimit" text="%label.userLimit" textFill="WHITE" />
-            <TextField id="maxUsers" alignment="CENTER" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #333333; -fx-text-fill: white;" />
-            <Button id="createLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="%button.create" textFill="WHITE" />
+            <Label id="userLimit" style="-fx-font-size: 16;" text="%label.userLimit" textFill="WHITE" />
+            <TextField id="maxUsers" alignment="CENTER" prefHeight="25.0" prefWidth="90.0" />
+            <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
          </children>
          <VBox.margin>
             <Insets />
          </VBox.margin>
       </HBox>
-      <TextField id="linkTextField" alignment="CENTER" prefWidth="559.0" style="-fx-background-color: #333333; -fx-text-fill: white;" text="link ..." />
-      <VBox prefHeight="400.0" prefWidth="60.0" spacing="25.0">
+      <TextField id="linkTextField" alignment="CENTER" prefWidth="559.0" text="link ...">
+         <VBox.margin>
+            <Insets top="25.0" />
+         </VBox.margin></TextField>
+      <VBox prefWidth="590.0">
          <children>
-            <Label id="inviteLinksLabel" text="%label.inviteLinks" textFill="WHITE" />
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+            <Label id="inviteLinksLabel" style="-fx-font-size: 16;" text="%label.inviteLinks" textFill="WHITE">
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin></Label>
+            <HBox alignment="CENTER" spacing="10.0">
                <children>
-                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="520.0" style="-fx-background-color: #333333; -fx-text-fill: white;" stylesheets="@../../styles/InviteComboBox.css" />
-                  <Button id="deleteLink" mnemonicParsing="false" style="-fx-background-color: #ff9999;" text="%button.delete" textFill="RED" />
+                  <ComboBox id="LinkComboBox" prefHeight="25.0" prefWidth="520.0" />
+                  <Button id="deleteLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.delete" textFill="RED" />
                </children>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
             </HBox>
          </children>
          <VBox.margin>
