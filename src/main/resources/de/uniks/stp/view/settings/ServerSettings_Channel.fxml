@@ -12,11 +12,11 @@
 
 <VBox id="rootChannel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox id="select" prefHeight="59.0" prefWidth="400.0">
+      <HBox id="select" prefHeight="60.0" prefWidth="400.0">
          <children>
             <HBox prefHeight="80.0" prefWidth="102.0">
                <children>
-                  <Label id="categoryLabel" text="%label.category">
+                  <Label id="categoryLabel" style="-fx-font-size: 16;" text="%label.category">
                      <HBox.margin>
                         <Insets left="20.0" top="15.0" />
                      </HBox.margin>
@@ -37,11 +37,11 @@
             </HBox>
          </children>
       </HBox>
-      <VBox id="settingsBox" prefHeight="248.0" prefWidth="473.0">
+      <VBox id="settingsBox" prefHeight="248.0" prefWidth="400.0">
          <children>
             <Label id="editChannelsLabel" style="-fx-font-size: 16;" text="%label.editChannels">
                <VBox.margin>
-                  <Insets left="30.0" />
+                  <Insets left="20.0" />
                </VBox.margin>
             </Label>
             <HBox spacing="20.0">
@@ -51,10 +51,10 @@
                         <Insets />
                      </opaqueInsets>
                   </ComboBox>
-                  <TextField id="editChannelsTextField" maxWidth="160.0" prefHeight="25.0" prefWidth="160.0" styleClass="text-input" />
+                  <TextField id="editChannelsTextField" maxWidth="160.0" prefHeight="25.0" prefWidth="160.0" promptText="%textField.changeName" styleClass="text-input" />
                </children>
                <VBox.margin>
-                  <Insets left="30.0" />
+                  <Insets left="20.0" />
                </VBox.margin>
             </HBox>
             <HBox spacing="20.0">
@@ -66,23 +66,23 @@
                   <Insets left="200.0" top="20.0" />
                </VBox.margin>
             </HBox>
-            <Label id="createChannelLabel" layoutX="45.0" layoutY="25.0" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.createChannel">
+            <Label id="createChannelLabel" layoutX="45.0" layoutY="25.0" style="-fx-font-size: 16;" text="%label.createChannel">
                <VBox.margin>
-                  <Insets left="30.0" top="45.0" />
+                  <Insets left="20.0" top="45.0" />
                </VBox.margin>
             </Label>
             <HBox alignment="CENTER_LEFT" spacing="20.0">
                <children>
-                  <TextField id="createChannelTextField" prefHeight="25.0" prefWidth="150.0" styleClass="text-input" />
+                  <TextField id="createChannelTextField" prefHeight="25.0" prefWidth="150.0" promptText="%textField.createNewOne" styleClass="text-input" />
                   <RadioButton id="channelTextRadioButton" contentDisplay="BOTTOM" mnemonicParsing="false" prefHeight="5.0" prefWidth="22.0" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" />
                   <RadioButton id="channelVoiceRadioButton" mnemonicParsing="false" prefHeight="5.0" prefWidth="22.0" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" />
                   <Button id="channelCreateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" />
                </children>
                <VBox.margin>
-                  <Insets left="30.0" />
+                  <Insets left="20.0" />
                </VBox.margin>
             </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+            <HBox prefWidth="200.0" spacing="15.0">
                <children>
                   <Label id="radioText" text="%radioButton.text">
                      <font>
@@ -96,7 +96,7 @@
                   </Label>
                </children>
                <padding>
-                  <Insets left="200.0" />
+                  <Insets left="185.0" />
                </padding>
             </HBox>
          </children>

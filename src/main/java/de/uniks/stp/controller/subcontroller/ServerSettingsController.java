@@ -140,10 +140,6 @@ public class ServerSettingsController {
     }
 
     private void newSelectedButton(Button button) {
-        if (selectedButton != null) {
-            selectedButton.setStyle("-fx-background-color: #2f3136; -fx-border-color: #2f3136;");
-        }
-        button.setStyle("-fx-background-color: #AAAAAA;-fx-border-color:#AAAAAA");
         selectedButton = button;
     }
 
@@ -172,10 +168,12 @@ public class ServerSettingsController {
                 case "Category":
                     subController = new ServerSettingsCategoryController(serverSettingsField, builder, server);
                     subController.init();
+                    subController.setTheme();
                     break;
                 case "Privilege":
                     subController = new ServerSettingsPrivilegeController(serverSettingsField, builder, server);
                     subController.init();
+                    subController.setTheme();
                     break;
                 default:
                     break;

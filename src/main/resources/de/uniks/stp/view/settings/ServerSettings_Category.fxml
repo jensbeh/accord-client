@@ -16,7 +16,7 @@
                <children>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="39.0" prefWidth="360.0">
                      <children>
-                        <Label id="editCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.editCategory" />
+                        <Label id="editCategoryLabel" style="-fx-font-size: 16;" text="%label.editCategory" />
                      </children>
                      <VBox.margin>
                         <Insets left="20.0" />
@@ -29,7 +29,7 @@
                               <Insets />
                            </opaqueInsets>
                            <HBox.margin>
-                              <Insets top="2.0" />
+                              <Insets />
                            </HBox.margin>
                         </ComboBox>
                         <VBox prefHeight="150.0" prefWidth="150.0" spacing="15.0">
@@ -57,7 +57,7 @@
                <children>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="375.0">
                      <children>
-                        <Label id="createCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.createCategory">
+                        <Label id="createCategoryLabel" style="-fx-font-size: 16;" text="%label.createCategory">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>

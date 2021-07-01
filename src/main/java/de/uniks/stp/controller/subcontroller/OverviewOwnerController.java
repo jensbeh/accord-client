@@ -7,9 +7,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -19,6 +21,7 @@ public class OverviewOwnerController {
     private Label serverName;
     private TextField nameText;
     private final RestClient restClient;
+    private VBox root;
 
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -27,12 +30,12 @@ public class OverviewOwnerController {
     }
 
     public void init() {
+        root = (VBox) view.lookup("rootCategory");
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
         Button deleteServer = (Button) view.lookup("#deleteServer");
-        Button changeName = (Button) view.lookup("#changeName");
+        Button changeName = (Button) view.lookup("#serverChangeButton");
         this.nameText = (TextField) view.lookup("#nameText");
-        nameText.setStyle("-fx-text-fill: white;" + "-fx-background-color:  #333333;");
         //Buttons
         deleteServer.setOnAction(this::onDeleteServerClicked);
         changeName.setOnAction(this::onChangeNameClicked);
@@ -84,5 +87,22 @@ public class OverviewOwnerController {
             });
 
         }
+    }
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

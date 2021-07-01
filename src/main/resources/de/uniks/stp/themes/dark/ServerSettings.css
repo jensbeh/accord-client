@@ -6,6 +6,25 @@
     -fx-background-color: #202225;
 }
 
+#rootPrivilege {
+    -fx-background-color: #202225;
+}
+
+#rootCategory {
+    -fx-background-color: #202225;
+}
+
+#rootOverview {
+    -fx-background-color: #202225;
+}
+
+#deleteServer {
+    -fx-background-color: RED;
+}
+
+#leaveServer {
+    -fx-background-color: RED;
+}
 
 #editChannelsLabel {
     -fx-text-fill: WHITE;
@@ -23,11 +42,47 @@
     -fx-background-color: #202225;
 }
 
+#Privilege_On {
+    -fx-background-color: #202225;
+}
+
 #settingsItems {
     -fx-background-color: #2f3136;
 }
 
+#User_from_Privilege {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: RED;
+}
+
+#User_to_Privilege {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
 #channelChangeButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#serverChangeButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#Change_Privilege {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;

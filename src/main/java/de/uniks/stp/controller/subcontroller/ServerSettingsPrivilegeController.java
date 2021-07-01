@@ -16,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.beans.PropertyChangeEvent;
@@ -39,6 +40,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private final RestClient restClient;
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
+    private VBox root;
 
 
     public ServerSettingsPrivilegeController(Parent view, ModelBuilder builder, Server server) {
@@ -50,6 +52,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
 
     @SuppressWarnings("unchecked")
     public void init() {
+        root = (VBox) view.lookup("#rootPrivilege");
         categoryChoice = (ComboBox<Categories>) view.lookup("#Category");
         channelChoice = (ComboBox<ServerChannel>) view.lookup("#Channels");
         privilegeOnButton = (RadioButton) view.lookup("#Privilege_On_Button");
@@ -233,5 +236,23 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 channel.removePropertyChangeListener(this::onPrivilegeChanged);
             }
         }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        root.getStylesheets().clear();
+        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }
