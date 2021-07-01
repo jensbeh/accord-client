@@ -10,10 +10,13 @@ import javafx.scene.image.Image;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -330,23 +333,20 @@ public class ResourceManager {
      * copy file
      */
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
-        InputStream in;
-        if (file.getName().equals("default.wav")) {
-            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
-            assert fileUrl != null;
-            in = fileUrl.openStream();
-        } else {
-            in = new FileInputStream(file);
+        FileChannel source;
+        if(file.getName().equals("default.wav")){
+            URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
+            assert zipFileURL != null;
+            Path path = Paths.get(zipFileURL.toURI());
+            File file1 = path.toFile();
+            source = new FileInputStream(file1).getChannel();
+        }else{
+            source = new FileInputStream(file).getChannel();
         }
-        OutputStream out = new FileOutputStream(targetPath);
-        // Copy the bits from instream to outstream
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
+        FileChannel desti = new FileOutputStream(targetPath).getChannel();
+        desti.transferFrom(source, 0, source.size());
+        source.close();
+        desti.close();
     }
 
     /**
@@ -365,7 +365,7 @@ public class ResourceManager {
     }
 
     /**
-     * save volume
+     * save volume of slider in jar file
      */
     public static void saveVolume(String currentUserName, Float volume) {
         try {
@@ -380,19 +380,18 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
-     * get value of comboBox
+     * get value of jar file
      */
     public static Float getVolume(String currentUserName) {
-        Float volume = 0.0f;
-        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
+        float volume = 0.0f;
+        if (Files.isReadable(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"))) {
             try {
                 Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
                 JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-                comboValue = (String) parser.get("volume");
+                volume = ((BigDecimal) parser.get("volume")).floatValue();
                 reader.close();
             } catch (JsonException |
                     IOException e) {

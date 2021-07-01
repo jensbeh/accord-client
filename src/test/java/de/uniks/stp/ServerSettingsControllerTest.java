@@ -331,6 +331,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void clickOnOwnerOverview() throws InterruptedException {
         loginInit(false);
 
+        mockPutServer();
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#server"));
         WaitForAsyncUtils.waitForFxEvents();
