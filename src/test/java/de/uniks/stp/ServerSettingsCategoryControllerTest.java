@@ -292,7 +292,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn("#serverMenuButton");
         clickOn("#ServerSettings");
-        clickOn("#category");
+        clickOn("#categoryBtn");
 
         Label editCategoryLabel = lookup("#editCategoryLabel").query();
         Label createCategoryLabel = lookup("#createCategoryLabel").query();
@@ -305,9 +305,9 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         Assert.assertEquals("Edit Category", editCategoryLabel.getText());
         Assert.assertEquals("Create Category", createCategoryLabel.getText());
-        Assert.assertEquals("change", changeCategoryNameButton.getText());
+        Assert.assertEquals("Change", changeCategoryNameButton.getText());
         Assert.assertEquals("Delete", deleteCategoryButton.getText());
-        Assert.assertEquals("create", createCategoryButton.getText());
+        Assert.assertEquals("Create", createCategoryButton.getText());
 
 
         // type in new name for channel

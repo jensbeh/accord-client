@@ -260,7 +260,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#serverMenuButton");
         clickOn("#ServerSettings");
-        clickOn("#privilege");
+        clickOn("#privilegeBtn");
 
         Server currentServer = builder.getCurrentServer();
         RadioButton privilegeOn = lookup("#Privilege_On_Button").query();
