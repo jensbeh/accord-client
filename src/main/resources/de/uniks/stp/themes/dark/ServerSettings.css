@@ -6,6 +6,11 @@
     -fx-background-color: #202225;
 }
 
+
+#editChannelsLabel {
+    -fx-text-fill: WHITE;
+}
+
 #serverSettingsContainer {
     -fx-background-color: #202225;
 }
@@ -30,7 +35,22 @@
     -fx-text-fill: WHITE;
 }
 
+#changeCategoryNameButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
 #channelDeleteButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: RED;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+}
+#deleteCategoryButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-text-fill: RED;
@@ -39,6 +59,14 @@
 }
 
 #channelCreateButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: WHITE;
+}
+
+#createCategoryButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
@@ -113,7 +141,7 @@
 }
 
 .combo-box-popup {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #3d4045;
 }
 
 .combo-box-popup .list-cell {
@@ -122,14 +150,14 @@
 }
 
 .combo-box-popup .list-view .list-cell {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #3d4045;
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
     -fx-alignment: center;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
-    -fx-background-color: #2f3136;
+    -fx-background-color: #525254;
 }
 
 .combo-box-base {
@@ -155,9 +183,5 @@
     -fx-background-radius: 0;
     -fx-border-color: #222222;
     -fx-background-color: #2f3136;
-    -fx-border-width: 2;
 }
 
-#channelTextRadioButton  {
-    -fx-content-display: BOTTOM;
-}

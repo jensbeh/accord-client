@@ -37,6 +37,8 @@ public class ServerSettingsChannelController extends SubSetting {
     private RadioButton channelVoiceRadioButton;
     private Button channelCreateButton;
     private VBox root;
+    private Label radioVoice;
+    private Label radioText;
 
     private static Categories selectedCategory;
     private static ServerChannel selectedChannel;
@@ -66,6 +68,9 @@ public class ServerSettingsChannelController extends SubSetting {
         this.channelTextRadioButton = (RadioButton) view.lookup("#channelTextRadioButton");
         this.channelVoiceRadioButton = (RadioButton) view.lookup("#channelVoiceRadioButton");
         this.channelCreateButton = (Button) view.lookup("#channelCreateButton");
+        this.radioText = (Label) view.lookup("#radioText");
+        this.radioVoice = (Label) view.lookup("#radioVoice");
+
 
         ToggleGroup textVoiceToggle = new ToggleGroup();
         channelTextRadioButton.setToggleGroup(textVoiceToggle);
@@ -141,6 +146,8 @@ public class ServerSettingsChannelController extends SubSetting {
         channelTextRadioButton.setDisable(disable);
         channelVoiceRadioButton.setDisable(disable);
         channelCreateButton.setDisable(disable);
+        radioVoice.setDisable(disable);
+        radioText.setDisable(disable);
     }
 
     /**

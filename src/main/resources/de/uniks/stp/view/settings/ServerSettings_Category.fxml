@@ -8,23 +8,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="400.0" style="-fx-background-color: #1f1f1f;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootCategory" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="248.0" prefWidth="473.0">
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+            <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <HBox alignment="BOTTOM_LEFT" prefHeight="39.0" prefWidth="360.0">
                      <children>
                         <Label id="editCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.editCategory" />
                      </children>
                      <VBox.margin>
-                        <Insets left="40.0" />
+                        <Insets left="20.0" />
                      </VBox.margin>
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
-                        <ComboBox id="editCategoriesSelector" prefWidth="150.0" promptText="%comboBox.selectCategory" styleClass="combo-box-popup" stylesheets="@../../styles/ServerSettingsStyles.css">
+                        <ComboBox id="editCategoriesSelector" prefWidth="150.0" promptText="%comboBox.selectCategory" styleClass="combo-box-popup">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
@@ -34,11 +34,11 @@
                         </ComboBox>
                         <VBox prefHeight="150.0" prefWidth="150.0" spacing="15.0">
                            <children>
-                              <TextField id="editCategoryNameTextField" maxWidth="150.0" prefWidth="150.0" promptText="%textField.changeName" styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css" />
+                              <TextField id="editCategoryNameTextField" maxWidth="150.0" prefWidth="150.0" promptText="%textField.changeName" styleClass="text-input" />
                               <HBox prefHeight="100.0" prefWidth="161.0" spacing="15.0">
                                  <children>
-                                    <Button id="changeCategoryNameButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.change" />
-                                    <Button id="deleteCategoryButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ff0000; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.delete" />
+                                    <Button id="changeCategoryNameButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" text="%button.change" />
+                                    <Button id="deleteCategoryButton" maxWidth="67.0" minHeight="30.0" minWidth="67.0" mnemonicParsing="false" text="%button.delete" />
                                  </children>
                                  <VBox.margin>
                                     <Insets />
@@ -55,7 +55,7 @@
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0">
                <children>
-                  <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="375.0">
                      <children>
                         <Label id="createCategoryLabel" style="-fx-text-fill: #ffffff; -fx-font-size: 16;" text="%label.createCategory">
                            <HBox.margin>
@@ -64,17 +64,17 @@
                         </Label>
                      </children>
                      <VBox.margin>
-                        <Insets left="40.0" />
+                        <Insets left="20.0" />
                      </VBox.margin>
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                      <children>
-                        <TextField id="createCategoryNameTextField" maxWidth="150.0" prefWidth="148.0" promptText="%textField.createNewOne" styleClass="text-input" stylesheets="@../../styles/ServerSettingsStyles.css">
+                        <TextField id="createCategoryNameTextField" maxWidth="150.0" prefWidth="148.0" promptText="%textField.createNewOne" styleClass="text-input">
                            <HBox.margin>
                               <Insets top="2.0" />
                            </HBox.margin>
                         </TextField>
-                        <Button id="createCategoryButton" maxWidth="72.0" minHeight="30.0" minWidth="72.0" mnemonicParsing="false" style="-fx-background-color: #e89595; -fx-background-radius: 80; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 0 0 0 0;" text="%button.create" />
+                        <Button id="createCategoryButton" maxWidth="72.0" minHeight="30.0" minWidth="72.0" mnemonicParsing="false" text="%button.create" />
                      </children>
                      <VBox.margin>
                         <Insets left="20.0" />
