@@ -97,8 +97,6 @@ public class HomeViewController {
         File file = new File("de/uniks/stp/sounds/default.wav");
         ResourceManager.saveNotifications(file);
 
-        //create Saves.json if not already there
-        createSaves();
 
         showPrivateView();
         showServers(() -> {
@@ -119,28 +117,7 @@ public class HomeViewController {
         });
     }
 
-    /**
-     * create saves.json if not there and add new jsonObject with username as key
-     */
-    public void createSaves() {
-        try {
-            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH))) {
-                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH));
-            }
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"))) {
-                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
-            }
-            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
-            JsonObject jsonObject = (JsonObject) Jsoner.deserialize(reader);
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
-            JsonObject obj2 = new JsonObject();
-            jsonObject.put(builder.getPersonalUser().getName(), obj2);
-            Jsoner.serialize(jsonObject, writer);
-            writer.close();
-        } catch (IOException | JsonException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     /**
      * Returns the current HomeViewController.
