@@ -10,11 +10,13 @@ import javafx.scene.image.Image;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -331,7 +333,16 @@ public class ResourceManager {
      * copy file
      */
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
-        FileChannel source = new FileInputStream(file).getChannel();
+        FileChannel source;
+        if(file.getName().equals("default.wav")){
+            URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/default.wav");
+            assert zipFileURL != null;
+            Path path = Paths.get(zipFileURL.toURI());
+            File file1 = path.toFile();
+            source = new FileInputStream(file1).getChannel();
+        }else{
+            source = new FileInputStream(file).getChannel();
+        }
         FileChannel desti = new FileOutputStream(targetPath).getChannel();
         desti.transferFrom(source, 0, source.size());
         source.close();

@@ -69,9 +69,7 @@ public class CustomNotificationsController extends SubSetting {
                 if (fileName.equals(newValue)) {
                     try {
                         stream = new FileInputStream(file);
-                        //builder.setSoundFile(stream);
                         URL url = new URL("file://" + file.getPath());
-                        System.out.println(url);
                         url = file.toURI().toURL();
                         builder.setSoundFile(url);
                     } catch (IOException e) {
