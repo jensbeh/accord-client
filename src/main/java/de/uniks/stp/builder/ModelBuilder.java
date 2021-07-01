@@ -295,6 +295,10 @@ public class ModelBuilder {
 
     public void muteMicrophone(boolean muteMicrophone) {
         this.muteMicrophone = muteMicrophone;
+        //when new value is set mute or unmute the microphone
+        if (audioStreamClient != null) {
+            this.audioStreamClient.muteMicrophone(muteMicrophone);
+        }
     }
 
     public boolean getMuteMicrophone() {

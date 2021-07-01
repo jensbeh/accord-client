@@ -294,6 +294,7 @@ public class ServerViewController {
             e.printStackTrace();
         }
     }
+
     /**
      * change microphone setting
      */
@@ -301,6 +302,7 @@ public class ServerViewController {
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }
+
     /**
      * change headphone setting
      */
