@@ -62,8 +62,4 @@ public class Microphone {
         microphone.stop();
         microphone.close();
     }
-
-    public void mute(boolean mute) {
-
-    }
 }

@@ -118,7 +118,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         AudioStreamClient.setSocket(mockAudioSocket);
 
         builder.setLoadUserData(false);
-
+        builder.getAudioStreamClient();
         app.start(stage);
         stage.centerOnScreen();
     }

@@ -100,8 +100,4 @@ public class AudioStreamSender implements Runnable {
             Thread.onSpinWait();
         }
     }
-
-    public void mute(boolean mute) {
-        microphone.mute(mute);
-    }
 }

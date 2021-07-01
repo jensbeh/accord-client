@@ -94,14 +94,9 @@ public class AudioStreamClient {
     }
 
     public void muteMicrophone(boolean mute) {
-        if (sender != null) {
-            if (mute) {
-                senderThread = new Thread(sender);
-                senderThread.start();
-            } else {
-                sender.stop();
-            }
+        if (mute) {
+            senderThread = new Thread(sender);
+            senderThread.start();
         }
-        //sender.mute(mute);
     }
 }
