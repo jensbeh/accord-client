@@ -21,10 +21,13 @@ import javafx.scene.web.WebView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +67,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
     private static class MessageListCell extends ListCell<Message> {
         private boolean loadImage;
-        private boolean use_web = true;
+        private String urlType;
 
         /**
          * shows message in cell of ListView
@@ -199,35 +202,43 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             if (matcher.find()){
                 url = matcher.toMatchResult().group();
             }
+            if (url.contains(".png") || url.contains(".jpg") || url.contains(".bmp") || url.contains(".svg")) {
+                urlType = "picture";
+            } else if (url.contains(".gif")){
+                urlType = "gif";
+            } else {
+                urlType = "None";
+            }
             return url;
         }
 
         private void setImage(String url, WebEngine engine){
-            if(url.contains(".png") || url.contains(".jpg") || url.contains(".bmp")) {
+            if(urlType.equals("picture")) {
+//                engine.loadContent("<html><body style=\"background-color:#121212\"><img align=middle src=\"" + url + "\"></body></html>");
                 engine.load(url);
                 loadImage = true;
-            } else if (url.contains(".gif")) {
-                engine.loadContent("<html><body style=\"background-color:#121212\"><img align=\"middle\" src=" + url + "></body></html>");
+            } else if (urlType.equals("gif")) {
+//                engine.load(url);
+                engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
                 loadImage = true;
             }
+//            engine.setJavaScriptEnabled(false);
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/test.css")).toExternalForm());
         }
 
         private void setImageSize(String url, WebView webView) {
             try {
-                Parent parent = this.getParent().getParent().getParent().getParent();
-//                    Parent parent = this.getParent().getParent();
-                while (parent.getId().equals("container")) {
+                Parent parent = this.getParent();
+                while (parent.getId() == null || parent.getId().equals("container")) {
                     parent = parent.getParent();
                 }
                 Bounds bounds = parent.getBoundsInLocal();
                 double maxX = bounds.getMaxX();
                 double maxY = bounds.getMaxY();
 
-                if(url.contains(".png") || url.contains(".jpg") || url.contains(".bmp")) {
+                if(urlType.equals("pictures")) {
                     URL url_stream = new URL(url);
                     BufferedImage image = ImageIO.read(url_stream);
-
-
                     if (image != null) {
                         int height = image.getHeight();
                         int width = image.getWidth();
