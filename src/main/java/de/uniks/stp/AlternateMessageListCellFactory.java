@@ -4,12 +4,12 @@ import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -21,9 +21,7 @@ import javafx.scene.web.WebView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -95,24 +93,13 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 String url = searchUrl(textMessage);
                 loadImage = false;
                 WebView webView = new WebView();
-                ImageView imageView = new ImageView();
-                if(use_web) {
-//                    System.out.println(this.getBoundsInParent());
-                    if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-                        setImage(url, webView.getEngine());
-                        if(loadImage) {
-                            webView.setContextMenuEnabled(false);
-                            //webView.setMaxSize(600,400);
-                            setImageSize(url, webView);
-                            textMessage = textMessage.replace(url, "");
-                        }
-                    }
-                } else {
-                    if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-                        setImage(url, imageView);
-                        if(loadImage) {
-                            textMessage = textMessage.replace(url, "");
-                        }
+
+                if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                    setImage(url, webView.getEngine());
+                    if(loadImage) {
+                        webView.setContextMenuEnabled(false);
+                        setImageSize(url, webView);
+                        textMessage = textMessage.replace(url, "");
                     }
                 }
 
@@ -163,12 +150,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 if(!loadImage) {
                     vbox.getChildren().addAll(userName, message);
                 } else {
-                    if(use_web){
-                        vbox.getChildren().addAll(userName, message, webView);
-                    }
-                    else {
-                        vbox.getChildren().addAll(userName, message, imageView);
-                    }
+                    vbox.getChildren().addAll(userName, message, webView);
                 }
 
                 cell.setAlignment(Pos.CENTER_RIGHT);
@@ -178,27 +160,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             }
             this.setGraphic(cell);
 
-        }
-
-        private void setImageSize(String url, WebView webView) {
-            try {
-                if(url.contains(".png") || url.contains(".jpg") || url.contains(".bmp")) {
-                    URL url_stream = new URL(url);
-                    BufferedImage image = ImageIO.read(url_stream);
-                    if (image != null) {
-                        int height = image.getHeight();
-                        int width = image.getWidth();
-                        if (height > 0 || width > 0) {
-                            webView.setMaxSize(width, height);
-                        }
-                    }
-                } else {
-                    webView.parentToLocal(this.getBoundsInLocal());
-                }
-                webView.autosize();
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
         }
 
         private String handleSpacing(String str){
@@ -231,7 +192,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         }
 
         private String searchUrl(String msg){
-            // String urlRegex = "((http:\\/\\/|https:\\/\\/)?(www.)?(([a-zA-Z0-9-]){2,}\\.){1,4}([a-zA-Z]){2,6}(\\/([a-zA-Z-_\\/\\.0-9#:?=&;,]*)?)?)";
             String urlRegex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
             Pattern pattern = Pattern.compile(urlRegex);
             Matcher matcher = pattern.matcher(msg);
@@ -247,25 +207,41 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 engine.load(url);
                 loadImage = true;
             } else if (url.contains(".gif")) {
-                engine.loadContent("<html><body style=\"background-color:#121212\"><img src=" + url + " class=\"center\"></body></html>");
+                engine.loadContent("<html><body style=\"background-color:#121212\"><img align=\"middle\" src=" + url + "></body></html>");
                 loadImage = true;
             }
         }
 
-        private void setImage(String url, ImageView imageView){
+        private void setImageSize(String url, WebView webView) {
             try {
-                URL url_stream = new URL(url);
-                BufferedImage imagebuffer = ImageIO.read(url_stream);
+                Parent parent = this.getParent().getParent().getParent().getParent();
+//                    Parent parent = this.getParent().getParent();
+                while (parent.getId().equals("container")) {
+                    parent = parent.getParent();
+                }
+                Bounds bounds = parent.getBoundsInLocal();
+                double maxX = bounds.getMaxX();
+                double maxY = bounds.getMaxY();
 
-                URLConnection conn = new URL(url).openConnection();
-                conn.setRequestProperty("User-Agent", "Wget/1.13.4 (linux-gnu)");
-                InputStream stream = conn.getInputStream();
-                Image image = new Image(stream);
-                imageView.setFitWidth(image.getWidth());
-                imageView.setFitHeight(image.getHeight());
-                imageView.setImage(image);
-                loadImage = true;
-            } catch (Exception e){
+                if(url.contains(".png") || url.contains(".jpg") || url.contains(".bmp")) {
+                    URL url_stream = new URL(url);
+                    BufferedImage image = ImageIO.read(url_stream);
+
+
+                    if (image != null) {
+                        int height = image.getHeight();
+                        int width = image.getWidth();
+                        if (height < maxY-20 || width < maxX-20) {
+                            webView.setMaxSize(width, height);
+                        } else {
+                            webView.setMaxSize(maxX-20, maxY-20);
+                        }
+                    }
+                } else {
+                    webView.setMaxSize(maxX-20, maxY-20);
+                }
+                webView.autosize();
+            } catch(Exception e) {
                 e.printStackTrace();
             }
         }
