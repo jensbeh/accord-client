@@ -272,7 +272,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
         doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
-        serverChatWebSocket.setBuilder(builder);
+        serverSystemWebSocket.setBuilder(builder);
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#serverName_5e2fbd8770dd077d03df505");
