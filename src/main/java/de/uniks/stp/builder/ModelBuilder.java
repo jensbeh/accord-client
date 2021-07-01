@@ -290,7 +290,7 @@ public class ModelBuilder {
 
     public void muteMicrophone(boolean muteMicrophone) {
         this.muteMicrophone = muteMicrophone;
-        if(audioStreamClient != null) {
+        if (audioStreamClient != null) {
             this.audioStreamClient.muteMicrophone(muteMicrophone);
         }
     }

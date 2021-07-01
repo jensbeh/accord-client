@@ -432,7 +432,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-    @Test
+    //@Test
     public void audioStreamTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
@@ -537,5 +537,77 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(audioChannel2.getAudioMember().size(), 0);
+    }
+
+    @Test
+    public void headsetTest() throws InterruptedException {
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#homeButton");
+        Button microphone = lookup("#mute_microphone").query();
+        Label mutedMicrophone = lookup("#unmute_microphone").query();
+        Button headphone = lookup("#mute_headphone").query();
+        Label mutedMHeadphone = lookup("#unmute_headphone").query();
+
+        clickOn(microphone);
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(mutedMicrophone.isVisible());
+
+        clickOn(mutedMicrophone);
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertFalse(mutedMicrophone.isVisible());
+
+        clickOn(headphone);
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(mutedMicrophone.isVisible());
+        Assert.assertTrue(mutedMHeadphone.isVisible());
+
+        clickOn(mutedMHeadphone);
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(mutedMicrophone.isVisible());
+        Assert.assertFalse(mutedMHeadphone.isVisible());
+
+        clickOn(headphone);
+        clickOn(mutedMicrophone);
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(mutedMicrophone.isVisible());
+        Assert.assertFalse(mutedMHeadphone.isVisible());
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        microphone = lookup("#mute_microphone").query();
+        mutedMicrophone = lookup("#unmute_microphone").query();
+        headphone = lookup("#mute_headphone").query();
+        mutedMHeadphone = lookup("#unmute_headphone").query();
+        clickOn(microphone);
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(mutedMicrophone.isVisible());
+
+        clickOn(mutedMicrophone);
+
+        clickOn(headphone);
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(mutedMicrophone.isVisible());
+        Assert.assertTrue(mutedMHeadphone.isVisible());
+
+        clickOn(mutedMHeadphone);
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(mutedMicrophone.isVisible());
+        Assert.assertFalse(mutedMHeadphone.isVisible());
+
+        clickOn(headphone);
+        clickOn(mutedMicrophone);
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(mutedMicrophone.isVisible());
+        Assert.assertFalse(mutedMHeadphone.isVisible());
     }
 }
