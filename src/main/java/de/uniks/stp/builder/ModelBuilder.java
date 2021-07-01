@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
     private static final String ROOT_PATH = "/de/uniks/stp";
-    private InputStream soundFile;
+    private URL soundFile;
 
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
@@ -107,7 +108,7 @@ public class ModelBuilder {
         this.restClient = restClient;
     }
 
-    public void setSoundFile(InputStream soundFile) {
+    public void setSoundFile(URL soundFile) {
         this.soundFile = soundFile;
     }
 
@@ -132,7 +133,7 @@ public class ModelBuilder {
         return serverSystemWebSocket;
     }
 
-    private InputStream getSoundFile() {
+    private URL getSoundFile() {
         return soundFile;
     }
 
@@ -171,13 +172,13 @@ public class ModelBuilder {
 
     public void playSound() {
         if (soundFile == null) {
-            setSoundFile(ModelBuilder.class.getResourceAsStream(ROOT_PATH + "/sounds/default.wav"));
+            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/default.wav"));
         }
         if (clip != null) {
             clip.stop();
         }
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile()));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile().openStream()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
