@@ -1,10 +1,16 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.Categories;
+import de.uniks.stp.model.Server;
+import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -32,6 +38,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ThemeControllerTest extends ApplicationTest {
+    private Stage stage;
     @Mock
     private RestClient restClient;
 
@@ -86,6 +93,7 @@ public class ThemeControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         //start application
         ModelBuilder builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
@@ -131,7 +139,7 @@ public class ThemeControllerTest extends ApplicationTest {
         categories.put("60b77ba0026b3534ca5a61ae");
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
-                .put("name", "Peter Lustig")
+                .put("name", "Peter")
                 .put("online", true);
         members.put(member);
         JSONObject jsonString = new JSONObject()
@@ -139,7 +147,7 @@ public class ThemeControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject()
                         .put("id", "5e2fbd8770dd077d03df505")
-                        .put("name", "asdfasdf")
+                        .put("name", "JOIdk")
                         .put("owner", "60ad230ac77d3f78988b3e5b")
                         .put("categories", categories)
                         .put("members", members)
@@ -155,14 +163,12 @@ public class ThemeControllerTest extends ApplicationTest {
     }
 
     public void mockGetCategories() {
-        JSONArray channels = new JSONArray();
-        channels.put("60b77ba0026b3534ca5a61af");
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61ae")
+                .put("id", "5e2fbd8770dd077d03df600")
                 .put("name", "default")
                 .put("server", "5e2fbd8770dd077d03df505")
-                .put("channels", channels));
+                .put("channels", new JSONArray().put("60b77ba0026b3534ca5a61af")));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -242,11 +248,6 @@ public class ThemeControllerTest extends ApplicationTest {
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
-
-
-        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
     }
 
     @Test
@@ -357,5 +358,214 @@ public class ThemeControllerTest extends ApplicationTest {
         clickOn(comboBox_themeSelect);
         clickOn("Dark");
         Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+    }
+
+    @Test
+    public void changeThemeServerSettings() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#deleteServer");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+
+        clickOn("#channelBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        Pane rootSettings = lookup("#root").query();
+        Assert.assertEquals("ffffff", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+
+        clickOn("#categoryBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        rootSettings = lookup("#root").query();
+        Assert.assertEquals("ffffff", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+
+        clickOn("#privilegeBtn");
+        clickOn("#privilegeBtn");
+        ComboBox<Categories> categoryChoice = lookup("#Category").query();
+        ComboBox<ServerChannel> channelChoice = lookup("#Channels").query();
+        clickOn(categoryChoice);
+        ComboBox<Categories> finalCategoryChoice = categoryChoice;
+        interact(() -> finalCategoryChoice.getSelectionModel().select(0));
+        Assert.assertEquals(channelChoice.getItems(), mockApp.getBuilder().getCurrentServer().getCategories().get(0).getChannel());
+
+        clickOn(channelChoice);
+        ComboBox<ServerChannel> finalChannelChoice = channelChoice;
+        interact(() -> finalChannelChoice.getSelectionModel().select(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#Privilege_On_Button");
+        clickOn("#Change_Privilege");
+        rootSettings = lookup("#root").query();
+        Assert.assertEquals("ffffff", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#deleteServer");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#channelBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#categoryBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#privilegeBtn");
+        clickOn("#privilegeBtn");
+        categoryChoice = lookup("#Category").query();
+        channelChoice = lookup("#Channels").query();
+        clickOn(categoryChoice);
+        interact(() -> finalCategoryChoice.getSelectionModel().select(0));
+        clickOn(channelChoice);
+        interact(() -> finalChannelChoice.getSelectionModel().select(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#Privilege_On_Button");
+        clickOn("#Change_Privilege");
+    }
+
+    @Test
+    public void inviteUserThemeTest() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#serverMenuButton");
+        clickOn("#InviteUsers");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#userLimitSelected");
+        Pane rootSettings = lookup("#root").query();
+        Assert.assertEquals("ffffff", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#serverMenuButton");
+        clickOn("#InviteUsers");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#userLimitSelected");
+        rootSettings = lookup("#root").query();
+        Assert.assertEquals("36393f", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 }

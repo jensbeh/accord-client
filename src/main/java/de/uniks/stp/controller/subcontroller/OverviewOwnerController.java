@@ -21,7 +21,7 @@ public class OverviewOwnerController {
     private Label serverName;
     private TextField nameText;
     private final RestClient restClient;
-    private VBox root;
+
 
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -30,7 +30,7 @@ public class OverviewOwnerController {
     }
 
     public void init() {
-        root = (VBox) view.lookup("rootCategory");
+
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
         Button deleteServer = (Button) view.lookup("#deleteServer");
@@ -96,22 +96,5 @@ public class OverviewOwnerController {
             });
 
         }
-    }
-    public void setTheme() {
-        if (builder.getTheme().equals("Bright")) {
-            setWhiteMode();
-        } else {
-            setDarkMode();
-        }
-    }
-
-    private void setWhiteMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
-    }
-
-    private void setDarkMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }
