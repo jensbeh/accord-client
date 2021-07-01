@@ -45,6 +45,8 @@ public class ModelBuilder {
 
     private AudioStreamClient audioStreamClient;
     private ServerChannel currentAudioChannel;
+    private boolean muteMicrophone;
+    private boolean muteHeadphones;
     private AudioInputStream audioInputStream;
 
     private boolean loadUserData = true;
@@ -200,6 +202,8 @@ public class ModelBuilder {
             settings.put("showNotifications", showNotifications);
             settings.put("playSound", playSound);
             settings.put("theme", theme);
+            settings.put("muteMicrophone", muteMicrophone);
+            settings.put("muteHeadphones", muteHeadphones);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -216,6 +220,8 @@ public class ModelBuilder {
                 showNotifications = true;
                 playSound = true;
                 theme = "Dark";
+                muteMicrophone = true;
+                muteHeadphones = true;
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -224,6 +230,8 @@ public class ModelBuilder {
             showNotifications = (boolean) parsedSettings.get("showNotifications");
             playSound = (boolean) parsedSettings.get("playSound");
             theme = (String) parsedSettings.get("theme");
+            muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
+            muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
             reader.close();
 
         } catch (Exception e) {
@@ -279,6 +287,23 @@ public class ModelBuilder {
     public ServerChannel getCurrentAudioChannel() {
         return this.currentAudioChannel;
     }
+
+    public void muteMicrophone(boolean muteMicrophone) {
+        this.muteMicrophone = muteMicrophone;
+    }
+
+    public boolean getMuteMicrophone() {
+        return muteMicrophone;
+    }
+
+    public void muteHeadphones(boolean muteHeadphones) {
+        this.muteHeadphones = muteHeadphones;
+    }
+
+    public boolean getMuteHeadphones() {
+        return muteHeadphones;
+    }
+
 
     public void setLoadUserData(boolean loadUserData) {
         this.loadUserData = loadUserData;

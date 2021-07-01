@@ -3,13 +3,13 @@ package de.uniks.stp.controller;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class UserProfileController {
 
-    public HBox root;
+    public VBox root;
     public Label userName;
     private Circle onlineStatus;
     private final Parent view;
@@ -20,7 +20,7 @@ public class UserProfileController {
     }
 
     public void init() {
-        root = (HBox) view.lookup("#root");
+        root = (VBox) view.lookup("#root");
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
     }

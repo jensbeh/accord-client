@@ -167,7 +167,7 @@ public class HomeViewController {
                 this.root.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
-
+                this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
 
                 this.root.getChildren().clear();
@@ -211,7 +211,7 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
-            CreateServerController createServerController = new CreateServerController( root, builder, stage);
+            CreateServerController createServerController = new CreateServerController(root, builder, stage);
             createServerController.init();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
@@ -349,6 +349,7 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
+        builder.saveSettings();
         if (stage != null) {
             this.stage.close();
             stage = null;
