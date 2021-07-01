@@ -17,7 +17,6 @@ public class OverviewController {
     private final ModelBuilder builder;
     private final RestClient restClient;
     private Label serverName;
-    private VBox root;
 
     public OverviewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -26,7 +25,6 @@ public class OverviewController {
     }
 
     public void init() {
-        root = (VBox) view.lookup("#rootOverview");
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
         Button leaveServer = (Button) view.lookup("#leaveServer");
@@ -43,23 +41,5 @@ public class OverviewController {
             Stage stage = (Stage) serverName.getScene().getWindow();
             stage.close();
         });
-    }
-
-    public void setTheme() {
-        if (builder.getTheme().equals("Bright")) {
-            setWhiteMode();
-        } else {
-            setDarkMode();
-        }
-    }
-
-    private void setWhiteMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
-    }
-
-    private void setDarkMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

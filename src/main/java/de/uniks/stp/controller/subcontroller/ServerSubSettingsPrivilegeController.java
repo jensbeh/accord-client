@@ -145,22 +145,4 @@ public class ServerSubSettingsPrivilegeController {
         addUser.setOnAction(null);
         removeUser.setOnAction(null);
     }
-
-    public void setTheme() {
-        if (builder.getTheme().equals("Bright")) {
-            setWhiteMode();
-        } else {
-            setDarkMode();
-        }
-    }
-
-    private void setWhiteMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ServerSettings.css")).toExternalForm());
-    }
-
-    private void setDarkMode() {
-        root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ServerSettings.css")).toExternalForm());
-    }
 }

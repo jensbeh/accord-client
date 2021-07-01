@@ -94,7 +94,6 @@ public class ServerSettingsController {
                 root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettingsSubView/Overview.fxml")), StageManager.getLangBundle());
                 OverviewController overviewController = new OverviewController(root, builder);
                 overviewController.init();
-                overviewController.setTheme();
             }
             this.settingsContainer.getChildren().clear();
             this.settingsContainer.getChildren().add(root);
