@@ -26,7 +26,20 @@
     -fx-background-color: RED;
 }
 
+
+#createCategoryLabel {
+    -fx-text-fill: WHITE;
+}
+
+#editCategoryLabel {
+    -fx-text-fill: WHITE;
+}
+
 #editChannelsLabel {
+    -fx-text-fill: WHITE;
+}
+
+#createChannelLabel {
     -fx-text-fill: WHITE;
 }
 
@@ -157,6 +170,16 @@
 }
 #overviewBtn:hover {
     -fx-background-color: #AAAAAA;
+    -fx-border-color: #AAAAAA;
+}
+
+#overviewBtn:focused {
+    -fx-background-color: #AAAAAA;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #AAAAAA;
 }
 
 #channelBtn {
@@ -169,6 +192,16 @@
 }
 #channelBtn:hover {
     -fx-background-color: #AAAAAA;
+    -fx-border-color: #AAAAAA;
+}
+
+#channelBtn:focused {
+    -fx-background-color: #AAAAAA;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #AAAAAA;
 }
 
 #categoryBtn {
@@ -181,6 +214,16 @@
 }
 #categoryBtn:hover {
     -fx-background-color: #AAAAAA;
+    -fx-border-color: #AAAAAA;
+}
+
+#categoryBtn:focused {
+    -fx-background-color: #AAAAAA;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #AAAAAA;
 }
 
 #privilegeBtn {
@@ -193,6 +236,16 @@
 }
 #privilegeBtn:hover {
     -fx-background-color: #AAAAAA;
+    -fx-border-color: #AAAAAA;
+}
+
+#privilegeBtn:focused {
+    -fx-background-color: #AAAAAA;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
+    -fx-border-color: #AAAAAA;
 }
 
 .combo-box-popup {
