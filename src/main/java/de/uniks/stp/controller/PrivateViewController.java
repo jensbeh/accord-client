@@ -196,6 +196,7 @@ public class PrivateViewController {
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }
+
     /**
      * change headphone setting
      */
