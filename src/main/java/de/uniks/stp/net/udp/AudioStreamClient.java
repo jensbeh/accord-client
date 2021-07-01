@@ -93,6 +93,9 @@ public class AudioStreamClient {
         socket = newSocket;
     }
 
+    /**
+     * starts new audio when microphone is unmuted
+     */
     public void muteMicrophone(boolean mute) {
         if (mute) {
             senderThread = new Thread(sender);
