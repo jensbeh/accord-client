@@ -48,6 +48,7 @@ public class AudioStreamClient {
             sender = new AudioStreamSender(builder, currentAudioChannel, address, port, socket);
             sender.init();
 
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -55,6 +56,7 @@ public class AudioStreamClient {
         //set both on threads so that quality is better
         receiverThread = new Thread(receiver);
         senderThread = new Thread(sender);
+
     }
 
     /**
@@ -91,4 +93,13 @@ public class AudioStreamClient {
         socket = newSocket;
     }
 
+    /**
+     * starts new audio when microphone is unmuted
+     */
+    public void muteMicrophone(boolean mute) {
+        if (mute) {
+            senderThread = new Thread(sender);
+            senderThread.start();
+        }
+    }
 }
