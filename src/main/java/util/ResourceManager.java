@@ -29,6 +29,7 @@ public class ResourceManager {
 
     private static final String ROOT_PATH = "/de/uniks/stp";
     private static String comboValue = "";
+    private static JsonObject root;
 
     /**
      * load highScore from file
@@ -290,19 +291,16 @@ public class ResourceManager {
      * get value of comboBox
      */
     public static String getComboValue(String currentUserName) {
-        comboValue = "";
-        if (new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json").exists()) {
-            try {
-                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
-                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-                comboValue = (String) parser.get("fileName");
-                reader.close();
-            } catch (JsonException |
-                    IOException e) {
-                e.printStackTrace();
-            }
+        JsonObject parser = new JsonObject();
+        try {
+            parser = getJsonObject(currentUserName, "currentNotification");
+        } catch (JsonException | IOException e) {
+            e.printStackTrace();
         }
-        return comboValue;
+        if (parser.get("currentNotification") == null) {
+            return "";
+        }
+        return (String) parser.get("currentNotification");
     }
 
     /**
@@ -311,15 +309,13 @@ public class ResourceManager {
     public static void setComboValue(String userName, String comboValue) {
         ResourceManager.comboValue = comboValue;
         try {
-            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"))) {
-                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
             }
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + comboValue + ".wav"))) {
-                for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH
-                        + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
-                    if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
-                        saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
-                    }
+            for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH
+                    + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
+                if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
+                    saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
                 }
             }
         } catch (IOException ioException) {
@@ -343,12 +339,8 @@ public class ResourceManager {
      */
     public static void saveUserNameAndSound(String currentUserName, String fileName) {
         try {
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + currentUserName + ".json"));
-            JsonObject obj = new JsonObject();
-            obj.put("fileName", fileName);
-            Jsoner.serialize(obj, writer);
-            writer.close();
-        } catch (IOException e) {
+            setJsonObject(currentUserName, "currentNotification", fileName);
+        } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
     }
@@ -358,52 +350,70 @@ public class ResourceManager {
      */
     public static void saveVolume(String currentUserName, Float volume) {
         try {
-            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"))) {
-                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"));
-            }
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
-            JsonObject obj = new JsonObject();
-            obj.put("volume", volume);
-            Jsoner.serialize(obj, writer);
-            writer.close();
-        } catch (IOException e) {
+            setJsonObject(currentUserName, "volume", String.valueOf(volume));
+        } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
      * get value of jar file
      */
     public static Float getVolume(String currentUserName) {
-        try{
-            checkForUser(currentUserName);
-        }catch (JsonException | IOException e) {
+        JsonObject parser = new JsonObject();
+        try {
+            parser = getJsonObject(currentUserName, "volume");
+        } catch (JsonException | IOException e) {
             e.printStackTrace();
         }
-
-        float volume = 0.0f;
-        if(Files.isReadable(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"))){
-            try {
-                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + currentUserName + ".json"));
-                JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-                volume = ((BigDecimal) parser.get("volume")).floatValue();
-                reader.close();
-            } catch (JsonException |
-                    IOException e) {
-                e.printStackTrace();
-            }
+        if (parser.get("volume") == null) {
+            return 0.0f;
         }
-        return volume;
+        String value = (String) parser.get("volume");
+        BigDecimal bigDecimal = new BigDecimal(value.replaceAll(",", ""));
+        return bigDecimal.floatValue();
     }
 
-    private static void checkForUser(String currentUserName) throws JsonException, IOException {
+    private static void setJsonObject(String currentUserName, String category, String value) throws JsonException, IOException {
         Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
-        JsonObject parser = (JsonObject) Jsoner.deserialize(reader);
-        if (parser.get(currentUserName) != null){
-            System.out.println("Jaaa");
-        }else{
-            System.out.println("Neiiin");
+        root = (JsonObject) Jsoner.deserialize(reader);
+        JsonObject jsonObject = (JsonObject) root.get(currentUserName);
+        if (root.get(currentUserName) != null && jsonObject.isEmpty()) {
+            jsonObject.put("currentNotification", new JsonObject());
+            jsonObject.put("private", new JsonArray());
+            jsonObject.put("snake", new JsonObject());
+            jsonObject.put("volume", new JsonObject());
         }
+        JsonObject jsonObject1 = (JsonObject) jsonObject.get(category);
+        jsonObject1.put(category, value);
+        BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+        Jsoner.serialize(root, writer);
+        writer.close();
+    }
+
+    private static JsonObject getJsonObject(String currentUserName, String category) throws JsonException, IOException {
+        Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+        root = (JsonObject) Jsoner.deserialize(reader);
+        JsonObject jsonObject = (JsonObject) root.get(currentUserName);
+        if (root.get(currentUserName) != null && jsonObject.isEmpty()) {
+            jsonObject.put("currentNotification", new JsonObject());
+            jsonObject.put("private", new JsonArray());
+            jsonObject.put("snake", new JsonObject());
+            jsonObject.put("volume", new JsonObject());
+        }
+        return (JsonObject) jsonObject.get(category);
+    }
+
+    private static JsonArray getJsonArray(String currentUserName, String category) throws JsonException, IOException {
+        Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+        root = (JsonObject) Jsoner.deserialize(reader);
+        JsonObject jsonObject = (JsonObject) root.get(currentUserName);
+        if (root.get(currentUserName) != null && jsonObject.isEmpty()) {
+            jsonObject.put("currentNotification", new JsonObject());
+            jsonObject.put("private", new JsonArray());
+            jsonObject.put("snake", new JsonObject());
+            jsonObject.put("volume", new JsonObject());
+        }
+        return (JsonArray) jsonObject.get(category);
     }
 }

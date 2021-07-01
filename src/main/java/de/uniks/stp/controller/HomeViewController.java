@@ -1,5 +1,8 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
 import com.sun.glass.ui.Clipboard;
@@ -28,8 +31,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import util.ResourceManager;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -93,22 +98,7 @@ public class HomeViewController {
         ResourceManager.saveNotifications(file);
 
         //create Saves.json if not already there
-        File file1 = null;
-
-        if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH))) {
-            Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH));
-        }
-        file1 = new File(APPDIR_ACCORD_PATH + "/Saves.json");
-        System.out.println(APPDIR_ACCORD_PATH + "/Saves.json");
-        /*if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"))) {
-             file1 = new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json");
-        }*/
-        assert file1 != null;
-        if(file1.exists()){
-            System.out.println("jo");
-        }else{
-            System.out.println("no");
-        }
+        createSaves();
 
         showPrivateView();
         showServers(() -> {
@@ -127,6 +117,29 @@ public class HomeViewController {
                 }
             }
         });
+    }
+
+    /**
+     * create saves.json if not there and add new jsonObject with username as key
+     */
+    public void createSaves() {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH));
+            }
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+            }
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+            JsonObject jsonObject = (JsonObject) Jsoner.deserialize(reader);
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Saves.json"));
+            JsonObject obj2 = new JsonObject();
+            jsonObject.put(builder.getPersonalUser().getName(), obj2);
+            Jsoner.serialize(jsonObject, writer);
+            writer.close();
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
