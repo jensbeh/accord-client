@@ -37,6 +37,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PrivateViewControllerTest extends ApplicationTest {
     private Stage stage;
+    private ModelBuilder builder;
 
     @Mock
     private RestClient restClient;
@@ -93,7 +94,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         //start application
-        ModelBuilder builder = new ModelBuilder();
+        builder = new ModelBuilder();
         builder.setUSER_CLIENT(privateSystemWebSocketClient);
         builder.setPrivateChatWebSocketClient(privateChatWebSocket);
         builder.setSERVER_USER(serverSystemWebSocket);
@@ -327,6 +328,7 @@ public class PrivateViewControllerTest extends ApplicationTest {
     @Test
     public void onNewMessageIconCounterTest() throws InterruptedException {
         loginInit();
+        builder.setDoNotDisturb(false);
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<PrivateChat> privateChat = lookup("#privateChatList").query();
