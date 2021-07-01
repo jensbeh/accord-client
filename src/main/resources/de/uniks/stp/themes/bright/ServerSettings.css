@@ -300,3 +300,48 @@
     -fx-background-color: #f2f3f5;
 }
 
+/*INVITE*/
+
+#rootInvite {
+    -fx-background-color: WHITE;
+}
+
+#rootUserTemp {
+    -fx-background-color: WHITE;
+}
+
+#rootUserLimit {
+    -fx-background-color: WHITE;
+}
+
+#userLimitLabel {
+    -fx-text-fill: BLACK;
+}
+
+#tempLabel {
+    -fx-text-fill: BLACK;
+}
+
+#inviteLinksLabel {
+    -fx-text-fill: BLACK;
+}
+
+#userLimit {
+    -fx-text-fill: BLACK;
+}
+
+#deleteLink {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: #1f29f7;
+}
+
+#createLink {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: BLACK;
+}

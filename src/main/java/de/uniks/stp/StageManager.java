@@ -217,6 +217,7 @@ public class StageManager extends Application {
             // init controller
             inviteUsersController = new InviteUsersController(root, builder, builder.getCurrentServer());
             inviteUsersController.init();
+            inviteUsersController.setTheme();
 
             subStage = new Stage();
             setSubStageTitle("window_title_inviteUsers");
