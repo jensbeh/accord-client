@@ -602,6 +602,14 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
+        Button microphone = lookup("#mute_microphone").query();
+        Label mutedMicrophone = lookup("#unmute_microphone").query();
+        clickOn(microphone);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(mutedMicrophone);
+        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#button_disconnectAudio");
         WaitForAsyncUtils.waitForFxEvents();
 
