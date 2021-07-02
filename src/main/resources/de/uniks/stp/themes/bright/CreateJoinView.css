@@ -1,11 +1,11 @@
 .tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: #36393f;
+    -fx-background-color: #f2f3f5;
 }
 
 .tab-pane
 {
     -fx-tab-min-width:60px;
-    -fx-background-color: #202225;
+    -fx-background-color: WHITE;
 }
 
 .tab{
@@ -13,16 +13,16 @@
 }
 .tab-pane .tab
 {
-    -fx-background-color: #a09f9f;
+    -fx-background-color: #a4a4a4;
     -fx-border-width: 0 0 3 0;
-    -fx-border-color: #a09f9f;
+    -fx-border-color: #a4a4a4;
     -fx-border-insets: 0 1 0 1,0,0;
 
 }
 .tab-pane .tab:selected
 {
     -fx-focus-color: transparent;
-    -fx-background-color: #838383;
+    -fx-background-color: #7e8081;
     -fx-border-width: 0 0 3 0;
     -fx-border-color: #7987ff;
 }
@@ -46,14 +46,14 @@
 }
 
 .text-input {
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: BLACK;
     -fx-background-radius: 0;
     -fx-border-color: #222222;
-    -fx-background-color: #2f3136;
+    -fx-background-color: #f2f3f5;
 }
 
 #createServer {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7987ff;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
@@ -61,7 +61,7 @@
 }
 
 #joinServer {
-    -fx-background-color: #ff9999;
+    -fx-background-color: #7987ff;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
