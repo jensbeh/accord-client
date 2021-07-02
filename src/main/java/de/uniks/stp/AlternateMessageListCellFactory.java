@@ -222,7 +222,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 loadImage = true;
             }
             engine.setJavaScriptEnabled(false);
-            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/test.css")).toExternalForm());
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/webView.css")).toExternalForm());
         }
 
         private void setImageSize(String url, WebView webView) {
