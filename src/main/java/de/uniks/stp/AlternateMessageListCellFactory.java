@@ -229,7 +229,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         private void setImageSize(String url, WebView webView) {
             try {
                 Parent parent = this.getParent();
-                while (parent != null && (parent.getId() == null || parent.getId().equals("container"))) {
+                while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
                     parent = parent.getParent();
                 }
                 Bounds bounds = parent.getBoundsInLocal();

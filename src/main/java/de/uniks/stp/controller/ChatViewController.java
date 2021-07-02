@@ -436,19 +436,25 @@ public class ChatViewController {
     public void refreshMessageListView() {
         Platform.runLater(() -> {
             messageList.setItems(FXCollections.observableArrayList(messages));
+            checkScrollToBottom();
         });
 
     }
 
     public void checkScrollToBottom() {
-        checkScrollToBottom();
         ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
-        VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
-        System.out.println(vf.toString());
-//        messageList.scrollTo(messages.size());
-        int lastMessagePosition = vf.getLastVisibleCell().getIndex();
-//            int firstMessagePosition = vf.getFirstVisibleCell().getIndex();
-        if (lastMessagePosition == messages.size()) {
+        int lastMessagePosition = 0;
+        int firstMessagePosition = 0;
+        if (ts != null) {
+            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+            if (vf != null)  {
+                if(vf.getFirstVisibleCell() != null && vf.getFirstVisibleCell() != null) {
+                    lastMessagePosition = vf.getFirstVisibleCell().getIndex();
+                    firstMessagePosition = vf.getFirstVisibleCell().getIndex();
+                }
+            }
+        }
+        if (lastMessagePosition == messages.size() || firstMessagePosition == 0) {
             messageList.scrollTo(messages.size());
         }
     }
