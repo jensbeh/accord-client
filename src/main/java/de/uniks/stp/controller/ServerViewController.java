@@ -240,10 +240,12 @@ public class ServerViewController {
             this.messageViewController.init();
             this.chatBox.getChildren().add(root);
             messageViewController.setTheme();
+            chatWebSocketClient.setChatViewController(messageViewController);
+            serverSystemWebSocket.setChatViewController(messageViewController);
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
-                    ChatViewController.printMessage(msg);
+                    messageViewController.printMessage(msg);
                 }
             }
         } catch (IOException e) {

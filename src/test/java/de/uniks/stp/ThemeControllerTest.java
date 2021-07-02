@@ -213,6 +213,7 @@ public class ThemeControllerTest extends ApplicationTest {
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
         doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
         doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(privateChatWebSocket).setMessageViewController(any());
         doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
