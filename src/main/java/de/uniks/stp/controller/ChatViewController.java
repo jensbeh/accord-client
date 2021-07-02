@@ -20,6 +20,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
@@ -395,7 +397,6 @@ public class ChatViewController {
         });
     }
 
-
     /**
      * copied the selected text
      */
@@ -438,7 +439,7 @@ public class ChatViewController {
     /**
      * insert new message in observableList
      */
-    public static void printMessage(Message msg) {
+    public void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 messages.add(msg);
@@ -455,7 +456,7 @@ public class ChatViewController {
     /**
      * removes message from observableList
      */
-    public static void removeMessage(Message msg) {
+    public void removeMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
@@ -469,8 +470,30 @@ public class ChatViewController {
         }
     }
 
-    public static void refreshMessageListView() {
-        Platform.runLater(() -> messageList.setItems(FXCollections.observableArrayList(messages)));
+    public void refreshMessageListView() {
+        Platform.runLater(() -> {
+            messageList.setItems(FXCollections.observableArrayList(messages));
+            checkScrollToBottom();
+        });
+
+    }
+
+    public void checkScrollToBottom() {
+        ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
+        int lastMessagePosition = 0;
+        int firstMessagePosition = 0;
+        if (ts != null) {
+            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+            if (vf != null) {
+                if (vf.getFirstVisibleCell() != null && vf.getFirstVisibleCell() != null) {
+                    lastMessagePosition = vf.getFirstVisibleCell().getIndex();
+                    firstMessagePosition = vf.getFirstVisibleCell().getIndex();
+                }
+            }
+        }
+        if (lastMessagePosition == messages.size() || firstMessagePosition == 0) {
+            messageList.scrollTo(messages.size());
+        }
     }
 
     public void clearMessageField() {

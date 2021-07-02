@@ -28,6 +28,7 @@ public class ServerChatWebSocket extends Endpoint {
     private ModelBuilder builder;
     public static final String COM_NOOP = "noop";
     private ServerViewController serverViewController;
+    private ChatViewController chatViewController;
     private String name;
 
     public void setServerViewController(ServerViewController serverViewController) {
@@ -150,7 +151,7 @@ public class ServerChatWebSocket extends Endpoint {
             if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                 assert message != null;
                 serverViewController.getCurrentChannel().withMessage(message);
-                ChatViewController.printMessage(message);
+                chatViewController.printMessage(message);
             }
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
@@ -196,5 +197,9 @@ public class ServerChatWebSocket extends Endpoint {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setChatViewController(ChatViewController chatViewController) {
+        this.chatViewController = chatViewController;
     }
 }
