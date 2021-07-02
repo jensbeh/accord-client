@@ -454,11 +454,11 @@ public class ChatViewController {
     }
 
     /**
-     * insert new message in observableList
+     * removes message from observableList
      */
     public static void removeMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
                 refreshMessageListView();
             }

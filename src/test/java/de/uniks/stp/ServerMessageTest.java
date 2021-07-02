@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.glassfish.json.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -322,7 +323,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         String messageIdB = "5e2fbd8770dd077d03dr458B";
         String messageIdC = "5e2fbd8770dd077d03dr458C";
-        String messageIdD = "5e2fbd8770dd077d03dr458C";
+        String messageIdD = "5e2fbd8770dd077d03dr458D";
         loginInit(true);
 
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
@@ -417,12 +418,32 @@ public class ServerMessageTest extends ApplicationTest {
                 sb.append(((Text) node).getText());
             }
         }
+
+        msgArrived = false;
+        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
+            if (privateChatMessageList.getItems().get(i).getMessage().equals(text)) {
+                msgArrived = true;
+            }
+        }
+        Assert.assertTrue(msgArrived);
+
         String fullText = sb.toString();
         fullText = fullText.replace("\n", "");
         Assert.assertEquals(fullText, text);
-        clickOn("#chooseCancel");
+        clickOn("#chooseDelete");
 
-        //TODO test delete Message functionality
+        String message2 = new JSONObject().put("action", "messageDeleted").put("data", new JSONObject().put("id", messageIdD).put("category", "5e2fbd8770dd077d03df600").put("channel",  channel.getId())).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message2);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        msgArrived = false;
+        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
+            if (privateChatMessageList.getItems().get(i).getMessage().equals(text)) {
+                msgArrived = true;
+            }
+        }
+        Assert.assertFalse(msgArrived);
 
         Button send = lookup("#sendButton").query();
         Assert.assertEquals(send.getText(), "send");
