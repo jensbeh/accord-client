@@ -2,12 +2,10 @@ package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
-import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
