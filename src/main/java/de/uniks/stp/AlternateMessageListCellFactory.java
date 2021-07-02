@@ -21,9 +21,7 @@ import javafx.scene.web.WebView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -96,32 +94,19 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 String url = searchUrl(textMessage);
                 loadImage = false;
                 WebView webView = new WebView();
-
                 if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
                     setImage(url, webView.getEngine());
-                    if(loadImage) {
+                    if (loadImage) {
                         webView.setContextMenuEnabled(false);
                         setImageSize(url, webView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
-
-
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-                    EmojiTextFlowParameters emojiTextFlowParameters;
-                    {
-                        emojiTextFlowParameters = new EmojiTextFlowParameters();
-                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-
-                        //Text color
-                        emojiTextFlowParameters.setTextColor(Color.WHITE);
-                    }
-                    message = new EmojiTextFlow(emojiTextFlowParameters);
+                    message = handleEmojis(true);
                     //Message background own user
                     message.getStyleClass().clear();
                     message.getStyleClass().add("messageLabelTo");
@@ -129,20 +114,13 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 } else {
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
-                    EmojiTextFlowParameters emojiTextFlowParameters;
-                    {
-                        emojiTextFlowParameters = new EmojiTextFlowParameters();
-                        emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                        emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                        emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                        emojiTextFlowParameters.setTextColor(Color.BLACK);
-                    }
-                    message = new EmojiTextFlow(emojiTextFlowParameters);
+
+                    message = handleEmojis(false);
                     //Message background
                     message.getStyleClass().clear();
                     message.getStyleClass().add("messageLabelFrom");
                 }
-                if(!textMessage.equals("")) {
+                if (!textMessage.equals("")) {
                     message.setId("messageLabel");
                     message.setMaxWidth(320);
                     message.setPrefWidth(textMessage.length());
@@ -150,7 +128,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.parseAndAppend(" " + str + " ");
                 }
 
-                if(!loadImage) {
+                if (!loadImage) {
                     vbox.getChildren().addAll(userName, message);
                 } else {
                     vbox.getChildren().addAll(userName, message, webView);
@@ -159,13 +137,36 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);
 
-
             }
             this.setGraphic(cell);
 
         }
 
-        private String handleSpacing(String str){
+        private EmojiTextFlow handleEmojis(boolean isUser) {
+            if (isUser) {
+                EmojiTextFlowParameters emojiTextFlowParameters;
+                {
+                    emojiTextFlowParameters = new EmojiTextFlowParameters();
+                    emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                    emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                    emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                    emojiTextFlowParameters.setTextColor(Color.WHITE);
+                }
+                return new EmojiTextFlow(emojiTextFlowParameters);
+            } else {
+                EmojiTextFlowParameters emojiTextFlowParameters;
+                {
+                    emojiTextFlowParameters = new EmojiTextFlowParameters();
+                    emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                    emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                    emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                    emojiTextFlowParameters.setTextColor(Color.BLACK);
+                }
+                return new EmojiTextFlow(emojiTextFlowParameters);
+            }
+        }
+
+        private String handleSpacing(String str) {
             //new Line after 50 Characters
             int point = 0;
             int counter = 25;
@@ -194,17 +195,17 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             return str;
         }
 
-        private String searchUrl(String msg){
-            String urlRegex = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+        private String searchUrl(String msg) {
+            String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
             Pattern pattern = Pattern.compile(urlRegex);
             Matcher matcher = pattern.matcher(msg);
             String url = "";
-            if (matcher.find()){
+            if (matcher.find()) {
                 url = matcher.toMatchResult().group();
             }
             if (url.contains(".png") || url.contains(".jpg") || url.contains(".bmp") || url.contains(".svg")) {
                 urlType = "picture";
-            } else if (url.contains(".gif")){
+            } else if (url.contains(".gif")) {
                 urlType = "gif";
             } else {
                 urlType = "None";
@@ -212,8 +213,8 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             return url;
         }
 
-        private void setImage(String url, WebEngine engine){
-            if(urlType.equals("picture")) {
+        private void setImage(String url, WebEngine engine) {
+            if (urlType.equals("picture")) {
 //                engine.loadContent("<html><body style=\"background-color:#121212\"><img align=middle src=\"" + url + "\"></body></html>");
                 engine.load(url);
                 loadImage = true;
@@ -235,24 +236,23 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 Bounds bounds = parent.getBoundsInLocal();
                 double maxX = bounds.getMaxX();
                 double maxY = bounds.getMaxY();
-
-                if(urlType.equals("pictures")) {
+                int height = 0;
+                int width = 0;
+                if (!urlType.equals("None")) {
                     URL url_stream = new URL(url);
-                    BufferedImage image = ImageIO.read(url_stream);
+                    BufferedImage image = ImageIO.read(url_stream.openStream());
                     if (image != null) {
-                        int height = image.getHeight();
-                        int width = image.getWidth();
-                        if (height < maxY-20 || width < maxX-20) {
-                            webView.setMaxSize(width, height);
-                        } else {
-                            webView.setMaxSize(maxX-20, maxY-20);
-                        }
+                        height = image.getHeight();
+                        width = image.getWidth();
                     }
+                }
+                if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+                    webView.setMaxSize(width, height);
                 } else {
-                    webView.setMaxSize(maxX-20, maxY-20);
+                    webView.setMaxSize(maxX - 50, maxY - 50);
                 }
                 webView.autosize();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
