@@ -494,7 +494,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
 
-        
         try {
             doAnswer((Answer<Void>) invocation -> {
                 return null;
