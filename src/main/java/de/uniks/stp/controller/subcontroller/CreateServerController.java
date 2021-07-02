@@ -252,4 +252,22 @@ public class CreateServerController {
         createServer.setOnAction(null);
         joinServer.setOnAction(null);
     }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        tapPane.getStylesheets().clear();
+        tapPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/CreateJoinView.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        tapPane.getStylesheets().clear();
+        tapPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/CreateJoinView.css")).toExternalForm());
+    }
 }
