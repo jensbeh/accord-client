@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -215,22 +216,20 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
         private void setImage(String url, WebEngine engine) {
             if (urlType.equals("picture")) {
-//                engine.loadContent("<html><body style=\"background-color:#121212\"><img align=middle src=\"" + url + "\"></body></html>");
                 engine.load(url);
                 loadImage = true;
             } else if (urlType.equals("gif")) {
-//                engine.load(url);
                 engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
                 loadImage = true;
             }
-//            engine.setJavaScriptEnabled(false);
+            engine.setJavaScriptEnabled(false);
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/test.css")).toExternalForm());
         }
 
         private void setImageSize(String url, WebView webView) {
             try {
                 Parent parent = this.getParent();
-                while (parent.getId() == null || parent.getId().equals("container")) {
+                while (parent != null && (parent.getId() == null || parent.getId().equals("container"))) {
                     parent = parent.getParent();
                 }
                 Bounds bounds = parent.getBoundsInLocal();

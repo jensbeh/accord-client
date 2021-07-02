@@ -283,11 +283,11 @@ public class PrivateViewController {
             messageViewController.init();
             messageViewController.setTheme();
             this.chatBox.getChildren().add(root);
-
+            privateChatWebSocket.setMessageViewController(messageViewController);
             if (PrivateViewController.getSelectedChat() != null) {
                 for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
                     // Display each Message which are saved
-                    ChatViewController.printMessage(msg);
+                    messageViewController.printMessage(msg);
                 }
             }
         } catch (IOException | JsonException e) {

@@ -29,6 +29,7 @@ public class ServerSystemWebSocket extends Endpoint {
     private final Timer noopTimer;
     private ModelBuilder builder;
     private ServerViewController serverViewController;
+    private Runnable refresh;
     private String name;
     public static final String COM_NOOP = "noop";
 
@@ -286,7 +287,7 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 msg.setMessage(text);
-                ChatViewController.refreshMessageListView();
+                refresh.run();
                 break;
             }
         }
@@ -584,5 +585,9 @@ public class ServerSystemWebSocket extends Endpoint {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setRefresh(Runnable refresh) {
+        this.refresh = refresh;
     }
 }

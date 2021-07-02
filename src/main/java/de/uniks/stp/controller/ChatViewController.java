@@ -20,6 +20,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.ListViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
@@ -123,7 +125,7 @@ public class ChatViewController {
     }
 
     /**
-     * opens emojiList
+     * opens emojiist
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
@@ -417,7 +419,7 @@ public class ChatViewController {
     /**
      * insert new message in observableList
      */
-    public static void printMessage(Message msg) {
+    public void printMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 messages.add(msg);
@@ -431,8 +433,24 @@ public class ChatViewController {
         }
     }
 
-    public static void refreshMessageListView() {
-        Platform.runLater(() -> messageList.setItems(FXCollections.observableArrayList(messages)));
+    public void refreshMessageListView() {
+        Platform.runLater(() -> {
+            messageList.setItems(FXCollections.observableArrayList(messages));
+        });
+
+    }
+
+    public void checkScrollToBottom() {
+        checkScrollToBottom();
+        ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
+        VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+        System.out.println(vf.toString());
+//        messageList.scrollTo(messages.size());
+        int lastMessagePosition = vf.getLastVisibleCell().getIndex();
+//            int firstMessagePosition = vf.getFirstVisibleCell().getIndex();
+        if (lastMessagePosition == messages.size()) {
+            messageList.scrollTo(messages.size());
+        }
     }
 
     public void clearMessageField() {

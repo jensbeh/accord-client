@@ -86,6 +86,9 @@ public class ServerMessageTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response9;
 
+    @Mock
+    private HttpResponse<JsonNode> response10;
+
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
@@ -112,6 +115,9 @@ public class ServerMessageTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
 
     @InjectMocks
     StageManager mockApp = new StageManager();
@@ -287,6 +293,20 @@ public class ServerMessageTest extends ApplicationTest {
         }).when(restClient).updateMessage(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
+    public void mockGetChannelMessagesURL() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor8.getValue();
+            callback.completed(response10);
+            return null;
+        }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor10.capture());
+    }
+
     public void loginInit(boolean emptyServers) throws InterruptedException {
         mockPostServer();
         if (!emptyServers)
@@ -313,7 +333,9 @@ public class ServerMessageTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
         serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setRefresh(any());
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
         doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
