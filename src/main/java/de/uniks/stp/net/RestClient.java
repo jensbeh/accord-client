@@ -186,4 +186,13 @@ public class RestClient {
                 + "/" + msgId).body(body).header("userKey", userKey);
         sendRequest(request, callback);
     }
+
+    public void deleteMessage(String serverId, String catId, String channelId, String msgId, String text, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("text", text);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.delete(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId
+                + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGE_PATH
+                + "/" + msgId).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
 }

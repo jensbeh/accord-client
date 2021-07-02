@@ -123,7 +123,7 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated")) {
+        if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated") && !userAction.equals("messageDeleted")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
         }
@@ -181,6 +181,10 @@ public class ServerSystemWebSocket extends Endpoint {
 
         if (userAction.equals("messageUpdated")) {
             updateMessage(jsonData);
+        }
+
+        if (userAction.equals("messageDeleted")) {
+            deleteMessage(jsonData);
         }
 
         if (builder.getCurrentServer() == serverViewController.getServer()) {
@@ -293,6 +297,22 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+
+    /**
+     * deletes the message
+     */
+    private void deleteMessage(JsonObject jsonData) {
+        String msgId = jsonData.getString("id");
+
+        for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
+            if (msg.getId().equals(msgId)) {
+                ChatViewController.removeMessage(msg);
+                ChatViewController.refreshMessageListView();
+                msg.removeYou();
+                break;
+            }
+        }
+    }
 
     /**
      * Build a serverUser with this instance of server.

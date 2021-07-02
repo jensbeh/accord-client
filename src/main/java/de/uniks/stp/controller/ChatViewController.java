@@ -326,7 +326,15 @@ public class ChatViewController {
     }
 
     private void deleteMessage(ActionEvent actionEvent) {
-        //TODO delete Message
+        String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
+        String catId = selectedMsg.getServerChannel().getCategories().getId();
+        String channelId = selectedMsg.getServerChannel().getId();
+        String userKey = builder.getPersonalUser().getUserKey();
+        String msgId = selectedMsg.getId();
+        restClient.deleteMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
+        });
+        refreshMessageListView();
+        stage.close();
     }
 
     /**
@@ -388,6 +396,7 @@ public class ChatViewController {
         });
     }
 
+
     /**
      * copied the selected text
      */
@@ -439,6 +448,23 @@ public class ChatViewController {
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 messages.add(msg);
+                refreshMessageListView();
+            }
+        }
+    }
+
+    /**
+     * insert new message in observableList
+     */
+    public static void removeMessage(Message msg) {
+        if (!HomeViewController.inServerChat) {
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+                messages.remove(msg);
+                refreshMessageListView();
+            }
+        } else {
+            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+                messages.remove(msg);
                 refreshMessageListView();
             }
         }
