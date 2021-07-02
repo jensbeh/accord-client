@@ -331,6 +331,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     public void clickOnOwnerOverview() throws InterruptedException {
         loginInit(false);
 
+        mockPutServer();
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#server"));
         WaitForAsyncUtils.waitForFxEvents();
@@ -339,7 +340,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         moveBy(0, 25);
         write("\n");
         Assert.assertNotEquals(1, this.listTargetWindows().size());
-        clickOn("#overview");
+        clickOn("#overviewBtn");
         clickOn("#deleteServer");
         Label serverNameLabel = lookup("#serverName").query();
         Button leaveButton = lookup("#deleteServer").query();
@@ -373,7 +374,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         //change ServerName
         TextField serverNameField = lookup("#nameText").query();
         serverNameField.setText("TestServer Team Bit Shift Renamed");
-        clickOn("#changeName");
+        clickOn("#serverChangeButton");
         String serverIdChangedName = "";
         for (Server server : serverList.getItems()) {
             if (server.getName().equals("TestServer Team Bit Shift Renamed")) {

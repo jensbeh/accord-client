@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class CustomNotificationsController extends SubSetting {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void init() {
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
@@ -68,7 +70,9 @@ public class CustomNotificationsController extends SubSetting {
                 if (fileName.equals(newValue)) {
                     try {
                         stream = new FileInputStream(file);
-                        builder.setSoundFile(stream);
+                        URL url = new URL("file://" + file.getPath());
+                        url = file.toURI().toURL();
+                        builder.setSoundFile(url);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

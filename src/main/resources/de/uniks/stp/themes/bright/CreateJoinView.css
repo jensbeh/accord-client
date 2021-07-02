@@ -1,0 +1,73 @@
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #f2f3f5;
+}
+
+.tab-pane {
+    -fx-tab-min-width: 60px;
+    -fx-background-color: WHITE;
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-width: 1;
+    -fx-border-color: -fx-focus-color;
+}
+
+.tab {
+    -fx-background-insets: 0 1 0 1, 0, 0;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #d0d0d0;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #d0d0d0;
+    -fx-border-insets: 0 1 0 1, 0, 0;
+
+}
+
+.tab-pane .tab:selected {
+    -fx-focus-color: transparent;
+    -fx-background-color: #d0d0d0;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #7987ff;
+}
+
+.tab .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #828282;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: BLACK;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-insets: 0, 0 0 1 0;
+    /* -fx-padding: 0.416667em 0.166667em 0.0em 0.833em; /* 5 2 0 10 */
+    -fx-padding: 0.416667em 0.166667em 0.0em 0.0em; /* overridden as 5 2 0 0 */
+}
+
+.text-input {
+    -fx-text-fill: BLACK;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #f2f3f5;
+}
+
+#createServer {
+    -fx-background-color: #7987ff;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: WHITE;
+}
+
+#joinServer {
+    -fx-background-color: #7987ff;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+    -fx-text-fill: WHITE;
+}

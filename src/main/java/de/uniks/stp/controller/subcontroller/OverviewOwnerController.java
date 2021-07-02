@@ -7,9 +7,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -20,6 +22,7 @@ public class OverviewOwnerController {
     private TextField nameText;
     private final RestClient restClient;
 
+
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
@@ -27,12 +30,12 @@ public class OverviewOwnerController {
     }
 
     public void init() {
+
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
         Button deleteServer = (Button) view.lookup("#deleteServer");
-        Button changeName = (Button) view.lookup("#changeName");
+        Button changeName = (Button) view.lookup("#serverChangeButton");
         this.nameText = (TextField) view.lookup("#nameText");
-        nameText.setStyle("-fx-text-fill: white;" + "-fx-background-color:  #333333;");
         //Buttons
         deleteServer.setOnAction(this::onDeleteServerClicked);
         changeName.setOnAction(this::onChangeNameClicked);
@@ -61,13 +64,22 @@ public class OverviewOwnerController {
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
         alert.setHeaderText(lang.getString("warning.deleteServer"));
-        buttonBar.setStyle("-fx-font-size: 14px;" +
-                "-fx-text-fill: white;"
-                + "-fx-background-color: indianred;");
-        buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
-        buttonBar.getButtons().get(1).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
-        dialogPane.getStylesheets().add(
-                StageManager.class.getResource("styles/AlertStyle.css").toExternalForm());
+
+        if (builder.getTheme().equals("Bright")) {
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/Alert.css")).toExternalForm());
+            buttonBar.setStyle("-fx-font-size: 14px;" +
+                    "-fx-text-fill: BLACK;"
+                    + "-fx-background-color: WHITE;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
+        } else {
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/Alert.css")).toExternalForm());
+            buttonBar.setStyle("-fx-font-size: 14px;" +
+                    "-fx-text-fill: white;"
+                    + "-fx-background-color: #2f3136;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
+        }
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == button) {

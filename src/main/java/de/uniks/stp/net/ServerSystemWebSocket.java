@@ -8,6 +8,7 @@ import de.uniks.stp.controller.subcontroller.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -123,7 +124,7 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated")) {
+        if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated") && !userAction.equals("messageDeleted")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
         }
@@ -181,6 +182,10 @@ public class ServerSystemWebSocket extends Endpoint {
 
         if (userAction.equals("messageUpdated")) {
             updateMessage(jsonData);
+        }
+
+        if (userAction.equals("messageDeleted")) {
+            deleteMessage(jsonData);
         }
 
         if (builder.getCurrentServer() == serverViewController.getServer()) {
@@ -293,6 +298,22 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+
+    /**
+     * deletes the message
+     */
+    private void deleteMessage(JsonObject jsonData) {
+        String msgId = jsonData.getString("id");
+
+        for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
+            if (msg.getId().equals(msgId)) {
+                ChatViewController.removeMessage(msg);
+                ChatViewController.refreshMessageListView();
+                msg.removeYou();
+                break;
+            }
+        }
+    }
 
     /**
      * Build a serverUser with this instance of server.
@@ -471,10 +492,16 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     for (ServerChannel channel : cat.getChannel()) {
                         if (channel.getId().equals(channelId)) {
+                            if (channel.getType().equals("audio")) {
+                                if (builder.getAudioStreamClient() != null) {
+                                    ActionEvent actionEvent = new ActionEvent();
+                                    serverViewController.onAudioDisconnectClicked(actionEvent);
+                                }
+                            }
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == serverViewController.getServer()) {
                                 Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
-                                if (serverViewController.getCurrentChannel().equals(channel)) {
+                                if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
                                     serverViewController.throwOutUserFromChatView();
                                 }
                             }

@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
+import util.ResourceManager;
 
 public class DoNotDisturbController extends SubSetting {
 
@@ -36,7 +37,8 @@ public class DoNotDisturbController extends SubSetting {
         showNotifications.setOnAction(this::updateSettings);
         playSound.setOnAction(this::updateSettings);
 
-
+        System.out.println("Volume: " + ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
         volume.valueProperty().addListener((observable, oldValue, newValue) -> builder.setVolume(newValue.floatValue()));
     }
 

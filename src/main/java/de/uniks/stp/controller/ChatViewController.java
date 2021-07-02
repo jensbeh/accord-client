@@ -71,6 +71,8 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
+    private int counter;
+    private ArrayList<String> pngNames = new ArrayList<>();
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -125,7 +127,7 @@ public class ChatViewController {
     }
 
     /**
-     * opens emojiist
+     * opens emojiList
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
@@ -136,6 +138,17 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
+        if (pngNames.isEmpty()) {
+            File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+            for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+                for (Emoji emoji : EmojiParser.getInstance().search("")) {
+                    if (emoji.getHex().equals(name)) {
+                        pngNames.add(name);
+                    }
+                }
+            }
+        }
         showEmojis();
     }
 
@@ -143,15 +156,14 @@ public class ChatViewController {
      * sets emojis on FlowPane
      */
     private void showEmojis() {
-        ArrayList<String> pngNames = new ArrayList<>();
         FlowPane flow = new FlowPane();
         scrollPane.setContent(flow);
         final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            pngNames.add(name);
-            flow.getChildren().add((getImageStack(fileEntry)));
+            if (pngNames.contains(name)) {
+                flow.getChildren().add((getImageStack(fileEntry)));
+            }
         }
     }
 
@@ -315,7 +327,15 @@ public class ChatViewController {
     }
 
     private void deleteMessage(ActionEvent actionEvent) {
-        //TODO delete Message
+        String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
+        String catId = selectedMsg.getServerChannel().getCategories().getId();
+        String channelId = selectedMsg.getServerChannel().getId();
+        String userKey = builder.getPersonalUser().getUserKey();
+        String msgId = selectedMsg.getId();
+        restClient.deleteMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
+        });
+        refreshMessageListView();
+        stage.close();
     }
 
     /**
@@ -428,6 +448,23 @@ public class ChatViewController {
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 messages.add(msg);
+                refreshMessageListView();
+            }
+        }
+    }
+
+    /**
+     * removes message from observableList
+     */
+    public static void removeMessage(Message msg) {
+        if (!HomeViewController.inServerChat) {
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
+                messages.remove(msg);
+                refreshMessageListView();
+            }
+        } else {
+            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+                messages.remove(msg);
                 refreshMessageListView();
             }
         }

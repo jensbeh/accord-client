@@ -1,5 +1,11 @@
 package de.uniks.stp.controller;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
+import com.pavlobu.emojitextflow.Emoji;
+import com.pavlobu.emojitextflow.EmojiParser;
+import com.sun.glass.ui.Clipboard;
 import de.uniks.stp.AlternateServerListCellFactory;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -12,25 +18,27 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.ResourceManager;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+import static util.Constants.*;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -61,7 +69,7 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() {
+    public void init() throws IOException {
         builder.loadSettings();
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
@@ -88,6 +96,7 @@ public class HomeViewController {
         File file = new File("de/uniks/stp/sounds/default.wav");
         ResourceManager.saveNotifications(file);
 
+
         showPrivateView();
         showServers(() -> {
             for (Server server : builder.getPersonalUser().getServer()) {
@@ -106,6 +115,8 @@ public class HomeViewController {
             }
         });
     }
+
+
 
     /**
      * Returns the current HomeViewController.
@@ -213,10 +224,10 @@ public class HomeViewController {
             stage = new Stage();
             CreateServerController createServerController = new CreateServerController(root, builder, stage);
             createServerController.init();
+            createServerController.setTheme();
             createServerController.showCreateServerView(this::onServerCreated);
             createServerController.joinNewServer(this::joinNewServer);
             stage.setTitle("Create or Join a new Server");
-            //setStageTitle("Create or Join a new Server"); //TODO
             stage.setScene(scene);
             stage.show();
             updateServerListColor();

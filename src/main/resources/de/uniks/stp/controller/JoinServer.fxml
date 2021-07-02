@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="createServerBox" alignment="CENTER" prefWidth="480.0" spacing="15.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="createServerBox" alignment="CENTER" prefWidth="480.0" spacing="15.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label id="join_errorLabel" textFill="#fc0000" VBox.vgrow="ALWAYS">
          <font>
@@ -19,7 +19,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" />
          </VBox.margin>
       </TextField>
-      <Button id="joinServer" mnemonicParsing="false" text="Join" />
+      <Button id="joinServer" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="Join" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
