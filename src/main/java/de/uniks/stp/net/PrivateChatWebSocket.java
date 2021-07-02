@@ -31,6 +31,7 @@ public class PrivateChatWebSocket extends Endpoint {
     private ModelBuilder builder;
     public static final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
+    private ChatViewController chatViewController;
 
     public PrivateViewController getPrivateViewController() {
         return privateViewController;
@@ -136,6 +137,10 @@ public class PrivateChatWebSocket extends Endpoint {
         return session;
     }
 
+    public void setMessageViewController(ChatViewController chatViewController) {
+        this.chatViewController = chatViewController;
+    }
+
     public void handleMessage(JsonStructure msg) {
         JsonObject jsonObject = JsonUtil.parse(msg.toString());
         System.out.println("privateChatWebSocketClient");
@@ -208,7 +213,7 @@ public class PrivateChatWebSocket extends Endpoint {
                 ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }
             if (privateViewController.getMessageViewController() != null) {
-                ChatViewController.printMessage(message);
+                chatViewController.printMessage(message);
             }
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {

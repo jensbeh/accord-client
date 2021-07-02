@@ -29,6 +29,7 @@ import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.nio.channels.Channel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -77,7 +78,16 @@ public class ServerViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response5;
 
     @Mock
+    private HttpResponse<JsonNode> response6;
+
+    @Mock
+    private HttpResponse<JsonNode> response7;
+
+    @Mock
     private DatagramSocket mockAudioSocket;
+
+    @Mock
+    private InetAddress inetAddress;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
@@ -93,6 +103,12 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
 
     private ModelBuilder builder;
 
@@ -116,6 +132,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
         AudioStreamClient.setSocket(mockAudioSocket);
+        AudioStreamClient.setAddress(inetAddress);
 
         builder.setLoadUserData(false);
         builder.getAudioStreamClient();
@@ -238,6 +255,35 @@ public class ServerViewControllerTest extends ApplicationTest {
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
     }
 
+    private void mockJoinVoiceChannel() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Successfully joined audio channel, please open an UDP connection to ")
+                .put("data", new JSONArray());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response6.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor6.getValue();
+            callback.completed(response6);
+            mockJoinVoiceChannel();
+            return null;
+        }).when(restClient).joinVoiceChannel(anyString(), anyString(), anyString(), anyString(), callbackCaptor6.capture());
+    }
+
+    private void mockLeaveVoiceChannel() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Left audio channel")
+                .put("data", new JSONArray());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response7.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor7.getValue();
+            callback.completed(response7);
+            mockLeaveVoiceChannel();
+            return null;
+        }).when(restClient).leaveVoiceChannel(anyString(), anyString(), anyString(), anyString(), callbackCaptor7.capture());
+    }
 
     public void loginInit(String name2, String pw) throws InterruptedException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
@@ -253,6 +299,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         mockGetServerUser();
         mockGetCategories();
         mockGetChannels();
+        mockJoinVoiceChannel();
+        mockLeaveVoiceChannel();
 
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -285,6 +333,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
     }
+
 
     @Test
     public void showServerTest() throws InterruptedException {
@@ -432,7 +481,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-    //@Test
+    @Test
     public void audioStreamTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
@@ -444,6 +493,14 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
+
+        try {
+            doAnswer((Answer<Void>) invocation -> {
+                return null;
+            }).when(mockAudioSocket).send(any());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             doAnswer((Answer<Void>) invocation -> {
@@ -475,6 +532,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         doubleClickOn("#60b77ba0026b3534ca5a61dd");
         WaitForAsyncUtils.waitForFxEvents();
@@ -525,7 +583,31 @@ public class ServerViewControllerTest extends ApplicationTest {
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
 
+        clickOn("#button_disconnectAudio");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        doubleClickOn("#60b77ba0026423ad521awd2");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026423ad521awd2")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Button microphone = lookup("#mute_microphone").query();
+        Label mutedMicrophone = lookup("#unmute_microphone").query();
+        clickOn(microphone);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(mutedMicrophone);
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn("#button_disconnectAudio");
