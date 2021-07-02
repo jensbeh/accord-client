@@ -300,8 +300,10 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
-        builder.setServerChatWebSocketClient(null);
-        builder.setSERVER_USER(null);
+        if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
+            builder.setServerChatWebSocketClient(null);
+            builder.setSERVER_USER(null);
+        }
         if (mouseEvent.getClickCount() == 1 && this.serverList.getItems().size() != 0) {
             if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
                 Server selectedServer = this.serverList.getSelectionModel().getSelectedItem();
