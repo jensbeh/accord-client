@@ -22,6 +22,7 @@ public class AudioStreamClient {
     private Thread receiverThread;
     private Thread senderThread;
     private static DatagramSocket socket;
+    private static InetAddress address;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;
@@ -30,7 +31,9 @@ public class AudioStreamClient {
 
     public void init() {
         try {
-            InetAddress address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
+            if (address == null) {
+                address = InetAddress.getByName(AUDIO_STREAM_ADDRESS);
+            }
             int port = AUDIO_STREAM_PORT;
 
             // Create the socket on which to send data.
@@ -89,10 +92,6 @@ public class AudioStreamClient {
         receiver.removeConnectedUser(audioMember);
     }
 
-    public static void setSocket(DatagramSocket newSocket) {
-        socket = newSocket;
-    }
-
     /**
      * starts new audio when microphone is unmuted
      */
@@ -101,5 +100,16 @@ public class AudioStreamClient {
             senderThread = new Thread(sender);
             senderThread.start();
         }
+    }
+
+    /**
+     * following methods only needed for testing
+     */
+    public static void setSocket(DatagramSocket newSocket) {
+        socket = newSocket;
+    }
+
+    public static void setAddress(InetAddress inetAddress) {
+        address = inetAddress;
     }
 }
