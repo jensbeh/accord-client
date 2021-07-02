@@ -13,18 +13,18 @@
 }
 .tab-pane .tab
 {
-    -fx-background-color: #a4a4a4;
+    -fx-background-color: #d0d0d0;
     -fx-border-width: 0 0 3 0;
-    -fx-border-color: #a4a4a4;
+    -fx-border-color: #d0d0d0;
     -fx-border-insets: 0 1 0 1,0,0;
 
 }
 .tab-pane .tab:selected
 {
     -fx-focus-color: transparent;
-    -fx-background-color: #7e8081;
+    -fx-background-color: #d0d0d0;
     -fx-border-width: 0 0 3 0;
-    -fx-border-color: #7987ff;
+    -fx-border-color: #d0d0d0;
 }
 
 .tab .tab-label {

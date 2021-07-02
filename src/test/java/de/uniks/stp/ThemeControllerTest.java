@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -521,7 +522,6 @@ public class ThemeControllerTest extends ApplicationTest {
         Button themeButton = lookup("#button_Theme").query();
         clickOn(themeButton);
         ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-
         clickOn(comboBox_themeSelect);
         clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
@@ -532,6 +532,7 @@ public class ThemeControllerTest extends ApplicationTest {
                 break;
             }
         }
+
         clickOn("#serverMenuButton");
         clickOn("#InviteUsers");
         WaitForAsyncUtils.waitForFxEvents();
@@ -567,5 +568,65 @@ public class ThemeControllerTest extends ApplicationTest {
         clickOn("#userLimitSelected");
         rootSettings = lookup("#root").query();
         Assert.assertEquals("36393f", rootSettings.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+    }
+
+    @Test
+    public void createServerThemeTest() throws InterruptedException {
+        loginInit();
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        clickOn(comboBox_themeSelect);
+        clickOn("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        Circle addServer = lookup("#addServer").query();
+        clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
+        TabPane tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("ffffff", tapPane.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        WaitForAsyncUtils.waitForFxEvents();
+
+        settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        clickOn(comboBox_themeSelect);
+        clickOn("Dark");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        addServer = lookup("#addServer").query();
+        clickOn(addServer);
+        WaitForAsyncUtils.waitForFxEvents();
+        tapPane = lookup("#tabView").query();
+        tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("202225", tapPane.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 }
