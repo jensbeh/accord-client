@@ -484,8 +484,8 @@ public class ChatViewController {
         int firstMessagePosition = 0;
         if (ts != null) {
             VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
-            if (vf != null)  {
-                if(vf.getFirstVisibleCell() != null && vf.getFirstVisibleCell() != null) {
+            if (vf != null) {
+                if (vf.getFirstVisibleCell() != null && vf.getFirstVisibleCell() != null) {
                     lastMessagePosition = vf.getFirstVisibleCell().getIndex();
                     firstMessagePosition = vf.getFirstVisibleCell().getIndex();
                 }
