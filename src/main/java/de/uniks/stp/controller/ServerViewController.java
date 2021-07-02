@@ -241,7 +241,7 @@ public class ServerViewController {
             this.chatBox.getChildren().add(root);
             messageViewController.setTheme();
             chatWebSocketClient.setChatViewController(messageViewController);
-            serverSystemWebSocket.setRefresh(messageViewController::refreshMessageListView);
+            serverSystemWebSocket.setChatViewController(messageViewController);
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved

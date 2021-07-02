@@ -456,7 +456,7 @@ public class ChatViewController {
     /**
      * removes message from observableList
      */
-    public static void removeMessage(Message msg) {
+    public void removeMessage(Message msg) {
         if (!HomeViewController.inServerChat) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
