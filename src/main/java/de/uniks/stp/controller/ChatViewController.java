@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static util.Constants.*;
@@ -137,7 +136,7 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
-        if(pngNames.isEmpty()) {
+        if (pngNames.isEmpty()) {
             File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
             for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
@@ -326,7 +325,15 @@ public class ChatViewController {
     }
 
     private void deleteMessage(ActionEvent actionEvent) {
-        //TODO delete Message
+        String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
+        String catId = selectedMsg.getServerChannel().getCategories().getId();
+        String channelId = selectedMsg.getServerChannel().getId();
+        String userKey = builder.getPersonalUser().getUserKey();
+        String msgId = selectedMsg.getId();
+        restClient.deleteMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
+        });
+        refreshMessageListView();
+        stage.close();
     }
 
     /**
@@ -388,6 +395,7 @@ public class ChatViewController {
         });
     }
 
+
     /**
      * copied the selected text
      */
@@ -439,6 +447,23 @@ public class ChatViewController {
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 messages.add(msg);
+                refreshMessageListView();
+            }
+        }
+    }
+
+    /**
+     * removes message from observableList
+     */
+    public static void removeMessage(Message msg) {
+        if (!HomeViewController.inServerChat) {
+            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
+                messages.remove(msg);
+                refreshMessageListView();
+            }
+        } else {
+            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+                messages.remove(msg);
                 refreshMessageListView();
             }
         }

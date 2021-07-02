@@ -39,6 +39,7 @@ public class CustomNotificationsController extends SubSetting {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void init() {
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
