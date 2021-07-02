@@ -432,7 +432,7 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertEquals(fullText, text);
         clickOn("#chooseDelete");
 
-        String message2 = new JSONObject().put("action", "messageDeleted").put("data", new JSONObject().put("id", messageIdD).put("category", "5e2fbd8770dd077d03df600").put("channel",  channel.getId())).toString();
+        String message2 = new JSONObject().put("action", "messageDeleted").put("data", new JSONObject().put("id", messageIdD).put("category", "5e2fbd8770dd077d03df600").put("channel", channel.getId())).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message2);
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();

@@ -491,8 +491,8 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     for (ServerChannel channel : cat.getChannel()) {
                         if (channel.getId().equals(channelId)) {
-                            if(channel.getType().equals("audio")){
-                                if(builder.getAudioStreamClient() != null){
+                            if (channel.getType().equals("audio")) {
+                                if (builder.getAudioStreamClient() != null) {
                                     ActionEvent actionEvent = new ActionEvent();
                                     serverViewController.onAudioDisconnectClicked(actionEvent);
                                 }

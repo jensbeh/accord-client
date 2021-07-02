@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static util.Constants.*;
@@ -137,7 +136,7 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
-        if(pngNames.isEmpty()) {
+        if (pngNames.isEmpty()) {
             File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
             for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
