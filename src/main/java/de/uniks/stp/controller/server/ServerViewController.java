@@ -1,8 +1,8 @@
 package de.uniks.stp.controller.server;
 
-import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
@@ -12,6 +12,7 @@ import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.SortUser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -24,7 +25,6 @@ import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import de.uniks.stp.util.SortUser;
 
 import java.io.IOException;
 import java.net.URI;

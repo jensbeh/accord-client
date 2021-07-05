@@ -1,10 +1,10 @@
 package de.uniks.stp.controller.home;
 
 
-import de.uniks.stp.cellfactories.PrivateChatListCell;
-import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.PrivateChatListCell;
+import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
@@ -12,9 +12,11 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.ResourceManager;
+import de.uniks.stp.util.SortUser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,8 +31,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
-import de.uniks.stp.util.ResourceManager;
-import de.uniks.stp.util.SortUser;
 
 import javax.json.JsonException;
 import java.io.IOException;
