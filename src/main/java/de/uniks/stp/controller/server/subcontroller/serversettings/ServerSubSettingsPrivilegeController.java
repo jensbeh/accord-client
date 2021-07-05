@@ -12,7 +12,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ServerSubSettingsPrivilegeController {
 

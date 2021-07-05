@@ -9,11 +9,11 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
+import de.uniks.stp.util.JsonUtil;
+import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import de.uniks.stp.util.JsonUtil;
-import de.uniks.stp.util.ResourceManager;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;

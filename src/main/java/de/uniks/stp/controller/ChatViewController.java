@@ -7,7 +7,6 @@ import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.MessageListCell;
-import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;

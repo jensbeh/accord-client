@@ -4,16 +4,15 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.server.ServerViewController;
-import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
+import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import de.uniks.stp.util.JsonUtil;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;

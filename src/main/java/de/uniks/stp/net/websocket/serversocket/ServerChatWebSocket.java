@@ -7,10 +7,10 @@ import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
+import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import de.uniks.stp.util.JsonUtil;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -43,7 +43,6 @@ public class ServerChatWebSocket extends Endpoint {
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
     }
-
 
     public ServerChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();

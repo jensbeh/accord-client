@@ -332,13 +332,13 @@ public class ResourceManager {
      */
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
         FileChannel source;
-        if(file.getName().equals("default.wav")){
+        if (file.getName().equals("default.wav")) {
             URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/notification/default.wav");
             assert zipFileURL != null;
             Path path = Paths.get(zipFileURL.toURI());
             File file1 = path.toFile();
             source = new FileInputStream(file1).getChannel();
-        }else{
+        } else {
             source = new FileInputStream(file).getChannel();
         }
         FileChannel desti = new FileOutputStream(targetPath).getChannel();

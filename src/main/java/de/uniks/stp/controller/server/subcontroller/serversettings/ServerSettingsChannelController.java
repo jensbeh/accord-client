@@ -130,11 +130,17 @@ public class ServerSettingsChannelController extends SubSetting {
         disableEditing(true);
     }
 
+    /**
+     * changes the comboBoxItems when a channel was renamed
+     */
     private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
         loadChannels(selectedChannel);
         System.out.println("ffff");
     }
 
+    /**
+     * changes the comboBoxItems when a channel was created or deleted and added new PCL
+     */
     private void onChannelListChanged(PropertyChangeEvent propertyChangeEvent) {
         loadChannels(null);
 
@@ -184,7 +190,7 @@ public class ServerSettingsChannelController extends SubSetting {
     }
 
     /**
-     * when category changes, enable items in view and load the Channels from the Category
+     * when category changes, enable items in view and load the Channels from the Category and added PCLs
      *
      * @param actionEvent the mouse click event
      */
@@ -250,14 +256,7 @@ public class ServerSettingsChannelController extends SubSetting {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-
-//                        Platform.runLater(() -> {
-//                            editChannelsSelector.getItems().clear();
-//                            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
-//                            editChannelsTextField.setText("");
-//                        });
                         Platform.runLater(() -> editChannelsTextField.setText(""));
-
                     }
                 });
             }
@@ -296,14 +295,6 @@ public class ServerSettingsChannelController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-//                    System.out.println("--> SUCCESS: channel created");
-//                    JSONObject data = body.getObject().getJSONObject("data");
-//                    String channelId = data.getString("id");
-//                    String name = data.getString("name");
-//
-//
-//                    ServerChannel newServerChannel = new ServerChannel().setId(channelId).setName(name);
-//                    Platform.runLater(() -> editChannelsSelector.getItems().add(newServerChannel));
                     Platform.runLater(() -> createChannelTextField.setText(""));
                 }
             });
@@ -318,14 +309,6 @@ public class ServerSettingsChannelController extends SubSetting {
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
             restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-//                    System.out.println("--> SUCCESS: deleted channel");
-//
-//                    Platform.runLater(() -> editChannelsSelector.getItems().remove(selectedChannel));
-//                    Platform.runLater(() -> editChannelsSelector.getSelectionModel().clearSelection());
-                }
             });
         }
     }
@@ -338,10 +321,6 @@ public class ServerSettingsChannelController extends SubSetting {
             counter++;
         }
         return pUsers;
-    }
-
-    public ServerChannel getSelectedChannel() {
-        return selectedChannel;
     }
 
     public void setTheme() {
