@@ -40,12 +40,12 @@ public class HomeViewController {
     private Button settingsButton;
     private static Label homeLabel;
     private static Button logoutButton;
-    private static Stage stage;
+    private Stage stage;
     private ModelBuilder builder;
     private ServerListCell serverListCellFactory;
     private PrivateViewController privateViewController;
     private Parent privateView;
-    public static boolean inServerChat = false;
+    public boolean inServerChat;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
 
@@ -58,6 +58,7 @@ public class HomeViewController {
     @SuppressWarnings("unchecked")
     public void init() throws IOException {
         builder.loadSettings();
+        builder.setInServerChat(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
@@ -184,7 +185,7 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
-        inServerChat = true;
+        builder.setInServerChat(true);
         try {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));

@@ -52,6 +52,7 @@ public class ModelBuilder {
     private AudioInputStream audioInputStream;
 
     private boolean loadUserData = true;
+    private boolean inServerChat;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -322,4 +323,11 @@ public class ModelBuilder {
         return loadUserData;
     }
 
+    public void setInServerChat(boolean state) {
+        this.inServerChat = state;
+    }
+
+    public boolean getInServerChat() {
+        return this.inServerChat;
+    }
 }

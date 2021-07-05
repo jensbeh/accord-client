@@ -4,10 +4,9 @@ import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
-import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.home.HomeViewController;
+import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
@@ -234,7 +233,7 @@ public class ChatViewController {
             text = messageList.getSelectionModel().getSelectedItem().getMessage();
 
             if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())
-                    || !HomeViewController.inServerChat) {
+                    || !builder.getInServerChat()) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
             } else {
@@ -417,7 +416,7 @@ public class ChatViewController {
         String textMessage = messageTextField.getText();
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
-                if (!HomeViewController.inServerChat) {
+                if (!builder.getInServerChat()) {
                     messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
@@ -443,7 +442,7 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public void printMessage(Message msg) {
-        if (!HomeViewController.inServerChat) {
+        if (!builder.getInServerChat()) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 messages.add(msg);
                 refreshMessageListView();
@@ -460,7 +459,7 @@ public class ChatViewController {
      * removes message from observableList
      */
     public void removeMessage(Message msg) {
-        if (!HomeViewController.inServerChat) {
+        if (!builder.getInServerChat()) {
             if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
                 refreshMessageListView();
