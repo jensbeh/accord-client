@@ -22,7 +22,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
     public ServerChannelListCell(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
     }
-    
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
