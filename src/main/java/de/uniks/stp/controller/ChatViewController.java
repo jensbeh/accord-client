@@ -50,14 +50,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
-    private static ModelBuilder builder;
-    private static ServerChannel currentChannel;
+    private ModelBuilder builder;
+    private ServerChannel currentChannel;
     private final Parent view;
     private VBox root;
-    private static Button sendButton;
+    private Button sendButton;
     private TextField messageTextField;
-    private static ListView<Message> messageList;
-    private static ArrayList<Message> messages;
+    private ListView<Message> messageList;
+    private ArrayList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
@@ -505,7 +505,7 @@ public class ChatViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));

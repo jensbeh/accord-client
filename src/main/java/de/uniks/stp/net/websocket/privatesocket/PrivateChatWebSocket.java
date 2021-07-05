@@ -157,7 +157,7 @@ public class PrivateChatWebSocket extends Endpoint {
                 message = new Message().setMessage(jsonObject.getString("message")).
                         setFrom(jsonObject.getString("from")).
                         setTimestamp(timestamp);
-                privateViewController.getMessageViewController().clearMessageField();
+                privateViewController.getChatViewController().clearMessageField();
             } else { // currentUser received
                 channelName = jsonObject.getString("from");
                 message = new Message().setMessage(jsonObject.getString("message")).
@@ -213,7 +213,7 @@ public class PrivateChatWebSocket extends Endpoint {
             } else {
                 ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }
-            if (privateViewController.getMessageViewController() != null) {
+            if (privateViewController.getChatViewController() != null) {
                 chatViewController.printMessage(message);
             }
         }

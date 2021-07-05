@@ -53,7 +53,7 @@ public class PrivateViewController {
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
     private Label welcomeToAccord;
-    private ChatViewController messageViewController;
+    private ChatViewController chatViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     private PrivateChatWebSocket privateChatWebSocket;
     private Button headphoneButton;
@@ -69,8 +69,8 @@ public class PrivateViewController {
         this.privateChatWebSocket = modelBuilder.getPrivateChatWebSocketClient();
     }
 
-    public ChatViewController getMessageViewController() {
-        return messageViewController;
+    public ChatViewController getChatViewController() {
+        return chatViewController;
     }
 
     @SuppressWarnings("unchecked")
@@ -279,16 +279,16 @@ public class PrivateViewController {
     public void MessageViews() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            messageViewController = new ChatViewController(root, builder);
+            chatViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
-            messageViewController.init();
-            messageViewController.setTheme();
+            chatViewController.init();
+            chatViewController.setTheme();
             this.chatBox.getChildren().add(root);
-            privateChatWebSocket.setMessageViewController(messageViewController);
+            privateChatWebSocket.setMessageViewController(chatViewController);
             if (builder.getCurrentPrivateChat() != null) {
                 for (Message msg : builder.getCurrentPrivateChat().getMessage()) {
                     // Display each Message which are saved
-                    messageViewController.printMessage(msg);
+                    chatViewController.printMessage(msg);
                 }
             }
         } catch (IOException | JsonException e) {
@@ -372,7 +372,7 @@ public class PrivateViewController {
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
-        ChatViewController.onLanguageChanged();
+        chatViewController.onLanguageChanged();
     }
 
     public void setTheme() {
@@ -386,16 +386,16 @@ public class PrivateViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/PrivateView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/PrivateView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
     }
 }
