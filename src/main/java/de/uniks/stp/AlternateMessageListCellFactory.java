@@ -12,6 +12,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -207,11 +210,9 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 urlType = "picture";
             } else if (url.contains(".gif")) {
                 urlType = "gif";
-            } else if (url.contains("youtube")){
-                urlType = "youtube";
             }
-            else if (url.contains(".webm")){
-                urlType = "video";
+            else if (url.contains(".mp4")){
+                setVideo(url);
             }
             else {
                 urlType = "None";
@@ -219,8 +220,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             return url;
         }
 
-        private void setVideo(String url, WebEngine engine) {
-
+        private void setVideo(String url) {
+            MediaView media = new MediaView();
+            MediaPlayer mediaPlayer = new MediaPlayer(new Media(Objects.requireNonNull(this.getClass().getResource(url)).toExternalForm()));
+            mediaPlayer.setAutoPlay(true);
+            media.setMediaPlayer(mediaPlayer);
         }
 
         private void setImage(String url, WebEngine engine) {
@@ -230,16 +234,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 engine.setJavaScriptEnabled(false);
             } else if (urlType.equals("gif")) {
                 engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
-                loadImage = true;
-                engine.setJavaScriptEnabled(false);
-            } else if (urlType.equals("youtube")) {
-                engine.load(url);
-                loadImage = true;
-                engine.setJavaScriptEnabled(true);
-            }
-            else if (urlType.equals("video")) {
-                String html = "<html><body><video width=\"320\" height=\"240\" controls> <source src=\"" + url + "\" type=\"video/mp4\"> <source src=\"movie.ogg\" type=\"video/ogg\"> Your browser does not support the video tag.</video></body></html>";
-                engine.loadContent(html);
                 loadImage = true;
                 engine.setJavaScriptEnabled(false);
             }
