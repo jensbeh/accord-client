@@ -16,12 +16,19 @@ import javafx.scene.shape.Circle;
 import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
-    private static ListView<ServerChannel> channelListView;
+    private ListView<ServerChannel> channelListView;
     private final ServerViewController serverViewController;
 
     public ServerChannelListCell(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
     }
+
+    private static String theme;
+
+    public static void setTheme(String newTheme) {
+        theme = newTheme;
+    }
+
 
     /**
      * The <code>call</code> method is called when required, and is given a
@@ -35,7 +42,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
      */
     @Override
     public ListCell<ServerChannel> call(ListView<ServerChannel> param) {
-        channelListView = param;
+        this.channelListView = param;
         return new ChannelListCell();
     }
 
@@ -45,35 +52,36 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
         private int audioMemberCount = 0;
 
         protected void updateItem(ServerChannel item, boolean empty) {
+            // creates a HBox for each cell of the listView
+            VBox cell = new VBox();
+            Label name = new Label();
+            VBox channelCell = new VBox();
+            HBox channelNameCell = new HBox();
+            VBox channelAudioUserCell = new VBox();
+            HBox notificationCell = new HBox();
+            HBox nameAndNotificationCell = new HBox();
+
+
+            // get visibility of scrollbar
+            try {
+                VBox vBox = (VBox) channelListView.getParent().getParent();
+                if (vBox != null) {
+                    ScrollPane scrollPane = (ScrollPane) vBox.getParent().getParent().getParent();
+
+                    ScrollPaneSkin skin = (ScrollPaneSkin) scrollPane.getSkin();
+                    Field field = skin.getClass().getDeclaredField("vsb");
+
+                    field.setAccessible(true);
+                    ScrollBar scrollBar = (ScrollBar) field.get(skin);
+                    field.setAccessible(false);
+                    isScrollBarVisible = scrollBar.isVisible();
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
             super.updateItem(item, empty);
             if (!empty) {
-                // creates a HBox for each cell of the listView
-                VBox cell = new VBox();
-                Label name = new Label();
-                VBox channelCell = new VBox();
-                HBox channelNameCell = new HBox();
-                VBox channelAudioUserCell = new VBox();
-                HBox notificationCell = new HBox();
-                HBox nameAndNotificationCell = new HBox();
-
-
-                // get visibility of scrollbar
-                try {
-                    VBox vBox = (VBox) channelListView.getParent().getParent();
-//                    if (vBox != null) {
-                        ScrollPane scrollPane = (ScrollPane) vBox.getParent().getParent().getParent();
-
-                        ScrollPaneSkin skin = (ScrollPaneSkin) scrollPane.getSkin();
-                        Field field = skin.getClass().getDeclaredField("vsb");
-
-                        field.setAccessible(true);
-                        ScrollBar scrollBar = (ScrollBar) field.get(skin);
-                        field.setAccessible(false);
-                        isScrollBarVisible = scrollBar.isVisible();
-//                    }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
 
                 if (item == serverViewController.getCurrentChannel()) {
                     if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
@@ -216,8 +224,8 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                     cell.getChildren().addAll(nameAndNotificationCell);
                     cell.setPrefHeight(28);
                 }
-                this.setGraphic(cell);
             }
+            this.setGraphic(cell);
         }
     }
 }

@@ -15,9 +15,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -47,6 +47,9 @@ public class ServerSettingsChannelController extends SubSetting {
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
     private String channelType;
+
+    private final PropertyChangeListener channelNamePCL = this::onChannelNameChanged;
+    private final PropertyChangeListener channelListPCL = this::onChannelListChanged;
 
 
     public ServerSettingsChannelController(Parent view, ModelBuilder builder, Server server) {
@@ -127,11 +130,34 @@ public class ServerSettingsChannelController extends SubSetting {
         disableEditing(true);
     }
 
+    private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
+        loadChannels(selectedChannel);
+        System.out.println("ffff");
+    }
+
+    private void onChannelListChanged(PropertyChangeEvent propertyChangeEvent) {
+        loadChannels(null);
+
+        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+            serverChannel.removePropertyChangeListener(this.channelNamePCL);
+        }
+
+        for (ServerChannel channel : selectedCategory.getChannel()) {
+            channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelNamePCL);
+        }
+    }
+
     public void stop() {
         categorySelector.setOnAction(null);
         editChannelsSelector.setOnAction(null);
         channelChangeButton.setOnAction(null);
         channelDeleteButton.setOnAction(null);
+
+        selectedCategory.removePropertyChangeListener(this.channelListPCL);
+
+        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+            serverChannel.removePropertyChangeListener(this.channelNamePCL);
+        }
     }
 
     /**
@@ -161,9 +187,22 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onCategoryChanged(ActionEvent actionEvent) {
         disableEditing(false);
-
+        Categories oldCategory = selectedCategory;
         selectedCategory = categorySelector.getValue();
+
+        if (oldCategory != null) {
+            oldCategory.removePropertyChangeListener(this.channelListPCL);
+            for (ServerChannel serverChannel : oldCategory.getChannel()) {
+                serverChannel.removePropertyChangeListener(this.channelNamePCL);
+            }
+        }
+
         loadChannels(null);
+
+        selectedCategory.addPropertyChangeListener(this.channelListPCL);
+        for (ServerChannel channel : selectedCategory.getChannel()) {
+            channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelNamePCL);
+        }
     }
 
     /**
@@ -183,13 +222,16 @@ public class ServerSettingsChannelController extends SubSetting {
             return;
         }
 
-        selectedChannel = null;
-        editChannelsSelector.getItems().clear();
-        editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+        Platform.runLater(() -> {
+            selectedChannel = null;
+            editChannelsSelector.getItems().clear();
+            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
 
-        if (preSelectChannel != null) {
-            editChannelsSelector.getSelectionModel().select(preSelectChannel);
-        }
+            if (preSelectChannel != null) {
+                editChannelsSelector.getSelectionModel().select(preSelectChannel);
+            }
+        });
+
     }
 
     /**
@@ -204,27 +246,15 @@ public class ServerSettingsChannelController extends SubSetting {
                 restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), userListToStringArray(selectedChannel.getPrivilegedUsers()), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
-                    if (status.equals("success")) {//
-//                        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
-//                            if (serverChannel.getId().equals(selectedChannel.getId())) {
-//                                selectedChannel = serverChannel;
-//                            }
-//                        }
-//                        List<ServerChannel> channelList = selectedCategory.getChannel();
-//                        int index = channelList.indexOf(selectedChannel);
-//                        channelList.remove(selectedChannel);
-//                        selectedCategory.removeChannel();
-//                        selectedChannel.setName(newChannelName);
-//
-//                        channelList.add(index, selectedChannel);
-//
-//                        selectedCategory.withChannel(channelList);
+                    if (status.equals("success")) {
 
-                        Platform.runLater(() -> {
-                            editChannelsSelector.getItems().clear();
-                            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
-                            editChannelsTextField.setText("");
-                        });
+//                        Platform.runLater(() -> {
+//                            editChannelsSelector.getItems().clear();
+//                            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+//                            editChannelsTextField.setText("");
+//                        });
+                        Platform.runLater(() -> editChannelsTextField.setText(""));
+
                     }
                 });
             }
@@ -263,14 +293,14 @@ public class ServerSettingsChannelController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: channel created");
-                    JSONObject data = body.getObject().getJSONObject("data");
-                    String channelId = data.getString("id");
-                    String name = data.getString("name");
-
-
-                    ServerChannel newServerChannel = new ServerChannel().setId(channelId).setName(name);
-                    Platform.runLater(() -> editChannelsSelector.getItems().add(newServerChannel));
+//                    System.out.println("--> SUCCESS: channel created");
+//                    JSONObject data = body.getObject().getJSONObject("data");
+//                    String channelId = data.getString("id");
+//                    String name = data.getString("name");
+//
+//
+//                    ServerChannel newServerChannel = new ServerChannel().setId(channelId).setName(name);
+//                    Platform.runLater(() -> editChannelsSelector.getItems().add(newServerChannel));
                     Platform.runLater(() -> createChannelTextField.setText(""));
                 }
             });
@@ -288,10 +318,10 @@ public class ServerSettingsChannelController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: deleted channel");
-
-                    Platform.runLater(() -> editChannelsSelector.getItems().remove(selectedChannel));
-                    Platform.runLater(() -> editChannelsSelector.getSelectionModel().clearSelection());
+//                    System.out.println("--> SUCCESS: deleted channel");
+//
+//                    Platform.runLater(() -> editChannelsSelector.getItems().remove(selectedChannel));
+//                    Platform.runLater(() -> editChannelsSelector.getSelectionModel().clearSelection());
                 }
             });
         }
