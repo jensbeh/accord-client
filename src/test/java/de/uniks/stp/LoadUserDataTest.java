@@ -1,7 +1,7 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.LoginScreenController;
+import de.uniks.stp.controller.login.LoginViewController;
 import de.uniks.stp.net.RestClient;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
@@ -63,7 +63,7 @@ public class LoadUserDataTest extends ApplicationTest {
 
     @BeforeAll
     static void setup() {
-        MockitoAnnotations.openMocks(LoginScreenController.class);
+        MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
     public void mockLogin() {
@@ -97,5 +97,4 @@ public class LoadUserDataTest extends ApplicationTest {
     public void loadUserData() {
         loginInit(false);
     }
-
 }

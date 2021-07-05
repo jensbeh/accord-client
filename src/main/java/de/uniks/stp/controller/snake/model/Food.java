@@ -2,7 +2,7 @@ package de.uniks.stp.controller.snake.model;
 
 
 import javafx.scene.image.Image;
-import util.ResourceManager;
+import de.uniks.stp.util.ResourceManager;
 
 import java.util.Random;
 

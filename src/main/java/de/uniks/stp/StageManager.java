@@ -1,14 +1,14 @@
 package de.uniks.stp;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.HomeViewController;
-import de.uniks.stp.controller.LoginScreenController;
-import de.uniks.stp.controller.SettingsController;
+import de.uniks.stp.controller.home.HomeViewController;
+import de.uniks.stp.controller.login.LoginViewController;
+import de.uniks.stp.controller.settings.SettingsController;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
-import de.uniks.stp.controller.subcontroller.InviteUsersController;
-import de.uniks.stp.controller.subcontroller.LanguageController;
-import de.uniks.stp.controller.subcontroller.ServerSettingsController;
+import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
+import de.uniks.stp.controller.settings.LanguageController;
+import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -29,7 +29,7 @@ public class StageManager extends Application {
     private static Stage stage;
     private static Stage subStage;
     private static HomeViewController homeViewController;
-    private static LoginScreenController loginCtrl;
+    private static LoginViewController loginCtrl;
     private static SettingsController settingsController;
     private static Scene scene;
     private static ResourceBundle langBundle;
@@ -69,7 +69,7 @@ public class StageManager extends Application {
             scene = new Scene(root);
             builder.setRestClient(restClient);
             builder.loadSettings();
-            loginCtrl = new LoginScreenController(root, builder);
+            loginCtrl = new LoginViewController(root, builder);
             loginCtrl.init();
             loginCtrl.setTheme();
             setStageTitle("window_title_login");
@@ -358,7 +358,7 @@ public class StageManager extends Application {
 
         SettingsController.onLanguageChanged();
         LanguageController.onLanguageChanged();
-        LoginScreenController.onLanguageChanged();
+        LoginViewController.onLanguageChanged();
         HomeViewController.onLanguageChanged();
         InviteUsersController.onLanguageChanged();
     }

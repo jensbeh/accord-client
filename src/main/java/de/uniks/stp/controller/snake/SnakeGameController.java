@@ -21,7 +21,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import util.ResourceManager;
+import de.uniks.stp.util.ResourceManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;

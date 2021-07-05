@@ -2,7 +2,7 @@
   classes: 	server 	categories 	serverChannel 	audioMember 	privateChat 	user 	currentUser 	message
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
-  defaultRoleType: 	"java.util.ArrayList<%s>"
+  defaultRoleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
   mainJavaDir: 	"src/main/java"
   packageName: 	de.uniks.stp.model
   packageSrcFolder: 	"src/main/java/de/uniks/stp/model"
@@ -72,10 +72,10 @@
   roles: 	message_serverChannel 	message_privateChat
 
 - c1: 	org.fulib.classmodel.CollectionType
-  implClass: 	class java.util.ArrayList
-  implTemplate: 	"java.util.ArrayList<%s>"
+  implClass: 	class java.de.uniks.stp.util.ArrayList
+  implTemplate: 	"java.de.uniks.stp.util.ArrayList<%s>"
   itf: 	org.fulib.classmodel.CollectionInterface.List
-  qualifiedImplName: 	java.util.ArrayList
+  qualifiedImplName: 	java.de.uniks.stp.util.ArrayList
   simpleImplName: 	ArrayList
 
 - server_name: 	org.fulib.classmodel.Attribute
@@ -115,7 +115,7 @@
   name: 	categories
   other: 	categories_server
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - server_user: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -127,7 +127,7 @@
   name: 	user
   other: 	user_server
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - server_currentUser: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -177,7 +177,7 @@
   name: 	channel
   other: 	serverChannel_categories
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - serverChannel_name: 	org.fulib.classmodel.Attribute
   clazz: 	serverChannel
@@ -244,7 +244,7 @@
   name: 	audioMember
   other: 	audioMember_channel
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - serverChannel_privilegedUsers: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -256,7 +256,7 @@
   name: 	privilegedUsers
   other: 	user_privileged
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - serverChannel_currentUser: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -278,7 +278,7 @@
   name: 	message
   other: 	message_serverChannel
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - audioMember_id: 	org.fulib.classmodel.Attribute
   clazz: 	audioMember
@@ -355,7 +355,7 @@
   name: 	message
   other: 	message_privateChat
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - user_name: 	org.fulib.classmodel.Attribute
   clazz: 	user
@@ -394,7 +394,7 @@
   name: 	privileged
   other: 	serverChannel_privilegedUsers
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - user_server: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -406,7 +406,7 @@
   name: 	server
   other: 	server_user
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - user_currentUser: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -464,7 +464,7 @@
   name: 	user
   other: 	user_currentUser
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - currentUser_server: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -476,7 +476,7 @@
   name: 	server
   other: 	server_currentUser
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - currentUser_privateChat: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -488,7 +488,7 @@
   name: 	privateChat
   other: 	privateChat_currentUser
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - currentUser_channel: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
@@ -500,7 +500,7 @@
   name: 	channel
   other: 	serverChannel_currentUser
   propertyStyle: 	Bean
-  roleType: 	"java.util.ArrayList<%s>"
+  roleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
 
 - message_from: 	org.fulib.classmodel.Attribute
   clazz: 	message
