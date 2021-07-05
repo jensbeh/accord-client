@@ -16,20 +16,13 @@ import javafx.scene.shape.Circle;
 import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
-    private static ListView<ServerChannel> channelListView;
-    private static ServerViewController serverViewController;
+    private ListView<ServerChannel> channelListView;
+    private final ServerViewController serverViewController;
 
     public ServerChannelListCell(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
     }
-
-    private static String theme;
-
-    public static void setTheme(String newTheme) {
-        theme = newTheme;
-    }
-
-
+    
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -46,7 +39,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
         return new ChannelListCell();
     }
 
-    private static class ChannelListCell extends ListCell<ServerChannel> {
+    private class ChannelListCell extends ListCell<ServerChannel> {
 
         private boolean isScrollBarVisible;
         private int audioMemberCount = 0;
