@@ -250,7 +250,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 setVideo(url, mediaView);
                 loadVideo = true;
             }
-            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/webView.css")).toExternalForm());
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
         }
 
 
