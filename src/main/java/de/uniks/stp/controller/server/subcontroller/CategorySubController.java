@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.server.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.cellfactories.ServerChannelListCell;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.ServerViewController;
@@ -168,11 +169,11 @@ public class CategorySubController {
 
     private void setWhiteMode() {
         view.getStylesheets().clear();
-        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/CategorySubView.css")).toExternalForm());
+        view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/CategorySubView.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         view.getStylesheets().clear();
-        view.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/CategorySubView.css")).toExternalForm());
+        view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/CategorySubView.css")).toExternalForm());
     }
 }

@@ -24,10 +24,10 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
     @Override
     public ListCell<User> call(ListView<User> param) {
-        return new UserListCell();
+        return new UserCell();
     }
 
-    private static class UserListCell extends ListCell<User> {
+    private static class UserCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             HBox cell = new HBox();

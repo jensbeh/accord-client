@@ -239,7 +239,7 @@ public class ServerViewController {
      */
     public void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ChatView.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
             this.messageViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
             this.messageViewController.init();
@@ -263,7 +263,7 @@ public class ServerViewController {
      */
     private void showCurrentUser() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("UserProfileView.fxml")));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
             UserProfileController userProfileController = new UserProfileController(root);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
@@ -326,7 +326,7 @@ public class ServerViewController {
     public void showAudioConnectedBox() {
         if (builder.getCurrentAudioChannel() != null) {
             try {
-                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/AudioConnectedBox.fxml")));
                 AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
                 audioConnectedBoxController.init();
                 audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
@@ -639,7 +639,7 @@ public class ServerViewController {
      */
     public void generateCategoryChannelView(Categories categories) {
         try {
-            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("CategorySubView.fxml")));
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/CategorySubView.fxml")));
             view.setId(categories.getId());
             CategorySubController tempCategorySubController = new CategorySubController(view, builder, this, categories);
             tempCategorySubController.init();
@@ -690,7 +690,7 @@ public class ServerViewController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/ServerView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerView.css")).toExternalForm());
         if (messageViewController != null) {
             messageViewController.setTheme();
         }
@@ -704,7 +704,7 @@ public class ServerViewController {
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/ServerView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerView.css")).toExternalForm());
         if (messageViewController != null) {
             messageViewController.setTheme();
         }

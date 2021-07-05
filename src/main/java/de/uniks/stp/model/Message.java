@@ -7,16 +7,16 @@ public class Message {
     public static final String PROPERTY_FROM = "from";
     public static final String PROPERTY_MESSAGE = "message";
     public static final String PROPERTY_TIMESTAMP = "timestamp";
-    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
-    public static final String PROPERTY_SERVER_CHANNEL = "serverChannel";
     public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_SERVER_CHANNEL = "serverChannel";
+    public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
     private String from;
     private String message;
     protected PropertyChangeSupport listeners;
     private long timestamp;
-    private PrivateChat privateChat;
-    private ServerChannel serverChannel;
     private String id;
+    private ServerChannel serverChannel;
+    private PrivateChat privateChat;
 
     public String getFrom()
    {
@@ -72,30 +72,21 @@ public class Message {
       return this;
    }
 
-    public PrivateChat getPrivateChat()
+    public String getId()
    {
-      return this.privateChat;
+      return this.id;
    }
 
-    public Message setPrivateChat(PrivateChat value)
+    public Message setId(String value)
    {
-      if (this.privateChat == value)
+      if (Objects.equals(value, this.id))
       {
          return this;
       }
 
-      final PrivateChat oldValue = this.privateChat;
-      if (this.privateChat != null)
-      {
-         this.privateChat = null;
-         oldValue.withoutMessage(this);
-      }
-      this.privateChat = value;
-      if (value != null)
-      {
-         value.withMessage(this);
-      }
-      this.firePropertyChange(PROPERTY_PRIVATE_CHAT, oldValue, value);
+      final String oldValue = this.id;
+      this.id = value;
+      this.firePropertyChange(PROPERTY_ID, oldValue, value);
       return this;
    }
 
@@ -126,21 +117,30 @@ public class Message {
       return this;
    }
 
-    public String getId()
+    public PrivateChat getPrivateChat()
    {
-      return this.id;
+      return this.privateChat;
    }
 
-    public Message setId(String value)
+    public Message setPrivateChat(PrivateChat value)
    {
-      if (Objects.equals(value, this.id))
+      if (this.privateChat == value)
       {
          return this;
       }
 
-      final String oldValue = this.id;
-      this.id = value;
-      this.firePropertyChange(PROPERTY_ID, oldValue, value);
+      final PrivateChat oldValue = this.privateChat;
+      if (this.privateChat != null)
+      {
+         this.privateChat = null;
+         oldValue.withoutMessage(this);
+      }
+      this.privateChat = value;
+      if (value != null)
+      {
+         value.withMessage(this);
+      }
+      this.firePropertyChange(PROPERTY_PRIVATE_CHAT, oldValue, value);
       return this;
    }
 

@@ -65,14 +65,14 @@ public class OverviewOwnerController {
         alert.setHeaderText(lang.getString("warning.deleteServer"));
 
         if (builder.getTheme().equals("Bright")) {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/Alert.css")).toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
             buttonBar.setStyle("-fx-font-size: 14px;" +
                     "-fx-text-fill: BLACK;"
                     + "-fx-background-color: WHITE;");
             buttonBar.getButtons().get(0).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
             buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
         } else {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/Alert.css")).toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
             buttonBar.setStyle("-fx-font-size: 14px;" +
                     "-fx-text-fill: white;"
                     + "-fx-background-color: #2f3136;");

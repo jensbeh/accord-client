@@ -147,7 +147,7 @@ public class PrivateViewController {
      */
     private void showCurrentUser() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("UserProfileView.fxml")));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
             UserProfileController userProfileController = new UserProfileController(root);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
@@ -216,7 +216,7 @@ public class PrivateViewController {
     public void showAudioConnectedBox() {
         if (builder.getCurrentAudioChannel() != null) {
             try {
-                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("AudioConnectedBox.fxml")));
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/AudioConnectedBox.fxml")));
                 AudioConnectedBoxController audioConnectedBoxController = new AudioConnectedBoxController(root);
                 audioConnectedBoxController.init();
                 audioConnectedBoxController.setServerName(builder.getCurrentAudioChannel().getCategories().getServer().getName());
@@ -281,7 +281,7 @@ public class PrivateViewController {
      */
     public void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ChatView.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
             messageViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             messageViewController.init();
@@ -401,7 +401,7 @@ public class PrivateViewController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/PrivateView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/PrivateView.css")).toExternalForm());
         if (messageViewController != null) {
             messageViewController.setTheme();
         }
@@ -409,7 +409,7 @@ public class PrivateViewController {
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/PrivateView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/PrivateView.css")).toExternalForm());
         if (messageViewController != null) {
             messageViewController.setTheme();
         }

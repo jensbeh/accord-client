@@ -208,7 +208,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             if (selectedChannel.isPrivilege()) {
                 try {
                     //view
-                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_Privilege_UserChange.fxml")), StageManager.getLangBundle());
+                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_Privilege_UserChange.fxml")), StageManager.getLangBundle());
                     //Controller
                     serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
                     serverSubSettingsPrivilegeController.init();
@@ -249,11 +249,11 @@ public class ServerSettingsPrivilegeController extends SubSetting {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerSettings.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

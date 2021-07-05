@@ -12,17 +12,17 @@ public class User {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_STATUS = "status";
+    public static final String PROPERTY_PRIVILEGED = "privileged";
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
-    public static final String PROPERTY_PRIVILEGED = "privileged";
     private String name;
     private String id;
     private boolean status;
     private boolean tempUser;
-    private List<Server> server;
     protected PropertyChangeSupport listeners;
-    private CurrentUser currentUser;
     private List<ServerChannel> privileged;
+    private List<Server> server;
+    private CurrentUser currentUser;
 
     public String getName()
    {
@@ -75,6 +75,72 @@ public class User {
       final boolean oldValue = this.status;
       this.status = value;
       this.firePropertyChange(PROPERTY_STATUS, oldValue, value);
+      return this;
+   }
+
+    public List<ServerChannel> getPrivileged()
+   {
+      return this.privileged != null ? Collections.unmodifiableList(this.privileged) : Collections.emptyList();
+   }
+
+    public User withPrivileged(ServerChannel value)
+   {
+      if (this.privileged == null)
+      {
+         this.privileged = new ArrayList<>();
+      }
+      if (!this.privileged.contains(value))
+      {
+         this.privileged.add(value);
+         value.withPrivilegedUsers(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED, null, value);
+      }
+      return this;
+   }
+
+    public User withPrivileged(ServerChannel... value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withPrivileged(item);
+      }
+      return this;
+   }
+
+    public User withPrivileged(Collection<? extends ServerChannel> value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withPrivileged(item);
+      }
+      return this;
+   }
+
+    public User withoutPrivileged(ServerChannel value)
+   {
+      if (this.privileged != null && this.privileged.remove(value))
+      {
+         value.withoutPrivilegedUsers(this);
+         this.firePropertyChange(PROPERTY_PRIVILEGED, value, null);
+      }
+      return this;
+   }
+
+    public User withoutPrivileged(ServerChannel... value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withoutPrivileged(item);
+      }
+      return this;
+   }
+
+    public User withoutPrivileged(Collection<? extends ServerChannel> value)
+   {
+      for (final ServerChannel item : value)
+      {
+         this.withoutPrivileged(item);
+      }
       return this;
    }
 
@@ -168,72 +234,6 @@ public class User {
          value.withUser(this);
       }
       this.firePropertyChange(PROPERTY_CURRENT_USER, oldValue, value);
-      return this;
-   }
-
-    public List<ServerChannel> getPrivileged()
-   {
-      return this.privileged != null ? Collections.unmodifiableList(this.privileged) : Collections.emptyList();
-   }
-
-    public User withPrivileged(ServerChannel value)
-   {
-      if (this.privileged == null)
-      {
-         this.privileged = new ArrayList<>();
-      }
-      if (!this.privileged.contains(value))
-      {
-         this.privileged.add(value);
-         value.withPrivilegedUsers(this);
-         this.firePropertyChange(PROPERTY_PRIVILEGED, null, value);
-      }
-      return this;
-   }
-
-    public User withPrivileged(ServerChannel... value)
-   {
-      for (final ServerChannel item : value)
-      {
-         this.withPrivileged(item);
-      }
-      return this;
-   }
-
-    public User withPrivileged(Collection<? extends ServerChannel> value)
-   {
-      for (final ServerChannel item : value)
-      {
-         this.withPrivileged(item);
-      }
-      return this;
-   }
-
-    public User withoutPrivileged(ServerChannel value)
-   {
-      if (this.privileged != null && this.privileged.remove(value))
-      {
-         value.withoutPrivilegedUsers(this);
-         this.firePropertyChange(PROPERTY_PRIVILEGED, value, null);
-      }
-      return this;
-   }
-
-    public User withoutPrivileged(ServerChannel... value)
-   {
-      for (final ServerChannel item : value)
-      {
-         this.withoutPrivileged(item);
-      }
-      return this;
-   }
-
-    public User withoutPrivileged(Collection<? extends ServerChannel> value)
-   {
-      for (final ServerChannel item : value)
-      {
-         this.withoutPrivileged(item);
-      }
       return this;
    }
 

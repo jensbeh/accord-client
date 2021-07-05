@@ -21,8 +21,8 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
         return currentServer;
     }
 
-    public static void setCurrentServer(Server currentServer) {
-        de.uniks.stp.cellfactories.ServerListCell.currentServer = currentServer;
+    public static void setCurrentServer(Server newCurrentServer) {
+        currentServer = newCurrentServer;
     }
 
     /**
@@ -37,10 +37,10 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
      */
     @Override
     public ListCell<Server> call(ListView<Server> param) {
-        return new ServerListCell();
+        return new ServerCell();
     }
 
-    private static class ServerListCell extends ListCell<Server> {
+    private static class ServerCell extends ListCell<Server> {
         protected void updateItem(Server item, boolean empty) {
             // creates a HBox for each cell of the listView
             StackPane cell = new StackPane();

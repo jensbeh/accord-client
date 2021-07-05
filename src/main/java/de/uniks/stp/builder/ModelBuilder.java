@@ -175,7 +175,7 @@ public class ModelBuilder {
 
     public void playSound() {
         if (soundFile == null) {
-            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/default.wav"));
+            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
         }
         if (clip != null) {
             clip.stop();

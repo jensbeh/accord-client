@@ -88,7 +88,7 @@ public class HomeViewController {
         showServers(() -> {
             for (Server server : builder.getPersonalUser().getServer()) {
                 try {
-                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                     serverController.get(server).startController(status -> {
@@ -157,7 +157,7 @@ public class HomeViewController {
         inServerChat = false;
         try {
             if (privateView == null) {
-                privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("PrivateView.fxml")), StageManager.getLangBundle());
+                privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/PrivateView.fxml")), StageManager.getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 privateViewController.setTheme();
@@ -206,7 +206,7 @@ public class HomeViewController {
     private void onShowCreateServer(MouseEvent mouseEvent) {
 
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateJoinView.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
             CreateJoinServerController createJoinServerController = new CreateJoinServerController(root, builder, stage);
@@ -233,7 +233,7 @@ public class HomeViewController {
                     try {
                         if (!serverController.containsKey(server)) {
                             builder.setCurrentServer(server);
-                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
                             serverViews.put(server, serverView);
                             serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                             serverController.get(server).startController(status -> Platform.runLater(() -> {
@@ -264,7 +264,7 @@ public class HomeViewController {
                     try {
                         if (!serverController.containsKey(server)) {
                             builder.setCurrentServer(server);
-                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("ServerView.fxml")), StageManager.getLangBundle());
+                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
                             serverViews.put(server, serverView);
                             serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                             serverController.get(server).startController(status -> Platform.runLater(() -> {
@@ -496,7 +496,7 @@ public class HomeViewController {
 
     private void setWhiteMode() {
         homeView.getStylesheets().clear();
-        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/HomeView.css")).toExternalForm());
+        homeView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HomeView.css")).toExternalForm());
         privateViewController.setTheme();
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
@@ -507,7 +507,7 @@ public class HomeViewController {
 
     private void setDarkMode() {
         homeView.getStylesheets().clear();
-        homeView.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/HomeView.css")).toExternalForm());
+        homeView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
         privateViewController.setTheme();
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {

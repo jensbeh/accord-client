@@ -54,7 +54,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersTemp.fxml")), StageManager.getLangBundle());
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersTemp.fxml")), StageManager.getLangBundle());
             //Controller
             inviteUsersTempSubController = new InviteUsersTempSubController(view, builder, server);
             inviteUsersTempSubController.init();
@@ -70,7 +70,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/invite users/inviteUsersUserLimit.fxml")), StageManager.getLangBundle());
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersUserLimit.fxml")), StageManager.getLangBundle());
             //Controller
             inviteUsersUserLimitSubController = new InviteUsersUserLimitSubController(view, builder, server);
             inviteUsersUserLimitSubController.init();
@@ -117,11 +117,11 @@ public class InviteUsersController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerSettings.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

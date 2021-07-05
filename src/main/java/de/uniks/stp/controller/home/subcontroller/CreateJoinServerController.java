@@ -93,8 +93,8 @@ public class CreateJoinServerController {
     }
 
     private void load_tab_content() throws IOException {
-        Parent createView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/CreateServer.fxml")), StageManager.getLangBundle());
-        Parent joinView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/JoinServer.fxml")), StageManager.getLangBundle());
+        Parent createView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateServer.fxml")), StageManager.getLangBundle());
+        Parent joinView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/JoinServer.fxml")), StageManager.getLangBundle());
         create_tab.setContent(createView);
         join_tab.setContent(joinView);
         create_errorLabel = (Label) view.lookup("#create_errorLabel");
@@ -263,11 +263,11 @@ public class CreateJoinServerController {
 
     private void setWhiteMode() {
         tapPane.getStylesheets().clear();
-        tapPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/CreateJoinView.css")).toExternalForm());
+        tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/CreateJoinView.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         tapPane.getStylesheets().clear();
-        tapPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/CreateJoinView.css")).toExternalForm());
+        tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/CreateJoinView.css")).toExternalForm());
     }
 }

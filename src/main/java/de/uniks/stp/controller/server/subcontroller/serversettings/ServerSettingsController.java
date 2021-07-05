@@ -88,11 +88,11 @@ public class ServerSettingsController {
         try {
             Parent root;
             if (builder.getCurrentServer().getOwner().equals(userId)) {
-                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettingsSubView/OverviewOwner.fxml")), StageManager.getLangBundle());
+                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/OverviewOwner.fxml")), StageManager.getLangBundle());
                 OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
                 overviewOwnerController.init();
             } else {
-                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettingsSubView/Overview.fxml")), StageManager.getLangBundle());
+                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/Overview.fxml")), StageManager.getLangBundle());
                 OverviewController overviewController = new OverviewController(root, builder);
                 overviewController.init();
             }
@@ -158,7 +158,7 @@ public class ServerSettingsController {
         // clear old and load new subSetting view
         try {
             this.serverSettingsContainer.getChildren().clear();
-            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("view/settings/ServerSettings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
+            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
 
             switch (fxmlName) {
                 case "Channel":
@@ -197,11 +197,11 @@ public class ServerSettingsController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerSettings.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/ServerSettings.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerSettings.css")).toExternalForm());
     }
 }

@@ -27,7 +27,6 @@ import static de.uniks.stp.util.Constants.*;
 
 public class ResourceManager {
 
-    private static final String ROOT_PATH = "/de/uniks/stp";
     private static String comboValue = "";
 
     /**
@@ -89,7 +88,7 @@ public class ResourceManager {
      * load snakeGameIcons from file
      */
     public static Image loadSnakeGameIcon(String image) {
-        return new Image(Objects.requireNonNull(ResourceManager.class.getResource(ROOT_PATH + "/snake/" + image + ".png")).toString());
+        return new Image(Objects.requireNonNull(ResourceManager.class.getResource("controller/snake" + image + ".png")).toString());
     }
 
     /**
@@ -209,7 +208,7 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
 
-                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/emojis/twemoji.zip");
+                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("emojis/twemoji.zip");
                 InputStream inputStream = zipFileURL.openStream();
                 ZipInputStream zipInputStream = new ZipInputStream(inputStream);
                 ZipEntry entry = zipInputStream.getNextEntry();
@@ -334,7 +333,7 @@ public class ResourceManager {
     private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
         FileChannel source;
         if(file.getName().equals("default.wav")){
-            URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/notification/default.wav");
+            URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("sounds/notification/default.wav");
             assert zipFileURL != null;
             Path path = Paths.get(zipFileURL.toURI());
             File file1 = path.toFile();

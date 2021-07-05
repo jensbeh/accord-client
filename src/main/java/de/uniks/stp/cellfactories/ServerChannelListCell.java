@@ -25,8 +25,8 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
     private static String theme;
 
-    public static void setTheme(String theme) {
-        ServerChannelListCell.theme = theme;
+    public static void setTheme(String newTheme) {
+        theme = newTheme;
     }
 
 

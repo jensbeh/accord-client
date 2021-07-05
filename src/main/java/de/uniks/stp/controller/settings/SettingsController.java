@@ -150,7 +150,7 @@ public class SettingsController {
         // clear old and load new subSetting view
         try {
             this.settingsContainer.getChildren().clear();
-            Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
+            Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
 
             switch (fxmlName) {
                 case "Language":
@@ -196,12 +196,12 @@ public class SettingsController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/SettingsView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/SettingsView.css")).toExternalForm());
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/SettingsView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/SettingsView.css")).toExternalForm());
     }
 }
 

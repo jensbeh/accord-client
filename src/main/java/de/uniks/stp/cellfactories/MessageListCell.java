@@ -2,6 +2,7 @@ package de.uniks.stp.cellfactories;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import javafx.geometry.Bounds;
@@ -43,7 +44,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
      */
     @Override
     public ListCell<Message> call(ListView<Message> param) {
-        return new MessageListCell();
+        return new MessageCell();
     }
 
 
@@ -53,17 +54,17 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         return currentUser;
     }
 
-    public static void setCurrentUser(CurrentUser currentUser) {
-        de.uniks.stp.cellfactories.MessageListCell.currentUser = currentUser;
+    public static void setCurrentUser(CurrentUser newCurrentUser) {
+        currentUser = newCurrentUser;
     }
 
     private static String theme;
 
-    public static void setTheme(String theme) {
-        de.uniks.stp.cellfactories.MessageListCell.theme = theme;
+    public static void setTheme(String newTheme) {
+        theme = newTheme;
     }
 
-    private static class MessageListCell extends ListCell<Message> {
+    private static class MessageCell extends ListCell<Message> {
         private boolean loadImage;
         private String urlType;
 
@@ -222,7 +223,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 loadImage = true;
             }
             engine.setJavaScriptEnabled(false);
-            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(StageManager.class.getResource("styles/message/webView.css")).toExternalForm());
         }
 
         private void setImageSize(String url, WebView webView) {
