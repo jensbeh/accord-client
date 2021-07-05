@@ -64,7 +64,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
     }
 
     private static class MessageListCell extends ListCell<Message> {
-        private boolean loadImage;
         private String urlType;
         private WebView webView;
 
@@ -74,6 +73,11 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
+            if(webView == null) {
+                webView = new WebView();
+            } else {
+                webView.getEngine().load(null);
+            }
             //Background for the messages
 
             this.setId("messagesBox");
@@ -87,24 +91,22 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     userName.setTextFill(Color.WHITE);
                 }
                 EmojiTextFlow message;
-
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
-                loadImage = false;
-                if (webView == null) {
-                    webView = new WebView();
-                }
-                if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                boolean loadImage = false;
+                if (!urlType.equals("None")) {
+                    loadImage = true;
                     setImage(url, webView.getEngine());
-                    if (loadImage) {
-                        webView.setContextMenuEnabled(false);
-                        setImageSize(url, webView);
-                        textMessage = textMessage.replace(url, "");
-                    }
+                    textMessage = textMessage.replace(url, "");
                 }
+                if (loadImage) {
+                    webView.setContextMenuEnabled(false);
+                    setImageSize(url);
+                }
+
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     userName.setText((formatterTime.format(date)) + " " + item.getFrom());
@@ -142,7 +144,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
             }
             this.setGraphic(cell);
-
         }
 
         private EmojiTextFlow handleEmojis(boolean isUser) {
@@ -217,7 +218,6 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 if (videoIdMatcher.find()) {
                     String videoId = videoIdMatcher.group();
                     url = "https://www.youtube.com/embed/" + videoId;
-                    System.out.println(videoId);
                 }
 
                 urlType = "youtube";
@@ -236,29 +236,29 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
         }
 
         private void setImage(String url, WebEngine engine) {
-            if (urlType.equals("picture")) {
-                engine.load(url);
-                loadImage = true;
-                engine.setJavaScriptEnabled(false);
-            } else if (urlType.equals("gif")) {
-                engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
-                loadImage = true;
-                engine.setJavaScriptEnabled(false);
-            } else if (urlType.equals("youtube")) {
-                engine.load(url);
-                loadImage = true;
-                engine.setJavaScriptEnabled(true);
-            }
-            else if (urlType.equals("video")) {
-                String html = "<html><body><video width=\"320\" height=\"240\" controls> <source src=\"" + url + "\" type=\"video/mp4\"> <source src=\"movie.ogg\" type=\"video/ogg\"> Your browser does not support the video tag.</video></body></html>";
-                engine.loadContent(html);
-                loadImage = true;
-                engine.setJavaScriptEnabled(false);
+            switch (urlType) {
+                case "picture":
+                    engine.load(url);
+                    engine.setJavaScriptEnabled(false);
+                    break;
+                case "gif":
+                    engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
+                    engine.setJavaScriptEnabled(false);
+                    break;
+                case "youtube":
+                    engine.load(url);
+                    engine.setJavaScriptEnabled(true);
+                    break;
+                case "video":
+                    String html = "<html><body><video width=\"320\" height=\"240\" controls> <source src=\"" + url + "\" type=\"video/mp4\"> <source src=\"movie.ogg\" type=\"video/ogg\"> Your browser does not support the video tag.</video></body></html>";
+                    engine.loadContent(html);
+                    engine.setJavaScriptEnabled(false);
+                    break;
             }
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/webView.css")).toExternalForm());
         }
 
-        private void setImageSize(String url, WebView webView) {
+        private void setImageSize(String url) {
             try {
                 Parent parent = this.getParent();
                 while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
