@@ -17,6 +17,7 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -203,17 +204,21 @@ public class ServerSettingsChannelController extends SubSetting {
                 restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), userListToStringArray(selectedChannel.getPrivilegedUsers()), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        System.out.println("--> SUCCESS: changed channel name");
-
-                        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
-                            if (serverChannel.getId().equals(selectedChannel.getId())) {
-                                selectedChannel = serverChannel;
-                            }
-                        }
-                        selectedCategory.withoutChannel(selectedChannel);
-                        selectedChannel.setName(newChannelName);
-                        selectedCategory.withChannel(selectedChannel);
+                    if (status.equals("success")) {//
+//                        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+//                            if (serverChannel.getId().equals(selectedChannel.getId())) {
+//                                selectedChannel = serverChannel;
+//                            }
+//                        }
+//                        List<ServerChannel> channelList = selectedCategory.getChannel();
+//                        int index = channelList.indexOf(selectedChannel);
+//                        channelList.remove(selectedChannel);
+//                        selectedCategory.removeChannel();
+//                        selectedChannel.setName(newChannelName);
+//
+//                        channelList.add(index, selectedChannel);
+//
+//                        selectedCategory.withChannel(channelList);
 
                         Platform.runLater(() -> {
                             editChannelsSelector.getItems().clear();

@@ -216,4 +216,8 @@ public class Categories {
       this.setServer(null);
       this.withoutChannel(new ArrayList<>(this.getChannel()));
    }
+
+   public void removeChannel() {
+        this.channel = null;
+   }
 }
