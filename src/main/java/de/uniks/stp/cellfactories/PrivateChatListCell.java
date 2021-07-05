@@ -19,16 +19,10 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     * determined.
+     *              determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
-
-    private static String theme;
-
-    public static void setTheme(String newTheme) {
-        theme = newTheme;
-    }
 
     @Override
     public ListCell<PrivateChat> call(ListView<PrivateChat> param) {

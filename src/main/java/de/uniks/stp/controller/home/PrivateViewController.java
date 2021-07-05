@@ -84,7 +84,6 @@ public class PrivateViewController {
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new PrivateChatListCell());
-        PrivateChatListCell.setTheme(builder.getTheme());
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
