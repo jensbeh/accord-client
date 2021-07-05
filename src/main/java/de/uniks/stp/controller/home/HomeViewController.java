@@ -492,7 +492,9 @@ public class HomeViewController {
         if (privateViewController != null) {
             privateViewController.onLanguageChanged();
         }
-        ServerViewController.onLanguageChanged();
+        if (serverController.get(builder.getCurrentServer()) != null) {
+            serverController.get(builder.getCurrentServer()).onLanguageChanged();
+        }
     }
 
     public PrivateViewController getPrivateViewController() {
