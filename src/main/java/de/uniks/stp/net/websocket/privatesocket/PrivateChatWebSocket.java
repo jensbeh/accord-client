@@ -167,7 +167,7 @@ public class PrivateChatWebSocket extends Endpoint {
             for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(channelName)) {
                     channel.withMessage(message);
-                    if (!builder.isDoNotDisturb() && (PrivateViewController.getSelectedChat() == null || channel != PrivateViewController.getSelectedChat())) {
+                    if (!builder.isDoNotDisturb() && (builder.getCurrentPrivateChat() == null || channel != builder.getCurrentPrivateChat())) {
                         if (builder.isPlaySound()) {
                             builder.playSound();
                         }
@@ -209,7 +209,7 @@ public class PrivateChatWebSocket extends Endpoint {
             }
             // save message
             if (builder.getPersonalUser().getName().equals(message.getFrom())) {
-                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), message);
+                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), builder.getCurrentPrivateChat().getName(), message);
             } else {
                 ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }

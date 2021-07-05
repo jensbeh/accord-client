@@ -1,10 +1,10 @@
 package de.uniks.stp.controller.home;
 
 
-import de.uniks.stp.cellfactories.PrivateChatListCell;
-import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.PrivateChatListCell;
+import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
@@ -12,9 +12,11 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.ResourceManager;
+import de.uniks.stp.util.SortUser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,8 +31,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
-import de.uniks.stp.util.ResourceManager;
-import de.uniks.stp.util.SortUser;
 
 import javax.json.JsonException;
 import java.io.IOException;
@@ -53,7 +53,6 @@ public class PrivateViewController {
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
-    private static PrivateChat selectedChat;
     private static Label welcomeToAccord;
     private ChatViewController messageViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
@@ -83,7 +82,7 @@ public class PrivateViewController {
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
-        privateChatList.setCellFactory(new PrivateChatListCell());
+        privateChatList.setCellFactory(new PrivateChatListCell(builder));
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
@@ -263,11 +262,11 @@ public class PrivateViewController {
      */
     private void onPrivateChatListClicked(MouseEvent mouseEvent) {
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
-            if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
+            if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
-                selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
-                if (selectedChat.getUnreadMessagesCounter() > 0) {
-                    selectedChat.setUnreadMessagesCounter(0);
+                builder.setCurrentPrivateChat(this.privateChatList.getSelectionModel().getSelectedItem());
+                if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
+                    builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
                 }
                 this.privateChatList.refresh();
                 MessageViews();
@@ -287,8 +286,8 @@ public class PrivateViewController {
             messageViewController.setTheme();
             this.chatBox.getChildren().add(root);
             privateChatWebSocket.setMessageViewController(messageViewController);
-            if (PrivateViewController.getSelectedChat() != null) {
-                for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
+            if (builder.getCurrentPrivateChat() != null) {
+                for (Message msg : builder.getCurrentPrivateChat().getMessage()) {
                     // Display each Message which are saved
                     messageViewController.printMessage(msg);
                 }
@@ -305,16 +304,16 @@ public class PrivateViewController {
      * @param mouseEvent is called when clicked on an online User
      */
     private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
-        PrivateChat currentChannel = selectedChat;
+        PrivateChat currentChannel = builder.getCurrentPrivateChat();
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean chatExisting = false;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
             for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(selectedUserName)) {
-                    selectedChat = channel;
-                    if (selectedChat.getUnreadMessagesCounter() > 0) {
-                        selectedChat.setUnreadMessagesCounter(0);
+                    builder.setCurrentPrivateChat(channel);
+                    if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
+                        builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
                     }
                     this.privateChatList.refresh();
                     chatExisting = true;
@@ -322,34 +321,21 @@ public class PrivateViewController {
                 }
             }
             if (!chatExisting) {
-                selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
-                builder.getPersonalUser().withPrivateChat(selectedChat);
+                PrivateChat newPrivateChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
+                builder.getPersonalUser().withPrivateChat(newPrivateChat);
                 try {
                     // load messages for new channel
-                    selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
+                    newPrivateChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), newPrivateChat.getName(), newPrivateChat));
                 } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
                     e.printStackTrace();
                 }
-                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
-                        getPrivateChat()));
+                builder.setCurrentPrivateChat(newPrivateChat);
+                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
-            if (!selectedChat.equals(currentChannel)) {
+            if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
         }
-    }
-
-    /**
-     * Get the current active Channel / selected Chat
-     *
-     * @return current active Channel
-     */
-    public static PrivateChat getSelectedChat() {
-        return selectedChat;
-    }
-
-    public static void setSelectedChat(PrivateChat channel) {
-        selectedChat = channel;
     }
 
     /**

@@ -171,7 +171,7 @@ public class HomeViewController {
 
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-                if (PrivateViewController.getSelectedChat() != null) {
+                if (builder.getCurrentPrivateChat() != null) {
                     this.privateViewController.MessageViews();
                 }
             }
@@ -400,6 +400,7 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the Home Button
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
+        builder.setInServerChat(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
@@ -435,8 +436,8 @@ public class HomeViewController {
             JSONObject result = response.getBody().getObject();
             if (result.get("status").equals("success")) {
                 System.out.println(result.get("message"));
-                if (PrivateViewController.getSelectedChat() != null) {
-                    PrivateViewController.setSelectedChat(null);
+                if (builder.getCurrentPrivateChat() != null) {
+                    builder.setCurrentPrivateChat(null);
                 }
                 Platform.runLater(StageManager::showLoginScreen);
             }

@@ -2,10 +2,7 @@ package de.uniks.stp.builder;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
-import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
+import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
@@ -53,6 +50,7 @@ public class ModelBuilder {
 
     private boolean loadUserData = true;
     private boolean inServerChat;
+    private PrivateChat currentPrivateChat;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -329,5 +327,13 @@ public class ModelBuilder {
 
     public boolean getInServerChat() {
         return this.inServerChat;
+    }
+
+    public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {
+        this.currentPrivateChat = currentPrivateChat;
+    }
+
+    public PrivateChat getCurrentPrivateChat() {
+        return this.currentPrivateChat;
     }
 }

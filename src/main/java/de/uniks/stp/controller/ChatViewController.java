@@ -419,8 +419,8 @@ public class ChatViewController {
                 if (!builder.getInServerChat()) {
                     messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
-                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                        if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
+                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -443,7 +443,7 @@ public class ChatViewController {
      */
     public void printMessage(Message msg) {
         if (!builder.getInServerChat()) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 messages.add(msg);
                 refreshMessageListView();
             }
@@ -460,7 +460,7 @@ public class ChatViewController {
      */
     public void removeMessage(Message msg) {
         if (!builder.getInServerChat()) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
+            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
                 refreshMessageListView();
             }
