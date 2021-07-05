@@ -30,7 +30,7 @@ public class PrivateChatWebSocket extends Endpoint {
     private Session session;
     private final Timer noopTimer;
     private ModelBuilder builder;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
     private ChatViewController chatViewController;
 
