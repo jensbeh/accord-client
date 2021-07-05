@@ -24,12 +24,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import util.ResourceManager;
 import util.SortUser;
 
 import javax.json.JsonException;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;

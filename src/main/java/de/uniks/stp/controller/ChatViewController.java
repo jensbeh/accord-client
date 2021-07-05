@@ -243,6 +243,7 @@ public class ChatViewController {
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
         selectedMsg = messageList.getSelectionModel().getSelectedItem();
+
         messageList.getSelectionModel().select(null);
     }
 

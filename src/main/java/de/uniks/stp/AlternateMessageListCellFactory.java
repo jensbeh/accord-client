@@ -68,6 +68,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
 
     private static class MessageListCell extends ListCell<Message> {
         private boolean loadImage;
+        private boolean loadVideo;
         private String urlType;
 
         /**
@@ -96,12 +97,18 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
                 loadImage = false;
+                loadVideo = false;
                 WebView webView = new WebView();
+                MediaView mediaView = new MediaView();
                 if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-                    setImage(url, webView.getEngine());
+                    setMedia(url, webView.getEngine(), mediaView);
                     if (loadImage) {
                         webView.setContextMenuEnabled(false);
                         setImageSize(url, webView);
+                        textMessage = textMessage.replace(url, "");
+                    }
+                    if (loadVideo) {
+                        setVideoSize(url, mediaView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
@@ -131,15 +138,16 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                     message.parseAndAppend(" " + str + " ");
                 }
 
-                if (!loadImage) {
-                    vbox.getChildren().addAll(userName, message);
-                } else {
+                if (loadImage){
                     vbox.getChildren().addAll(userName, message, webView);
+                } else if (loadVideo) {
+                    vbox.getChildren().addAll(userName, message, mediaView);
+                } else {
+                    vbox.getChildren().addAll(userName, message);
                 }
 
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);
-
             }
             this.setGraphic(cell);
 
@@ -212,7 +220,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 urlType = "gif";
             }
             else if (url.contains(".mp4")){
-                setVideo(url);
+                urlType = "video";
             }
             else {
                 urlType = "None";
@@ -220,14 +228,15 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             return url;
         }
 
-        private void setVideo(String url) {
-            MediaView media = new MediaView();
-            MediaPlayer mediaPlayer = new MediaPlayer(new Media(Objects.requireNonNull(this.getClass().getResource(url)).toExternalForm()));
-            mediaPlayer.setAutoPlay(true);
-            media.setMediaPlayer(mediaPlayer);
+        private void setVideo(String url, MediaView mediaView) {
+            Media mediaUrl = new Media(url);
+            MediaPlayer mediaPlayer = new MediaPlayer(mediaUrl);
+            mediaPlayer.setAutoPlay(false);
+            mediaView.setMediaPlayer(mediaPlayer);
+            mediaPlayer.setOnError(() -> System.out.println("Error : " + mediaPlayer.getError().toString()));
         }
 
-        private void setImage(String url, WebEngine engine) {
+        private void setMedia(String url, WebEngine engine, MediaView mediaView) {
             if (urlType.equals("picture")) {
                 engine.load(url);
                 loadImage = true;
@@ -236,8 +245,44 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
                 loadImage = true;
                 engine.setJavaScriptEnabled(false);
+            } else if (urlType.equals("video")) {
+                setVideo(url, mediaView);
+                loadVideo = true;
             }
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/webView.css")).toExternalForm());
+        }
+
+
+        private void setVideoSize(String url, MediaView mediaView) {
+            try {
+                Parent parent = this.getParent();
+                while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
+                    parent = parent.getParent();
+                }
+                Bounds bounds = parent.getBoundsInLocal();
+                double maxX = bounds.getMaxX();
+                double maxY = bounds.getMaxY();
+                int height = 0;
+                int width = 0;
+                if (!urlType.equals("None")) {
+                    URL url_stream = new URL(url);
+                    BufferedImage image = ImageIO.read(url_stream.openStream());
+                    if (image != null) {
+                        height = image.getHeight();
+                        width = image.getWidth();
+                    }
+                }
+                if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+                    mediaView.setFitHeight(height);
+                    mediaView.setFitWidth(width);
+                } else {
+                    mediaView.setFitHeight(maxY - 50);
+                    mediaView.setFitWidth(maxX - 50);
+                }
+                mediaView.autosize();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         private void setImageSize(String url, WebView webView) {
