@@ -113,6 +113,7 @@ public class ChatViewController {
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setCellFactory(new MessageListCell());
         MessageListCell.setTheme(builder.getTheme());
+
         messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 

@@ -5,14 +5,17 @@ import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -22,6 +25,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -29,6 +33,7 @@ import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,6 +76,16 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         private boolean loadImage;
         private boolean loadVideo;
         private String urlType;
+        private final boolean repeat = false;
+        private boolean stopRequested = false;
+        private boolean atEndOfMedia = false;
+        private javafx.util.Duration duration;
+        private Slider timeSlider;
+        private Label playTime;
+        private Slider volumeSlider;
+        private HBox mediaBar;
+        private MediaPlayer mp;
+        private MediaView mediaView;
 
         /**
          * shows message in cell of ListView
@@ -79,7 +94,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
             //Background for the messages
-
             this.setId("messagesBox");
             if (!empty) {
                 VBox vbox = new VBox();
@@ -142,7 +156,8 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 if (loadImage){
                     vbox.getChildren().addAll(userName, message, webView);
                 } else if (loadVideo) {
-                    vbox.getChildren().addAll(userName, message, mediaView);
+                    VBox mediaBox = setMediaControls(mediaView);
+                    vbox.getChildren().addAll(userName, message, mediaBox);
                 } else {
                     vbox.getChildren().addAll(userName, message);
                 }
@@ -152,6 +167,181 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             }
             this.setGraphic(cell);
 
+        }
+
+        private VBox setMediaControls(MediaView mediaView) {
+            mediaBar = new HBox();
+            mediaBar.setAlignment(Pos.CENTER);
+            mediaBar.setPadding(new Insets(5, 10, 5, 10));
+            BorderPane.setAlignment(mediaBar, Pos.CENTER);
+            final Button playButton  = new Button("Play");
+            mediaBar.getChildren().add(playButton);
+            // Add spacer
+            Label spacer = new Label("   ");
+            mediaBar.getChildren().add(spacer);
+
+            Label timeLabel = new Label("Time: ");
+            mediaBar.getChildren().add(timeLabel);
+
+            timeSlider = new Slider();
+            HBox.setHgrow(timeSlider,Priority.ALWAYS);
+            timeSlider.setMinWidth(50);
+            timeSlider.setMaxWidth(Double.MAX_VALUE);
+            mediaBar.getChildren().add(timeSlider);
+
+            playTime = new Label();
+            playTime.setPrefWidth(130);
+            playTime.setMinWidth(50);
+            mediaBar.getChildren().add(playTime);
+
+            Label volumeLabel = new Label("Vol: ");
+            mediaBar.getChildren().add(volumeLabel);
+
+            volumeSlider = new Slider();
+            volumeSlider.setPrefWidth(70);
+            volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
+            volumeSlider.setMinWidth(30);
+
+            mediaBar.getChildren().add(volumeSlider);
+
+            VBox mediaBox = new VBox();
+            mediaBox.getChildren().addAll(mediaView, mediaBar);
+            mediaBox.setAlignment(Pos.CENTER_RIGHT);
+
+            MediaPlayer mp = mediaView.getMediaPlayer();
+
+            playButton.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent e) {
+                    MediaPlayer.Status status = mp.getStatus();
+
+                    if (status == MediaPlayer.Status.UNKNOWN  || status == MediaPlayer.Status.HALTED)
+                    {
+                        // don't do anything in these states
+                        return;
+                    }
+
+                    if ( status == MediaPlayer.Status.PAUSED
+                            || status == MediaPlayer.Status.READY
+                            || status == MediaPlayer.Status.STOPPED)
+                    {
+                        // rewind the movie if we're sitting at the end
+                        if (atEndOfMedia) {
+                            mp.seek(mp.getStartTime());
+                            atEndOfMedia = false;
+                        }
+                        mp.play();
+                    } else {
+                        mp.pause();
+                    }
+                }
+            });
+
+            mp.currentTimeProperty().addListener(new InvalidationListener()
+            {
+                public void invalidated(Observable ov) {
+                    updateValues();
+                }
+            });
+
+            mp.setOnPlaying(new Runnable() {
+                public void run() {
+                    if (stopRequested) {
+                        mp.pause();
+                        stopRequested = false;
+                    } else {
+                        playButton.setText("||");
+                    }
+                }
+            });
+
+            mp.setOnPaused(new Runnable() {
+                public void run() {
+                    System.out.println("onPaused");
+                    playButton.setText(">");
+                }
+            });
+
+            mp.setOnReady(new Runnable() {
+                public void run() {
+                    duration = mp.getMedia().getDuration();
+                    updateValues();
+                }
+            });
+
+            mp.setCycleCount(repeat ? MediaPlayer.INDEFINITE : 1);
+            mp.setOnEndOfMedia(new Runnable() {
+                public void run() {
+                    if (!repeat) {
+                        playButton.setText(">");
+                        stopRequested = true;
+                        atEndOfMedia = true;
+                    }
+                }
+            });
+
+
+            return mediaBox;
+        }
+
+        protected void updateValues() {
+            if (playTime != null && timeSlider != null && volumeSlider != null) {
+                Platform.runLater(new Runnable() {
+                    public void run() {
+                        Duration currentTime = mp.getCurrentTime();
+                        playTime.setText(formatTime(currentTime, duration));
+                        timeSlider.setDisable(duration.isUnknown());
+                        if (!timeSlider.isDisabled()
+                                && duration.greaterThan(Duration.ZERO)
+                                && !timeSlider.isValueChanging()) {
+                            timeSlider.setValue(currentTime.divide(duration).toMillis()
+                                    * 100.0);
+                        }
+                        if (!volumeSlider.isValueChanging()) {
+                            volumeSlider.setValue((int)Math.round(mp.getVolume()
+                                    * 100));
+                        }
+                    }
+                });
+            }
+        }
+
+        private static String formatTime(Duration elapsed, Duration duration) {
+            int intElapsed = (int)Math.floor(elapsed.toSeconds());
+            int elapsedHours = intElapsed / (60 * 60);
+            if (elapsedHours > 0) {
+                intElapsed -= elapsedHours * 60 * 60;
+            }
+            int elapsedMinutes = intElapsed / 60;
+            int elapsedSeconds = intElapsed - elapsedHours * 60 * 60
+                    - elapsedMinutes * 60;
+
+            if (duration.greaterThan(Duration.ZERO)) {
+                int intDuration = (int)Math.floor(duration.toSeconds());
+                int durationHours = intDuration / (60 * 60);
+                if (durationHours > 0) {
+                    intDuration -= durationHours * 60 * 60;
+                }
+                int durationMinutes = intDuration / 60;
+                int durationSeconds = intDuration - durationHours * 60 * 60 -
+                        durationMinutes * 60;
+                if (durationHours > 0) {
+                    return String.format("%d:%02d:%02d/%d:%02d:%02d",
+                            elapsedHours, elapsedMinutes, elapsedSeconds,
+                            durationHours, durationMinutes, durationSeconds);
+                } else {
+                    return String.format("%02d:%02d/%02d:%02d",
+                            elapsedMinutes, elapsedSeconds,durationMinutes,
+                            durationSeconds);
+                }
+            } else {
+                if (elapsedHours > 0) {
+                    return String.format("%d:%02d:%02d", elapsedHours,
+                            elapsedMinutes, elapsedSeconds);
+                } else {
+                    return String.format("%02d:%02d",elapsedMinutes,
+                            elapsedSeconds);
+                }
+            }
         }
 
         private EmojiTextFlow handleEmojis(boolean isUser) {
@@ -231,10 +421,10 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
         private void setVideo(String url, MediaView mediaView) {
             Media mediaUrl = new Media(url);
-            MediaPlayer mediaPlayer = new MediaPlayer(mediaUrl);
-            mediaPlayer.setAutoPlay(false);
-            mediaView.setMediaPlayer(mediaPlayer);
-            mediaPlayer.setOnError(() -> System.out.println("Error : " + mediaPlayer.getError().toString()));
+            mp = new MediaPlayer(mediaUrl);
+            mp.setAutoPlay(false);
+            mediaView.setMediaPlayer(mp);
+            mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
         }
 
         private void setMedia(String url, WebEngine engine, MediaView mediaView) {
