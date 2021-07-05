@@ -66,6 +66,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
     private static class MessageListCell extends ListCell<Message> {
         private boolean loadImage;
         private String urlType;
+        private WebView webView;
 
         /**
          * shows message in cell of ListView
@@ -93,7 +94,9 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
                 loadImage = false;
-                WebView webView = new WebView();
+                if (webView == null) {
+                    webView = new WebView();
+                }
                 if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
                     setImage(url, webView.getEngine());
                     if (loadImage) {
@@ -208,7 +211,15 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             } else if (url.contains(".gif")) {
                 urlType = "gif";
             } else if (url.contains("youtube")){
-                url = url.replace("watch", "embed");
+                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
+                Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
+                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
+                if (videoIdMatcher.find()) {
+                    String videoId = videoIdMatcher.group();
+                    url = "https://www.youtube.com/embed/" + videoId;
+                    System.out.println(videoId);
+                }
+
                 urlType = "youtube";
             }
             else if (url.contains(".webm")){
