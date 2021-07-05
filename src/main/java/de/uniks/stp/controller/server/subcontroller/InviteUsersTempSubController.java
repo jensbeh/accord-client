@@ -22,9 +22,9 @@ public class InviteUsersTempSubController {
     private final ModelBuilder builder;
     private final Server server;
     private final RestClient restClient;
-    private static Button createLink;
-    private static Label inviteLinksLabel;
-    private static Button deleteLink;
+    private Button createLink;
+    private Label inviteLinksLabel;
+    private Button deleteLink;
     private TextField linkTextField;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
