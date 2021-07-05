@@ -468,9 +468,6 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
                     cat.withChannel(newChannel);
-                    if (builder.getCurrentServer() == serverViewController.getServer()) {
-                        Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                    }
                     serverViewController.refreshAllChannelLists();
                     break;
                 }
@@ -501,7 +498,6 @@ public class ServerSystemWebSocket extends Endpoint {
                             }
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == serverViewController.getServer()) {
-                                Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
                                 if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
                                     serverViewController.throwOutUserFromChatView();
                                 }
@@ -587,9 +583,6 @@ public class ServerSystemWebSocket extends Endpoint {
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
                         channel.withPrivilegedUsers(member);
-                        if (builder.getCurrentServer() == serverViewController.getServer()) {
-                            Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                        }
                         break;
                     }
                 }
@@ -597,9 +590,6 @@ public class ServerSystemWebSocket extends Endpoint {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                             .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
                     category.withChannel(newChannel);
-                    if (builder.getCurrentServer() == serverViewController.getServer()) {
-                        Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                    }
                 }
             }
         }

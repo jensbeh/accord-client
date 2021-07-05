@@ -8,12 +8,14 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,9 +28,9 @@ public class ServerSettingsChannelController extends SubSetting {
     private final RestClient restClient;
 
     private Label categoryLabel;
-    private static ComboBox<Categories> categorySelector;
+    private ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
-    private static ComboBox<ServerChannel> editChannelsSelector;
+    private ComboBox<ServerChannel> editChannelsSelector;
     private TextField editChannelsTextField;
     private Button channelChangeButton;
     private Button channelDeleteButton;
@@ -41,8 +43,8 @@ public class ServerSettingsChannelController extends SubSetting {
     private Label radioVoice;
     private Label radioText;
 
-    private static Categories selectedCategory;
-    private static ServerChannel selectedChannel;
+    private Categories selectedCategory;
+    private ServerChannel selectedChannel;
     private String channelType;
 
 
@@ -175,7 +177,7 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    public static void loadChannels(ServerChannel preSelectChannel) {
+    public void loadChannels(ServerChannel preSelectChannel) {
         if (categorySelector == null || editChannelsSelector == null) {
             return;
         }
@@ -203,17 +205,24 @@ public class ServerSettingsChannelController extends SubSetting {
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
                         System.out.println("--> SUCCESS: changed channel name");
-                        editChannelsTextField.setText("");
-                    } else {
-                        System.out.println(status);
-                        System.out.println(body.getObject().getString("message"));
+
+                        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+                            if (serverChannel.getId().equals(selectedChannel.getId())) {
+                                selectedChannel = serverChannel;
+                            }
+                        }
+                        selectedCategory.withoutChannel(selectedChannel);
+                        selectedChannel.setName(newChannelName);
+                        selectedCategory.withChannel(selectedChannel);
+
+                        Platform.runLater(() -> {
+                            editChannelsSelector.getItems().clear();
+                            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+                            editChannelsTextField.setText("");
+                        });
                     }
                 });
-            } else {
-                System.out.println("--> ERR: New name equals old name");
             }
-        } else {
-            System.out.println("--> ERR: No Channel selected OR Field is empty");
         }
     }
 
@@ -250,14 +259,16 @@ public class ServerSettingsChannelController extends SubSetting {
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
                     System.out.println("--> SUCCESS: channel created");
-                    createChannelTextField.setText(""); // TODO maybe Platform.runlater?
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
+                    JSONObject data = body.getObject().getJSONObject("data");
+                    String channelId = data.getString("id");
+                    String name = data.getString("name");
+
+
+                    ServerChannel newServerChannel = new ServerChannel().setId(channelId).setName(name);
+                    Platform.runLater(() -> editChannelsSelector.getItems().add(newServerChannel));
+                    Platform.runLater(() -> createChannelTextField.setText(""));
                 }
             });
-        } else {
-            System.out.println("--> ERR: Field is empty");
         }
     }
 
@@ -273,13 +284,11 @@ public class ServerSettingsChannelController extends SubSetting {
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
                     System.out.println("--> SUCCESS: deleted channel");
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
+
+                    Platform.runLater(() -> editChannelsSelector.getItems().remove(selectedChannel));
+                    Platform.runLater(() -> editChannelsSelector.getSelectionModel().clearSelection());
                 }
             });
-        } else {
-            System.out.println("--> ERR: No Channel selected");
         }
     }
 
@@ -293,7 +302,7 @@ public class ServerSettingsChannelController extends SubSetting {
         return pUsers;
     }
 
-    public static ServerChannel getSelectedChannel() {
+    public ServerChannel getSelectedChannel() {
         return selectedChannel;
     }
 
