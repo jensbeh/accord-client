@@ -65,8 +65,8 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
     }
 
     private static class MessageCell extends ListCell<Message> {
-        private boolean loadImage;
         private String urlType;
+        private WebView webView;
 
         /**
          * shows message in cell of ListView
@@ -74,6 +74,11 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
+            if(webView == null) {
+                webView = new WebView();
+            } else {
+                webView.getEngine().load(null);
+            }
             //Background for the messages
 
             this.setId("messagesBox");
@@ -87,22 +92,22 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     userName.setTextFill(Color.WHITE);
                 }
                 EmojiTextFlow message;
-
                 //right alignment if User is currentUser else left
                 Date date = new Date(item.getTimestamp());
                 DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
-                loadImage = false;
-                WebView webView = new WebView();
-                if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                boolean loadImage = false;
+                if (!urlType.equals("None")) {
+                    loadImage = true;
                     setImage(url, webView.getEngine());
-                    if (loadImage) {
-                        webView.setContextMenuEnabled(false);
-                        setImageSize(url, webView);
-                        textMessage = textMessage.replace(url, "");
-                    }
+                    textMessage = textMessage.replace(url, "");
                 }
+                if (loadImage) {
+                    webView.setContextMenuEnabled(false);
+                    setImageSize(url);
+                }
+
                 if (currentUser.getName().equals(item.getFrom())) {
                     vbox.setAlignment(Pos.CENTER_RIGHT);
                     userName.setText((formatterTime.format(date)) + " " + item.getFrom());
@@ -140,7 +145,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
             }
             this.setGraphic(cell);
-
         }
 
         private EmojiTextFlow handleEmojis(boolean isUser) {
@@ -208,25 +212,54 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 urlType = "picture";
             } else if (url.contains(".gif")) {
                 urlType = "gif";
-            } else {
+            } else if (url.contains("youtube")){
+                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
+                Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
+                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
+                if (videoIdMatcher.find()) {
+                    String videoId = videoIdMatcher.group();
+                    url = "https://www.youtube.com/embed/" + videoId;
+                }
+
+                urlType = "youtube";
+            }
+            else if (url.contains(".webm")){
+                urlType = "video";
+            }
+            else {
                 urlType = "None";
             }
             return url;
         }
 
+        private void setVideo(String url, WebEngine engine) {
+
+        }
+
         private void setImage(String url, WebEngine engine) {
-            if (urlType.equals("picture")) {
-                engine.load(url);
-                loadImage = true;
-            } else if (urlType.equals("gif")) {
-                engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
-                loadImage = true;
+            switch (urlType) {
+                case "picture":
+                    engine.load(url);
+                    engine.setJavaScriptEnabled(false);
+                    break;
+                case "gif":
+                    engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
+                    engine.setJavaScriptEnabled(false);
+                    break;
+                case "youtube":
+                    engine.load(url);
+                    engine.setJavaScriptEnabled(true);
+                    break;
+                case "video":
+                    String html = "<html><body><video width=\"320\" height=\"240\" controls> <source src=\"" + url + "\" type=\"video/mp4\"> <source src=\"movie.ogg\" type=\"video/ogg\"> Your browser does not support the video tag.</video></body></html>";
+                    engine.loadContent(html);
+                    engine.setJavaScriptEnabled(false);
+                    break;
             }
-            engine.setJavaScriptEnabled(false);
             engine.setUserStyleSheetLocation(Objects.requireNonNull(StageManager.class.getResource("styles/message/webView.css")).toExternalForm());
         }
 
-        private void setImageSize(String url, WebView webView) {
+        private void setImageSize(String url) {
             try {
                 Parent parent = this.getParent();
                 while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
