@@ -1,19 +1,23 @@
 package de.uniks.stp.controller.home;
 
-import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
+import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -21,11 +25,13 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import de.uniks.stp.util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -104,7 +110,6 @@ public class HomeViewController {
             }
         });
     }
-
 
 
     /**
@@ -480,8 +485,13 @@ public class HomeViewController {
             homeLabel.setText(lang.getString("label.home"));
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
-        createJoinServerController.onLanguageChanged();
-        privateViewController.onLanguageChanged();
+
+        if (createJoinServerController != null) {
+            createJoinServerController.onLanguageChanged();
+        }
+        if (privateViewController != null) {
+            privateViewController.onLanguageChanged();
+        }
         ServerViewController.onLanguageChanged();
     }
 
