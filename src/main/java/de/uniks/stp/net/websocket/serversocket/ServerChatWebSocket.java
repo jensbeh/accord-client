@@ -27,7 +27,7 @@ public class ServerChatWebSocket extends Endpoint {
     private Session session;
     private final Timer noopTimer;
     private ModelBuilder builder;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
     private String name;

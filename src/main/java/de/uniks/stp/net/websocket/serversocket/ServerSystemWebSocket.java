@@ -33,7 +33,7 @@ public class ServerSystemWebSocket extends Endpoint {
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
     private String name;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
 
     public void setServerViewController(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
