@@ -254,7 +254,6 @@ public class PrivateMessageTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
 
-
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
@@ -312,6 +311,14 @@ public class PrivateMessageTest extends ApplicationTest {
         //Assert.assertEquals(2, messageList.getItems().size());
         //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
         //Assert.assertEquals(msg2, messageList.getItems().get(1).getMessage());
+
+        //Test onOnlineUserListClicked
+        userList = lookup("#onlineUsers").query();
+        testUserOne = userList.getItems().get(0);
+        privateChat = lookup("#privateChatList").query();
+        privateChat.getItems().get(1).setUnreadMessagesCounter(1);
+        doubleClickOn(userList.lookup("#" + testUserOne.getId()));
+        WaitForAsyncUtils.waitForFxEvents();
 
         rightClickOn("#userNameLabel");
         moveBy(0,15);
