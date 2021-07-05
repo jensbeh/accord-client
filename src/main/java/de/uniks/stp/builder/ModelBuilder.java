@@ -8,7 +8,11 @@ import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
-import util.ResourceManager;
+import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
+import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
+import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
+import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.ResourceManager;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -16,7 +20,6 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.file.Files;
@@ -24,8 +27,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static util.Constants.APPDIR_ACCORD_PATH;
-import static util.Constants.CONFIG_PATH;
+import static de.uniks.stp.util.Constants.APPDIR_ACCORD_PATH;
+import static de.uniks.stp.util.Constants.CONFIG_PATH;
 
 public class ModelBuilder {
     private Server currentServer;
@@ -172,7 +175,7 @@ public class ModelBuilder {
 
     public void playSound() {
         if (soundFile == null) {
-            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/default.wav"));
+            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
         }
         if (clip != null) {
             clip.stop();

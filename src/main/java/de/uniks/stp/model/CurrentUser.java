@@ -11,21 +11,21 @@ import java.util.Collection;
 public class CurrentUser {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_USER_KEY = "userKey";
+    public static final String PROPERTY_PASSWORD = "password";
+    public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_USER = "user";
     public static final String PROPERTY_SERVER = "server";
-    public static final String PROPERTY_PASSWORD = "password";
     public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
     public static final String PROPERTY_CHANNEL = "channel";
-    public static final String PROPERTY_ID = "id";
     private String name;
     private String userKey;
-    private List<User> user;
     protected PropertyChangeSupport listeners;
-    private List<Server> server;
     private String password;
+    private String id;
+    private List<User> user;
+    private List<Server> server;
     private List<PrivateChat> privateChat;
     private List<ServerChannel> channel;
-    private String id;
 
     public String getName()
    {
@@ -60,6 +60,42 @@ public class CurrentUser {
       final String oldValue = this.userKey;
       this.userKey = value;
       this.firePropertyChange(PROPERTY_USER_KEY, oldValue, value);
+      return this;
+   }
+
+    public String getPassword()
+   {
+      return this.password;
+   }
+
+    public CurrentUser setPassword(String value)
+   {
+      if (Objects.equals(value, this.password))
+      {
+         return this;
+      }
+
+      final String oldValue = this.password;
+      this.password = value;
+      this.firePropertyChange(PROPERTY_PASSWORD, oldValue, value);
+      return this;
+   }
+
+    public String getId()
+   {
+      return this.id;
+   }
+
+    public CurrentUser setId(String value)
+   {
+      if (Objects.equals(value, this.id))
+      {
+         return this;
+      }
+
+      final String oldValue = this.id;
+      this.id = value;
+      this.firePropertyChange(PROPERTY_ID, oldValue, value);
       return this;
    }
 
@@ -195,24 +231,6 @@ public class CurrentUser {
       return this;
    }
 
-    public String getPassword()
-   {
-      return this.password;
-   }
-
-    public CurrentUser setPassword(String value)
-   {
-      if (Objects.equals(value, this.password))
-      {
-         return this;
-      }
-
-      final String oldValue = this.password;
-      this.password = value;
-      this.firePropertyChange(PROPERTY_PASSWORD, oldValue, value);
-      return this;
-   }
-
     public List<PrivateChat> getPrivateChat()
    {
       return this.privateChat != null ? Collections.unmodifiableList(this.privateChat) : Collections.emptyList();
@@ -342,24 +360,6 @@ public class CurrentUser {
       {
          this.withoutChannel(item);
       }
-      return this;
-   }
-
-    public String getId()
-   {
-      return this.id;
-   }
-
-    public CurrentUser setId(String value)
-   {
-      if (Objects.equals(value, this.id))
-      {
-         return this;
-      }
-
-      final String oldValue = this.id;
-      this.id = value;
-      this.firePropertyChange(PROPERTY_ID, oldValue, value);
       return this;
    }
 

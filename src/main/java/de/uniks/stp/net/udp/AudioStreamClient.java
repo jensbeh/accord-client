@@ -9,8 +9,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static util.Constants.AUDIO_STREAM_ADDRESS;
-import static util.Constants.AUDIO_STREAM_PORT;
+import static de.uniks.stp.util.Constants.AUDIO_STREAM_ADDRESS;
+import static de.uniks.stp.util.Constants.AUDIO_STREAM_PORT;
 
 public class AudioStreamClient {
 

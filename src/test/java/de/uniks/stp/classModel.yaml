@@ -2,7 +2,7 @@
   classes: 	scenarioTest
   defaultCollectionType: 	c1
   defaultPropertyStyle: 	Bean
-  defaultRoleType: 	"java.util.ArrayList<%s>"
+  defaultRoleType: 	"java.de.uniks.stp.util.ArrayList<%s>"
   mainJavaDir: 	"src/test/java"
   packageName: 	de.uniks.stp
   packageSrcFolder: 	"src/test/java/de/uniks/stp"
@@ -16,9 +16,9 @@
   propertyStyle: 	Bean
 
 - c1: 	org.fulib.classmodel.CollectionType
-  implClass: 	class java.util.ArrayList
-  implTemplate: 	"java.util.ArrayList<%s>"
+  implClass: 	class java.de.uniks.stp.util.ArrayList
+  implTemplate: 	"java.de.uniks.stp.util.ArrayList<%s>"
   itf: 	org.fulib.classmodel.CollectionInterface.List
-  qualifiedImplName: 	java.util.ArrayList
+  qualifiedImplName: 	java.de.uniks.stp.util.ArrayList
   simpleImplName: 	ArrayList
 

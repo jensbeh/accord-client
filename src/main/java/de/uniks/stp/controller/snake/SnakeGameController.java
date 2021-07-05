@@ -21,7 +21,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import util.ResourceManager;
+import de.uniks.stp.util.ResourceManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -519,21 +519,21 @@ public class SnakeGameController {
      */
     private void loadAllSounds() {
         try {
-            Media media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/quest-605.wav")).toURI().toString());
+            Media media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/quest-605.wav")).toURI().toString());
             backgroundMusic = new MediaPlayer(media);
             backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/gameOver.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/gameOver.wav")).toURI().toString());
             gameOverSound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/eating.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/eating.wav")).toURI().toString());
             eatingSound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/countdown321.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/countdown321.wav")).toURI().toString());
             countDown321Sound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/sounds/snake/countdownGO.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/countdownGO.wav")).toURI().toString());
             countDownGoSound = new MediaPlayer(media);
 
         } catch (URISyntaxException e) {
