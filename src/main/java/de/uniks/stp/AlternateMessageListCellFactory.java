@@ -207,21 +207,42 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
                 urlType = "picture";
             } else if (url.contains(".gif")) {
                 urlType = "gif";
-            } else {
+            } else if (url.contains("youtube")){
+                urlType = "youtube";
+            }
+            else if (url.contains(".webm")){
+                urlType = "video";
+            }
+            else {
                 urlType = "None";
             }
             return url;
+        }
+
+        private void setVideo(String url, WebEngine engine) {
+
         }
 
         private void setImage(String url, WebEngine engine) {
             if (urlType.equals("picture")) {
                 engine.load(url);
                 loadImage = true;
+                engine.setJavaScriptEnabled(false);
             } else if (urlType.equals("gif")) {
                 engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
                 loadImage = true;
+                engine.setJavaScriptEnabled(false);
+            } else if (urlType.equals("youtube")) {
+                engine.load(url);
+                loadImage = true;
+                engine.setJavaScriptEnabled(true);
             }
-            engine.setJavaScriptEnabled(false);
+            else if (urlType.equals("video")) {
+                String html = "<html><body><video width=\"320\" height=\"240\" controls> <source src=\"" + url + "\" type=\"video/mp4\"> <source src=\"movie.ogg\" type=\"video/ogg\"> Your browser does not support the video tag.</video></body></html>";
+                engine.loadContent(html);
+                loadImage = true;
+                engine.setJavaScriptEnabled(false);
+            }
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/webView.css")).toExternalForm());
         }
 
