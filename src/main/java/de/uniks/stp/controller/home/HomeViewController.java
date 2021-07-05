@@ -130,6 +130,7 @@ public class HomeViewController {
      * refreshed the serverList when a server was deleted.
      */
     public void serverDeleted() {
+        builder.setInServerChat(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
