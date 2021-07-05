@@ -175,6 +175,7 @@ public class PrivateViewController {
         microphoneLabel.setOnMouseClicked(event -> {
             microphoneLabel.setVisible(false);
             builder.muteMicrophone(true);
+            builder.setMicrophoneFirstMuted(false);
             if (!builder.getMuteHeadphones()) {
                 builder.muteHeadphones(true);
                 headphoneLabel.setVisible(false);
@@ -183,9 +184,11 @@ public class PrivateViewController {
         //unMute headphone
         headphoneLabel.setOnMouseClicked(event -> {
             headphoneLabel.setVisible(false);
-            microphoneLabel.setVisible(false);
-            builder.muteMicrophone(true);
             builder.muteHeadphones(true);
+            if (!builder.getMicrophoneFirstMuted()) {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+            }
         });
     }
 
@@ -193,6 +196,7 @@ public class PrivateViewController {
      * change microphone setting
      */
     private void muteMicrophone(ActionEvent actionEvent) {
+        builder.setMicrophoneFirstMuted(true);
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }

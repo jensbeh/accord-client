@@ -51,6 +51,7 @@ public class ModelBuilder {
     private boolean loadUserData = true;
     private boolean inServerChat;
     private PrivateChat currentPrivateChat;
+    private boolean firstMuted;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -208,6 +209,7 @@ public class ModelBuilder {
             settings.put("theme", theme);
             settings.put("muteMicrophone", muteMicrophone);
             settings.put("muteHeadphones", muteHeadphones);
+            settings.put("firstMuted", firstMuted);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -226,6 +228,7 @@ public class ModelBuilder {
                 theme = "Dark";
                 muteMicrophone = true;
                 muteHeadphones = true;
+                firstMuted = false;
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -236,6 +239,7 @@ public class ModelBuilder {
             theme = (String) parsedSettings.get("theme");
             muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
             muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
+            firstMuted = (boolean) parsedSettings.get("firstMuted");
             reader.close();
 
         } catch (Exception e) {
@@ -335,5 +339,13 @@ public class ModelBuilder {
 
     public PrivateChat getCurrentPrivateChat() {
         return this.currentPrivateChat;
+    }
+
+    public void setMicrophoneFirstMuted(boolean muted) {
+        this.firstMuted = muted;
+    }
+
+    public boolean getMicrophoneFirstMuted() {
+        return firstMuted;
     }
 }
