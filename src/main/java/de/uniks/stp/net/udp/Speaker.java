@@ -2,7 +2,7 @@ package de.uniks.stp.net.udp;
 
 import javax.sound.sampled.*;
 
-import static util.Constants.*;
+import static de.uniks.stp.util.Constants.*;
 
 public class Speaker {
     private AudioFormat format;

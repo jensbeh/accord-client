@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static util.Constants.AUDIO_DATAGRAM_PAKET_SIZE;
+import static de.uniks.stp.util.Constants.AUDIO_DATAGRAM_PAKET_SIZE;
 
 public class AudioStreamSender implements Runnable {
 
