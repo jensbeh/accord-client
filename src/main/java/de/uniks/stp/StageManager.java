@@ -368,7 +368,9 @@ public class StageManager extends Application {
         if (homeViewController != null) {
             homeViewController.onLanguageChanged();
         }
-        InviteUsersController.onLanguageChanged();
+        if (inviteUsersController != null) {
+            inviteUsersController.onLanguageChanged();
+        }
     }
 
 

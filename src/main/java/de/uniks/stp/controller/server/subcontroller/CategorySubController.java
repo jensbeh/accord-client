@@ -28,7 +28,6 @@ public class CategorySubController {
     private ListView<ServerChannel> channelList;
     private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
-    private VBox categoryVbox;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;

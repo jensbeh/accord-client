@@ -169,7 +169,7 @@ public class InviteUsersUserLimitSubController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (createLink != null)
             createLink.setText(lang.getString("button.create"));
