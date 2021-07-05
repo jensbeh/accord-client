@@ -2,16 +2,16 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.util.Constants;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * The class SettingsController controls the view in Settings
@@ -27,30 +27,6 @@ public class SettingsController {
     private Button themeButton;
 
     private SubSetting subController;
-
-    /**
-     * First check if there is a settings file already in user local directory - if not, create
-     */
-    public void setup() {
-        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
-
-        Properties prop = new Properties();
-        File file = new File(path_to_config + Constants.SETTINGS_FILE);
-        File dir = new File(path_to_config);
-        if (!file.exists()) {
-            try {
-                dir.mkdirs();
-                if (file.createNewFile()) {
-                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
-                    prop.setProperty("LANGUAGE", "en");
-                    prop.store(op, null);
-                }
-            } catch (Exception e) {
-                System.out.println(e + "");
-                e.printStackTrace();
-            }
-        }
-    }
 
     public SettingsController(ModelBuilder builder, Parent view) {
         this.builder = builder;

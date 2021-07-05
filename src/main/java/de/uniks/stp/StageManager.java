@@ -5,7 +5,6 @@ import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.login.LoginViewController;
 import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
-import de.uniks.stp.controller.settings.LanguageController;
 import de.uniks.stp.controller.settings.SettingsController;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
@@ -21,8 +20,13 @@ import kong.unirest.Unirest;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 
@@ -42,7 +46,6 @@ public class StageManager extends Application {
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
     private static SnakeGameController snakeGameController;
-    private static LanguageController languageController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -56,6 +59,7 @@ public class StageManager extends Application {
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
 
         loadAppDir();
+        languageSetup();
 
         // start application
         stage = primaryStage;
@@ -68,8 +72,46 @@ public class StageManager extends Application {
         Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
     }
 
-    public static void setBuilder(ModelBuilder builder) {
-        StageManager.builder = builder;
+    /**
+     * First check if there is a settings file already in user local directory - if not, create
+     */
+    private void languageSetup() {
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+
+        Properties prop = new Properties();
+        File file = new File(path_to_config + Constants.SETTINGS_FILE);
+        File dir = new File(path_to_config);
+        if (!file.exists()) {
+            try {
+                dir.mkdirs();
+                if (file.createNewFile()) {
+                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
+                    prop.setProperty("LANGUAGE", "en");
+                    prop.store(op, null);
+                }
+            } catch (Exception e) {
+                System.out.println(e + "");
+                e.printStackTrace();
+            }
+        }
+
+        // load language from Settings
+        prop = new Properties();
+        try {
+            String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+            FileInputStream ip = new FileInputStream(PATH_FILE_SETTINGS);
+            prop.load(ip);
+            Locale currentLocale = new Locale(prop.getProperty("LANGUAGE"));
+            Locale.setDefault(currentLocale);
+            resetLangBundle();
+        } catch (Exception e) {
+            System.err.println(e + "");
+            e.printStackTrace();
+        }
+    }
+
+    public static void setBuilder(ModelBuilder newBuilder) {
+        builder = newBuilder;
     }
 
     public static void showLoginScreen() {

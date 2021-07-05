@@ -372,7 +372,9 @@ public class PrivateViewController {
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
-        chatViewController.onLanguageChanged();
+        if (chatViewController != null) {
+            chatViewController.onLanguageChanged();
+        }
     }
 
     public void setTheme() {
