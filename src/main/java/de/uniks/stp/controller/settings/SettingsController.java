@@ -2,14 +2,12 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.util.Constants;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
-import de.uniks.stp.util.Constants;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +23,7 @@ public class SettingsController {
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
-    private static Button languageButton;
+    private Button languageButton;
     private Button themeButton;
 
     private SubSetting subController;
@@ -33,10 +31,7 @@ public class SettingsController {
     /**
      * First check if there is a settings file already in user local directory - if not, create
      */
-    public static void setup() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
-
+    public void setup() {
         String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
 
         Properties prop = new Properties();
@@ -55,8 +50,6 @@ public class SettingsController {
                 e.printStackTrace();
             }
         }
-
-        LanguageController.setup();
     }
 
     public SettingsController(ModelBuilder builder, Parent view) {
@@ -155,6 +148,7 @@ public class SettingsController {
             switch (fxmlName) {
                 case "Language":
                     subController = new LanguageController(settingsField);
+                    subController.setup();
                     subController.init();
                     break;
                 case "DoNotDisturb":
@@ -181,7 +175,7 @@ public class SettingsController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
     }

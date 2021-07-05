@@ -1,7 +1,5 @@
 package de.uniks.stp.controller.settings;
 
-import java.util.Objects;
-
 public class SubSetting {
     public void init() {
 
@@ -19,5 +17,9 @@ public class SubSetting {
     }
 
     private void setDarkMode() {
+    }
+
+    public void setup() {
+
     }
 }

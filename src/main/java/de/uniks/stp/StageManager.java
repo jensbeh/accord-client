@@ -10,6 +10,7 @@ import de.uniks.stp.controller.settings.SettingsController;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kong.unirest.Unirest;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -39,6 +42,7 @@ public class StageManager extends Application {
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
     private static SnakeGameController snakeGameController;
+    private static LanguageController languageController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -50,11 +54,18 @@ public class StageManager extends Application {
             restClient = new RestClient();
         }
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
-        SettingsController.setup();
+
+        loadAppDir();
+
         // start application
         stage = primaryStage;
         showLoginScreen();
         primaryStage.show();
+    }
+
+    private void loadAppDir() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
     }
 
     public static void setBuilder(ModelBuilder builder) {
@@ -360,8 +371,8 @@ public class StageManager extends Application {
             subStage.setTitle(getLangBundle().getString(subStageTitleName));
         }
 
-        SettingsController.onLanguageChanged();
-        LanguageController.onLanguageChanged();
+        settingsController.onLanguageChanged();
+
         if (loginViewController != null) {
             loginViewController.onLanguageChanged();
         }
