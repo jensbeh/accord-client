@@ -103,11 +103,9 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
 
-                    Circle background = null;
-                    Circle foreground = null;
+                    Circle background = new Circle(notificationCircleSize / 2);
+                    Circle foreground = new Circle(notificationCircleSize / 2 - 1);
 
-                    background = new Circle(notificationCircleSize / 2);
-                    foreground = new Circle(notificationCircleSize / 2 - 1);
                     //IDs to use CSS styling
                     background.getStyleClass().clear();
                     foreground.getStyleClass().clear();
