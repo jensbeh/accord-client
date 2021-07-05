@@ -5,7 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -321,7 +321,7 @@ public class PrivateMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         rightClickOn("#userNameLabel");
-        moveBy(0,15);
+        moveBy(0, 15);
         write("\n");
 
         messageList.getSelectionModel().select(0);
