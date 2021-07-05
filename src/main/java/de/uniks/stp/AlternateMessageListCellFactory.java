@@ -208,6 +208,7 @@ public class AlternateMessageListCellFactory implements javafx.util.Callback<Lis
             } else if (url.contains(".gif")) {
                 urlType = "gif";
             } else if (url.contains("youtube")){
+                url = url.replace("watch", "embed");
                 urlType = "youtube";
             }
             else if (url.contains(".webm")){
