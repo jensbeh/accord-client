@@ -48,23 +48,23 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
     }
 
 
-    private static CurrentUser currentUser;
+    private CurrentUser currentUser;
 
-    public static CurrentUser getCurrentUser() {
+    public CurrentUser getCurrentUser() {
         return currentUser;
     }
 
-    public static void setCurrentUser(CurrentUser newCurrentUser) {
+    public void setCurrentUser(CurrentUser newCurrentUser) {
         currentUser = newCurrentUser;
     }
 
-    private static String theme;
+    private String theme;
 
-    public static void setTheme(String newTheme) {
+    public void setTheme(String newTheme) {
         theme = newTheme;
     }
 
-    private static class MessageCell extends ListCell<Message> {
+    private class MessageCell extends ListCell<Message> {
         private boolean loadImage;
         private String urlType;
 

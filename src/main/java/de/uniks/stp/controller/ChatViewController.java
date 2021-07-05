@@ -73,8 +73,8 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private int counter;
     private ArrayList<String> pngNames = new ArrayList<>();
+    private MessageListCell messageListCellFactory;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -111,12 +111,13 @@ public class ChatViewController {
 
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageList.setCellFactory(new MessageListCell());
-        MessageListCell.setTheme(builder.getTheme());
+        messageListCellFactory = new MessageListCell();
+        messageList.setCellFactory(messageListCellFactory);
+        messageListCellFactory.setTheme(builder.getTheme());
         messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
-        MessageListCell.setCurrentUser(builder.getPersonalUser());
+        messageListCellFactory.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
@@ -417,7 +418,7 @@ public class ChatViewController {
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
-                    MessageListCell.setCurrentUser(builder.getPersonalUser());
+                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
                             builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
@@ -426,7 +427,7 @@ public class ChatViewController {
                         e.printStackTrace();
                     }
                 } else {
-                    MessageListCell.setCurrentUser(builder.getPersonalUser());
+                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());

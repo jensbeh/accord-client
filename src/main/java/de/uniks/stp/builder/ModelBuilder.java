@@ -6,7 +6,7 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
@@ -27,15 +27,12 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static de.uniks.stp.util.Constants.APPDIR_ACCORD_PATH;
-import static de.uniks.stp.util.Constants.CONFIG_PATH;
+import static de.uniks.stp.util.Constants.*;
 
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-    private static final String ROOT_PATH = "/de/uniks/stp";
     private URL soundFile;
-
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
