@@ -135,7 +135,6 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
         loadChannels(selectedChannel);
-        System.out.println("ffff");
     }
 
     /**
