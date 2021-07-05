@@ -153,10 +153,13 @@ public class ServerSettingsChannelController extends SubSetting {
         channelChangeButton.setOnAction(null);
         channelDeleteButton.setOnAction(null);
 
-        selectedCategory.removePropertyChangeListener(this.channelListPCL);
 
-        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
-            serverChannel.removePropertyChangeListener(this.channelNamePCL);
+        if (selectedCategory != null) {
+            selectedCategory.removePropertyChangeListener(this.channelListPCL);
+
+            for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+                serverChannel.removePropertyChangeListener(this.channelNamePCL);
+            }
         }
     }
 
