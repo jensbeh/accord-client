@@ -38,8 +38,8 @@ public class HomeViewController {
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
-    private static Label homeLabel;
-    private static Button logoutButton;
+    private Label homeLabel;
+    private Button logoutButton;
     private Stage stage;
     private ModelBuilder builder;
     private ServerListCell serverListCellFactory;
@@ -48,6 +48,7 @@ public class HomeViewController {
     public boolean inServerChat;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
+    private CreateJoinServerController createJoinServerController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -210,7 +211,7 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
-            CreateJoinServerController createJoinServerController = new CreateJoinServerController(root, builder, stage);
+            createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
             createJoinServerController.setTheme();
             createJoinServerController.showCreateServerView(this::onServerCreated);
@@ -473,14 +474,14 @@ public class HomeViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
-        CreateJoinServerController.onLanguageChanged();
-        PrivateViewController.onLanguageChanged();
+        createJoinServerController.onLanguageChanged();
+        privateViewController.onLanguageChanged();
         ServerViewController.onLanguageChanged();
     }
 

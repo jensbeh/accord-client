@@ -41,7 +41,6 @@ import java.util.ResourceBundle;
 import static de.uniks.stp.util.Constants.*;
 
 public class PrivateViewController {
-
     private final RestClient restClient;
 
     private final Parent view;
@@ -53,7 +52,7 @@ public class PrivateViewController {
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
-    private static Label welcomeToAccord;
+    private Label welcomeToAccord;
     private ChatViewController messageViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     private PrivateChatWebSocket privateChatWebSocket;
@@ -368,7 +367,7 @@ public class PrivateViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));

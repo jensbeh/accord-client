@@ -359,7 +359,7 @@ public class StageManager extends Application {
         SettingsController.onLanguageChanged();
         LanguageController.onLanguageChanged();
         LoginViewController.onLanguageChanged();
-        HomeViewController.onLanguageChanged();
+        homeViewController.onLanguageChanged();
         InviteUsersController.onLanguageChanged();
     }
 
