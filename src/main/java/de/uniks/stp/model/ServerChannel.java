@@ -16,21 +16,21 @@ public class ServerChannel {
     public static final String PROPERTY_PRIVILEGE = "privilege";
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_CATEGORIES = "categories";
+    public static final String PROPERTY_AUDIO_MEMBER = "audioMember";
     public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
     public static final String PROPERTY_MESSAGE = "message";
-    public static final String PROPERTY_AUDIO_MEMBER = "audioMember";
     private String name;
     private String id;
     private int unreadMessagesCounter;
     private boolean privilege;
     private String type;
+    protected PropertyChangeSupport listeners;
     private Categories categories;
+    private List<AudioMember> audioMember;
     private List<User> privilegedUsers;
     private CurrentUser currentUser;
-    protected PropertyChangeSupport listeners;
     private List<Message> message;
-    private List<AudioMember> audioMember;
 
     public String getName()
    {
@@ -146,6 +146,72 @@ public class ServerChannel {
          value.withChannel(this);
       }
       this.firePropertyChange(PROPERTY_CATEGORIES, oldValue, value);
+      return this;
+   }
+
+    public List<AudioMember> getAudioMember()
+   {
+      return this.audioMember != null ? Collections.unmodifiableList(this.audioMember) : Collections.emptyList();
+   }
+
+    public ServerChannel withAudioMember(AudioMember value)
+   {
+      if (this.audioMember == null)
+      {
+         this.audioMember = new ArrayList<>();
+      }
+      if (!this.audioMember.contains(value))
+      {
+         this.audioMember.add(value);
+         value.setChannel(this);
+         this.firePropertyChange(PROPERTY_AUDIO_MEMBER, null, value);
+      }
+      return this;
+   }
+
+    public ServerChannel withAudioMember(AudioMember... value)
+   {
+      for (final AudioMember item : value)
+      {
+         this.withAudioMember(item);
+      }
+      return this;
+   }
+
+    public ServerChannel withAudioMember(Collection<? extends AudioMember> value)
+   {
+      for (final AudioMember item : value)
+      {
+         this.withAudioMember(item);
+      }
+      return this;
+   }
+
+    public ServerChannel withoutAudioMember(AudioMember value)
+   {
+      if (this.audioMember != null && this.audioMember.remove(value))
+      {
+         value.setChannel(null);
+         this.firePropertyChange(PROPERTY_AUDIO_MEMBER, value, null);
+      }
+      return this;
+   }
+
+    public ServerChannel withoutAudioMember(AudioMember... value)
+   {
+      for (final AudioMember item : value)
+      {
+         this.withoutAudioMember(item);
+      }
+      return this;
+   }
+
+    public ServerChannel withoutAudioMember(Collection<? extends AudioMember> value)
+   {
+      for (final AudioMember item : value)
+      {
+         this.withoutAudioMember(item);
+      }
       return this;
    }
 
@@ -304,72 +370,6 @@ public class ServerChannel {
       for (final Message item : value)
       {
          this.withoutMessage(item);
-      }
-      return this;
-   }
-
-    public List<AudioMember> getAudioMember()
-   {
-      return this.audioMember != null ? Collections.unmodifiableList(this.audioMember) : Collections.emptyList();
-   }
-
-    public ServerChannel withAudioMember(AudioMember value)
-   {
-      if (this.audioMember == null)
-      {
-         this.audioMember = new ArrayList<>();
-      }
-      if (!this.audioMember.contains(value))
-      {
-         this.audioMember.add(value);
-         value.setChannel(this);
-         this.firePropertyChange(PROPERTY_AUDIO_MEMBER, null, value);
-      }
-      return this;
-   }
-
-    public ServerChannel withAudioMember(AudioMember... value)
-   {
-      for (final AudioMember item : value)
-      {
-         this.withAudioMember(item);
-      }
-      return this;
-   }
-
-    public ServerChannel withAudioMember(Collection<? extends AudioMember> value)
-   {
-      for (final AudioMember item : value)
-      {
-         this.withAudioMember(item);
-      }
-      return this;
-   }
-
-    public ServerChannel withoutAudioMember(AudioMember value)
-   {
-      if (this.audioMember != null && this.audioMember.remove(value))
-      {
-         value.setChannel(null);
-         this.firePropertyChange(PROPERTY_AUDIO_MEMBER, value, null);
-      }
-      return this;
-   }
-
-    public ServerChannel withoutAudioMember(AudioMember... value)
-   {
-      for (final AudioMember item : value)
-      {
-         this.withoutAudioMember(item);
-      }
-      return this;
-   }
-
-    public ServerChannel withoutAudioMember(Collection<? extends AudioMember> value)
-   {
-      for (final AudioMember item : value)
-      {
-         this.withoutAudioMember(item);
       }
       return this;
    }

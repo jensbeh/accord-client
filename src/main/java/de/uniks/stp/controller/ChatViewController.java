@@ -4,9 +4,11 @@ import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
-import de.uniks.stp.AlternateMessageListCellFactory;
+import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.home.HomeViewController;
+import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
@@ -46,7 +48,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static util.Constants.*;
+import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
     private static ModelBuilder builder;
@@ -109,12 +111,12 @@ public class ChatViewController {
 
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageList.setCellFactory(new AlternateMessageListCellFactory());
-        AlternateMessageListCellFactory.setTheme(builder.getTheme());
+        messageList.setCellFactory(new MessageListCell());
+        MessageListCell.setTheme(builder.getTheme());
         messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
-        AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+        MessageListCell.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
@@ -276,9 +278,9 @@ public class ChatViewController {
             yes.setOnAction(this::deleteMessage);
             no.setOnAction(this::cancelDelete);
             if (builder.getTheme().equals("Bright")) {
-                scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ChatView.css")).toExternalForm());
+                scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
             } else {
-                scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ChatView.css")).toExternalForm());
+                scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
             }
             stage.setScene(scene);
             stage.setResizable(false);
@@ -415,7 +417,7 @@ public class ChatViewController {
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!HomeViewController.inServerChat) {
-                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    MessageListCell.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
                             builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
@@ -424,7 +426,7 @@ public class ChatViewController {
                         e.printStackTrace();
                     }
                 } else {
-                    AlternateMessageListCellFactory.setCurrentUser(builder.getPersonalUser());
+                    MessageListCell.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
@@ -523,14 +525,14 @@ public class ChatViewController {
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/bright/ChatView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
         refreshMessageListView();
 
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
-        root.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/themes/dark/ChatView.css")).toExternalForm());
+        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
         refreshMessageListView();
     }
 }

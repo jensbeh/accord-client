@@ -18,9 +18,9 @@ public class PrivateChat {
     private String name;
     private String id;
     private int unreadMessagesCounter;
+    protected PropertyChangeSupport listeners;
     private CurrentUser currentUser;
     private List<Message> message;
-    protected PropertyChangeSupport listeners;
 
     public String getName()
    {

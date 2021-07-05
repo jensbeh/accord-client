@@ -6,7 +6,7 @@ import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import org.json.JSONObject;
 
-import static util.Constants.*;
+import static de.uniks.stp.util.Constants.*;
 
 public class RestClient {
 

@@ -19,9 +19,9 @@ public class Server {
     private String name;
     private String id;
     private String owner;
+    protected PropertyChangeSupport listeners;
     private List<Categories> categories;
     private List<User> user;
-    protected PropertyChangeSupport listeners;
     private CurrentUser currentUser;
 
     public String getName()
