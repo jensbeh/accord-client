@@ -56,8 +56,7 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private ListView<Message> messageList;
-    //private static ArrayList<Message> messages;
-    private ObservableList<Message> messages;
+    private ArrayList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
@@ -112,10 +111,7 @@ public class ChatViewController {
         messageListCellFactory = new MessageListCell();
         messageList.setCellFactory(messageListCellFactory);
         messageListCellFactory.setTheme(builder.getTheme());
-        //ListView with message as parameter and observableList
-        messages = FXCollections.observableArrayList();
-        messageList.setItems(messages);
-
+        messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
         messageListCellFactory.setCurrentUser(builder.getPersonalUser());
@@ -247,7 +243,6 @@ public class ChatViewController {
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
         selectedMsg = messageList.getSelectionModel().getSelectedItem();
-
         messageList.getSelectionModel().select(null);
     }
 
@@ -476,8 +471,10 @@ public class ChatViewController {
     }
 
     public void refreshMessageListView() {
-        //            messageList.refresh();
-        Platform.runLater(this::checkScrollToBottom);
+        Platform.runLater(() -> {
+            messageList.setItems(FXCollections.observableArrayList(messages));
+            checkScrollToBottom();
+        });
 
     }
 
