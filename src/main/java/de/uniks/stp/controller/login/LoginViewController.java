@@ -3,6 +3,7 @@ package de.uniks.stp.controller.login;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Constants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -10,7 +11,6 @@ import javafx.scene.control.*;
 import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
-import de.uniks.stp.util.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,21 +23,21 @@ import java.util.Scanner;
 
 public class LoginViewController {
     private final Parent root;
-    private static TextField usernameTextField;
-    private static PasswordField passwordTextField;
-    private static CheckBox rememberCheckBox;
-    private static CheckBox tempUserCheckBox;
-    private static Button loginButton;
-    private static Button signInButton;
+    private TextField usernameTextField;
+    private PasswordField passwordTextField;
+    private CheckBox rememberCheckBox;
+    private CheckBox tempUserCheckBox;
+    private Button loginButton;
+    private Button signInButton;
     private Button settingsButton;
-    private static Label errorLabel;
+    private Label errorLabel;
     private String message;
     private final RestClient restClient;
-    private static Label connectionLabel;
+    private Label connectionLabel;
     private final ModelBuilder builder;
-    private static String error;
-    private static String connectionError;
-    public static boolean noConnectionTest;
+    private String error;
+    private String connectionError;
+    public boolean noConnectionTest;
 
     public LoginViewController(Parent root, ModelBuilder builder) {
         this.restClient = builder.getRestClient();
@@ -305,7 +305,7 @@ public class LoginViewController {
     /**
      * decode password
      */
-    public static String decode(String str) {
+    public String decode(String str) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] bytes = decoder.decode(str);
         return new String(bytes);
@@ -314,7 +314,7 @@ public class LoginViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         usernameTextField.setPromptText(lang.getString("textField.prompt_username"));
         passwordTextField.setPromptText(lang.getString("textField.prompt_password"));
@@ -371,5 +371,9 @@ public class LoginViewController {
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Login.css")).toExternalForm());
+    }
+
+    public void setNoConnectionTest(boolean noConnectionTestState) {
+        this.noConnectionTest = noConnectionTestState;
     }
 }

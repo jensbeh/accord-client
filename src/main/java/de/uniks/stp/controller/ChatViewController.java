@@ -4,11 +4,9 @@ import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
-import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.home.HomeViewController;
-import de.uniks.stp.controller.home.PrivateViewController;
+import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
@@ -51,14 +49,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
-    private static ModelBuilder builder;
-    private static ServerChannel currentChannel;
+    private ModelBuilder builder;
+    private ServerChannel currentChannel;
     private final Parent view;
     private VBox root;
-    private static Button sendButton;
+    private Button sendButton;
     private TextField messageTextField;
-    private static ListView<Message> messageList;
-    private static ArrayList<Message> messages;
+    private ListView<Message> messageList;
+    private ArrayList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
@@ -73,8 +71,8 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private int counter;
     private ArrayList<String> pngNames = new ArrayList<>();
+    private MessageListCell messageListCellFactory;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -111,12 +109,13 @@ public class ChatViewController {
 
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageList.setCellFactory(new MessageListCell());
-        MessageListCell.setTheme(builder.getTheme());
+        messageListCellFactory = new MessageListCell();
+        messageList.setCellFactory(messageListCellFactory);
+        messageListCellFactory.setTheme(builder.getTheme());
         messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
-        MessageListCell.setCurrentUser(builder.getPersonalUser());
+        messageListCellFactory.setCurrentUser(builder.getPersonalUser());
         messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
@@ -233,7 +232,7 @@ public class ChatViewController {
             text = messageList.getSelectionModel().getSelectedItem().getMessage();
 
             if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())
-                    || !HomeViewController.inServerChat) {
+                    || !builder.getInServerChat()) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
             } else {
@@ -416,17 +415,17 @@ public class ChatViewController {
         String textMessage = messageTextField.getText();
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
-                if (!HomeViewController.inServerChat) {
-                    MessageListCell.setCurrentUser(builder.getPersonalUser());
+                if (!builder.getInServerChat()) {
+                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
-                        if (builder.getPrivateChatWebSocketClient() != null && PrivateViewController.getSelectedChat() != null) {
-                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", PrivateViewController.getSelectedChat().getName()).put("message", textMessage).toString());
+                        if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
+                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    MessageListCell.setCurrentUser(builder.getPersonalUser());
+                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
@@ -442,8 +441,8 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public void printMessage(Message msg) {
-        if (!HomeViewController.inServerChat) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+        if (!builder.getInServerChat()) {
+            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 messages.add(msg);
                 refreshMessageListView();
             }
@@ -459,8 +458,8 @@ public class ChatViewController {
      * removes message from observableList
      */
     public void removeMessage(Message msg) {
-        if (!HomeViewController.inServerChat) {
-            if (PrivateViewController.getSelectedChat().getName().equals(msg.getPrivateChat().getName())) {
+        if (!builder.getInServerChat()) {
+            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) {
                 messages.remove(msg);
                 refreshMessageListView();
             }
@@ -505,7 +504,7 @@ public class ChatViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));

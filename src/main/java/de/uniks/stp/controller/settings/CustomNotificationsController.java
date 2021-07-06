@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,7 +9,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
-import de.uniks.stp.util.ResourceManager;
 
 import java.io.File;
 import java.io.FileInputStream;

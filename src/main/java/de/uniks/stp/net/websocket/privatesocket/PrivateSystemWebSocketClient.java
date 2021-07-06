@@ -5,10 +5,10 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import de.uniks.stp.util.JsonUtil;
 import de.uniks.stp.util.SortUser;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
 
 import javax.json.JsonObject;
 import javax.websocket.*;
@@ -23,7 +23,7 @@ public class PrivateSystemWebSocketClient extends Endpoint {
     private Session session;
     private final Timer noopTimer;
     private ModelBuilder builder;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
 
     public void setPrivateViewController(PrivateViewController privateViewController) {

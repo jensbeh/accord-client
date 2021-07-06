@@ -15,14 +15,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 public class ServerListCell implements javafx.util.Callback<ListView<Server>, ListCell<Server>> {
-    private static Server currentServer;
+    private Server currentServer;
 
-    public static Server getCurrentServer() {
-        return currentServer;
-    }
-
-    public static void setCurrentServer(Server newCurrentServer) {
-        currentServer = newCurrentServer;
+    public void setCurrentServer(Server newCurrentServer) {
+        this.currentServer = newCurrentServer;
     }
 
     /**
@@ -40,7 +36,7 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
         return new ServerCell();
     }
 
-    private static class ServerCell extends ListCell<Server> {
+    private class ServerCell extends ListCell<Server> {
         protected void updateItem(Server item, boolean empty) {
             // creates a HBox for each cell of the listView
             StackPane cell = new StackPane();

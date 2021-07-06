@@ -9,11 +9,11 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
+import de.uniks.stp.util.JsonUtil;
+import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import de.uniks.stp.util.JsonUtil;
-import de.uniks.stp.util.ResourceManager;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
@@ -30,7 +30,7 @@ public class PrivateChatWebSocket extends Endpoint {
     private Session session;
     private final Timer noopTimer;
     private ModelBuilder builder;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
     private PrivateViewController privateViewController;
     private ChatViewController chatViewController;
 
@@ -157,7 +157,7 @@ public class PrivateChatWebSocket extends Endpoint {
                 message = new Message().setMessage(jsonObject.getString("message")).
                         setFrom(jsonObject.getString("from")).
                         setTimestamp(timestamp);
-                privateViewController.getMessageViewController().clearMessageField();
+                privateViewController.getChatViewController().clearMessageField();
             } else { // currentUser received
                 channelName = jsonObject.getString("from");
                 message = new Message().setMessage(jsonObject.getString("message")).
@@ -167,7 +167,7 @@ public class PrivateChatWebSocket extends Endpoint {
             for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(channelName)) {
                     channel.withMessage(message);
-                    if (!builder.isDoNotDisturb() && (PrivateViewController.getSelectedChat() == null || channel != PrivateViewController.getSelectedChat())) {
+                    if (!builder.isDoNotDisturb() && (builder.getCurrentPrivateChat() == null || channel != builder.getCurrentPrivateChat())) {
                         if (builder.isPlaySound()) {
                             builder.playSound();
                         }
@@ -209,11 +209,11 @@ public class PrivateChatWebSocket extends Endpoint {
             }
             // save message
             if (builder.getPersonalUser().getName().equals(message.getFrom())) {
-                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), PrivateViewController.getSelectedChat().getName(), message);
+                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), builder.getCurrentPrivateChat().getName(), message);
             } else {
                 ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }
-            if (privateViewController.getMessageViewController() != null) {
+            if (privateViewController.getChatViewController() != null) {
                 chatViewController.printMessage(message);
             }
         }

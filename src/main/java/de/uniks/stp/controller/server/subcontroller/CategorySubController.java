@@ -1,8 +1,8 @@
 package de.uniks.stp.controller.server.subcontroller;
 
 import de.uniks.stp.StageManager;
-import de.uniks.stp.cellfactories.ServerChannelListCell;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.ServerChannelListCell;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.ServerChannel;
@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
@@ -28,7 +27,6 @@ public class CategorySubController {
     private ListView<ServerChannel> channelList;
     private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
-    private VBox categoryVbox;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -43,7 +41,6 @@ public class CategorySubController {
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channelList");
         ServerChannelListCell channelListCellFactory = new ServerChannelListCell(serverViewController);
-        ServerChannelListCell.setTheme(builder.getTheme());
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         //PCL
@@ -101,7 +98,6 @@ public class CategorySubController {
     }
 
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
-        Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
         if (category.getChannel().size() > 0) {
             channelList.setPrefHeight(category.getChannel().size() * CHANNEL_HEIGHT);
             for (ServerChannel channel : category.getChannel()) {
@@ -123,7 +119,7 @@ public class CategorySubController {
     }
 
     private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
-        channelList.refresh();
+        Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
     }
 
     public Categories getCategories() {

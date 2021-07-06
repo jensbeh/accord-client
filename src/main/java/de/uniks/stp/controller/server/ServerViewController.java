@@ -1,8 +1,8 @@
 package de.uniks.stp.controller.server;
 
-import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
@@ -12,6 +12,7 @@ import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.SortUser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -24,7 +25,6 @@ import javafx.scene.shape.Line;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import de.uniks.stp.util.SortUser;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,22 +37,22 @@ import static de.uniks.stp.util.Constants.*;
  */
 public class ServerViewController {
 
-    private static ModelBuilder builder;
+    private ModelBuilder builder;
     private final RestClient restClient;
     private final Server server;
     private final Parent view;
     private MenuButton serverMenuButton;
-    private static Label textChannelLabel;
-    private static Label generalLabel;
-    private static Label welcomeToAccord;
+    private Label textChannelLabel;
+    private Label generalLabel;
+    private Label welcomeToAccord;
     private ListView<User> onlineUsersList;
     private ListView<User> offlineUsersList;
     private VBox currentUserBox;
     private HBox root;
     private VBox chatBox;
     private ChatViewController messageViewController;
-    private static MenuItem serverSettings;
-    private static MenuItem inviteUsers;
+    private MenuItem serverSettings;
+    private MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
     private final HomeViewController homeViewController;
@@ -285,6 +285,7 @@ public class ServerViewController {
             microphoneLabel.setOnMouseClicked(event -> {
                 microphoneLabel.setVisible(false);
                 builder.muteMicrophone(true);
+                builder.setMicrophoneFirstMuted(false);
                 if (!builder.getMuteHeadphones()) {
                     builder.muteHeadphones(true);
                     headphoneLabel.setVisible(false);
@@ -293,9 +294,11 @@ public class ServerViewController {
             //unMute headphone
             headphoneLabel.setOnMouseClicked(event -> {
                 headphoneLabel.setVisible(false);
-                microphoneLabel.setVisible(false);
-                builder.muteMicrophone(true);
                 builder.muteHeadphones(true);
+                if (!builder.getMicrophoneFirstMuted()) {
+                    microphoneLabel.setVisible(false);
+                    builder.muteMicrophone(true);
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -306,6 +309,7 @@ public class ServerViewController {
      * change microphone setting
      */
     private void muteMicrophone(ActionEvent actionEvent) {
+        builder.setMicrophoneFirstMuted(true);
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }
@@ -597,7 +601,7 @@ public class ServerViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (textChannelLabel != null)
             textChannelLabel.setText(lang.getString("label.textChannel"));
