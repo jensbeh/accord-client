@@ -1,8 +1,8 @@
 package de.uniks.stp.controller.snake.model;
 
 
-import javafx.scene.image.Image;
 import de.uniks.stp.util.ResourceManager;
+import javafx.scene.image.Image;
 
 import java.util.Random;
 

@@ -29,11 +29,11 @@ public class CreateJoinServerController {
     private final RestClient restClient;
     private final ModelBuilder builder;
     private final Parent view;
-    private static TextField serverName;
+    private TextField serverName;
     private final Stage stage;
     private Button createServer;
     private Runnable create;
-    private static String error;
+    private String error;
     private TextField linkTextField;
     private Button joinServer;
     private Runnable join;
@@ -41,9 +41,9 @@ public class CreateJoinServerController {
     private TabPane tapPane;
     private Tab create_tab;
     private Tab join_tab;
-    private static Label create_errorLabel;
-    private static Label join_errorLabel;
-    private static String last_error_type;
+    private Label create_errorLabel;
+    private Label join_errorLabel;
+    private String last_error_type;
 
 
     /**
@@ -152,7 +152,7 @@ public class CreateJoinServerController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (serverName != null)
             serverName.setText(lang.getString("textField.server_name"));

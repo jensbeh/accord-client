@@ -1,19 +1,23 @@
 package de.uniks.stp.controller.home;
 
-import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
+import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -21,11 +25,13 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import de.uniks.stp.util.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -38,16 +44,17 @@ public class HomeViewController {
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
-    private static Label homeLabel;
-    private static Button logoutButton;
-    private static Stage stage;
+    private Label homeLabel;
+    private Button logoutButton;
+    private Stage stage;
     private ModelBuilder builder;
     private ServerListCell serverListCellFactory;
     private PrivateViewController privateViewController;
     private Parent privateView;
-    public static boolean inServerChat = false;
+    public boolean inServerChat;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
+    private CreateJoinServerController createJoinServerController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -58,6 +65,7 @@ public class HomeViewController {
     @SuppressWarnings("unchecked")
     public void init() throws IOException {
         builder.loadSettings();
+        builder.setInServerChat(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
@@ -104,7 +112,6 @@ public class HomeViewController {
     }
 
 
-
     /**
      * Returns the current HomeViewController.
      */
@@ -123,6 +130,7 @@ public class HomeViewController {
      * refreshed the serverList when a server was deleted.
      */
     public void serverDeleted() {
+        builder.setInServerChat(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
@@ -170,7 +178,7 @@ public class HomeViewController {
 
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
-                if (PrivateViewController.getSelectedChat() != null) {
+                if (builder.getCurrentPrivateChat() != null) {
                     this.privateViewController.MessageViews();
                 }
             }
@@ -184,7 +192,7 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
-        inServerChat = true;
+        builder.setInServerChat(true);
         try {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
@@ -209,7 +217,7 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
-            CreateJoinServerController createJoinServerController = new CreateJoinServerController(root, builder, stage);
+            createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
             createJoinServerController.setTheme();
             createJoinServerController.showCreateServerView(this::onServerCreated);
@@ -399,6 +407,7 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the Home Button
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
+        builder.setInServerChat(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
@@ -434,8 +443,8 @@ public class HomeViewController {
             JSONObject result = response.getBody().getObject();
             if (result.get("status").equals("success")) {
                 System.out.println(result.get("message"));
-                if (PrivateViewController.getSelectedChat() != null) {
-                    PrivateViewController.setSelectedChat(null);
+                if (builder.getCurrentPrivateChat() != null) {
+                    builder.setCurrentPrivateChat(null);
                 }
                 Platform.runLater(StageManager::showLoginScreen);
             }
@@ -471,15 +480,22 @@ public class HomeViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
         if (logoutButton != null)
             logoutButton.setText(lang.getString("button.logout"));
-        CreateJoinServerController.onLanguageChanged();
-        PrivateViewController.onLanguageChanged();
-        ServerViewController.onLanguageChanged();
+
+        if (createJoinServerController != null) {
+            createJoinServerController.onLanguageChanged();
+        }
+        if (privateViewController != null) {
+            privateViewController.onLanguageChanged();
+        }
+        if (serverController.get(builder.getCurrentServer()) != null) {
+            serverController.get(builder.getCurrentServer()).onLanguageChanged();
+        }
     }
 
     public PrivateViewController getPrivateViewController() {

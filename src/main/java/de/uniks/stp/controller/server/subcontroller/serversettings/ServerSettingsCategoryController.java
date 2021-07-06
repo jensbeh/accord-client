@@ -115,16 +115,9 @@ public class ServerSettingsCategoryController extends SubSetting {
                         });
 
                         Platform.runLater(() -> changeCategoryNameTextField.setText(""));
-                    } else {
-                        System.out.println(status);
-                        System.out.println(body.getObject().getString("message"));
                     }
                 });
-            } else {
-                System.out.println("--> ERR: New name equals old name");
             }
-        } else {
-            System.out.println("--> ERR: No Category selected OR Field is empty");
         }
     }
 
@@ -139,13 +132,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                 if (status.equals("success")) {
                     Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
                     Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
                 }
             });
-        } else {
-            System.out.println("--> ERR: No Category selected");
         }
     }
 
@@ -167,13 +155,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                     Categories newCategory = new Categories().setId(categoryId).setName(name);
                     Platform.runLater(() -> categoriesSelector.getItems().add(newCategory));
                     createCategoryNameTextField.setText("");
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
                 }
             });
-        } else {
-            System.out.println("--> ERR: Field is empty");
         }
     }
 

@@ -1,11 +1,11 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
-import de.uniks.stp.util.ResourceManager;
 
 public class DoNotDisturbController extends SubSetting {
 

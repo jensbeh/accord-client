@@ -39,6 +39,9 @@ public class Constants {
     public static String USERDATA_FILE = "/userData.txt";
     public static String NOTIFICATION_PATH = "/soundNotifications";
 
+    // Rescources
+    public static final String ROOT_PATH = "/de/uniks/stp";
+
     // AudioStream
     public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de";
     public static int AUDIO_STREAM_PORT = 33100;

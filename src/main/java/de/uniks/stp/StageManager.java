@@ -3,13 +3,13 @@ package de.uniks.stp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.login.LoginViewController;
+import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
+import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.controller.settings.SettingsController;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
-import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
-import de.uniks.stp.controller.settings.LanguageController;
-import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,9 +17,16 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kong.unirest.Unirest;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 
@@ -29,7 +36,7 @@ public class StageManager extends Application {
     private static Stage stage;
     private static Stage subStage;
     private static HomeViewController homeViewController;
-    private static LoginViewController loginCtrl;
+    private static LoginViewController loginViewController;
     private static SettingsController settingsController;
     private static Scene scene;
     private static ResourceBundle langBundle;
@@ -50,15 +57,61 @@ public class StageManager extends Application {
             restClient = new RestClient();
         }
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
-        SettingsController.setup();
+
+        loadAppDir();
+        languageSetup();
+
         // start application
         stage = primaryStage;
         showLoginScreen();
         primaryStage.show();
     }
 
-    public static void setBuilder(ModelBuilder builder) {
-        StageManager.builder = builder;
+    private void loadAppDir() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+    }
+
+    /**
+     * First check if there is a settings file already in user local directory - if not, create
+     */
+    private void languageSetup() {
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+
+        Properties prop = new Properties();
+        File file = new File(path_to_config + Constants.SETTINGS_FILE);
+        File dir = new File(path_to_config);
+        if (!file.exists()) {
+            try {
+                dir.mkdirs();
+                if (file.createNewFile()) {
+                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
+                    prop.setProperty("LANGUAGE", "en");
+                    prop.store(op, null);
+                }
+            } catch (Exception e) {
+                System.out.println(e + "");
+                e.printStackTrace();
+            }
+        }
+
+        // load language from Settings
+        prop = new Properties();
+        try {
+            String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+            FileInputStream ip = new FileInputStream(PATH_FILE_SETTINGS);
+            prop.load(ip);
+            Locale currentLocale = new Locale(prop.getProperty("LANGUAGE"));
+            Locale.setDefault(currentLocale);
+            resetLangBundle();
+        } catch (Exception e) {
+            System.err.println(e + "");
+            e.printStackTrace();
+        }
+    }
+
+    public static void setBuilder(ModelBuilder newBuilder) {
+        builder = newBuilder;
     }
 
     public static void showLoginScreen() {
@@ -69,9 +122,9 @@ public class StageManager extends Application {
             scene = new Scene(root);
             builder.setRestClient(restClient);
             builder.loadSettings();
-            loginCtrl = new LoginViewController(root, builder);
-            loginCtrl.init();
-            loginCtrl.setTheme();
+            loginViewController = new LoginViewController(root, builder);
+            loginViewController.init();
+            loginViewController.setTheme();
             setStageTitle("window_title_login");
             stage.setResizable(false);
             stage.setScene(scene);
@@ -121,9 +174,9 @@ public class StageManager extends Application {
 
     private static void cleanup() {
         // call cascading stop
-        if (loginCtrl != null) {
-            loginCtrl.stop();
-            loginCtrl = null;
+        if (loginViewController != null) {
+            loginViewController.stop();
+            loginViewController = null;
         }
         if (homeViewController != null) {
             homeViewController.stop();
@@ -324,6 +377,10 @@ public class StageManager extends Application {
         return homeViewController;
     }
 
+    public LoginViewController getLoginViewController() {
+        return loginViewController;
+    }
+
     public static ResourceBundle getLangBundle() {
         return langBundle;
     }
@@ -356,11 +413,17 @@ public class StageManager extends Application {
             subStage.setTitle(getLangBundle().getString(subStageTitleName));
         }
 
-        SettingsController.onLanguageChanged();
-        LanguageController.onLanguageChanged();
-        LoginViewController.onLanguageChanged();
-        HomeViewController.onLanguageChanged();
-        InviteUsersController.onLanguageChanged();
+        settingsController.onLanguageChanged();
+
+        if (loginViewController != null) {
+            loginViewController.onLanguageChanged();
+        }
+        if (homeViewController != null) {
+            homeViewController.onLanguageChanged();
+        }
+        if (inviteUsersController != null) {
+            inviteUsersController.onLanguageChanged();
+        }
     }
 
 
@@ -368,8 +431,8 @@ public class StageManager extends Application {
         if (homeViewController != null) {
             homeViewController.setTheme();
         }
-        if (loginCtrl != null) {
-            loginCtrl.setTheme();
+        if (loginViewController != null) {
+            loginViewController.setTheme();
         }
         if (settingsController != null) {
             settingsController.setTheme();

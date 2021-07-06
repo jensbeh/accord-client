@@ -394,13 +394,13 @@ public class HomeViewControllerTest extends ApplicationTest {
         doubleClickOn(userList.lookup("#" + testUserTwo.getId()));
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(testUserTwo.getName(), PrivateViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserTwo.getName(), app.getBuilder().getCurrentPrivateChat().getName());
 
         ListView<PrivateChat> privateChatList = lookup("#privateChatList").query();
         clickOn(privateChatList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(testUserOne.getName(), PrivateViewController.getSelectedChat().getName());
+        Assert.assertEquals(testUserOne.getName(), app.getBuilder().getCurrentPrivateChat().getName());
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));

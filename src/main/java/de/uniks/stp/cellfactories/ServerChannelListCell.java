@@ -16,8 +16,8 @@ import javafx.scene.shape.Circle;
 import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
-    private static ListView<ServerChannel> channelListView;
-    private static ServerViewController serverViewController;
+    private ListView<ServerChannel> channelListView;
+    private final ServerViewController serverViewController;
 
     public ServerChannelListCell(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
@@ -46,7 +46,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
         return new ChannelListCell();
     }
 
-    private static class ChannelListCell extends ListCell<ServerChannel> {
+    private class ChannelListCell extends ListCell<ServerChannel> {
 
         private boolean isScrollBarVisible;
         private int audioMemberCount = 0;
@@ -65,15 +65,17 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             // get visibility of scrollbar
             try {
                 VBox vBox = (VBox) channelListView.getParent().getParent();
-                ScrollPane scrollPane = (ScrollPane) vBox.getParent().getParent().getParent();
+                if (vBox != null) {
+                    ScrollPane scrollPane = (ScrollPane) vBox.getParent().getParent().getParent();
 
-                ScrollPaneSkin skin = (ScrollPaneSkin) scrollPane.getSkin();
-                Field field = skin.getClass().getDeclaredField("vsb");
+                    ScrollPaneSkin skin = (ScrollPaneSkin) scrollPane.getSkin();
+                    Field field = skin.getClass().getDeclaredField("vsb");
 
-                field.setAccessible(true);
-                ScrollBar scrollBar = (ScrollBar) field.get(skin);
-                field.setAccessible(false);
-                isScrollBarVisible = scrollBar.isVisible();
+                    field.setAccessible(true);
+                    ScrollBar scrollBar = (ScrollBar) field.get(skin);
+                    field.setAccessible(false);
+                    isScrollBarVisible = scrollBar.isVisible();
+                }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 e.printStackTrace();
             }

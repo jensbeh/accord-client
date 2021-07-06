@@ -1,10 +1,10 @@
 package de.uniks.stp.controller.home;
 
 
-import de.uniks.stp.cellfactories.PrivateChatListCell;
-import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.PrivateChatListCell;
+import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
@@ -12,9 +12,11 @@ import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
-import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.ResourceManager;
+import de.uniks.stp.util.SortUser;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,8 +34,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
-import de.uniks.stp.util.ResourceManager;
-import de.uniks.stp.util.SortUser;
 
 import javax.json.JsonException;
 import java.io.File;
@@ -45,7 +45,6 @@ import java.util.ResourceBundle;
 import static de.uniks.stp.util.Constants.*;
 
 public class PrivateViewController {
-
     private final RestClient restClient;
 
     private final Parent view;
@@ -57,9 +56,8 @@ public class PrivateViewController {
     private VBox chatBox;
     private ListView<PrivateChat> privateChatList;
     private ListView<User> onlineUsersList;
-    private static PrivateChat selectedChat;
-    private static Label welcomeToAccord;
-    private ChatViewController messageViewController;
+    private Label welcomeToAccord;
+    private ChatViewController chatViewController;
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     private PrivateChatWebSocket privateChatWebSocket;
     private Button headphoneButton;
@@ -75,8 +73,8 @@ public class PrivateViewController {
         this.privateChatWebSocket = modelBuilder.getPrivateChatWebSocketClient();
     }
 
-    public ChatViewController getMessageViewController() {
-        return messageViewController;
+    public ChatViewController getChatViewController() {
+        return chatViewController;
     }
 
     @SuppressWarnings("unchecked")
@@ -87,8 +85,7 @@ public class PrivateViewController {
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
-        privateChatList.setCellFactory(new PrivateChatListCell());
-        PrivateChatListCell.setTheme(builder.getTheme());
+        privateChatList.setCellFactory(new PrivateChatListCell(builder));
         this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
@@ -182,6 +179,7 @@ public class PrivateViewController {
         microphoneLabel.setOnMouseClicked(event -> {
             microphoneLabel.setVisible(false);
             builder.muteMicrophone(true);
+            builder.setMicrophoneFirstMuted(false);
             if (!builder.getMuteHeadphones()) {
                 builder.muteHeadphones(true);
                 headphoneLabel.setVisible(false);
@@ -190,9 +188,11 @@ public class PrivateViewController {
         //unMute headphone
         headphoneLabel.setOnMouseClicked(event -> {
             headphoneLabel.setVisible(false);
-            microphoneLabel.setVisible(false);
-            builder.muteMicrophone(true);
             builder.muteHeadphones(true);
+            if (!builder.getMicrophoneFirstMuted()) {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(true);
+            }
         });
     }
 
@@ -200,6 +200,7 @@ public class PrivateViewController {
      * change microphone setting
      */
     private void muteMicrophone(ActionEvent actionEvent) {
+        builder.setMicrophoneFirstMuted(true);
         microphoneLabel.setVisible(true);
         builder.muteMicrophone(false);
     }
@@ -268,11 +269,11 @@ public class PrivateViewController {
      */
     private void onPrivateChatListClicked(MouseEvent mouseEvent) {
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
-            if (selectedChat == null || !selectedChat.equals(this.privateChatList.getSelectionModel().
+            if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
-                selectedChat = this.privateChatList.getSelectionModel().getSelectedItem();
-                if (selectedChat.getUnreadMessagesCounter() > 0) {
-                    selectedChat.setUnreadMessagesCounter(0);
+                builder.setCurrentPrivateChat(this.privateChatList.getSelectionModel().getSelectedItem());
+                if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
+                    builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
                 }
                 this.privateChatList.refresh();
                 MessageViews();
@@ -286,16 +287,16 @@ public class PrivateViewController {
     public void MessageViews() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            messageViewController = new ChatViewController(root, builder);
+            chatViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
-            messageViewController.init();
-            messageViewController.setTheme();
+            chatViewController.init();
+            chatViewController.setTheme();
             this.chatBox.getChildren().add(root);
-            privateChatWebSocket.setMessageViewController(messageViewController);
-            if (PrivateViewController.getSelectedChat() != null) {
-                for (Message msg : PrivateViewController.getSelectedChat().getMessage()) {
+            privateChatWebSocket.setMessageViewController(chatViewController);
+            if (builder.getCurrentPrivateChat() != null) {
+                for (Message msg : builder.getCurrentPrivateChat().getMessage()) {
                     // Display each Message which are saved
-                    messageViewController.printMessage(msg);
+                    chatViewController.printMessage(msg);
                 }
             }
         } catch (IOException | JsonException e) {
@@ -310,16 +311,16 @@ public class PrivateViewController {
      * @param mouseEvent is called when clicked on an online User
      */
     private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
-        PrivateChat currentChannel = selectedChat;
+        PrivateChat currentChannel = builder.getCurrentPrivateChat();
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean chatExisting = false;
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
             String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
             for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
                 if (channel.getName().equals(selectedUserName)) {
-                    selectedChat = channel;
-                    if (selectedChat.getUnreadMessagesCounter() > 0) {
-                        selectedChat.setUnreadMessagesCounter(0);
+                    builder.setCurrentPrivateChat(channel);
+                    if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
+                        builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
                     }
                     this.privateChatList.refresh();
                     chatExisting = true;
@@ -327,34 +328,21 @@ public class PrivateViewController {
                 }
             }
             if (!chatExisting) {
-                selectedChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
-                builder.getPersonalUser().withPrivateChat(selectedChat);
+                PrivateChat newPrivateChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
+                builder.getPersonalUser().withPrivateChat(newPrivateChat);
                 try {
                     // load messages for new channel
-                    selectedChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), selectedChat.getName(), selectedChat));
+                    newPrivateChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), newPrivateChat.getName(), newPrivateChat));
                 } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
                     e.printStackTrace();
                 }
-                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().
-                        getPrivateChat()));
+                builder.setCurrentPrivateChat(newPrivateChat);
+                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
             }
-            if (!selectedChat.equals(currentChannel)) {
+            if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
         }
-    }
-
-    /**
-     * Get the current active Channel / selected Chat
-     *
-     * @return current active Channel
-     */
-    public static PrivateChat getSelectedChat() {
-        return selectedChat;
-    }
-
-    public static void setSelectedChat(PrivateChat channel) {
-        selectedChat = channel;
     }
 
     /**
@@ -387,12 +375,14 @@ public class PrivateViewController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
 
-        ChatViewController.onLanguageChanged();
+        if (chatViewController != null) {
+            chatViewController.onLanguageChanged();
+        }
     }
 
     public void setTheme() {
@@ -406,16 +396,16 @@ public class PrivateViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/PrivateView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/PrivateView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
     }
 }
