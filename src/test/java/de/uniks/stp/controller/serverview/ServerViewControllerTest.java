@@ -683,9 +683,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
         clickOn(headphone);
-        Thread.sleep(2000);
         clickOn(mutedMicrophone);
-        Thread.sleep(2000);
         Assert.assertFalse(builder.getMuteMicrophone());
         Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
