@@ -108,12 +108,14 @@ public class ChatViewController {
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
 
-        //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageList.setCellFactory(new MessageListCell());
+        messageListCellFactory = new MessageListCell();
+        messageList.setCellFactory(messageListCellFactory);
+        messageListCellFactory.setTheme(builder.getTheme());
+        //ListView with message as parameter and observableList
         messages = FXCollections.observableArrayList();
         messageList.setItems(messages);
-        messageListCellFactory.setTheme(builder.getTheme());
+
         lang = StageManager.getLangBundle();
 
         messageListCellFactory.setCurrentUser(builder.getPersonalUser());
