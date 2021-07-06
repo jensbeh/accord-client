@@ -7,7 +7,6 @@ import de.uniks.stp.model.ServerChannel;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import static de.uniks.stp.util.Constants.AUDIO_STREAM_ADDRESS;

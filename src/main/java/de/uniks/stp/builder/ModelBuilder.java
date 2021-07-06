@@ -226,8 +226,8 @@ public class ModelBuilder {
                 showNotifications = true;
                 playSound = true;
                 theme = "Dark";
-                muteMicrophone = true;
-                muteHeadphones = true;
+                muteMicrophone = false;
+                muteHeadphones = false;
                 firstMuted = false;
                 saveSettings();
             }
