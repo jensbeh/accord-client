@@ -116,6 +116,8 @@ public class ServerChatWebSocket extends Endpoint {
                 if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                     Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
                 }
+                Message finalMessage = message;
+                Platform.runLater(() -> chatViewController.printMessage(finalMessage));
             }
             // currentUser received
             else if (!from.equals(builder.getPersonalUser().getName())) {

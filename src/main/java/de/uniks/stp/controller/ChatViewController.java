@@ -11,11 +11,15 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,22 +33,33 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
 import javax.json.JsonException;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.net.URL;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -73,6 +88,26 @@ public class ChatViewController {
     private Message selectedMsg;
     private ArrayList<String> pngNames = new ArrayList<>();
     private MessageListCell messageListCellFactory;
+    private VBox container;
+
+    private boolean loadImage;
+    private boolean loadVideo;
+    private boolean videoPlayed;
+    private String urlType;
+    private final boolean repeat = false;
+    private boolean stopRequested = false;
+    private boolean atEndOfMedia = false;
+    private javafx.util.Duration duration;
+    private Slider timeSlider;
+    private Label playTime;
+    private Slider volumeSlider;
+    private HBox mediaBar;
+    private VBox mediaBox;
+    private VBox messagesBox;
+    private ScrollPane messageScrollPane;
+
+    private HashMap<StackPane, Message> messagesHashMap;
+    private HashMap<Message, StackPane> stackPaneHashMap;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -106,16 +141,19 @@ public class ChatViewController {
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
-
-        messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageListCellFactory = new MessageListCell();
-        messageList.setCellFactory(messageListCellFactory);
-        messageListCellFactory.setTheme(builder.getTheme());
-        messages = new ArrayList<>();
+        messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
+        container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
+        messagesHashMap = new HashMap<>();
+        stackPaneHashMap = new HashMap<>();
+//        messageList = (ListView<Message>) view.lookup("#messageListView");
+//        messageListCellFactory = new MessageListCell();
+//        messageList.setCellFactory(messageListCellFactory);
+//        messageListCellFactory.setTheme(builder.getTheme());
+//        messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
-        messageListCellFactory.setCurrentUser(builder.getPersonalUser());
-        messageList.setOnMouseClicked(this::chatClicked);
+//        messageListCellFactory.setCurrentUser(builder.getPersonalUser());
+//        messageList.setOnMouseClicked(this::chatClicked);
 
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
@@ -125,6 +163,428 @@ public class ChatViewController {
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
     }
+
+    protected void updateItem(Message item, boolean empty) {
+        StackPane cell = new StackPane();
+        //Background for the messages
+        if (empty) {
+            VBox vbox = new VBox();
+            Label userName = new Label();
+            userName.setId("userNameLabel");
+            if (builder.getTheme().equals("Bright")) {
+                userName.setTextFill(Color.BLACK);
+            } else {
+                userName.setTextFill(Color.WHITE);
+            }
+            EmojiTextFlow message;
+
+            //right alignment if User is currentUser else left
+            Date date = new Date(item.getTimestamp());
+            DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
+            String textMessage = item.getMessage();
+            String url = searchUrl(textMessage);
+            loadImage = false;
+            loadVideo = false;
+            WebView webView = new WebView();
+            MediaView mediaView = new MediaView();
+            if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
+                if (webView != null) {
+                    setMedia(url, webView.getEngine());
+                    if (loadImage) {
+                        webView.setContextMenuEnabled(false);
+                        setImageSize(cell, url, webView);
+                        textMessage = textMessage.replace(url, "");
+                    }
+                }
+                if (mediaView != null) {
+                    setMedia(url, mediaView);
+                    if (loadVideo) {
+                        setVideoSize(cell, url, mediaView);
+                        textMessage = textMessage.replace(url, "");
+                    }
+                }
+            }
+            if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+                vbox.setAlignment(Pos.CENTER_RIGHT);
+                userName.setText((formatterTime.format(date)) + " " + item.getFrom());
+
+                message = handleEmojis(true);
+                //Message background own user
+                message.getStyleClass().clear();
+                message.getStyleClass().add("messageLabelTo");
+
+            } else {
+                vbox.setAlignment(Pos.CENTER_LEFT);
+                userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
+
+                message = handleEmojis(false);
+                //Message background
+                message.getStyleClass().clear();
+                message.getStyleClass().add("messageLabelFrom");
+            }
+            if (!textMessage.equals("")) {
+                message.setId("messageLabel");
+                message.setMaxWidth(320);
+                message.setPrefWidth(textMessage.length());
+                String str = handleSpacing(textMessage);
+                message.parseAndAppend(" " + str + " ");
+            }
+
+            if (loadImage) {
+                vbox.getChildren().addAll(userName, message, webView);
+            } else if (loadVideo) {
+                if (mediaBox == null) {
+                    mediaBox = setMediaControls(mediaView);
+                }
+                vbox.getChildren().addAll(userName, message, mediaBox);
+            } else {
+                vbox.getChildren().addAll(userName, message);
+            }
+
+            cell.setAlignment(Pos.CENTER_RIGHT);
+            cell.getChildren().addAll(vbox);
+            cell.setMinWidth(420);
+            cell.setOnMouseClicked(this::chatClicked);
+            container.getChildren().add(cell);
+            messagesHashMap.put(cell, item);
+            stackPaneHashMap.put(item, cell);
+        }
+    }
+
+    private VBox setMediaControls(MediaView mediaView) {
+        MediaPlayer mp = mediaView.getMediaPlayer();
+        mediaBar = new HBox();
+        mediaBar.setAlignment(Pos.CENTER);
+        mediaBar.setPadding(new Insets(5, 10, 5, 10));
+        BorderPane.setAlignment(mediaBar, Pos.CENTER);
+        final Button playButton = new Button("Play");
+        mediaBar.getChildren().add(playButton);
+        // Add spacer
+        Label spacer = new Label("   ");
+        mediaBar.getChildren().add(spacer);
+
+        Label timeLabel = new Label("Time: ");
+        mediaBar.getChildren().add(timeLabel);
+
+        timeSlider = new Slider();
+        HBox.setHgrow(timeSlider, Priority.ALWAYS);
+        timeSlider.setMinWidth(50);
+        timeSlider.setMaxWidth(Double.MAX_VALUE);
+        mediaBar.getChildren().add(timeSlider);
+
+        playTime = new Label();
+        playTime.setPrefWidth(130);
+        playTime.setMinWidth(50);
+        mediaBar.getChildren().add(playTime);
+
+        Label volumeLabel = new Label("Vol: ");
+        mediaBar.getChildren().add(volumeLabel);
+
+        volumeSlider = new Slider();
+        volumeSlider.setPrefWidth(70);
+        volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
+        volumeSlider.setMinWidth(30);
+
+        mediaBar.getChildren().add(volumeSlider);
+
+
+        if (mediaBox == null) {
+            mediaBox = new VBox();
+            mediaBox.getChildren().addAll(mediaView, mediaBar);
+            mediaBox.setAlignment(Pos.CENTER_RIGHT);
+        }
+
+        playButton.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                MediaPlayer.Status status = mp.getStatus();
+
+                if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED) {
+                    // don't do anything in these states
+                    return;
+                }
+
+                if (status == MediaPlayer.Status.PAUSED
+                        || status == MediaPlayer.Status.READY
+                        || status == MediaPlayer.Status.STOPPED) {
+                    // rewind the movie if we're sitting at the end
+                    if (atEndOfMedia) {
+                        mp.seek(mp.getStartTime());
+                        atEndOfMedia = false;
+                    }
+                    mp.play();
+                    videoPlayed = true;
+                } else {
+                    mp.pause();
+                    videoPlayed = true;
+                }
+            }
+        });
+
+        mp.currentTimeProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+                updateValues(mp);
+            }
+        });
+
+        mp.setOnPlaying(new Runnable() {
+            public void run() {
+                if (stopRequested) {
+                    mp.pause();
+                    stopRequested = false;
+                } else {
+                    playButton.setText("||");
+                }
+            }
+        });
+
+        mp.setOnPaused(new Runnable() {
+            public void run() {
+                System.out.println("onPaused");
+                playButton.setText(">");
+            }
+        });
+
+        mp.setOnReady(new Runnable() {
+            public void run() {
+                duration = mp.getMedia().getDuration();
+                updateValues(mp);
+            }
+        });
+
+        mp.setCycleCount(repeat ? MediaPlayer.INDEFINITE : 1);
+        mp.setOnEndOfMedia(new Runnable() {
+            public void run() {
+                if (!repeat) {
+                    playButton.setText(">");
+                    stopRequested = true;
+                    atEndOfMedia = true;
+                }
+            }
+        });
+        return mediaBox;
+    }
+
+    protected void updateValues(MediaPlayer mp) {
+        if (playTime != null && timeSlider != null && volumeSlider != null) {
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    Duration currentTime = mp.getCurrentTime();
+                    playTime.setText(formatTime(currentTime, duration));
+                    timeSlider.setDisable(duration.isUnknown());
+                    if (!timeSlider.isDisabled()
+                            && duration.greaterThan(Duration.ZERO)
+                            && !timeSlider.isValueChanging()) {
+                        timeSlider.setValue(currentTime.divide(duration).toMillis()
+                                * 100.0);
+                    }
+                    if (!volumeSlider.isValueChanging()) {
+                        volumeSlider.setValue((int) Math.round(mp.getVolume()
+                                * 100));
+                    }
+                }
+            });
+        }
+    }
+
+    private String formatTime(Duration elapsed, Duration duration) {
+        int intElapsed = (int) Math.floor(elapsed.toSeconds());
+        int elapsedHours = intElapsed / (60 * 60);
+        if (elapsedHours > 0) {
+            intElapsed -= elapsedHours * 60 * 60;
+        }
+        int elapsedMinutes = intElapsed / 60;
+        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60
+                - elapsedMinutes * 60;
+
+        if (duration.greaterThan(Duration.ZERO)) {
+            int intDuration = (int) Math.floor(duration.toSeconds());
+            int durationHours = intDuration / (60 * 60);
+            if (durationHours > 0) {
+                intDuration -= durationHours * 60 * 60;
+            }
+            int durationMinutes = intDuration / 60;
+            int durationSeconds = intDuration - durationHours * 60 * 60 -
+                    durationMinutes * 60;
+            if (durationHours > 0) {
+                return String.format("%d:%02d:%02d/%d:%02d:%02d",
+                        elapsedHours, elapsedMinutes, elapsedSeconds,
+                        durationHours, durationMinutes, durationSeconds);
+            } else {
+                return String.format("%02d:%02d/%02d:%02d",
+                        elapsedMinutes, elapsedSeconds, durationMinutes,
+                        durationSeconds);
+            }
+        } else {
+            if (elapsedHours > 0) {
+                return String.format("%d:%02d:%02d", elapsedHours,
+                        elapsedMinutes, elapsedSeconds);
+            } else {
+                return String.format("%02d:%02d", elapsedMinutes,
+                        elapsedSeconds);
+            }
+        }
+    }
+
+    private EmojiTextFlow handleEmojis(boolean isUser) {
+        if (isUser) {
+            EmojiTextFlowParameters emojiTextFlowParameters;
+            {
+                emojiTextFlowParameters = new EmojiTextFlowParameters();
+                emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                emojiTextFlowParameters.setTextColor(Color.WHITE);
+            }
+            return new EmojiTextFlow(emojiTextFlowParameters);
+        } else {
+            EmojiTextFlowParameters emojiTextFlowParameters;
+            {
+                emojiTextFlowParameters = new EmojiTextFlowParameters();
+                emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                emojiTextFlowParameters.setTextColor(Color.BLACK);
+            }
+            return new EmojiTextFlow(emojiTextFlowParameters);
+        }
+    }
+
+    private String handleSpacing(String str) {
+        //new Line after 50 Characters
+        int point = 0;
+        int counter = 25;
+        boolean found = false;
+        int endPoint;
+        int length = str.length();
+        while ((point + 50) < length) {
+            endPoint = point + 50;
+            while (counter != 0 && !found) {
+                counter--;
+                if (str.charAt(endPoint - (25 - counter)) == ' ') {
+                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
+                    length += 2;
+                    found = true;
+                    point = endPoint - (25 - counter) + 2;
+                }
+            }
+            if (counter == 0) {
+                str = new StringBuilder(str).insert(endPoint, "\n").toString();
+                length += 2;
+                point = endPoint + 2;
+            }
+            found = false;
+            counter = 25;
+        }
+        return str;
+    }
+
+    private String searchUrl(String msg) {
+        String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+        Pattern pattern = Pattern.compile(urlRegex);
+        Matcher matcher = pattern.matcher(msg);
+        String url = "";
+        if (matcher.find()) {
+            url = matcher.toMatchResult().group();
+        }
+        if (url.contains(".png") || url.contains(".jpg") || url.contains(".bmp") || url.contains(".svg")) {
+            urlType = "picture";
+        } else if (url.contains(".gif")) {
+            urlType = "gif";
+        } else if (url.contains(".mp4")) {
+            urlType = "video";
+        } else {
+            urlType = "None";
+        }
+        return url;
+    }
+
+    private void setVideo(String url, MediaView mediaView) {
+        Media mediaUrl = new Media(url);
+        MediaPlayer mp = new MediaPlayer(mediaUrl);
+        mediaView.setMediaPlayer(mp);
+        mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
+    }
+
+    private void setMedia(String url, WebEngine engine) {
+        if (urlType.equals("picture")) {
+            engine.load(url);
+            loadImage = true;
+            engine.setJavaScriptEnabled(false);
+        } else if (urlType.equals("gif")) {
+            engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
+            loadImage = true;
+            engine.setJavaScriptEnabled(false);
+        }
+        engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
+    }
+
+    private void setMedia(String url, MediaView mediaView) {
+        if (urlType.equals("video")) {
+            setVideo(url, mediaView);
+            loadVideo = true;
+        }
+    }
+
+    private void setVideoSize(Parent parent, String url, MediaView mediaView) {
+        try {
+            while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
+                parent = parent.getParent();
+            }
+            Bounds bounds = parent.getBoundsInLocal();
+            double maxX = bounds.getMaxX();
+            double maxY = bounds.getMaxY();
+            int height = 0;
+            int width = 0;
+            if (!urlType.equals("None")) {
+                URL url_stream = new URL(url);
+                BufferedImage image = ImageIO.read(url_stream.openStream());
+                if (image != null) {
+                    height = image.getHeight();
+                    width = image.getWidth();
+                }
+            }
+            if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+                mediaView.setFitHeight(height);
+                mediaView.setFitWidth(width);
+            } else {
+                mediaView.setFitHeight(maxY - 50);
+                mediaView.setFitWidth(maxX - 50);
+            }
+            mediaView.autosize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setImageSize(Parent parent, String url, WebView webView) {
+        try {
+            while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
+                parent = parent.getParent();
+            }
+            Bounds bounds = parent.getBoundsInLocal();
+            double maxX = bounds.getMaxX();
+            double maxY = bounds.getMaxY();
+            int height = 0;
+            int width = 0;
+            if (!urlType.equals("None")) {
+                URL url_stream = new URL(url);
+                BufferedImage image = ImageIO.read(url_stream.openStream());
+                if (image != null) {
+                    height = image.getHeight();
+                    width = image.getWidth();
+                }
+            }
+            if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+                webView.setMaxSize(width, height);
+            } else {
+                webView.setMaxSize(maxX - 50, maxY - 50);
+            }
+            webView.autosize();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * opens emojiList
@@ -224,13 +684,20 @@ public class ChatViewController {
             item3.setId("deleteItem");
             contextMenu.getItems().addAll(item1, item2, item3);
         }
-        if (messageList.getSelectionModel().getSelectedItem() == null) {
-            messageList.setContextMenu(null);
-        } else {
-            messageList.setContextMenu(contextMenu);
-            text = messageList.getSelectionModel().getSelectedItem().getMessage();
 
-            if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())
+        StackPane selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode().getParent().getParent();
+
+        if (selected == null) {
+
+        } else {
+            selected.setOnContextMenuRequested(event -> {
+                contextMenu.setY(event.getScreenY());
+                contextMenu.setX(event.getScreenX());
+                contextMenu.show(selected.getScene().getWindow());
+            });
+            text = messagesHashMap.get(selected).getMessage();
+
+            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName())
                     || !builder.getInServerChat()) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
@@ -242,8 +709,7 @@ public class ChatViewController {
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
-        selectedMsg = messageList.getSelectionModel().getSelectedItem();
-        messageList.getSelectionModel().select(null);
+        selectedMsg = messagesHashMap.get(selected);
     }
 
     /**
@@ -334,7 +800,8 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.deleteMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
-        refreshMessageListView();
+        StackPane toRemove = stackPaneHashMap.get(selectedMsg);
+        container.getChildren().remove(toRemove);
         stage.close();
     }
 
@@ -424,7 +891,6 @@ public class ChatViewController {
                         e.printStackTrace();
                     }
                 } else {
-                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
@@ -442,12 +908,12 @@ public class ChatViewController {
     public void printMessage(Message msg) {
         if (!builder.getInServerChat()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                messages.add(msg);
+                updateItem(msg, true);
                 refreshMessageListView();
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
-                messages.add(msg);
+                updateItem(msg, true);
                 refreshMessageListView();
             }
         }
@@ -465,16 +931,14 @@ public class ChatViewController {
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 messages.remove(msg);
+
                 refreshMessageListView();
             }
         }
     }
 
     public void refreshMessageListView() {
-        Platform.runLater(() -> {
-            messageList.setItems(FXCollections.observableArrayList(messages));
-            checkScrollToBottom();
-        });
+
 
     }
 
