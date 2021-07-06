@@ -59,7 +59,6 @@ public class AudioStreamClient {
         //set both on threads so that quality is better
         receiverThread = new Thread(receiver);
         senderThread = new Thread(sender);
-
     }
 
     /**
@@ -90,16 +89,6 @@ public class AudioStreamClient {
      */
     public void removeAudioMemberReceiver(AudioMember audioMember) {
         receiver.removeConnectedUser(audioMember);
-    }
-
-    /**
-     * starts new audio when microphone is unmuted
-     */
-    public void muteMicrophone(boolean mute) {
-        if (mute) {
-            senderThread = new Thread(sender);
-            senderThread.start();
-        }
     }
 
     /**

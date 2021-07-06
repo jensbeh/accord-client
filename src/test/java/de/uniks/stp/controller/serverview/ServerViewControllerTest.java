@@ -635,14 +635,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Button microphone = lookup("#mute_microphone").query();
-        Label mutedMicrophone = lookup("#unmute_microphone").query();
-        clickOn(microphone);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        clickOn(mutedMicrophone);
-        WaitForAsyncUtils.waitForFxEvents();
-
         clickOn("#button_disconnectAudio");
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -669,31 +661,31 @@ public class ServerViewControllerTest extends ApplicationTest {
         Label mutedMHeadphone = lookup("#unmute_headphone").query();
 
         clickOn(microphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteMicrophone());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteMicrophone());
         Assert.assertFalse(mutedMicrophone.isVisible());
 
         clickOn(headphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
-        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(mutedMHeadphone.isVisible());
         Assert.assertFalse(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMHeadphone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
         clickOn(headphone);
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
@@ -703,29 +695,29 @@ public class ServerViewControllerTest extends ApplicationTest {
         headphone = lookup("#mute_headphone").query();
         mutedMHeadphone = lookup("#unmute_headphone").query();
         clickOn(microphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteMicrophone());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMicrophone);
 
         clickOn(headphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
-        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(mutedMHeadphone.isVisible());
         Assert.assertFalse(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMHeadphone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
         clickOn(headphone);
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
     }
