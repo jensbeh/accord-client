@@ -298,7 +298,9 @@ public class ModelBuilder {
 
     public void muteMicrophone(boolean muteMicrophone) {
         this.muteMicrophone = muteMicrophone;
-        //when new value is set mute or unmute the microphone
+    }
+
+    public void setMuteMicrophone() {
         if (audioStreamClient != null) {
             this.audioStreamClient.muteMicrophone(muteMicrophone);
         }
@@ -310,12 +312,14 @@ public class ModelBuilder {
 
     public void muteHeadphones(boolean muteHeadphones) {
         this.muteHeadphones = muteHeadphones;
+        if (audioStreamClient != null) {
+            this.audioStreamClient.muteHeadphone(muteHeadphones);
+        }
     }
 
     public boolean getMuteHeadphones() {
         return muteHeadphones;
     }
-
 
     public void setLoadUserData(boolean loadUserData) {
         this.loadUserData = loadUserData;

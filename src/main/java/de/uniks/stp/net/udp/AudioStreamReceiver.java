@@ -82,6 +82,10 @@ public class AudioStreamReceiver implements Runnable {
                     }
                 }
             }
+            //break when headphones muted
+            if (!builder.getMuteHeadphones()) {
+                receiverActive = false;
+            }
         }
 
         socket.close();

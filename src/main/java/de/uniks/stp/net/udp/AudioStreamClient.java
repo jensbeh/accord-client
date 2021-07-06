@@ -7,6 +7,7 @@ import de.uniks.stp.model.ServerChannel;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import static de.uniks.stp.util.Constants.AUDIO_STREAM_ADDRESS;
@@ -59,7 +60,6 @@ public class AudioStreamClient {
         //set both on threads so that quality is better
         receiverThread = new Thread(receiver);
         senderThread = new Thread(sender);
-
     }
 
     /**
@@ -99,6 +99,24 @@ public class AudioStreamClient {
         if (mute) {
             senderThread = new Thread(sender);
             senderThread.start();
+        }
+    }
+
+    /**
+     * starts new audio when headset is unmuted
+     */
+    public void muteHeadphone(boolean mute) {
+        if (mute) {
+            try {
+                socket = new DatagramSocket();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+            init();
+            for (AudioMember audioMember : builder.getCurrentAudioChannel().getAudioMember()) {
+                setNewAudioMemberReceiver(audioMember);
+            }
+            startStream();
         }
     }
 
