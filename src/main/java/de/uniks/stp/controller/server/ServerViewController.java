@@ -533,6 +533,12 @@ public class ServerViewController {
                                 channelLoadedCallback.onSuccess(status1);
                             }
                         });
+                    } else {
+                        loadedChannel++;
+                        if (loadedChannel == data.length()) {
+                            loadedChannel = 0;
+                            channelLoadedCallback.onSuccess("success");
+                        }
                     }
                 }
             }
