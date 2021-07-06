@@ -2,7 +2,6 @@ package de.uniks.stp.cellfactories;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
-import de.uniks.stp.StageManager;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Message;
 import javafx.application.Platform;
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +53,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         return new MessageCell();
     }
 
-
     private static CurrentUser currentUser;
 
     public static CurrentUser getCurrentUser() {
@@ -72,9 +69,10 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         theme = newTheme;
     }
 
-    private static class MessageCell extends ListCell<Message> {
+    private class MessageCell extends ListCell<Message> {
         private boolean loadImage;
-        private boolean loadVideo;
+        private boolean loadVideo = false;
+        private boolean videoPlayed;
         private String urlType;
         private final boolean repeat = false;
         private boolean stopRequested = false;
@@ -84,12 +82,15 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         private Label playTime;
         private Slider volumeSlider;
         private HBox mediaBar;
-        private MediaPlayer mp;
+        private VBox mediaBox;
         private MediaView mediaView;
+        private MediaPlayer mp;
+        private WebView webView;
 
         /**
          * shows message in cell of ListView
          */
+        @Override
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
@@ -112,19 +113,29 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
                 loadImage = false;
-                loadVideo = false;
-                WebView webView = new WebView();
-                MediaView mediaView = new MediaView();
+
+                if (webView == null && (urlType.equals("gif") || urlType.equals("picture"))) {
+                    webView = new WebView();
+                }
+                if (mediaView == null && urlType.equals("video")) {
+                    mediaView = new MediaView();
+                }
                 if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-                    setMedia(url, webView.getEngine(), mediaView);
-                    if (loadImage) {
-                        webView.setContextMenuEnabled(false);
-                        setImageSize(url, webView);
-                        textMessage = textMessage.replace(url, "");
+
+                    if (webView != null) {
+                        setMedia(url, mediaView);
+                        if (loadImage) {
+                            webView.setContextMenuEnabled(false);
+                            setImageSize(url, webView);
+                            textMessage = textMessage.replace(url, "");
+                        }
                     }
-                    if (loadVideo) {
-                        setVideoSize(url, mediaView);
-                        textMessage = textMessage.replace(url, "");
+                    if (mediaView != null) {
+                        setMedia(url, mediaView);
+                        if (loadVideo) {
+                            setVideoSize(url, mediaView);
+                            textMessage = textMessage.replace(url, "");
+                        }
                     }
                 }
                 if (currentUser.getName().equals(item.getFrom())) {
@@ -153,10 +164,10 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     message.parseAndAppend(" " + str + " ");
                 }
 
-                if (loadImage){
+                if (loadImage) {
                     vbox.getChildren().addAll(userName, message, webView);
                 } else if (loadVideo) {
-                    VBox mediaBox = setMediaControls(mediaView);
+                    mediaBox = setMediaControls(mediaView);
                     vbox.getChildren().addAll(userName, message, mediaBox);
                 } else {
                     vbox.getChildren().addAll(userName, message);
@@ -164,9 +175,10 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);
+                Platform.runLater(() -> this.setGraphic(cell));
+            } else {
+                Platform.runLater(() -> this.setGraphic(null));
             }
-            this.setGraphic(cell);
-
         }
 
         private VBox setMediaControls(MediaView mediaView) {
@@ -174,7 +186,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             mediaBar.setAlignment(Pos.CENTER);
             mediaBar.setPadding(new Insets(5, 10, 5, 10));
             BorderPane.setAlignment(mediaBar, Pos.CENTER);
-            final Button playButton  = new Button("Play");
+            final Button playButton = new Button("Play");
             mediaBar.getChildren().add(playButton);
             // Add spacer
             Label spacer = new Label("   ");
@@ -184,7 +196,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             mediaBar.getChildren().add(timeLabel);
 
             timeSlider = new Slider();
-            HBox.setHgrow(timeSlider,Priority.ALWAYS);
+            HBox.setHgrow(timeSlider, Priority.ALWAYS);
             timeSlider.setMinWidth(50);
             timeSlider.setMaxWidth(Double.MAX_VALUE);
             mediaBar.getChildren().add(timeSlider);
@@ -204,40 +216,40 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
             mediaBar.getChildren().add(volumeSlider);
 
-            VBox mediaBox = new VBox();
-            mediaBox.getChildren().addAll(mediaView, mediaBar);
-            mediaBox.setAlignment(Pos.CENTER_RIGHT);
 
-            MediaPlayer mp = mediaView.getMediaPlayer();
+            if (mediaBox == null) {
+                mediaBox = new VBox();
+                mediaBox.getChildren().addAll(mediaView, mediaBar);
+                mediaBox.setAlignment(Pos.CENTER_RIGHT);
+            }
 
             playButton.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent e) {
                     MediaPlayer.Status status = mp.getStatus();
 
-                    if (status == MediaPlayer.Status.UNKNOWN  || status == MediaPlayer.Status.HALTED)
-                    {
+                    if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED) {
                         // don't do anything in these states
                         return;
                     }
 
-                    if ( status == MediaPlayer.Status.PAUSED
+                    if (status == MediaPlayer.Status.PAUSED
                             || status == MediaPlayer.Status.READY
-                            || status == MediaPlayer.Status.STOPPED)
-                    {
+                            || status == MediaPlayer.Status.STOPPED) {
                         // rewind the movie if we're sitting at the end
                         if (atEndOfMedia) {
                             mp.seek(mp.getStartTime());
                             atEndOfMedia = false;
                         }
                         mp.play();
+                        videoPlayed = true;
                     } else {
                         mp.pause();
+                        videoPlayed = true;
                     }
                 }
             });
 
-            mp.currentTimeProperty().addListener(new InvalidationListener()
-            {
+            mp.currentTimeProperty().addListener(new InvalidationListener() {
                 public void invalidated(Observable ov) {
                     updateValues();
                 }
@@ -278,8 +290,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     }
                 }
             });
-
-
             return mediaBox;
         }
 
@@ -297,7 +307,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                                     * 100.0);
                         }
                         if (!volumeSlider.isValueChanging()) {
-                            volumeSlider.setValue((int)Math.round(mp.getVolume()
+                            volumeSlider.setValue((int) Math.round(mp.getVolume()
                                     * 100));
                         }
                     }
@@ -305,8 +315,8 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             }
         }
 
-        private static String formatTime(Duration elapsed, Duration duration) {
-            int intElapsed = (int)Math.floor(elapsed.toSeconds());
+        private String formatTime(Duration elapsed, Duration duration) {
+            int intElapsed = (int) Math.floor(elapsed.toSeconds());
             int elapsedHours = intElapsed / (60 * 60);
             if (elapsedHours > 0) {
                 intElapsed -= elapsedHours * 60 * 60;
@@ -316,7 +326,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     - elapsedMinutes * 60;
 
             if (duration.greaterThan(Duration.ZERO)) {
-                int intDuration = (int)Math.floor(duration.toSeconds());
+                int intDuration = (int) Math.floor(duration.toSeconds());
                 int durationHours = intDuration / (60 * 60);
                 if (durationHours > 0) {
                     intDuration -= durationHours * 60 * 60;
@@ -330,7 +340,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                             durationHours, durationMinutes, durationSeconds);
                 } else {
                     return String.format("%02d:%02d/%02d:%02d",
-                            elapsedMinutes, elapsedSeconds,durationMinutes,
+                            elapsedMinutes, elapsedSeconds, durationMinutes,
                             durationSeconds);
                 }
             } else {
@@ -338,7 +348,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     return String.format("%d:%02d:%02d", elapsedHours,
                             elapsedMinutes, elapsedSeconds);
                 } else {
-                    return String.format("%02d:%02d",elapsedMinutes,
+                    return String.format("%02d:%02d", elapsedMinutes,
                             elapsedSeconds);
                 }
             }
@@ -409,11 +419,9 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 urlType = "picture";
             } else if (url.contains(".gif")) {
                 urlType = "gif";
-            }
-            else if (url.contains(".mp4")){
+            } else if (url.contains(".mp4")) {
                 urlType = "video";
-            }
-            else {
+            } else {
                 urlType = "None";
             }
             return url;
@@ -421,13 +429,14 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
         private void setVideo(String url, MediaView mediaView) {
             Media mediaUrl = new Media(url);
-            mp = new MediaPlayer(mediaUrl);
-            mp.setAutoPlay(false);
-            mediaView.setMediaPlayer(mp);
-            mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
+            if (mp == null) {
+                mp = new MediaPlayer(mediaUrl);
+                mediaView.setMediaPlayer(mp);
+                mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
+            }
         }
 
-        private void setMedia(String url, WebEngine engine, MediaView mediaView) {
+        private void setMedia(String url, WebEngine engine) {
             if (urlType.equals("picture")) {
                 engine.load(url);
                 loadImage = true;
@@ -436,13 +445,18 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
                 loadImage = true;
                 engine.setJavaScriptEnabled(false);
-            } else if (urlType.equals("video")) {
-                setVideo(url, mediaView);
-                loadVideo = true;
             }
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
         }
 
+        private void setMedia(String url, MediaView mediaView) {
+            if (urlType.equals("video")) {
+                if (mp == null) {
+                    setVideo(url, mediaView);
+                    loadVideo = true;
+                }
+            }
+        }
 
         private void setVideoSize(String url, MediaView mediaView) {
             try {

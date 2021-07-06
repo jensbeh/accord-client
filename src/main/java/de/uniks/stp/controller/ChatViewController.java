@@ -57,8 +57,9 @@ public class ChatViewController {
     private VBox root;
     private static Button sendButton;
     private TextField messageTextField;
-    private static ListView<Message> messageList;
-    private static ArrayList<Message> messages;
+    private ListView<Message> messageList;
+    //private static ArrayList<Message> messages;
+    private ObservableList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
@@ -112,9 +113,9 @@ public class ChatViewController {
         //ListView with message as parameter and observableList
         messageList = (ListView<Message>) view.lookup("#messageListView");
         messageList.setCellFactory(new MessageListCell());
+        messages = FXCollections.observableArrayList();
+        messageList.setItems(messages);
         MessageListCell.setTheme(builder.getTheme());
-
-        messages = new ArrayList<>();
         lang = StageManager.getLangBundle();
 
         MessageListCell.setCurrentUser(builder.getPersonalUser());
@@ -475,10 +476,8 @@ public class ChatViewController {
     }
 
     public void refreshMessageListView() {
-        Platform.runLater(() -> {
-            messageList.setItems(FXCollections.observableArrayList(messages));
-            checkScrollToBottom();
-        });
+        //            messageList.refresh();
+        Platform.runLater(this::checkScrollToBottom);
 
     }
 
