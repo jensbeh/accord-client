@@ -220,8 +220,8 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     public void mockGetChannels() {
-        JSONArray members = new JSONArray();
-        JSONArray audioMembers = new JSONArray();
+        JSONArray members = new JSONArray().put("60ad230ac77d3f78988b3e5b");
+        JSONArray audioMembers = new JSONArray().put("60ad230ac77d3f78988b3e5b");
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
                 .put("id", "60b77ba0026b3534ca5a61af")
@@ -230,7 +230,7 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
                 .put("members", members)
-                .put("audioMembers", audioMembers))
+                .put("audioMembers", new JSONArray()))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
                         .put("name", "audioChannel")
@@ -548,7 +548,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ServerChannel audioChannel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(1);
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
         User newUser = new User().setName("Hans").setId("60ace8f1c77d3f78988bawdw");
         builder.getPersonalUser().withUser(newUser);
@@ -559,14 +559,14 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 3);
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
         doubleClickOn("#60b77ba0026423ad521awd2");
         WaitForAsyncUtils.waitForFxEvents();
@@ -583,7 +583,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 2);
 
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
@@ -623,7 +623,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel2.getAudioMember().size(), 0);
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
     }
 
     @Test
