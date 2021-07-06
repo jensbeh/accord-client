@@ -46,7 +46,6 @@ public class ModelBuilder {
     private ServerChannel currentAudioChannel;
     private boolean muteMicrophone;
     private boolean muteHeadphones;
-    private AudioInputStream audioInputStream;
 
     private boolean loadUserData = true;
     private boolean inServerChat;
