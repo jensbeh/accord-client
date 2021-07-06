@@ -76,17 +76,14 @@ public class AudioStreamSender implements Runnable {
             try {
                 // send to address
                 if (!socket.isClosed()) {
-                    socket.send(packet);
+                    if(builder.getMuteMicrophone()){
+                        socket.send(packet);
+                    }
                 }
             } catch (IOException e) {
                 stopped = true; // set to true when connection get lost
             }
-            //if microphone is muted break
-            if (!builder.getMuteMicrophone()) {
-                senderActive = false;
-            }
         }
-
         // stop if senderActive is set to false in stop method in this class
         microphone.stopRecording();
         stopped = true;

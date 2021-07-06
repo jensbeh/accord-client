@@ -300,21 +300,12 @@ public class ModelBuilder {
         this.muteMicrophone = muteMicrophone;
     }
 
-    public void setMuteMicrophone() {
-        if (audioStreamClient != null) {
-            this.audioStreamClient.muteMicrophone(muteMicrophone);
-        }
-    }
-
     public boolean getMuteMicrophone() {
         return muteMicrophone;
     }
 
     public void muteHeadphones(boolean muteHeadphones) {
         this.muteHeadphones = muteHeadphones;
-        if (audioStreamClient != null) {
-            this.audioStreamClient.muteHeadphone(muteHeadphones);
-        }
     }
 
     public boolean getMuteHeadphones() {

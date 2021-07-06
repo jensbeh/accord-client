@@ -93,34 +93,6 @@ public class AudioStreamClient {
     }
 
     /**
-     * starts new audio when microphone is unmuted
-     */
-    public void muteMicrophone(boolean mute) {
-        if (mute) {
-            senderThread = new Thread(sender);
-            senderThread.start();
-        }
-    }
-
-    /**
-     * starts new audio when headset is unmuted
-     */
-    public void muteHeadphone(boolean mute) {
-        if (mute) {
-            try {
-                socket = new DatagramSocket();
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
-            init();
-            for (AudioMember audioMember : builder.getCurrentAudioChannel().getAudioMember()) {
-                setNewAudioMemberReceiver(audioMember);
-            }
-            startStream();
-        }
-    }
-
-    /**
      * following methods only needed for testing
      */
     public static void setSocket(DatagramSocket newSocket) {

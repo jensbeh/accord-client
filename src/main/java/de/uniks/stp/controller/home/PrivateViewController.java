@@ -179,8 +179,6 @@ public class PrivateViewController {
             if (!builder.getMuteHeadphones()) {
                 builder.muteHeadphones(true);
                 headphoneLabel.setVisible(false);
-            } else {
-                builder.setMuteMicrophone();
             }
         });
         //unMute headphone
