@@ -89,6 +89,9 @@ public class ServerViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response7;
 
     @Mock
+    private HttpResponse<JsonNode> response8;
+
+    @Mock
     private DatagramSocket mockAudioSocket;
 
     @Mock
@@ -114,6 +117,9 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
 
     private ModelBuilder builder;
 
@@ -260,6 +266,27 @@ public class ServerViewControllerTest extends ApplicationTest {
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
     }
 
+    public void mockGetChannelMessages() {
+        JSONArray data = new JSONArray();
+        data.put(new JSONObject()
+                .put("id", "60b77r3w4qa324ca23412342")
+                .put("channel", "60b77ba0026b3534ca5a61af")
+                .put("timestamp", "1616935874361")
+                .put("from", "Peter Lustig")
+                .put("text", "Hallo Users!"));
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", data);
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor8.getValue();
+            callback.completed(response8);
+            return null;
+        }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
+    }
+
     private void mockJoinVoiceChannel() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -304,6 +331,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         mockGetServerUser();
         mockGetCategories();
         mockGetChannels();
+        mockGetChannelMessages();
         mockJoinVoiceChannel();
         mockLeaveVoiceChannel();
 
