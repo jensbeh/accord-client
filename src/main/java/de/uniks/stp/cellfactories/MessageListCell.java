@@ -68,7 +68,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
     private class MessageCell extends ListCell<Message> {
         private boolean loadImage;
-        private boolean loadVideo = false;
+        private boolean loadVideo;
         private boolean videoPlayed;
         private String urlType;
         private final boolean repeat = false;
@@ -110,7 +110,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 String textMessage = item.getMessage();
                 String url = searchUrl(textMessage);
                 loadImage = false;
-
+                loadVideo = false;
                 if (webView == null && (urlType.equals("gif") || urlType.equals("picture"))) {
                     webView = new WebView();
                 }
@@ -118,9 +118,8 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     mediaView = new MediaView();
                 }
                 if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-
                     if (webView != null) {
-                        setMedia(url, mediaView);
+                        setMedia(url, webView.getEngine());
                         if (loadImage) {
                             webView.setContextMenuEnabled(false);
                             setImageSize(url, webView);
@@ -164,7 +163,9 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 if (loadImage) {
                     vbox.getChildren().addAll(userName, message, webView);
                 } else if (loadVideo) {
-                    mediaBox = setMediaControls(mediaView);
+                    if (mediaBox == null) {
+                        mediaBox = setMediaControls(mediaView);
+                    }
                     vbox.getChildren().addAll(userName, message, mediaBox);
                 } else {
                     vbox.getChildren().addAll(userName, message);
@@ -172,9 +173,10 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
                 cell.setAlignment(Pos.CENTER_RIGHT);
                 cell.getChildren().addAll(vbox);
-                Platform.runLater(() -> this.setGraphic(cell));
+                this.setGraphic(cell);
             } else {
-                Platform.runLater(() -> this.setGraphic(null));
+                this.setGraphic(null);
+                this.setText(null);
             }
         }
 
@@ -426,11 +428,9 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
         private void setVideo(String url, MediaView mediaView) {
             Media mediaUrl = new Media(url);
-            if (mp == null) {
-                mp = new MediaPlayer(mediaUrl);
-                mediaView.setMediaPlayer(mp);
-                mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
-            }
+            mp = new MediaPlayer(mediaUrl);
+            mediaView.setMediaPlayer(mp);
+            mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
         }
 
         private void setMedia(String url, WebEngine engine) {
@@ -450,8 +450,8 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             if (urlType.equals("video")) {
                 if (mp == null) {
                     setVideo(url, mediaView);
-                    loadVideo = true;
                 }
+                loadVideo = true;
             }
         }
 
