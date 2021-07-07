@@ -1,7 +1,15 @@
 package de.uniks.stp.model;
 
+import com.sun.javafx.collections.ObservableMapWrapper;
+import com.sun.javafx.scene.control.ControlAcceleratorSupport;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;

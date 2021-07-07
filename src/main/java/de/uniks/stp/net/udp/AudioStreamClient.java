@@ -3,6 +3,7 @@ package de.uniks.stp.net.udp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
+import de.uniks.stp.model.User;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -100,5 +101,19 @@ public class AudioStreamClient {
 
     public static void setAddress(InetAddress inetAddress) {
         address = inetAddress;
+    }
+
+    /**
+     * set User to MuteList
+     */
+    public void setMutedUser(String mutedUser) {
+        receiver.setMutedUser(mutedUser);
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedUser(String mutedUser) {
+        receiver.setUnMutedUser(mutedUser);
     }
 }

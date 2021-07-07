@@ -123,6 +123,19 @@ public class ServerViewController {
         return builder.getCurrentAudioChannel();
     }
 
+    /**
+     * set User to MuteList
+     */
+    public void setMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setMutedUser(user);
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setUnMutedUser(user);
+    }
 
     /**
      * Callback, when all server information are loaded

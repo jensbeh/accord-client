@@ -1,7 +1,9 @@
 package de.uniks.stp.net.udp;
 
+import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
+import de.uniks.stp.model.User;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class AudioStreamReceiver implements Runnable {
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
     private volatile boolean stopped;
+    private final ArrayList<String> mutedUser = new ArrayList<>();
 
     public AudioStreamReceiver(ModelBuilder builder, DatagramSocket socket) {
         this.builder = builder;
@@ -78,7 +81,10 @@ public class AudioStreamReceiver implements Runnable {
                     if (!builder.getMuteHeadphones()) {
                         if (!senderName.equals(builder.getPersonalUser().getName())) {
                             if (receiverSpeakerMap != null) {
-                                receiverSpeakerMap.get(senderName).writeData(receivedData);
+                                System.out.println(mutedUser + "###" + senderName);
+                                if (!mutedUser.contains(senderName)) {
+                                    receiverSpeakerMap.get(senderName).writeData(receivedData);
+                                }
                             }
                         }
                     }
@@ -110,6 +116,22 @@ public class AudioStreamReceiver implements Runnable {
 
         receiverSpeakerMap.get(removeMember.getName()).stopPlayback();
         receiverSpeakerMap.remove(removeMember.getName());
+    }
+
+    /**
+     * set User to MuteList
+     */
+    public void setMutedUser(String mutedMember) {
+        if (!mutedUser.contains(mutedMember)) {
+            mutedUser.add(mutedMember);
+        }
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedUser(String unMutedUser) {
+        mutedUser.remove(unMutedUser);
     }
 
 
