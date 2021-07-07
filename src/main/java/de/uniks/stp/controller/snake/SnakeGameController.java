@@ -646,6 +646,7 @@ public class SnakeGameController {
         scene.setOnKeyPressed(null);
         restartButton.setOnAction(null);
         exitGameButton.setOnAction(null);
+        gameOverExitGameButton.setOnAction(null);
         muteButton.setOnAction(null);
 
         if (gameTimeline != null) {
