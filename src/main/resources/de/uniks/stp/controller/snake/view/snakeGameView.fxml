@@ -26,7 +26,7 @@
                <children>
                   <HBox prefHeight="40.0" prefWidth="40.0">
                      <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" top="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="20.0" top="5.0" />
                      </HBox.margin>
                      <children>
                         <Button id="muteButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="muteButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="🔊">
@@ -35,6 +35,21 @@
                            </font>
                         </Button>
                      </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="40.0" prefWidth="84.0">
+                     <children>
+                        <Button id="button_exit" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" style="-fx-background-color: #454545;" styleClass="exitButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="Exit" textFill="WHITE">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="-1.0" />
+                           </padding>
+                        </Button>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>

@@ -17,21 +17,36 @@
 }
 
 .muteButton{
-    -fx-text-fill: black;
+    -fx-text-fill: white;
     -fx-background-color: #545454;
     -fx-background-radius: 20;
 }
 
 .muteButton:hover{
-    -fx-text-fill: black;
+    -fx-text-fill: white;
     -fx-background-color: #454545;
     -fx-background-radius: 20;
 }
 
 .muteButton:pressed{
-    -fx-text-fill: black;
+    -fx-text-fill: white;
     -fx-background-color: #545454;
     -fx-background-radius: 20;
+}
+
+.exitButton{
+    -fx-text-fill: white;
+    -fx-background-color: #545454;
+}
+
+.exitButton:hover{
+    -fx-text-fill: white;
+    -fx-background-color: #454545;
+}
+
+.exitButton:pressed{
+    -fx-text-fill: white;
+    -fx-background-color: #545454;
 }
 
 .bodybg{
