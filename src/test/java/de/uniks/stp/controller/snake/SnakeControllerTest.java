@@ -153,12 +153,7 @@ public class SnakeControllerTest extends ApplicationTest {
         }
 
         // close start Snake view
-        for (Object object : this.listTargetWindows()) {
-            if (((Stage) object).getTitle().equals("Snake")) {
-                Platform.runLater(((Stage) object)::close);
-                break;
-            }
-        }
+        clickOn("#button_exit");
     }
 
     //@Test
@@ -269,12 +264,6 @@ public class SnakeControllerTest extends ApplicationTest {
         Assert.assertEquals("\uD83D\uDD08", muteButton.getText());
 
         // close game
-        for (Object object : this.listTargetWindows()) {
-            if (((Stage) object).getTitle().equals("Snake")) {
-                Platform.runLater(((Stage) object)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
+        clickOn("#button_exit");
     }
 }
