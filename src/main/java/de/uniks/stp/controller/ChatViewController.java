@@ -123,6 +123,10 @@ public class ChatViewController {
         emojiButton.setOnAction(this::emojiButtonClicked);
     }
 
+    public ScrollPane getMessageScrollPane() {
+        return messageScrollPane;
+    }
+
     public VBox getContainer() {
         return container;
     }

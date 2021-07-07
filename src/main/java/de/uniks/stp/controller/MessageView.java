@@ -71,7 +71,7 @@ public class MessageView {
                     setMedia(url, webView.getEngine());
                     if (loadImage) {
                         webView.setContextMenuEnabled(false);
-                        setImageSize(chatViewController.getContainer(), url, webView);
+                        setImageSize(chatViewController.getMessageScrollPane(), url, webView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
@@ -80,7 +80,7 @@ public class MessageView {
                     loadVideo = true;
                     setMedia(url, mediaView);
                     if (loadVideo) {
-                        setVideoSize(chatViewController.getContainer(), url, mediaView);
+                        setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
@@ -232,10 +232,7 @@ public class MessageView {
 
     private void setVideoSize(Parent parent, String url, MediaView mediaView) {
         try {
-            while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
-                parent = parent.getParent();
-            }
-            Bounds bounds = parent.getBoundsInLocal();
+            Bounds bounds = parent.getParent().getParent().getParent().getBoundsInLocal();
             double maxX = bounds.getMaxX();
             double maxY = bounds.getMaxY();
             int height = 0;
@@ -263,10 +260,7 @@ public class MessageView {
 
     private void setImageSize(Parent parent, String url, WebView webView) {
         try {
-            while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
-                parent = parent.getParent();
-            }
-            Bounds bounds = parent.getBoundsInLocal();
+            Bounds bounds =  parent.getParent().getParent().getParent().getBoundsInLocal();
             double maxX = bounds.getMaxX();
             double maxY = bounds.getMaxY();
             int height = 0;
