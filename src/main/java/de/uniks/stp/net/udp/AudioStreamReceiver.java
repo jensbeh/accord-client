@@ -81,14 +81,12 @@ public class AudioStreamReceiver implements Runnable {
                     if (!builder.getMuteHeadphones()) {
                         if (!senderName.equals(builder.getPersonalUser().getName())) {
                             if (receiverSpeakerMap != null) {
-                                System.out.println(mutedUser + "###" + senderName);
                                 if (!mutedUser.contains(senderName)) {
                                     receiverSpeakerMap.get(senderName).writeData(receivedData);
                                 }
                             }
                         }
                     }
-
                 }
             }
         }

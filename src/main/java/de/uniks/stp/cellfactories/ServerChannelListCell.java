@@ -163,6 +163,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 ContextMenu menu = new ContextMenu();
                 MenuItem mute = new MenuItem("mute");
                 MenuItem unMute = new MenuItem("unmute");
+                menu.setId("AudioMemberControl");
                 mute.setId("muteAudioMember");
                 mute.setId("unMuteAudioMember");
                 menu.getItems().addAll(mute, unMute);
