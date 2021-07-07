@@ -29,6 +29,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -401,7 +402,6 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
-        refreshMessageListView();
         abortEdit(actionEvent);
     }
 
@@ -499,8 +499,11 @@ public class ChatViewController {
         }
     }
 
-    public void refreshMessageListView() {
+
+    public void updateMessage(Message msg) {
+        ((Text)(((EmojiTextFlow)((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
     }
+
 
     public void checkScrollToBottom() {
         ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
@@ -548,13 +551,10 @@ public class ChatViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
-        refreshMessageListView();
-
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
-        refreshMessageListView();
     }
 }
