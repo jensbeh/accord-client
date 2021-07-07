@@ -214,7 +214,7 @@ public class PrivateChatWebSocket extends Endpoint {
                 ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
             }
             if (privateViewController.getChatViewController() != null) {
-                chatViewController.printMessage(message);
+                Platform.runLater(() -> chatViewController.printMessage(message));
             }
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
