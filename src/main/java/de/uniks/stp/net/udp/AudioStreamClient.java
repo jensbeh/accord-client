@@ -3,7 +3,6 @@ package de.uniks.stp.net.udp;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
