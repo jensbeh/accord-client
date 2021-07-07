@@ -62,7 +62,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
     private class MessageCell extends ListCell<Message> {
         private String urlType;
-        private WebView webView;
 
         /**
          * shows message in cell of ListView
@@ -70,11 +69,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
         protected void updateItem(Message item, boolean empty) {
             StackPane cell = new StackPane();
             super.updateItem(item, empty);
-            if(webView == null) {
-                webView = new WebView();
-            } else {
-                webView.getEngine().load(null);
-            }
+            WebView webView = new WebView();
             //Background for the messages
 
             this.setId("messagesBox");
@@ -96,12 +91,12 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                 boolean loadImage = false;
                 if (!urlType.equals("None")) {
                     loadImage = true;
-                    setImage(url, webView.getEngine());
+                    setMedia(url, webView.getEngine());
                     textMessage = textMessage.replace(url, "");
                 }
                 if (loadImage) {
                     webView.setContextMenuEnabled(false);
-                    setImageSize(url);
+                    setImageSize(url, webView);
                 }
 
                 if (currentUser.getName().equals(item.getFrom())) {
@@ -209,14 +204,6 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             } else if (url.contains(".gif")) {
                 urlType = "gif";
             } else if (url.contains("youtube")){
-                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
-                Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
-                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
-                if (videoIdMatcher.find()) {
-                    String videoId = videoIdMatcher.group();
-                    url = "https://www.youtube.com/embed/" + videoId;
-                }
-
                 urlType = "youtube";
             }
             else if (url.contains(".webm")){
@@ -232,7 +219,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
 
         }
 
-        private void setImage(String url, WebEngine engine) {
+        private void setMedia(String url, WebEngine engine) {
             switch (urlType) {
                 case "picture":
                     engine.load(url);
@@ -243,7 +230,12 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
                     engine.setJavaScriptEnabled(false);
                     break;
                 case "youtube":
-                    engine.load(url);
+                    String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
+                    Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
+                    Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
+                    String videoId = videoIdMatcher.group();
+                    String youtube_url = "https://www.youtube.com/embed/" + videoId;
+                    engine.load(youtube_url);
                     engine.setJavaScriptEnabled(true);
                     break;
                 case "video":
@@ -255,7 +247,7 @@ public class MessageListCell implements javafx.util.Callback<ListView<Message>, 
             engine.setUserStyleSheetLocation(Objects.requireNonNull(StageManager.class.getResource("styles/message/webView.css")).toExternalForm());
         }
 
-        private void setImageSize(String url) {
+        private void setImageSize(String url, WebView webView) {
             try {
                 Parent parent = this.getParent();
                 while (parent.getParent() != null && (parent.getId() == null || parent.getId().equals("container"))) {
