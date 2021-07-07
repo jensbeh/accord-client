@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
 import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.controller.snake.model.Snake;
+import de.uniks.stp.util.ResourceManager;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -21,7 +22,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import de.uniks.stp.util.ResourceManager;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;

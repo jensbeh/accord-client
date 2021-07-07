@@ -481,7 +481,8 @@ public class LoginViewControllerTest extends ApplicationTest {
         CheckBox rememberBox = lookup("#rememberMeCheckbox").query();
         rememberBox.setSelected(true);
 
-        LoginViewController.noConnectionTest = true;
+
+        app.getLoginViewController().setNoConnectionTest(true);
         clickOn("#signinButton");
         WaitForAsyncUtils.waitForFxEvents();
         Label noConnectionTest = lookup("#connectionLabel").query();
@@ -496,13 +497,13 @@ public class LoginViewControllerTest extends ApplicationTest {
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("No connection - \nPlease check your connection and try again", noConnectionTest.getText());
-        LoginViewController.noConnectionTest = false;
+        app.getLoginViewController().setNoConnectionTest(false);
     }
 
     /**
      * decode password
      */
-    public static String decode(String str) {
+    public String decode(String str) {
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] bytes = decoder.decode(str);
         return new String(bytes);

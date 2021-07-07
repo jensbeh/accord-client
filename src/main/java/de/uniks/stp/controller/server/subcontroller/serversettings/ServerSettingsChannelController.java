@@ -8,6 +8,7 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -15,6 +16,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -26,9 +29,9 @@ public class ServerSettingsChannelController extends SubSetting {
     private final RestClient restClient;
 
     private Label categoryLabel;
-    private static ComboBox<Categories> categorySelector;
+    private ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
-    private static ComboBox<ServerChannel> editChannelsSelector;
+    private ComboBox<ServerChannel> editChannelsSelector;
     private TextField editChannelsTextField;
     private Button channelChangeButton;
     private Button channelDeleteButton;
@@ -41,9 +44,12 @@ public class ServerSettingsChannelController extends SubSetting {
     private Label radioVoice;
     private Label radioText;
 
-    private static Categories selectedCategory;
-    private static ServerChannel selectedChannel;
+    private Categories selectedCategory;
+    private ServerChannel selectedChannel;
     private String channelType;
+
+    private final PropertyChangeListener channelNamePCL = this::onChannelNameChanged;
+    private final PropertyChangeListener channelListPCL = this::onChannelListChanged;
 
 
     public ServerSettingsChannelController(Parent view, ModelBuilder builder, Server server) {
@@ -124,11 +130,42 @@ public class ServerSettingsChannelController extends SubSetting {
         disableEditing(true);
     }
 
+    /**
+     * changes the comboBoxItems when a channel was renamed
+     */
+    private void onChannelNameChanged(PropertyChangeEvent propertyChangeEvent) {
+        loadChannels(selectedChannel);
+    }
+
+    /**
+     * changes the comboBoxItems when a channel was created or deleted and added new PCL
+     */
+    private void onChannelListChanged(PropertyChangeEvent propertyChangeEvent) {
+        loadChannels(null);
+
+        for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+            serverChannel.removePropertyChangeListener(this.channelNamePCL);
+        }
+
+        for (ServerChannel channel : selectedCategory.getChannel()) {
+            channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelNamePCL);
+        }
+    }
+
     public void stop() {
         categorySelector.setOnAction(null);
         editChannelsSelector.setOnAction(null);
         channelChangeButton.setOnAction(null);
         channelDeleteButton.setOnAction(null);
+
+
+        if (selectedCategory != null) {
+            selectedCategory.removePropertyChangeListener(this.channelListPCL);
+
+            for (ServerChannel serverChannel : selectedCategory.getChannel()) {
+                serverChannel.removePropertyChangeListener(this.channelNamePCL);
+            }
+        }
     }
 
     /**
@@ -152,15 +189,28 @@ public class ServerSettingsChannelController extends SubSetting {
     }
 
     /**
-     * when category changes, enable items in view and load the Channels from the Category
+     * when category changes, enable items in view and load the Channels from the Category and added PCLs
      *
      * @param actionEvent the mouse click event
      */
     private void onCategoryChanged(ActionEvent actionEvent) {
         disableEditing(false);
-
+        Categories oldCategory = selectedCategory;
         selectedCategory = categorySelector.getValue();
+
+        if (oldCategory != null) {
+            oldCategory.removePropertyChangeListener(this.channelListPCL);
+            for (ServerChannel serverChannel : oldCategory.getChannel()) {
+                serverChannel.removePropertyChangeListener(this.channelNamePCL);
+            }
+        }
+
         loadChannels(null);
+
+        selectedCategory.addPropertyChangeListener(this.channelListPCL);
+        for (ServerChannel channel : selectedCategory.getChannel()) {
+            channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelNamePCL);
+        }
     }
 
     /**
@@ -175,18 +225,21 @@ public class ServerSettingsChannelController extends SubSetting {
     /**
      * load the Channels from the selected Category
      */
-    public static void loadChannels(ServerChannel preSelectChannel) {
+    public void loadChannels(ServerChannel preSelectChannel) {
         if (categorySelector == null || editChannelsSelector == null) {
             return;
         }
 
-        selectedChannel = null;
-        editChannelsSelector.getItems().clear();
-        editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
+        Platform.runLater(() -> {
+            selectedChannel = null;
+            editChannelsSelector.getItems().clear();
+            editChannelsSelector.getItems().addAll(selectedCategory.getChannel());
 
-        if (preSelectChannel != null) {
-            editChannelsSelector.getSelectionModel().select(preSelectChannel);
-        }
+            if (preSelectChannel != null) {
+                editChannelsSelector.getSelectionModel().select(preSelectChannel);
+            }
+        });
+
     }
 
     /**
@@ -202,18 +255,10 @@ public class ServerSettingsChannelController extends SubSetting {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-                        System.out.println("--> SUCCESS: changed channel name");
-                        editChannelsTextField.setText("");
-                    } else {
-                        System.out.println(status);
-                        System.out.println(body.getObject().getString("message"));
+                        Platform.runLater(() -> editChannelsTextField.setText(""));
                     }
                 });
-            } else {
-                System.out.println("--> ERR: New name equals old name");
             }
-        } else {
-            System.out.println("--> ERR: No Channel selected OR Field is empty");
         }
     }
 
@@ -249,15 +294,9 @@ public class ServerSettingsChannelController extends SubSetting {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
                 if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: channel created");
-                    createChannelTextField.setText(""); // TODO maybe Platform.runlater?
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
+                    Platform.runLater(() -> createChannelTextField.setText(""));
                 }
             });
-        } else {
-            System.out.println("--> ERR: Field is empty");
         }
     }
 
@@ -269,17 +308,7 @@ public class ServerSettingsChannelController extends SubSetting {
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
             restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    System.out.println("--> SUCCESS: deleted channel");
-                } else {
-                    System.out.println(status);
-                    System.out.println(body.getObject().getString("message"));
-                }
             });
-        } else {
-            System.out.println("--> ERR: No Channel selected");
         }
     }
 
@@ -291,10 +320,6 @@ public class ServerSettingsChannelController extends SubSetting {
             counter++;
         }
         return pUsers;
-    }
-
-    public static ServerChannel getSelectedChannel() {
-        return selectedChannel;
     }
 
     public void setTheme() {

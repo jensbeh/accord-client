@@ -4,16 +4,15 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.server.ServerViewController;
-import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsChannelController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
+import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import de.uniks.stp.util.JsonUtil;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -33,7 +32,7 @@ public class ServerSystemWebSocket extends Endpoint {
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
     private String name;
-    public static final String COM_NOOP = "noop";
+    public final String COM_NOOP = "noop";
 
     public void setServerViewController(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;
@@ -468,9 +467,6 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
                     cat.withChannel(newChannel);
-                    if (builder.getCurrentServer() == serverViewController.getServer()) {
-                        Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                    }
                     serverViewController.refreshAllChannelLists();
                     break;
                 }
@@ -501,7 +497,6 @@ public class ServerSystemWebSocket extends Endpoint {
                             }
                             cat.withoutChannel(channel);
                             if (builder.getCurrentServer() == serverViewController.getServer()) {
-                                Platform.runLater(() -> ServerSettingsChannelController.loadChannels(null));
                                 if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
                                     serverViewController.throwOutUserFromChatView();
                                 }
@@ -587,9 +582,6 @@ public class ServerSystemWebSocket extends Endpoint {
                         ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                         channel.withoutPrivilegedUsers(privileged);
                         channel.withPrivilegedUsers(member);
-                        if (builder.getCurrentServer() == serverViewController.getServer()) {
-                            Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                        }
                         break;
                     }
                 }
@@ -597,9 +589,6 @@ public class ServerSystemWebSocket extends Endpoint {
                     ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                             .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
                     category.withChannel(newChannel);
-                    if (builder.getCurrentServer() == serverViewController.getServer()) {
-                        Platform.runLater(() -> ServerSettingsChannelController.loadChannels(ServerSettingsChannelController.getSelectedChannel()));
-                    }
                 }
             }
         }

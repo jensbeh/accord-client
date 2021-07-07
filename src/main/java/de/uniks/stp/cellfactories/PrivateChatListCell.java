@@ -1,6 +1,6 @@
 package de.uniks.stp.cellfactories;
 
-import de.uniks.stp.controller.home.PrivateViewController;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -13,29 +13,29 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
+    private final ModelBuilder builder;
+
+    public PrivateChatListCell(ModelBuilder builder) {
+        this.builder = builder;
+    }
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     * determined.
+     *              determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
-
-    private static String theme;
-
-    public static void setTheme(String newTheme) {
-        theme = newTheme;
-    }
 
     @Override
     public ListCell<PrivateChat> call(ListView<PrivateChat> param) {
         return new ChannelListCell();
     }
 
-    private static class ChannelListCell extends ListCell<PrivateChat> {
+    private class ChannelListCell extends ListCell<PrivateChat> {
 
         protected void updateItem(PrivateChat item, boolean empty) {
             // creates a HBox for each cell of the listView
@@ -97,7 +97,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 }
 
                 // set chatColor - if selected / else not selected
-                if (PrivateViewController.getSelectedChat() != null && PrivateViewController.getSelectedChat().getName().equals(item.getName())) {
+                if (builder.getCurrentPrivateChat() != null && builder.getCurrentPrivateChat().getName().equals(item.getName())) {
                     cell.getStyleClass().clear();
                     cell.getStyleClass().add("selectedChat");
                 } else {
@@ -109,11 +109,9 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
 
-                    Circle background = null;
-                    Circle foreground = null;
+                    Circle background = new Circle(notificationCircleSize / 2);
+                    Circle foreground = new Circle(notificationCircleSize / 2 - 1);
 
-                    background = new Circle(notificationCircleSize / 2);
-                    foreground = new Circle(notificationCircleSize / 2 - 1);
                     //IDs to use CSS styling
                     background.getStyleClass().clear();
                     foreground.getStyleClass().clear();

@@ -14,20 +14,20 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class InviteUsersController {
-    private static RadioButton tempSelected;
-    private static RadioButton userLimitSelected;
-    private static VBox inviteBox;
-    private static Label tempLabel;
-    private static Label userLimitLabel;
+    private RadioButton tempSelected;
+    private RadioButton userLimitSelected;
+    private VBox inviteBox;
+    private Label tempLabel;
+    private Label userLimitLabel;
     private final Server server;
     private final ModelBuilder builder;
-    private static Parent view;
+    private Parent view;
     private VBox root;
     private InviteUsersTempSubController inviteUsersTempSubController;
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;
 
     public InviteUsersController(Parent view, ModelBuilder builder, Server currentServer) {
-        InviteUsersController.view = view;
+        this.view = view;
         this.builder = builder;
         this.server = currentServer;
     }
@@ -95,7 +95,7 @@ public class InviteUsersController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (tempLabel != null)
             tempLabel.setText(lang.getString("label.temp"));
@@ -103,8 +103,12 @@ public class InviteUsersController {
         if (userLimitLabel != null)
             userLimitLabel.setText(lang.getString("label.userLimit"));
 
-        InviteUsersTempSubController.onLanguageChanged();
-        InviteUsersUserLimitSubController.onLanguageChanged();
+        if (inviteUsersTempSubController != null) {
+            inviteUsersTempSubController.onLanguageChanged();
+        }
+        if (inviteUsersUserLimitSubController != null) {
+            inviteUsersUserLimitSubController.onLanguageChanged();
+        }
     }
 
     public void setTheme() {

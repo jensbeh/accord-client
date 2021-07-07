@@ -2,11 +2,8 @@ package de.uniks.stp.builder;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
-import de.uniks.stp.model.CurrentUser;
-import de.uniks.stp.model.Server;
-import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.model.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
@@ -27,15 +24,12 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static de.uniks.stp.util.Constants.APPDIR_ACCORD_PATH;
-import static de.uniks.stp.util.Constants.CONFIG_PATH;
+import static de.uniks.stp.util.Constants.*;
 
 public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
-    private static final String ROOT_PATH = "/de/uniks/stp";
     private URL soundFile;
-
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
@@ -52,9 +46,11 @@ public class ModelBuilder {
     private ServerChannel currentAudioChannel;
     private boolean muteMicrophone;
     private boolean muteHeadphones;
-    private AudioInputStream audioInputStream;
 
     private boolean loadUserData = true;
+    private boolean inServerChat;
+    private PrivateChat currentPrivateChat;
+    private boolean firstMuted;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -212,6 +208,7 @@ public class ModelBuilder {
             settings.put("theme", theme);
             settings.put("muteMicrophone", muteMicrophone);
             settings.put("muteHeadphones", muteHeadphones);
+            settings.put("firstMuted", firstMuted);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -228,8 +225,9 @@ public class ModelBuilder {
                 showNotifications = true;
                 playSound = true;
                 theme = "Dark";
-                muteMicrophone = true;
-                muteHeadphones = true;
+                muteMicrophone = false;
+                muteHeadphones = false;
+                firstMuted = false;
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -240,6 +238,7 @@ public class ModelBuilder {
             theme = (String) parsedSettings.get("theme");
             muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
             muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
+            firstMuted = (boolean) parsedSettings.get("firstMuted");
             reader.close();
 
         } catch (Exception e) {
@@ -298,10 +297,6 @@ public class ModelBuilder {
 
     public void muteMicrophone(boolean muteMicrophone) {
         this.muteMicrophone = muteMicrophone;
-        //when new value is set mute or unmute the microphone
-        if (audioStreamClient != null) {
-            this.audioStreamClient.muteMicrophone(muteMicrophone);
-        }
     }
 
     public boolean getMuteMicrophone() {
@@ -316,7 +311,6 @@ public class ModelBuilder {
         return muteHeadphones;
     }
 
-
     public void setLoadUserData(boolean loadUserData) {
         this.loadUserData = loadUserData;
     }
@@ -325,4 +319,27 @@ public class ModelBuilder {
         return loadUserData;
     }
 
+    public void setInServerChat(boolean state) {
+        this.inServerChat = state;
+    }
+
+    public boolean getInServerChat() {
+        return this.inServerChat;
+    }
+
+    public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {
+        this.currentPrivateChat = currentPrivateChat;
+    }
+
+    public PrivateChat getCurrentPrivateChat() {
+        return this.currentPrivateChat;
+    }
+
+    public void setMicrophoneFirstMuted(boolean muted) {
+        this.firstMuted = muted;
+    }
+
+    public boolean getMicrophoneFirstMuted() {
+        return firstMuted;
+    }
 }

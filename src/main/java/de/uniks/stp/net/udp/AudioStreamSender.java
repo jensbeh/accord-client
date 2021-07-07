@@ -43,6 +43,7 @@ public class AudioStreamSender implements Runnable {
     public void run() {
         senderActive = true;
         stopped = false;
+        int send = 0;
 
         JSONObject obj1 = new JSONObject().put("channel", currentAudioChannel.getId())
                 .put("name", builder.getPersonalUser().getName());
@@ -76,17 +77,17 @@ public class AudioStreamSender implements Runnable {
             try {
                 // send to address
                 if (!socket.isClosed()) {
-                    socket.send(packet);
+                    if (!builder.getMuteMicrophone() || send == 0) {
+                        socket.send(packet);
+                        if (send == 0) {
+                            send = 1;
+                        }
+                    }
                 }
             } catch (IOException e) {
                 stopped = true; // set to true when connection get lost
             }
-            //if microphone is muted break
-            if (!builder.getMuteMicrophone()) {
-                senderActive = false;
-            }
         }
-
         // stop if senderActive is set to false in stop method in this class
         microphone.stopRecording();
         stopped = true;

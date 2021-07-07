@@ -1,11 +1,11 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
+import de.uniks.stp.util.Constants;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import de.uniks.stp.util.Constants;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,13 +15,13 @@ public class LanguageController extends SubSetting {
 
     private final Parent view;
     private ComboBox<String> languageSelector;
-    private static Label selectLanguageLabel;
-    private static final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
-    private static Locale currentLocale;
+    private Label selectLanguageLabel;
+    private final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+    private Locale currentLocale;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
-    public static void setup() {
+    public void setup() {
         // load language from Settings
         Properties prop = new Properties();
         try {
@@ -39,6 +39,7 @@ public class LanguageController extends SubSetting {
     public LanguageController(Parent view) {
         this.view = view;
     }
+
 
     @SuppressWarnings("unchecked")
     public void init() {
@@ -82,6 +83,7 @@ public class LanguageController extends SubSetting {
         currentLocale = locales.get(language);
         Locale.setDefault(currentLocale);
         StageManager.onLanguageChanged();
+        onLanguageChanged();
 
         // save in Settings
         Properties prop = new Properties();
@@ -107,9 +109,8 @@ public class LanguageController extends SubSetting {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         selectLanguageLabel.setText(lang.getString("label.select_language"));
     }
-
 }

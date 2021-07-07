@@ -12,14 +12,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ServerSubSettingsPrivilegeController {
 
-    private static ComboBox<String> addUserMenu;
-    private static ComboBox<String> removeUserMenu;
-    private static Button addUser;
-    private static Button removeUser;
+    private ComboBox<String> addUserMenu;
+    private ComboBox<String> removeUserMenu;
+    private Button addUser;
+    private Button removeUser;
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;

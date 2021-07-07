@@ -25,9 +25,9 @@ public class InviteUsersUserLimitSubController {
     private final ModelBuilder builder;
     private final Server server;
     private final RestClient restClient;
-    private static Button createLink;
-    private static Label inviteLinksLabel;
-    private static Button deleteLink;
+    private Button createLink;
+    private Label inviteLinksLabel;
+    private Button deleteLink;
     private TextField linkTextField;
     private TextField userLimit;
     private ComboBox<List<String>> linkComboBox;
@@ -169,7 +169,7 @@ public class InviteUsersUserLimitSubController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         if (createLink != null)
             createLink.setText(lang.getString("button.create"));

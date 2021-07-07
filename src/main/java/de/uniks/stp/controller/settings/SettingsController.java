@@ -7,13 +7,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import net.harawata.appdirs.AppDirs;
-import net.harawata.appdirs.AppDirsFactory;
-import de.uniks.stp.util.Constants;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * The class SettingsController controls the view in Settings
@@ -25,39 +23,10 @@ public class SettingsController {
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
-    private static Button languageButton;
+    private Button languageButton;
     private Button themeButton;
 
     private SubSetting subController;
-
-    /**
-     * First check if there is a settings file already in user local directory - if not, create
-     */
-    public static void setup() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
-
-        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
-
-        Properties prop = new Properties();
-        File file = new File(path_to_config + Constants.SETTINGS_FILE);
-        File dir = new File(path_to_config);
-        if (!file.exists()) {
-            try {
-                dir.mkdirs();
-                if (file.createNewFile()) {
-                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
-                    prop.setProperty("LANGUAGE", "en");
-                    prop.store(op, null);
-                }
-            } catch (Exception e) {
-                System.out.println(e + "");
-                e.printStackTrace();
-            }
-        }
-
-        LanguageController.setup();
-    }
 
     public SettingsController(ModelBuilder builder, Parent view) {
         this.builder = builder;
@@ -155,6 +124,7 @@ public class SettingsController {
             switch (fxmlName) {
                 case "Language":
                     subController = new LanguageController(settingsField);
+                    subController.setup();
                     subController.init();
                     break;
                 case "DoNotDisturb":
@@ -181,7 +151,7 @@ public class SettingsController {
     /**
      * when language changed reset labels and texts with correct language
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
     }
