@@ -71,7 +71,7 @@ public class MessageView {
                     setMedia(url, webView.getEngine());
                     if (loadImage) {
                         webView.setContextMenuEnabled(false);
-                        setImageSize(cell, url, webView);
+                        setImageSize(chatViewController.getContainer(), url, webView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
@@ -80,7 +80,7 @@ public class MessageView {
                     loadVideo = true;
                     setMedia(url, mediaView);
                     if (loadVideo) {
-                        setVideoSize(cell, url, mediaView);
+                        setVideoSize(chatViewController.getContainer(), url, mediaView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
