@@ -24,7 +24,7 @@
                </children></VBox>
             <ScrollPane id="messageScrollPane" hbarPolicy="NEVER" vbarPolicy="NEVER">
                <content>
-                  <VBox id="messageVBox" alignment="CENTER" minHeight="200.0" minWidth="400.0" />
+                  <VBox id="messageVBox" alignment="CENTER" />
                </content>
             </ScrollPane>
          </children>

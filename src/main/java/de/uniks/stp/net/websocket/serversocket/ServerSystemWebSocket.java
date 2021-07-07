@@ -308,7 +308,6 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 chatViewController.removeMessage(msg);
-                chatViewController.refreshMessageListView();
                 msg.removeYou();
                 break;
             }

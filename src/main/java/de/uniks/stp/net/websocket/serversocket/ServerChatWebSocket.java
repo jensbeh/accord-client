@@ -116,8 +116,6 @@ public class ServerChatWebSocket extends Endpoint {
                 if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                     Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
                 }
-                Message finalMessage = message;
-                Platform.runLater(() -> chatViewController.printMessage(finalMessage));
             }
             // currentUser received
             else if (!from.equals(builder.getPersonalUser().getName())) {
@@ -153,7 +151,8 @@ public class ServerChatWebSocket extends Endpoint {
             if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                 assert message != null;
                 serverViewController.getCurrentChannel().withMessage(message);
-                chatViewController.printMessage(message);
+                Message finalMessage = message;
+                Platform.runLater(() -> chatViewController.printMessage(finalMessage));
             }
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
