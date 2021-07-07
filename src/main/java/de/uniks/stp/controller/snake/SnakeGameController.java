@@ -98,8 +98,6 @@ public class SnakeGameController {
         exitGameButton.setOnAction(this::exitGame);
         gameOverExitGameButton.setOnAction(this::exitGame);
         muteButton.setOnAction(this::muteSound);
-        builder = new ModelBuilder();
-        builder.buildPersonalUser("TEST_USER","123", "123123");
         isGameMute = ResourceManager.loadMuteGameState(builder.getPersonalUser().getName());
         if (isGameMute) {
             backgroundMusic.setMute(true);
