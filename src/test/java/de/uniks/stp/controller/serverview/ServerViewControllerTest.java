@@ -89,6 +89,9 @@ public class ServerViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response7;
 
     @Mock
+    private HttpResponse<JsonNode> response8;
+
+    @Mock
     private DatagramSocket mockAudioSocket;
 
     @Mock
@@ -114,6 +117,9 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
 
     private ModelBuilder builder;
 
@@ -220,8 +226,8 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     public void mockGetChannels() {
-        JSONArray members = new JSONArray();
-        JSONArray audioMembers = new JSONArray();
+        JSONArray members = new JSONArray().put("60ad230ac77d3f78988b3e5b");
+        JSONArray audioMembers = new JSONArray().put("60ad230ac77d3f78988b3e5b");
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
                 .put("id", "60b77ba0026b3534ca5a61af")
@@ -230,7 +236,7 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
                 .put("members", members)
-                .put("audioMembers", audioMembers))
+                .put("audioMembers", new JSONArray()))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
                         .put("name", "audioChannel")
@@ -258,6 +264,27 @@ public class ServerViewControllerTest extends ApplicationTest {
             callback.completed(response5);
             return null;
         }).when(restClient).getCategoryChannels(anyString(), anyString(), anyString(), callbackCaptor5.capture());
+    }
+
+    public void mockGetChannelMessages() {
+        JSONArray data = new JSONArray();
+        data.put(new JSONObject()
+                .put("id", "60b77r3w4qa324ca23412342")
+                .put("channel", "60b77ba0026b3534ca5a61af")
+                .put("timestamp", "1616935874361")
+                .put("from", "Peter Lustig")
+                .put("text", "Hallo Users!"));
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", data);
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response8.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor8.getValue();
+            callback.completed(response8);
+            return null;
+        }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor8.capture());
     }
 
     private void mockJoinVoiceChannel() {
@@ -304,6 +331,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         mockGetServerUser();
         mockGetCategories();
         mockGetChannels();
+        mockGetChannelMessages();
         mockJoinVoiceChannel();
         mockLeaveVoiceChannel();
 
@@ -548,7 +576,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ServerChannel audioChannel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(1);
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
         User newUser = new User().setName("Hans").setId("60ace8f1c77d3f78988bawdw");
         builder.getPersonalUser().withUser(newUser);
@@ -559,14 +587,14 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 3);
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel.getAudioMember().size(), 2);
 
         doubleClickOn("#60b77ba0026423ad521awd2");
         WaitForAsyncUtils.waitForFxEvents();
@@ -583,7 +611,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 2);
 
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
@@ -607,14 +635,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Button microphone = lookup("#mute_microphone").query();
-        Label mutedMicrophone = lookup("#unmute_microphone").query();
-        clickOn(microphone);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        clickOn(mutedMicrophone);
-        WaitForAsyncUtils.waitForFxEvents();
-
         clickOn("#button_disconnectAudio");
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -623,7 +643,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(audioChannel2.getAudioMember().size(), 0);
+        Assert.assertEquals(audioChannel2.getAudioMember().size(), 1);
     }
 
     @Test
@@ -641,31 +661,31 @@ public class ServerViewControllerTest extends ApplicationTest {
         Label mutedMHeadphone = lookup("#unmute_headphone").query();
 
         clickOn(microphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteMicrophone());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteMicrophone());
         Assert.assertFalse(mutedMicrophone.isVisible());
 
         clickOn(headphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
-        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(mutedMHeadphone.isVisible());
         Assert.assertFalse(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMHeadphone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
         clickOn(headphone);
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
@@ -675,29 +695,29 @@ public class ServerViewControllerTest extends ApplicationTest {
         headphone = lookup("#mute_headphone").query();
         mutedMHeadphone = lookup("#unmute_headphone").query();
         clickOn(microphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteMicrophone());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMicrophone);
 
         clickOn(headphone);
-        Assert.assertFalse(builder.getMuteMicrophone());
-        Assert.assertFalse(builder.getMuteHeadphones());
+        Assert.assertTrue(builder.getMuteMicrophone());
+        Assert.assertTrue(builder.getMuteHeadphones());
         Assert.assertTrue(mutedMicrophone.isVisible());
         Assert.assertTrue(mutedMHeadphone.isVisible());
         Assert.assertFalse(builder.getMicrophoneFirstMuted());
 
         clickOn(mutedMHeadphone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
 
         clickOn(headphone);
         clickOn(mutedMicrophone);
-        Assert.assertTrue(builder.getMuteMicrophone());
-        Assert.assertTrue(builder.getMuteHeadphones());
+        Assert.assertFalse(builder.getMuteMicrophone());
+        Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
     }

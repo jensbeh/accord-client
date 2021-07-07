@@ -46,7 +46,6 @@ public class ModelBuilder {
     private ServerChannel currentAudioChannel;
     private boolean muteMicrophone;
     private boolean muteHeadphones;
-    private AudioInputStream audioInputStream;
 
     private boolean loadUserData = true;
     private boolean inServerChat;
@@ -226,8 +225,8 @@ public class ModelBuilder {
                 showNotifications = true;
                 playSound = true;
                 theme = "Dark";
-                muteMicrophone = true;
-                muteHeadphones = true;
+                muteMicrophone = false;
+                muteHeadphones = false;
                 firstMuted = false;
                 saveSettings();
             }
@@ -298,10 +297,6 @@ public class ModelBuilder {
 
     public void muteMicrophone(boolean muteMicrophone) {
         this.muteMicrophone = muteMicrophone;
-        //when new value is set mute or unmute the microphone
-        if (audioStreamClient != null) {
-            this.audioStreamClient.muteMicrophone(muteMicrophone);
-        }
     }
 
     public boolean getMuteMicrophone() {
@@ -315,7 +310,6 @@ public class ModelBuilder {
     public boolean getMuteHeadphones() {
         return muteHeadphones;
     }
-
 
     public void setLoadUserData(boolean loadUserData) {
         this.loadUserData = loadUserData;
