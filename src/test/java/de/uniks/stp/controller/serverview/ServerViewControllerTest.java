@@ -519,7 +519,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
 
-    //@Test
+    @Test
     public void audioStreamTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
@@ -593,6 +593,14 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 3);
+
+        rightClickOn("#audioMember");
+        WaitForAsyncUtils.waitForFxEvents();
+        ContextMenu contextMenu = lookup("#audioMember").queryLabeled().getContextMenu();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        write("\n");
+        interact(() -> contextMenu.getItems().get(1).fire());
+        WaitForAsyncUtils.waitForFxEvents();
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);

@@ -1,9 +1,7 @@
 package de.uniks.stp.net.udp;
 
-import com.sun.javafx.fxml.expression.Expression;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
-import de.uniks.stp.model.User;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -78,13 +76,9 @@ public class AudioStreamReceiver implements Runnable {
                     String senderName = jsonData.getString("name");
 
                     // set receivedData to speaker of the senderName
-                    if (!builder.getMuteHeadphones()) {
-                        if (!senderName.equals(builder.getPersonalUser().getName())) {
-                            if (receiverSpeakerMap != null) {
-                                if (!mutedUser.contains(senderName)) {
-                                    receiverSpeakerMap.get(senderName).writeData(receivedData);
-                                }
-                            }
+                    if (!builder.getMuteHeadphones() && !senderName.equals(builder.getPersonalUser().getName())) {
+                        if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
+                            receiverSpeakerMap.get(senderName).writeData(receivedData);
                         }
                     }
                 }
