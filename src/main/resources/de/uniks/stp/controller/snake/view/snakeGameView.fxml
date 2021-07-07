@@ -96,6 +96,14 @@
                   <Font size="32.0" />
                </font>
             </Button>
+            <Button id="button_gameover_exit" layoutX="290.0" layoutY="345.0" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" styleClass="restartButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="Exit" textFill="WHITE">
+               <font>
+                  <Font size="22.0" />
+               </font>
+               <padding>
+                  <Insets bottom="-1.0" />
+               </padding>
+            </Button>
          </children>
       </Pane>
       <Pane id="countDownBox" layoutX="107.0" layoutY="181.0" prefHeight="272.0" prefWidth="350.0" AnchorPane.bottomAnchor="380.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="250.0">
