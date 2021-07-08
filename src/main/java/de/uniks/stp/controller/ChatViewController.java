@@ -251,13 +251,11 @@ public class ChatViewController {
                 contextMenu.setX(event.getScreenX());
                 contextMenu.show(finalSelected.getScene().getWindow());
             });
-
+            // if message is a text message
             if (selected.getParent() instanceof StackPane) {
                 StackPane stackPane = (StackPane) selected.getParent();
                 text = messagesHashMap.get(stackPane).getMessage();
-
-                if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName())
-                        || !builder.getInServerChat()) {
+                if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
                     contextMenu.getItems().get(1).setVisible(false);
                     contextMenu.getItems().get(2).setVisible(false);
                 } else {
@@ -266,11 +264,17 @@ public class ChatViewController {
                 }
                 selectedMsg = messagesHashMap.get(stackPane);
             } else {
-                if (selected.getParent() != null) {
-                    if (selected.getParent().getParent() instanceof StackPane) {
-                        StackPane stackPane = (StackPane) selected.getParent().getParent();
-                        selectedMsg = messagesHashMap.get(stackPane);
+                // if message is a video
+                if (selected.getParent() != null && selected.getParent().getParent() instanceof StackPane) {
+                    StackPane stackPane = (StackPane) selected.getParent().getParent();
+                    if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
+                        contextMenu.getItems().get(1).setVisible(false);
+                        contextMenu.getItems().get(2).setVisible(false);
+                    } else {
+                        contextMenu.getItems().get(1).setVisible(true);
+                        contextMenu.getItems().get(2).setVisible(true);
                     }
+                    selectedMsg = messagesHashMap.get(stackPane);
                 }
             }
         }
@@ -302,6 +306,12 @@ public class ChatViewController {
             deleteMsg.setId("deleteMsg");
             String msgText = null;
             if (text != null) {
+                msgText = formattedText(text);
+                deleteMsg.parseAndAppend(msgText);
+                deleteMsg.setMinWidth(530);
+                pane.setContent(deleteMsg);
+            } else {
+                text = selectedMsg.getMessage();
                 msgText = formattedText(text);
                 deleteMsg.parseAndAppend(msgText);
                 deleteMsg.setMinWidth(530);
