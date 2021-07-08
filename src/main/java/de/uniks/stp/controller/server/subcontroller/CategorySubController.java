@@ -44,6 +44,7 @@ public class CategorySubController {
         ServerChannelListCell.setTheme(builder.getTheme());
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
+        channelList.getSelectionModel().select(builder.getCurrentAudioChannel());
         //PCL
         category.addPropertyChangeListener(Categories.PROPERTY_CHANNEL, this::onChannelChanged);
         category.addPropertyChangeListener(Categories.PROPERTY_NAME, this::onCategoryNameChanged);
