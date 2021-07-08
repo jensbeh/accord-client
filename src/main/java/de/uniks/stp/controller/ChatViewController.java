@@ -9,6 +9,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -512,7 +513,7 @@ public class ChatViewController {
                 Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
                 stackPaneHashMap.remove(toRemoveMsg);
                 messagesHashMap.remove(toRemoveStack);
-                container.getChildren().remove(toRemoveStack);
+                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
@@ -520,7 +521,8 @@ public class ChatViewController {
                 Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
                 stackPaneHashMap.remove(toRemoveMsg);
                 messagesHashMap.remove(toRemoveStack);
-                container.getChildren().remove(toRemoveStack);
+                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
+
             }
         }
     }
