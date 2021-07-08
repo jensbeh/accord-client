@@ -28,7 +28,7 @@
     -fx-text-fill: WHITE;
 }
 
-#deleteMsg .color{
+#deleteMsg .color {
     -fx-text-fill: WHITE;
     -fx-background-color: #36393f;
 }
@@ -63,15 +63,15 @@
     -fx-border-color: #36393f;
 }
 
-#messageScrollPane  {
+#messageScrollPane {
     -fx-border-color: #36393f;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #36393f;
     -fx-padding: 1;
 }
 
 .list-cell {
-    -fx-background-color:#36393f;
+    -fx-background-color: #36393f;
 }
 
 .messageLabelTo {
@@ -103,7 +103,24 @@
     -fx-background-radius: 80;
 }
 
-
 #messageVBox {
     -fx-background-color: #36393f;
+}
+
+#playButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#timeLabel {
+    -fx-text-fill: WHITE;
+}
+
+#playTimeLabel {
+    -fx-text-fill: WHITE;
+}
+
+#volumeLabel {
+    -fx-text-fill: WHITE;
 }

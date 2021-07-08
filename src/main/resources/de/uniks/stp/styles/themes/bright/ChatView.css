@@ -97,3 +97,21 @@
 #messageVBox {
     -fx-background-color: WHITE;
 }
+
+#playButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#timeLabel {
+    -fx-text-fill: BLACK;
+}
+
+#playTimeLabel {
+    -fx-text-fill: BLACK;
+}
+
+#volumeLabel {
+    -fx-text-fill: BLACK;
+}

@@ -239,31 +239,44 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
-        StackPane selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode().getParent().getParent();
+        VBox selected = null;
+        if (mouseEvent.getPickResult().getIntersectedNode().getParent() instanceof VBox) {
+            selected = (VBox) mouseEvent.getPickResult().getIntersectedNode().getParent();
+        }
 
-        if (selected == null) {
-
-        } else {
+        if (selected != null) {
+            VBox finalSelected = selected;
             selected.setOnContextMenuRequested(event -> {
                 contextMenu.setY(event.getScreenY());
                 contextMenu.setX(event.getScreenX());
-                contextMenu.show(selected.getScene().getWindow());
+                contextMenu.show(finalSelected.getScene().getWindow());
             });
-            text = messagesHashMap.get(selected).getMessage();
 
-            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName())
-                    || !builder.getInServerChat()) {
-                contextMenu.getItems().get(1).setVisible(false);
-                contextMenu.getItems().get(2).setVisible(false);
+            if (selected.getParent() instanceof StackPane) {
+                StackPane stackPane = (StackPane) selected.getParent();
+                text = messagesHashMap.get(stackPane).getMessage();
+
+                if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName())
+                        || !builder.getInServerChat()) {
+                    contextMenu.getItems().get(1).setVisible(false);
+                    contextMenu.getItems().get(2).setVisible(false);
+                } else {
+                    contextMenu.getItems().get(1).setVisible(true);
+                    contextMenu.getItems().get(2).setVisible(true);
+                }
+                selectedMsg = messagesHashMap.get(stackPane);
             } else {
-                contextMenu.getItems().get(1).setVisible(true);
-                contextMenu.getItems().get(2).setVisible(true);
+                if (selected.getParent() != null) {
+                    if (selected.getParent().getParent() instanceof StackPane) {
+                        StackPane stackPane = (StackPane) selected.getParent().getParent();
+                        selectedMsg = messagesHashMap.get(stackPane);
+                    }
+                }
             }
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
-        selectedMsg = messagesHashMap.get(selected);
     }
 
     /**
@@ -287,10 +300,13 @@ public class ChatViewController {
             }
             EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
-            String msgText = formattedText(text);
-            deleteMsg.parseAndAppend(msgText);
-            deleteMsg.setMinWidth(530);
-            pane.setContent(deleteMsg);
+            String msgText = null;
+            if (text != null) {
+                msgText = formattedText(text);
+                deleteMsg.parseAndAppend(msgText);
+                deleteMsg.setMinWidth(530);
+                pane.setContent(deleteMsg);
+            }
             Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
             yes.setOnAction(this::deleteMessage);
@@ -501,7 +517,7 @@ public class ChatViewController {
 
 
     public void updateMessage(Message msg) {
-        ((Text)(((EmojiTextFlow)((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
+        ((Text) (((EmojiTextFlow) ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
     }
 
 

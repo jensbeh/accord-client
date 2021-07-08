@@ -80,7 +80,7 @@ public class MessageView {
                     loadVideo = true;
                     setMedia(url, mediaView);
                     if (loadVideo) {
-                        setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+//                        setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
                         textMessage = textMessage.replace(url, "");
                     }
                 }
@@ -116,7 +116,11 @@ public class MessageView {
             } else if (loadVideo) {
                 MediaControl mediaControl = new MediaControl();
                 VBox mediaBox = mediaControl.setMediaControls(mediaView);
+
+                setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+
                 vbox.getChildren().addAll(userName, message, mediaBox);
+
             } else {
                 vbox.getChildren().addAll(userName, message);
             }
@@ -130,6 +134,7 @@ public class MessageView {
             chatViewController.getStackPaneHashMap().put(item, cell);
         }
     }
+
     private EmojiTextFlow handleEmojis(boolean isUser) {
         if (isUser) {
             EmojiTextFlowParameters emojiTextFlowParameters;
@@ -246,6 +251,7 @@ public class MessageView {
                 }
             }
             if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+
                 mediaView.setFitHeight(height);
                 mediaView.setFitWidth(width);
             } else {
@@ -260,7 +266,7 @@ public class MessageView {
 
     private void setImageSize(Parent parent, String url, WebView webView) {
         try {
-            Bounds bounds =  parent.getParent().getParent().getParent().getBoundsInLocal();
+            Bounds bounds = parent.getParent().getParent().getParent().getBoundsInLocal();
             double maxX = bounds.getMaxX();
             double maxY = bounds.getMaxY();
             int height = 0;
@@ -283,7 +289,6 @@ public class MessageView {
             e.printStackTrace();
         }
     }
-
 
 
 }

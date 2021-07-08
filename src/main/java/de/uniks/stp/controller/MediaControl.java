@@ -71,27 +71,32 @@ public class MediaControl extends BorderPane {
         mediaBar.setAlignment(Pos.CENTER);
         mediaBar.setPadding(new Insets(5, 10, 5, 10));
         BorderPane.setAlignment(mediaBar, Pos.CENTER);
-        final Button playButton = new Button("Play");
+        Button playButton = new Button("Play");
+        playButton.setMinWidth(40);
+        playButton.setId("playButton");
         mediaBar.getChildren().add(playButton);
         // Add spacer
-        Label spacer = new Label("   ");
+        Label spacer = new Label("    ");
         mediaBar.getChildren().add(spacer);
 
-        Label timeLabel = new Label("Time: ");
+        Label timeLabel = new Label();
+        timeLabel.setId("timeLabel");
         mediaBar.getChildren().add(timeLabel);
 
         timeSlider = new Slider();
-        HBox.setHgrow(timeSlider, Priority.ALWAYS);
+        HBox.setHgrow(timeSlider, Priority.SOMETIMES);
         timeSlider.setMinWidth(50);
         timeSlider.setMaxWidth(Double.MAX_VALUE);
         mediaBar.getChildren().add(timeSlider);
 
         playTime = new Label();
-        playTime.setPrefWidth(130);
+        playTime.setId("playTimeLabel");
+        playTime.setPrefWidth(90);
         playTime.setMinWidth(50);
         mediaBar.getChildren().add(playTime);
 
-        Label volumeLabel = new Label("Vol: ");
+        Label volumeLabel = new Label();
+        volumeLabel.setId("volumeLabel");
         mediaBar.getChildren().add(volumeLabel);
 
         volumeSlider = new Slider();
@@ -139,15 +144,14 @@ public class MediaControl extends BorderPane {
                     mp.pause();
                     stopRequested = false;
                 } else {
-                    playButton.setText("||");
+                    playButton.setText("Pause");
                 }
             }
         });
 
         mp.setOnPaused(new Runnable() {
             public void run() {
-                System.out.println("onPaused");
-                playButton.setText(">");
+                playButton.setText("Play");
             }
         });
 
@@ -162,12 +166,31 @@ public class MediaControl extends BorderPane {
         mp.setOnEndOfMedia(new Runnable() {
             public void run() {
                 if (!repeat) {
-                    playButton.setText(">");
+                    playButton.setText("Play");
                     stopRequested = true;
                     atEndOfMedia = true;
                 }
             }
         });
+
+        timeSlider.valueProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+                if (timeSlider.isValueChanging()) {
+                    // multiply duration by percentage calculated by slider position
+                    mp.seek(duration.multiply(timeSlider.getValue() / 100.0));
+                }
+            }
+        });
+
+        volumeSlider.valueProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+                if (volumeSlider.isValueChanging()) {
+                    mp.setVolume(volumeSlider.getValue() / 100.0);
+                }
+            }
+        });
+
+        mediaBox.setMaxWidth(400);
         return mediaBox;
     }
 
