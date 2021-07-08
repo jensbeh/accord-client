@@ -197,6 +197,19 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     audioMemberName.setContextMenu(menu);
                                 }
 
+                                //remember the muted user
+                                if (serverViewController.getMutedAudioMember().contains(user.getName())) {
+                                    mute.setVisible(false);
+                                    unMute.setVisible(true);
+                                    audioMemberName.setText(user.getName() + " \uD83D\uDD07");
+                                }
+
+                                //set contextMenu not visible if you´re not in audiochannel
+                                if (serverViewController.getCurrentAudioChannel() == null) {
+                                    mute.setVisible(false);
+                                    unMute.setVisible(false);
+                                }
+
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
                                 audioMemberCell.setOnMouseClicked((ae) -> {
                                     mute.setOnAction((act) -> {

@@ -566,7 +566,6 @@ public class ServerViewControllerTest extends ApplicationTest {
             e.printStackTrace();
         }
 
-
         doubleClickOn("#60b77ba0026b3534ca5a61dd");
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -593,7 +592,11 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         ContextMenu contextMenu = lookup("#audioMember").queryLabeled().getContextMenu();
         interact(() -> contextMenu.getItems().get(0).fire());
-        write("\n");
+        //write("\n");
+        doubleClickOn("#60b77ba0026423ad521awd2");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
         interact(() -> contextMenu.getItems().get(1).fire());
         WaitForAsyncUtils.waitForFxEvents();
 

@@ -126,6 +126,12 @@ public class AudioStreamReceiver implements Runnable {
         mutedUser.remove(unMutedUser);
     }
 
+    /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        return mutedUser;
+    }
 
     /**
      * var stopped is for waiting till the current while is completed, to stop Receiver
@@ -136,5 +142,4 @@ public class AudioStreamReceiver implements Runnable {
             Thread.onSpinWait();
         }
     }
-
 }

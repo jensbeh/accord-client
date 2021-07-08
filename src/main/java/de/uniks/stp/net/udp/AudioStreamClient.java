@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import static de.uniks.stp.util.Constants.AUDIO_STREAM_ADDRESS;
 import static de.uniks.stp.util.Constants.AUDIO_STREAM_PORT;
@@ -114,5 +115,12 @@ public class AudioStreamClient {
      */
     public void setUnMutedUser(String mutedUser) {
         receiver.setUnMutedUser(mutedUser);
+    }
+
+    /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        return receiver.getMutedAudioMember();
     }
 }

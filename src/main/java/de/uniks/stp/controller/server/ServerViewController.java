@@ -138,6 +138,20 @@ public class ServerViewController {
     }
 
     /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        //return empty array if audioStreamClient doesn´t exist
+        if (builder.getAudioStreamClient() == null) {
+            return new ArrayList<>();
+        } else {
+            return builder.getAudioStreamClient().getMutedAudioMember();
+        }
+
+    }
+
+
+    /**
      * Callback, when all server information are loaded
      */
     public interface ServerReadyCallback {
