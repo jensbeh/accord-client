@@ -112,6 +112,13 @@ public class ChatViewController {
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
         messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
+        // set scroll speed
+        final double SPEED = 0.001;
+        messageScrollPane.getContent().setOnScroll(scrollEvent -> {
+            double deltaY = scrollEvent.getDeltaY() * SPEED;
+            messageScrollPane.setVvalue(messageScrollPane.getVvalue() - deltaY);
+        });
+
         messageScrollPane.setFitToHeight(true);
         messageScrollPane.setFitToWidth(true);
         container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
