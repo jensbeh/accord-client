@@ -263,6 +263,9 @@ public class HomeViewController {
      * called after the ok button in createServer is clicked
      */
     public void onServerCreated() {
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         builder.setServerChatWebSocketClient(null);
         builder.setSERVER_USER(null);
         Platform.runLater(() -> {
@@ -295,6 +298,10 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on a Server
      */
     private void onServerClicked(MouseEvent mouseEvent) {
+        //stop currently playing videos
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         if (this.builder.getCurrentServer() != (this.serverList.getSelectionModel().getSelectedItem())) {
             builder.setServerChatWebSocketClient(null);
             builder.setSERVER_USER(null);
@@ -407,6 +414,9 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the Home Button
      */
     private void homeButtonClicked(MouseEvent mouseEvent) {
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         builder.setInServerChat(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
@@ -425,6 +435,9 @@ public class HomeViewController {
      * @param actionEvent is called when clicked on the Logout Button
      */
     private void logoutButtonOnClicked(ActionEvent actionEvent) {
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         try {
             if (builder.getServerSystemWebSocket() != null) {
                 if (builder.getServerSystemWebSocket().getSession() != null) {

@@ -3,12 +3,12 @@ package de.uniks.stp.controller.snake;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
-import javafx.application.Platform;
+import de.uniks.stp.util.ResourceManager;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -31,7 +31,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-import de.uniks.stp.util.ResourceManager;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -153,12 +152,7 @@ public class SnakeControllerTest extends ApplicationTest {
         }
 
         // close start Snake view
-        for (Object object : this.listTargetWindows()) {
-            if (((Stage) object).getTitle().equals("Snake")) {
-                Platform.runLater(((Stage) object)::close);
-                break;
-            }
-        }
+        clickOn("#button_exit");
     }
 
     //@Test
@@ -170,7 +164,7 @@ public class SnakeControllerTest extends ApplicationTest {
         // clicks 15 times on home
         Circle homeButton = lookup("#homeButton").query();
         for (int i = 0; i < 10; i++) {
-            clickOn(homeButton); 
+            clickOn(homeButton);
         }
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -269,12 +263,6 @@ public class SnakeControllerTest extends ApplicationTest {
         Assert.assertEquals("\uD83D\uDD08", muteButton.getText());
 
         // close game
-        for (Object object : this.listTargetWindows()) {
-            if (((Stage) object).getTitle().equals("Snake")) {
-                Platform.runLater(((Stage) object)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
+        clickOn("#button_exit");
     }
 }

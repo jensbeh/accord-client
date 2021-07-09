@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -376,7 +377,9 @@ public class ServerMessageTest extends ApplicationTest {
 
         ListView<Message> privateChatMessageList = lookup("#messageListView").query();
 
-        Assert.assertEquals(1, privateChatMessageList.getItems().size());
+        ScrollPane messageScrollPane = (ScrollPane) lookup("#messageScrollPane");
+        VBox container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
+        Assert.assertEquals(1, container.getChildren().size());
 
         messageField.setText("Okay");
         write("\n");

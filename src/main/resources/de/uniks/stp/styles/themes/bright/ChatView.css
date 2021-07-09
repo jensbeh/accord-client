@@ -37,45 +37,42 @@
     -fx-background-color: #717177;
 }
 
-#messageListView #messageListView {
+#messageScrollPane #messageScrollPane {
     -fx-background-color: WHITE;
 }
 
-#messageListView .scroll-bar:vertical {
+#messageScrollPane .scroll-bar:vertical {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: WHITE;
 }
 
-#messageListView .scroll-bar:horizontal {
+#messageScrollPane .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: WHITE;
 }
 
-#messageListView  {
+#messageScrollPane  {
     -fx-border-color: WHITE;
     -fx-background-insets: 0 ;
     -fx-background-color: WHITE;
     -fx-padding: 1;
 }
 
-#messageListView .list-cell {
-    -fx-background-color: WHITE;
-}
 
-#messageListView .list-cell .messageLabelTo {
+.messageLabelTo {
     -fx-background-color: #7da6df;
     -fx-background-radius: 4;
 }
 
-#messageListView .list-cell #userNameLabel {
+#userNameLabel {
     -fx-text-fill: BLACK;
 }
 
-#messageListView .list-cell .messageLabelFrom {
+.messageLabelFrom {
     -fx-background-color: #d4d4d4;
     -fx-background-radius: 4;
 }
@@ -95,4 +92,26 @@
 #sendButton {
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
+}
+
+#messageVBox {
+    -fx-background-color: WHITE;
+}
+
+#playButton {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#timeLabel {
+    -fx-text-fill: BLACK;
+}
+
+#playTimeLabel {
+    -fx-text-fill: BLACK;
+}
+
+#volumeLabel {
+    -fx-text-fill: BLACK;
 }

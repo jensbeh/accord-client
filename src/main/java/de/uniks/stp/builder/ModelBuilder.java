@@ -2,6 +2,7 @@ package de.uniks.stp.builder;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -28,12 +29,14 @@ import static de.uniks.stp.util.Constants.*;
 
 public class ModelBuilder {
     private Server currentServer;
+    private ChatViewController currentChatViewController;
     private CurrentUser personalUser;
     private URL soundFile;
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
+
 
     private RestClient restClient;
     private boolean playSound;
@@ -341,5 +344,14 @@ public class ModelBuilder {
 
     public boolean getMicrophoneFirstMuted() {
         return firstMuted;
+    }
+
+
+    public ChatViewController getCurrentChatViewController() {
+        return currentChatViewController;
+    }
+
+    public void setCurrentChatViewController(ChatViewController currentChatViewController) {
+        this.currentChatViewController = currentChatViewController;
     }
 }
