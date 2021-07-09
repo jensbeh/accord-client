@@ -10,14 +10,13 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.ResourceManager;
+import javafx.scene.control.ComboBox;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +29,7 @@ public class ModelBuilder {
     private Server currentServer;
     private CurrentUser personalUser;
     private URL soundFile;
+    private URL channelSoundFile;
     private ServerSystemWebSocket serverSystemWebSocket;
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
@@ -169,14 +169,31 @@ public class ModelBuilder {
         return this.restClient;
     }
 
+    /**
+     * play notification sound
+     */
     public void playSound() {
-        if (soundFile == null) {
+        if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
             setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
+        }else{
+            String newValue = ResourceManager.getComboValue(personalUser.getName());
+            for(File file : ResourceManager.getNotificationSoundFiles()){
+                String fileName = file.getName().substring(0, file.getName().length() - 4);
+                if (fileName.equals(newValue)) {
+                    try {
+                        URL url = file.toURI().toURL();
+                        this.setSoundFile(url);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
         if (clip != null) {
             clip.stop();
         }
         try {
+            System.out.println("ComboBox: " + ResourceManager.getComboValue(personalUser.getName()));
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile().openStream()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
@@ -188,6 +205,36 @@ public class ModelBuilder {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * play notification sound when you join/leave an audio channel
+     */
+    public void playChannelSound(String action) {
+        if(action.equals("join")) {
+            setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/join.wav"));
+        }else{
+            setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/left.wav"));
+        }
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getChannelSoundFile().openStream()));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private URL getChannelSoundFile() {
+        return this.channelSoundFile;
+    }
+
+    private void setChannelSoundFile(URL resource) {
+        this.channelSoundFile = resource;
     }
 
     public void setVolume(Float number) {
