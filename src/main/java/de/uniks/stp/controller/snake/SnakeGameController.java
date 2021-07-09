@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.snake;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
 import de.uniks.stp.controller.snake.model.Game;
@@ -21,6 +22,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.net.URISyntaxException;
@@ -33,7 +36,7 @@ import static de.uniks.stp.controller.snake.Constants.*;
 public class SnakeGameController {
 
     private final Parent view;
-    private final ModelBuilder builder;
+    private ModelBuilder builder;
     private final Scene scene;
     private Label scoreLabel;
     private Label highScoreLabel;
@@ -49,6 +52,8 @@ public class SnakeGameController {
     private Pane gameOverBox;
     private Text gameOverScoreText;
     private Button restartButton;
+    private Button exitGameButton;
+    private Button gameOverExitGameButton;
     private VBox gameBox;
     private Button muteButton;
     private Pane countDownBox;
@@ -77,6 +82,8 @@ public class SnakeGameController {
         gameOverBox = (Pane) view.lookup("#gameOverBox");
         gameOverScoreText = (Text) view.lookup("#gameOverScoreText");
         restartButton = (Button) view.lookup("#restartButton");
+        exitGameButton = (Button) view.lookup("#button_exit");
+        gameOverExitGameButton = (Button) view.lookup("#button_gameover_exit");
         scoreLabel = (Label) view.lookup("#label_score");
         highScoreLabel = (Label) view.lookup("#label_highscore");
         Canvas gameField = (Canvas) view.lookup("#gameField");
@@ -88,6 +95,8 @@ public class SnakeGameController {
         countdownText.setOpacity(0.0);
 
         restartButton.setOnAction(this::restartGame);
+        exitGameButton.setOnAction(this::exitGame);
+        gameOverExitGameButton.setOnAction(this::exitGame);
         muteButton.setOnAction(this::muteSound);
         isGameMute = ResourceManager.loadMuteGameState(builder.getPersonalUser().getName());
         if (isGameMute) {
@@ -519,21 +528,21 @@ public class SnakeGameController {
      */
     private void loadAllSounds() {
         try {
-            Media media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/quest-605.wav")).toURI().toString());
+            Media media = new Media(Objects.requireNonNull(StageManager.class.getResource("sounds/snake/quest-605.wav")).toURI().toString());
             backgroundMusic = new MediaPlayer(media);
             backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
             backgroundMusic.play();
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/gameOver.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(StageManager.class.getResource("sounds/snake/gameOver.wav")).toURI().toString());
             gameOverSound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/eating.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(StageManager.class.getResource("sounds/snake/eating.wav")).toURI().toString());
             eatingSound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/countdown321.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(StageManager.class.getResource("sounds/snake/countdown321.wav")).toURI().toString());
             countDown321Sound = new MediaPlayer(media);
 
-            media = new Media(Objects.requireNonNull(getClass().getResource("sounds/snake/countdownGO.wav")).toURI().toString());
+            media = new Media(Objects.requireNonNull(StageManager.class.getResource("sounds/snake/countdownGO.wav")).toURI().toString());
             countDownGoSound = new MediaPlayer(media);
 
         } catch (URISyntaxException e) {
@@ -622,10 +631,21 @@ public class SnakeGameController {
         }
     }
 
+    /**
+     * OnClick method -> the stage will close
+     */
+    private void exitGame(ActionEvent actionEvent) {
+        Stage thisStage = (Stage) exitGameButton.getScene().getWindow();
+        thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+    }
+
     public void stop() {
         ResourceManager.saveHighScore(builder.getPersonalUser().getName(), game.getHighScore());
         scene.setOnKeyPressed(null);
         restartButton.setOnAction(null);
+        exitGameButton.setOnAction(null);
+        gameOverExitGameButton.setOnAction(null);
+        muteButton.setOnAction(null);
 
         if (gameTimeline != null) {
             gameTimeline.stop();
