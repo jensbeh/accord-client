@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 public class MessageView {
     private String urlType;
     private ModelBuilder builder;
+    private ChatViewController chatViewController;
     private boolean loadImage;
     private boolean loadVideo;
 
@@ -40,7 +41,11 @@ public class MessageView {
         this.builder = builder;
     }
 
-    public void updateItem(Message item, boolean empty, ChatViewController chatViewController) {
+    public void setChatViewController(ChatViewController chatViewController) {
+        this.chatViewController = chatViewController;
+    }
+
+    public void updateItem(Message item, boolean empty) {
         boolean loadImage;
         boolean loadVideo;
         StackPane cell = new StackPane();
@@ -211,6 +216,7 @@ public class MessageView {
     private void setVideo(String url, MediaView mediaView) {
         Media mediaUrl = new Media(url);
         MediaPlayer mp = new MediaPlayer(mediaUrl);
+        chatViewController.getMediaPlayers().add(mp);
         mediaView.setMediaPlayer(mp);
         mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
     }

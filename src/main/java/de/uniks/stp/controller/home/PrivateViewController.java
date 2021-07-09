@@ -29,14 +29,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
 import javax.json.JsonException;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;
@@ -268,6 +264,9 @@ public class PrivateViewController {
      * @param mouseEvent is called when double clicked on an existing chat
      */
     private void onPrivateChatListClicked(MouseEvent mouseEvent) {
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         if (this.privateChatList.getSelectionModel().getSelectedItem() != null) {
             if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
@@ -287,12 +286,17 @@ public class PrivateViewController {
     public void MessageViews() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
+            //stop videos from recent chatviewcontroller
+            if (chatViewController != null) {
+                chatViewController.stopMediaPlayers();
+            }
             chatViewController = new ChatViewController(root, builder);
             this.chatBox.getChildren().clear();
             chatViewController.init();
             chatViewController.setTheme();
             this.chatBox.getChildren().add(root);
-            privateChatWebSocket.setMessageViewController(chatViewController);
+            privateChatWebSocket.setChatViewController(chatViewController);
+            builder.setCurrentChatViewController(chatViewController);
             if (builder.getCurrentPrivateChat() != null) {
                 for (Message msg : builder.getCurrentPrivateChat().getMessage()) {
                     // Display each Message which are saved
@@ -311,6 +315,9 @@ public class PrivateViewController {
      * @param mouseEvent is called when clicked on an online User
      */
     private void onOnlineUsersListClicked(MouseEvent mouseEvent) {
+        if (builder.getCurrentChatViewController() != null) {
+            builder.getCurrentChatViewController().stopMediaPlayers();
+        }
         PrivateChat currentChannel = builder.getCurrentPrivateChat();
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
             boolean chatExisting = false;

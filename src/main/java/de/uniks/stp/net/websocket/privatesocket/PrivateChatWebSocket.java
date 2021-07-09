@@ -138,7 +138,7 @@ public class PrivateChatWebSocket extends Endpoint {
         return session;
     }
 
-    public void setMessageViewController(ChatViewController chatViewController) {
+    public void setChatViewController(ChatViewController chatViewController) {
         this.chatViewController = chatViewController;
     }
 

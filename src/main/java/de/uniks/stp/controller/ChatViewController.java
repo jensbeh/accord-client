@@ -27,6 +27,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -67,7 +68,7 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private ArrayList<String> pngNames = new ArrayList<>();
+    private ArrayList<String> pngNames;
 
     private VBox container;
 
@@ -76,6 +77,7 @@ public class ChatViewController {
 
     private HashMap<StackPane, Message> messagesHashMap;
     private HashMap<Message, StackPane> stackPaneHashMap;
+    private ArrayList<MediaPlayer> mediaPlayers;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -121,8 +123,15 @@ public class ChatViewController {
                 sendButton.fire();
             }
         });
+        mediaPlayers = new ArrayList<>();
+        pngNames = new ArrayList<>();
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
+        builder.setCurrentChatViewController(this);
+    }
+
+    public ArrayList<MediaPlayer> getMediaPlayers() {
+        return mediaPlayers;
     }
 
     public ScrollPane getMessageScrollPane() {
@@ -492,13 +501,15 @@ public class ChatViewController {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
-                messageView.updateItem(msg, true, this);
+                messageView.setChatViewController(this);
+                messageView.updateItem(msg, true);
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
-                messageView.updateItem(msg, true, this);
+                messageView.setChatViewController(this);
+                messageView.updateItem(msg, true);
             }
         }
     }
@@ -566,6 +577,13 @@ public class ChatViewController {
 
     public void stop() {
         sendButton.setOnAction(null);
+        stopMediaPlayers();
+    }
+
+    public void stopMediaPlayers() {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
     }
 
     public void setTheme() {
