@@ -99,7 +99,6 @@ public class CustomNotificationsController extends SubSetting {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Documents", "*.wav"));
         File selectedFile = fileChooser.showOpenDialog(null);
-
         if (selectedFile != null && !fileNames.contains(selectedFile.getName().substring(0, selectedFile.getName().length() - 4))) {
             String fileName = selectedFile.getName().substring(0, selectedFile.getName().length() - 4);
             customSoundComboBox.setPromptText(fileName);
@@ -109,6 +108,8 @@ public class CustomNotificationsController extends SubSetting {
             File file = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + selectedFile.getName());
             ResourceManager.saveNotifications(selectedFile);
             ob.add(file);
+            ResourceManager.setComboValue(builder.getPersonalUser().getName(),
+                    selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
         } else {
             System.out.println("File is not valid!");
         }

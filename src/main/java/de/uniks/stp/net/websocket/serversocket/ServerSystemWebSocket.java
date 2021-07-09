@@ -253,12 +253,13 @@ public class ServerSystemWebSocket extends Endpoint {
             if (jsonData.getString("category").equals(category.getId())) {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
-
                         // which audioMember disconnects?
                         for (AudioMember audioMember : serverChannel.getAudioMember()) {
                             if (audioMember.getId().equals(userId)) {
                                 serverChannel.withoutAudioMember(audioMember);
-                                builder.playChannelSound("left");
+                                if(!audioMember.getId().equals(builder.getPersonalUser().getId())) {
+                                    builder.playChannelSound("left");
+                                }
                                 // personalUser disconnects
                                 if (userId.equals(builder.getPersonalUser().getId())) {
                                     builder.setCurrentAudioChannel(null);
