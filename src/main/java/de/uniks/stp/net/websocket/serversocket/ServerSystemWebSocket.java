@@ -203,6 +203,8 @@ public class ServerSystemWebSocket extends Endpoint {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
 
+
+
                         // put name and id
                         String userName = "";
                         for (User user : builder.getPersonalUser().getUser()) {
@@ -218,7 +220,11 @@ public class ServerSystemWebSocket extends Endpoint {
                                 builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
                             }
                         }
-                        builder.playChannelSound("join");
+                        if(builder.getPersonalUser().getId().equals(jsonData.getString("id"))
+                                || (builder.getCurrentAudioChannel() != null &&
+                                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
+                            builder.playChannelSound("join");
+                        }
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
                             if (builder.getAudioStreamClient() != null) {
@@ -257,7 +263,9 @@ public class ServerSystemWebSocket extends Endpoint {
                         for (AudioMember audioMember : serverChannel.getAudioMember()) {
                             if (audioMember.getId().equals(userId)) {
                                 serverChannel.withoutAudioMember(audioMember);
+
                                 if(!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
+                                        builder.getCurrentAudioChannel() != null &&
                                         builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
                                     builder.playChannelSound("left");
                                 }
