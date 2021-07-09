@@ -257,7 +257,8 @@ public class ServerSystemWebSocket extends Endpoint {
                         for (AudioMember audioMember : serverChannel.getAudioMember()) {
                             if (audioMember.getId().equals(userId)) {
                                 serverChannel.withoutAudioMember(audioMember);
-                                if(!audioMember.getId().equals(builder.getPersonalUser().getId())) {
+                                if(!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
+                                        builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
                                     builder.playChannelSound("left");
                                 }
                                 // personalUser disconnects

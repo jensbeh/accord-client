@@ -140,7 +140,6 @@ public class SettingsController {
                     subController.init();
                     break;
             }
-
             this.settingsContainer.getChildren().add(settingsField);
         } catch (Exception e) {
             System.err.println("Error on showing Settings Field Screen");
