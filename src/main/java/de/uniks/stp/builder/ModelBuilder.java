@@ -169,6 +169,9 @@ public class ModelBuilder {
         return this.restClient;
     }
 
+    /**
+     * play notification sound
+     */
     public void playSound() {
         if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
             setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
@@ -204,6 +207,9 @@ public class ModelBuilder {
         }
     }
 
+    /**
+     * play notification sound when you join/leave an audio channel
+     */
     public void playChannelSound(String action) {
         if(action.equals("join")) {
             setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/join.wav"));
