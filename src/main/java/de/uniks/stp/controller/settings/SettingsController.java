@@ -53,7 +53,7 @@ public class SettingsController {
 
         if (builder.getPersonalUser() != null) {
             Button doNotDisturbButton = addItem("DnD");
-            doNotDisturbButton.setText("Do Not Disturb");
+            doNotDisturbButton.setText("Notification");
             addAction(doNotDisturbButton, "DoNotDisturb");
             Button customNotifications = addItem("CN");
             customNotifications.setText("Custom Notifications");

@@ -55,7 +55,7 @@ public class CustomNotificationsController extends SubSetting {
         if (!ResourceManager.getComboValue(builder.getPersonalUser().getName()).equals("")) {
             customSoundComboBox.setPromptText(ResourceManager.getComboValue(builder.getPersonalUser().getName()));
         }
-
+        deleteButton.setVisible(!customSoundComboBox.getPromptText().equals("default"));
         for (File file : ob) {
             String fileName = file.getName().substring(0, file.getName().length() - 4);
             fileNames.add(fileName);
@@ -63,6 +63,8 @@ public class CustomNotificationsController extends SubSetting {
             customSoundComboBox.getItems().add(fileName);
         }
         customSoundComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            deleteButton.setVisible(!newValue.equals("default"));
+            customSoundComboBox.setPromptText(newValue);
             ResourceManager.setComboValue(builder.getPersonalUser().getName(), newValue);
             for (File file : files) {
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
@@ -70,8 +72,7 @@ public class CustomNotificationsController extends SubSetting {
                 if (fileName.equals(newValue)) {
                     try {
                         stream = new FileInputStream(file);
-                        URL url = new URL("file://" + file.getPath());
-                        url = file.toURI().toURL();
+                        URL url = file.toURI().toURL();
                         builder.setSoundFile(url);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -98,7 +99,10 @@ public class CustomNotificationsController extends SubSetting {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Documents", "*.wav"));
         File selectedFile = fileChooser.showOpenDialog(null);
+
         if (selectedFile != null && !fileNames.contains(selectedFile.getName().substring(0, selectedFile.getName().length() - 4))) {
+            String fileName = selectedFile.getName().substring(0, selectedFile.getName().length() - 4);
+            customSoundComboBox.setPromptText(fileName);
             files.add(selectedFile);
             fileNames.add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
             customSoundComboBox.getItems().add(selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
