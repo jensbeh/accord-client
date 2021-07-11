@@ -113,8 +113,10 @@ public class MessageView {
             }
 
             if (loadImage) {
-                vbox.setMaxSize(webView.getMaxWidth(), webView.getMaxHeight());
+//                vbox.setPrefSize(webView.getMaxWidth(), webView.getMaxHeight());
                 vbox.getChildren().addAll(userName, message, webView);
+//                cell.setPrefSize(chatViewController.getContainer().getMaxWidth(), chatViewController.getContainer().getMaxHeight());
+                cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
             } else if (loadVideo) {
                 MediaControl mediaControl = new MediaControl();
                 VBox mediaBox = mediaControl.setMediaControls(mediaView);
@@ -128,7 +130,7 @@ public class MessageView {
 
             cell.setAlignment(Pos.CENTER_RIGHT);
             cell.getChildren().addAll(vbox);
-            cell.setMinWidth(420);
+//            cell.setMinSize(420, 60);
             cell.setOnMouseClicked(chatViewController::chatClicked);
             chatViewController.getContainer().getChildren().add(cell);
             chatViewController.getMessagesHashMap().put(cell, item);
@@ -230,9 +232,7 @@ public class MessageView {
                 engine.setJavaScriptEnabled(false);
                 break;
             case "youtube":
-                System.out.println(url);
                 String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
-//                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
                 Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
                 Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
                 String youtube_url = "";
@@ -285,10 +285,9 @@ public class MessageView {
 
     private void setImageSize(Parent parent, String url, WebView webView) {
         try {
-            while (parent.getParent() != null && (parent.getId() != null || parent.getId().equals("chatBox"))) {
+            while (parent.getParent() != null && parent.getId() != null && !Objects.equals(parent.getId(), "chatBox")) {
                 parent = parent.getParent();
             }
-
             Bounds bounds = parent.getBoundsInLocal();
             double maxX = bounds.getMaxX();
             double maxY = bounds.getMaxY();
@@ -302,7 +301,6 @@ public class MessageView {
                     width = image.getWidth();
                 }
             }
-            System.out.println(height + " " +  width);
             if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
                 webView.setMaxSize(width, height);
             } else {
