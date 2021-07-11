@@ -135,7 +135,7 @@ public class ServerMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -392,7 +392,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         boolean msgArrived = false;
-        
+
         String firstMessage = app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(0))).getMessage();
         for (int i = 0; i < messageVBox.getChildren().size(); i++) {
             String msg = app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(i))).getMessage();
@@ -518,5 +518,39 @@ public class ServerMessageTest extends ApplicationTest {
         moveBy(-290, -150);
         clickOn();
         //Assert.assertEquals(":ng:", messageField.getText());
+    }
+
+    @Test
+    public void videoTest() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        String messageIdA = "5e2fbd8770dd077d03dr458A";
+        String messageIdB = "5e2fbd8770dd077d03dr458B";
+        String messageIdC = "5e2fbd8770dd077d03dr458C";
+        String messageIdD = "5e2fbd8770dd077d03dr458D";
+        loginInit(true);
+
+        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "src/test/resources/de/uniks/stp/testVideo.mp4").put("from", testUserMainName).put("id", messageIdA);
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
     }
 }

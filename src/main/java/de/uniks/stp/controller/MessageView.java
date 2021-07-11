@@ -22,6 +22,7 @@ import javafx.scene.web.WebView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -74,7 +75,7 @@ public class MessageView {
                 loadVideo = true;
                 setMedia(url, mediaView);
                 if (loadVideo) {
-//                        setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+                    setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
                     textMessage = textMessage.replace(url, "");
                 }
             } else if (!urlType.equals("None")) {
@@ -193,7 +194,7 @@ public class MessageView {
     }
 
     private String searchUrl(String msg) {
-        String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+        String urlRegex = "\\b(https?|ftp|file|src)(://|/test)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         Pattern pattern = Pattern.compile(urlRegex);
         Matcher matcher = pattern.matcher(msg);
         String url = "";
@@ -215,7 +216,13 @@ public class MessageView {
     }
 
     private void setVideo(String url, MediaView mediaView) {
-        Media mediaUrl = new Media(url);
+        Media mediaUrl = null;
+        if (url.contains("src/test")) {
+            File file = new File(url);
+            mediaUrl = new Media(file.toURI().toString());
+        } else {
+            mediaUrl = new Media(url);
+        }
         MediaPlayer mp = new MediaPlayer(mediaUrl);
         chatViewController.getMediaPlayers().add(mp);
         mediaView.setMediaPlayer(mp);
@@ -263,7 +270,13 @@ public class MessageView {
             int height = 0;
             int width = 0;
             if (!urlType.equals("None")) {
-                URL url_stream = new URL(url);
+                URL url_stream = null;
+                if (url.contains("src/test")) {
+                    File file = new File(url);
+                    url_stream = new URL(file.toURI().toString());
+                } else {
+                    url_stream = new URL(url);
+                }
                 BufferedImage image = ImageIO.read(url_stream.openStream());
                 if (image != null) {
                     height = image.getHeight();
