@@ -49,6 +49,7 @@ public class MessageView {
         boolean loadImage;
         boolean loadVideo;
         StackPane cell = new StackPane();
+        cell.setId("messageCell");
         //Background for the messages
         if (empty) {
             VBox vbox = new VBox();
@@ -129,11 +130,12 @@ public class MessageView {
             } else {
                 vbox.getChildren().addAll(userName, message);
             }
-
+            vbox.setMouseTransparent(true);
             cell.setAlignment(Pos.CENTER_RIGHT);
             cell.getChildren().addAll(vbox);
             cell.setMinWidth(420);
             cell.setOnMouseClicked(chatViewController::chatClicked);
+            cell.setPickOnBounds(true);
             chatViewController.getContainer().getChildren().add(cell);
             chatViewController.getMessagesHashMap().put(cell, item);
             chatViewController.getStackPaneHashMap().put(item, cell);

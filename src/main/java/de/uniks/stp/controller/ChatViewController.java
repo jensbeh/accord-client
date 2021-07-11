@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
+    private ContextMenu contextMenu;
     private ModelBuilder builder;
     private ServerChannel currentChannel;
     private final Parent view;
@@ -58,7 +59,6 @@ public class ChatViewController {
     private ScrollPane scrollPane;
     private List<String> searchList;
     private String text;
-    private ContextMenu contextMenu;
     private ResourceBundle lang;
     private HBox messageBox;
     private Stage stage;
@@ -135,6 +135,10 @@ public class ChatViewController {
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
         builder.setCurrentChatViewController(this);
+    }
+
+    public ContextMenu getContextMenu() {
+        return contextMenu;
     }
 
     public ArrayList<MediaPlayer> getMediaPlayers() {
@@ -256,44 +260,28 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
-        VBox selected = null;
-        if (mouseEvent.getPickResult().getIntersectedNode().getParent() instanceof VBox) {
-            selected = (VBox) mouseEvent.getPickResult().getIntersectedNode().getParent();
+        StackPane selected = null;
+        if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
         }
 
         if (selected != null) {
-            VBox finalSelected = selected;
+            StackPane finalSelected = selected;
             selected.setOnContextMenuRequested(event -> {
                 contextMenu.setY(event.getScreenY());
                 contextMenu.setX(event.getScreenX());
                 contextMenu.show(finalSelected.getScene().getWindow());
             });
             // if message is a text message
-            if (selected.getParent() instanceof StackPane) {
-                StackPane stackPane = (StackPane) selected.getParent();
-                text = messagesHashMap.get(stackPane).getMessage();
-                if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
-                    contextMenu.getItems().get(1).setVisible(false);
-                    contextMenu.getItems().get(2).setVisible(false);
-                } else {
-                    contextMenu.getItems().get(1).setVisible(true);
-                    contextMenu.getItems().get(2).setVisible(true);
-                }
-                selectedMsg = messagesHashMap.get(stackPane);
+            text = messagesHashMap.get(selected).getMessage();
+            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
+                contextMenu.getItems().get(1).setVisible(false);
+                contextMenu.getItems().get(2).setVisible(false);
             } else {
-                // if message is a video
-                if (selected.getParent() != null && selected.getParent().getParent() instanceof StackPane) {
-                    StackPane stackPane = (StackPane) selected.getParent().getParent();
-                    if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
-                        contextMenu.getItems().get(1).setVisible(false);
-                        contextMenu.getItems().get(2).setVisible(false);
-                    } else {
-                        contextMenu.getItems().get(1).setVisible(true);
-                        contextMenu.getItems().get(2).setVisible(true);
-                    }
-                    selectedMsg = messagesHashMap.get(stackPane);
-                }
+                contextMenu.getItems().get(1).setVisible(true);
+                contextMenu.getItems().get(2).setVisible(true);
             }
+            selectedMsg = messagesHashMap.get(selected);
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
