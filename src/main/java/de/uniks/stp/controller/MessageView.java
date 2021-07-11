@@ -34,8 +34,7 @@ public class MessageView {
     private String urlType;
     private ModelBuilder builder;
     private ChatViewController chatViewController;
-    private boolean loadImage;
-    private boolean loadVideo;
+    boolean loadVideo;
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
@@ -70,26 +69,23 @@ public class MessageView {
             loadVideo = false;
             WebView webView = new WebView();
             MediaView mediaView = new MediaView();
-            if (!url.equals("") && !url.contains("https://ac.uniks.de/")) {
-                if (urlType.equals("picture")) {
-                    loadImage = true;
-                    setMedia(url, webView.getEngine());
-                    if (loadImage) {
-                        webView.setContextMenuEnabled(false);
-                        setImageSize(chatViewController.getMessageScrollPane(), url, webView);
-                        textMessage = textMessage.replace(url, "");
-                    }
-                }
-
-                if (urlType.equals("video")) {
-                    loadVideo = true;
-                    setMedia(url, mediaView);
-                    if (loadVideo) {
+            if (urlType.equals("video")) {
+                loadVideo = true;
+                setMedia(url, mediaView);
+                if (loadVideo) {
 //                        setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-                        textMessage = textMessage.replace(url, "");
-                    }
+                    textMessage = textMessage.replace(url, "");
                 }
+            } else if (!urlType.equals("None")) {
+                loadImage = true;
+                setMedia(url, webView.getEngine());
+                textMessage = textMessage.replace(url, "");
             }
+            if (loadImage) {
+                webView.setContextMenuEnabled(false);
+                setImageSize(chatViewController.getMessageScrollPane(), url, webView);
+            }
+
             if (builder.getPersonalUser().getName().equals(item.getFrom())) {
                 vbox.setAlignment(Pos.CENTER_RIGHT);
                 userName.setText((formatterTime.format(date)) + " " + item.getFrom());
@@ -117,13 +113,13 @@ public class MessageView {
             }
 
             if (loadImage) {
+                vbox.setMaxSize(webView.getMaxWidth(), webView.getMaxHeight());
                 vbox.getChildren().addAll(userName, message, webView);
             } else if (loadVideo) {
                 MediaControl mediaControl = new MediaControl();
                 VBox mediaBox = mediaControl.setMediaControls(mediaView);
 
                 setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-
                 vbox.getChildren().addAll(userName, message, mediaBox);
 
             } else {
@@ -205,6 +201,8 @@ public class MessageView {
             urlType = "picture";
         } else if (url.contains(".gif")) {
             urlType = "gif";
+        } else if (url.contains("youtube")){
+            urlType = "youtube";
         } else if (url.contains(".mp4")) {
             urlType = "video";
         } else {
@@ -222,14 +220,29 @@ public class MessageView {
     }
 
     private void setMedia(String url, WebEngine engine) {
-        if (urlType.equals("picture")) {
-            engine.load(url);
-            loadImage = true;
-            engine.setJavaScriptEnabled(false);
-        } else if (urlType.equals("gif")) {
-            engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
-            loadImage = true;
-            engine.setJavaScriptEnabled(false);
+        switch (urlType) {
+            case "picture":
+                engine.load(url);
+                engine.setJavaScriptEnabled(false);
+                break;
+            case "gif":
+                engine.loadContent("<html><body><img src=\"" + url + "\" class=\"center\"></body></html>");
+                engine.setJavaScriptEnabled(false);
+                break;
+            case "youtube":
+                System.out.println(url);
+                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
+//                String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/)[^#\\&\\?]*";
+                Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
+                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
+                String youtube_url = "";
+                if (videoIdMatcher.find()){
+                    String videoId = videoIdMatcher.group();
+                    youtube_url = "https://www.youtube.com/embed/" + videoId;
+                }
+                engine.load(youtube_url);
+                engine.setJavaScriptEnabled(true);
+                break;
         }
         engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
     }
@@ -272,7 +285,11 @@ public class MessageView {
 
     private void setImageSize(Parent parent, String url, WebView webView) {
         try {
-            Bounds bounds = parent.getParent().getParent().getParent().getBoundsInLocal();
+            while (parent.getParent() != null && (parent.getId() != null || parent.getId().equals("chatBox"))) {
+                parent = parent.getParent();
+            }
+
+            Bounds bounds = parent.getBoundsInLocal();
             double maxX = bounds.getMaxX();
             double maxY = bounds.getMaxY();
             int height = 0;
@@ -285,6 +302,7 @@ public class MessageView {
                     width = image.getWidth();
                 }
             }
+            System.out.println(height + " " +  width);
             if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
                 webView.setMaxSize(width, height);
             } else {
