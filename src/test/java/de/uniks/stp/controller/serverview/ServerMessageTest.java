@@ -135,7 +135,7 @@ public class ServerMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -534,9 +534,6 @@ public class ServerMessageTest extends ApplicationTest {
         serverSystemWebSocket.setBuilder(builder);
 
         String messageIdA = "5e2fbd8770dd077d03dr458A";
-        String messageIdB = "5e2fbd8770dd077d03dr458B";
-        String messageIdC = "5e2fbd8770dd077d03dr458C";
-        String messageIdD = "5e2fbd8770dd077d03dr458D";
         loginInit(true);
 
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
