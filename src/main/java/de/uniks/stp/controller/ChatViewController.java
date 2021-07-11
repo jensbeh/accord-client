@@ -261,8 +261,13 @@ public class ChatViewController {
         }
 
         StackPane selected = null;
+        System.out.println(mouseEvent.getPickResult().getIntersectedNode().toString());
         if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
             selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
+        }
+        //if video gets clicked
+        else if (mouseEvent.getPickResult().getIntersectedNode().getParent().getParent() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode().getParent().getParent();
         }
 
         if (selected != null) {

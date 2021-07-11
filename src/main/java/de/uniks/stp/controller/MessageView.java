@@ -121,19 +121,18 @@ public class MessageView {
             } else if (loadVideo) {
                 MediaControl mediaControl = new MediaControl();
                 VBox mediaBox = mediaControl.setMediaControls(mediaView);
-
                 setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
                 vbox.getChildren().addAll(userName, message, mediaBox);
 
             } else {
                 vbox.getChildren().addAll(userName, message);
+                vbox.setMouseTransparent(true);
             }
-            vbox.setMouseTransparent(true);
+
             cell.setAlignment(Pos.CENTER_RIGHT);
             cell.getChildren().addAll(vbox);
 //            cell.setMinSize(420, 60);
             cell.setOnMouseClicked(chatViewController::chatClicked);
-            cell.setPickOnBounds(true);
             chatViewController.getContainer().getChildren().add(cell);
             chatViewController.getMessagesHashMap().put(cell, item);
             chatViewController.getStackPaneHashMap().put(item, cell);
@@ -205,7 +204,7 @@ public class MessageView {
             urlType = "picture";
         } else if (url.contains(".gif")) {
             urlType = "gif";
-        } else if (url.contains("youtube")){
+        } else if (url.contains("youtube")) {
             urlType = "youtube";
         } else if (url.contains(".mp4")) {
             urlType = "video";
@@ -238,7 +237,7 @@ public class MessageView {
                 Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
                 Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
                 String youtube_url = "";
-                if (videoIdMatcher.find()){
+                if (videoIdMatcher.find()) {
                     String videoId = videoIdMatcher.group();
                     youtube_url = "https://www.youtube.com/embed/" + videoId;
                 }

@@ -10,10 +10,8 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -290,7 +288,8 @@ public class PrivateMessageTest extends ApplicationTest {
         privateChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<Message> messageList = lookup("#messageListView").query();
+        ScrollPane messageScrollPane = (ScrollPane) lookup("#messageScrollPane").query();
+        VBox messageVBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
 
         //Assert.assertEquals(2, messageList.getItems().size());
         //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
@@ -300,13 +299,13 @@ public class PrivateMessageTest extends ApplicationTest {
 
         doubleClickOn("#cell_" + privateChat.getItems().get(0).getId());
         WaitForAsyncUtils.waitForFxEvents();
-        messageList = lookup("#messageListView").query();
+        messageVBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
 
         //Assert.assertEquals("Hallo", messageList.getItems().get(0).getMessage());
 
         doubleClickOn("#cell_" + privateChat.getItems().get(1).getId());
         WaitForAsyncUtils.waitForFxEvents();
-        messageList = lookup("#messageListView").query();
+        messageVBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
 
         //Assert.assertEquals(2, messageList.getItems().size());
         //Assert.assertEquals(msg1, messageList.getItems().get(0).getMessage());
@@ -323,10 +322,9 @@ public class PrivateMessageTest extends ApplicationTest {
         rightClickOn("#userNameLabel");
         moveBy(0, 15);
         write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        messageList.getSelectionModel().select(0);
-        rightClickOn(messageList);
-        ContextMenu contextMenu = lookup("#messageListView").queryListView().getContextMenu();
+        ContextMenu contextMenu = mockApp.getBuilder().getCurrentChatViewController().getContextMenu();
         Assert.assertEquals(3, contextMenu.getItems().size());
         Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
         Assert.assertFalse(contextMenu.getItems().get(1).isVisible());

@@ -106,6 +106,7 @@ public class MediaControl extends BorderPane {
 
         mediaBar.getChildren().add(volumeSlider);
 
+        mediaView.setMouseTransparent(true);
         mediaBox.getChildren().addAll(mediaView, mediaBar);
         mediaBox.setAlignment(Pos.CENTER_RIGHT);
         playButton.setOnAction(new EventHandler<ActionEvent>() {
