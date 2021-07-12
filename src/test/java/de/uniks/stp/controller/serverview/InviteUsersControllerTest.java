@@ -3,7 +3,7 @@ package de.uniks.stp.controller.serverview;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -609,8 +609,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
     public void inviteUsersErrorMessagesTest() throws InterruptedException {
         loginInit(false);
 
-        Circle addServer = lookup("#addServer").query();
-
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
@@ -637,8 +635,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
             }
         }
 
+        Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         WaitForAsyncUtils.waitForFxEvents();
+
         TabPane tapPane = lookup("#tabView").query();
         tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         TextField insertInviteLink = lookup("#inviteLink").query();

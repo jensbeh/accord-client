@@ -10,13 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -103,10 +102,10 @@ public class InviteUsersTempSubController {
      * when clicked the button the link text is copied to clipboard
      */
     private void onCopyLinkClicked(ActionEvent actionEvent) {
-        String link = linkLabel.getText();
-        StringSelection stringSelection = new StringSelection(link);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, null);
+        javafx.scene.input.Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(linkLabel.getText());
+        clipboard.setContent(content);
     }
 
     /**
