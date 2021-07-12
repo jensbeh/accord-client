@@ -602,6 +602,7 @@ public class ServerViewController {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
         }
     }
 

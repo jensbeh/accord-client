@@ -229,6 +229,7 @@ public class ServerSystemWebSocket extends Endpoint {
                         if (userId.equals(builder.getPersonalUser().getId())) {
                             if (builder.getAudioStreamClient() != null) {
                                 builder.getAudioStreamClient().disconnectStream();
+                                builder.setAudioStreamClient(null);
                             }
                             AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
                             serverChannel.withAudioMember(audioMemberPersonalUser);
@@ -273,7 +274,6 @@ public class ServerSystemWebSocket extends Endpoint {
                                 if (userId.equals(builder.getPersonalUser().getId())) {
                                     builder.setCurrentAudioChannel(null);
                                     builder.getAudioStreamClient().disconnectStream();
-
                                     builder.setAudioStreamClient(null);
                                 }
                                 // other user disconnects
