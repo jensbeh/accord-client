@@ -1,5 +1,6 @@
 body {
-    background-color: #121212;
+    background-color: transparent;
+    -webkit-background-size: unset;
 }
 
 .center {
