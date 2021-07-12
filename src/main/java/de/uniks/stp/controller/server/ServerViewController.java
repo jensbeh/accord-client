@@ -50,7 +50,7 @@ public class ServerViewController {
     private VBox currentUserBox;
     private HBox root;
     private VBox chatBox;
-    private ChatViewController messageViewController;
+    private ChatViewController chatViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
@@ -83,8 +83,8 @@ public class ServerViewController {
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
     }
 
-    public ChatViewController getMessageViewController() {
-        return messageViewController;
+    public ChatViewController getChatViewController() {
+        return chatViewController;
     }
 
     public Map<Categories, CategorySubController> getCategorySubControllerList() {
@@ -267,17 +267,22 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            this.messageViewController = new ChatViewController(root, builder, currentChannel);
+            // stop videos from recent channel
+            if (chatViewController != null) {
+                chatViewController.stopMediaPlayers();
+            }
+            this.chatViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
-            this.messageViewController.init();
+            this.chatViewController.init();
             this.chatBox.getChildren().add(root);
-            messageViewController.setTheme();
-            chatWebSocketClient.setChatViewController(messageViewController);
-            serverSystemWebSocket.setChatViewController(messageViewController);
+            chatViewController.setTheme();
+            builder.setCurrentChatViewController(chatViewController);
+            chatWebSocketClient.setChatViewController(chatViewController);
+            serverSystemWebSocket.setChatViewController(chatViewController);
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
-                    messageViewController.printMessage(msg);
+                    chatViewController.printMessage(msg);
                 }
             }
         } catch (IOException e) {
@@ -387,6 +392,7 @@ public class ServerViewController {
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 System.out.println(body);
+                builder.playChannelSound("left");
             }
 
             this.disconnectAudioButton.setOnAction(null);
@@ -628,6 +634,7 @@ public class ServerViewController {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
         }
     }
 
@@ -702,8 +709,8 @@ public class ServerViewController {
      */
     public void throwOutUserFromChatView() {
         setCurrentChannel(null);
-        if (this.messageViewController != null) {
-            this.messageViewController.stop();
+        if (this.chatViewController != null) {
+            this.chatViewController.stop();
         }
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }
@@ -728,8 +735,8 @@ public class ServerViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
         for (Categories categories : server.getCategories()) {
             if (categorySubControllerList.size() != 0) {
@@ -742,8 +749,8 @@ public class ServerViewController {
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
         for (Categories categories : server.getCategories()) {
             if (categorySubControllerList.size() != 0) {

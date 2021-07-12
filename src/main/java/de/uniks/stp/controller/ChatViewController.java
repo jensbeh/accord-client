@@ -6,12 +6,10 @@ import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.cellfactories.MessageListCell;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -29,9 +27,11 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -40,15 +40,13 @@ import org.json.JSONObject;
 import javax.json.JsonException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
+    private ContextMenu contextMenu;
     private ModelBuilder builder;
     private ServerChannel currentChannel;
     private final Parent view;
@@ -61,7 +59,6 @@ public class ChatViewController {
     private ScrollPane scrollPane;
     private List<String> searchList;
     private String text;
-    private ContextMenu contextMenu;
     private ResourceBundle lang;
     private HBox messageBox;
     private Stage stage;
@@ -71,8 +68,16 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private ArrayList<String> pngNames = new ArrayList<>();
-    private MessageListCell messageListCellFactory;
+    private ArrayList<String> pngNames;
+
+    private VBox container;
+
+    private VBox messagesBox;
+    private ScrollPane messageScrollPane;
+
+    private HashMap<StackPane, Message> messagesHashMap;
+    private HashMap<Message, StackPane> stackPaneHashMap;
+    private ArrayList<MediaPlayer> mediaPlayers;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -106,25 +111,54 @@ public class ChatViewController {
         messageBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
+        messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
+        // set scroll speed
+        final double SPEED = 0.001;
+        messageScrollPane.getContent().setOnScroll(scrollEvent -> {
+            double deltaY = scrollEvent.getDeltaY() * SPEED;
+            messageScrollPane.setVvalue(messageScrollPane.getVvalue() - deltaY);
+        });
 
-        //ListView with message as parameter and observableList
-        messageList = (ListView<Message>) view.lookup("#messageListView");
-        messageListCellFactory = new MessageListCell();
-        messageList.setCellFactory(messageListCellFactory);
-        messageListCellFactory.setTheme(builder.getTheme());
-        messages = new ArrayList<>();
+        messageScrollPane.setFitToHeight(true);
+        messageScrollPane.setFitToWidth(true);
+        container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
+        messagesHashMap = new HashMap<>();
+        stackPaneHashMap = new HashMap<>();
         lang = StageManager.getLangBundle();
-
-        messageListCellFactory.setCurrentUser(builder.getPersonalUser());
-        messageList.setOnMouseClicked(this::chatClicked);
-
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 sendButton.fire();
             }
         });
+        mediaPlayers = new ArrayList<>();
+        pngNames = new ArrayList<>();
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
+        builder.setCurrentChatViewController(this);
+    }
+
+    public ContextMenu getContextMenu() {
+        return contextMenu;
+    }
+
+    public ArrayList<MediaPlayer> getMediaPlayers() {
+        return mediaPlayers;
+    }
+
+    public ScrollPane getMessageScrollPane() {
+        return messageScrollPane;
+    }
+
+    public VBox getContainer() {
+        return container;
+    }
+
+    public HashMap<StackPane, Message> getMessagesHashMap() {
+        return messagesHashMap;
+    }
+
+    public HashMap<Message, StackPane> getStackPaneHashMap() {
+        return stackPaneHashMap;
     }
 
     /**
@@ -209,7 +243,7 @@ public class ChatViewController {
     /**
      * build menu with chat options
      */
-    private void chatClicked(MouseEvent mouseEvent) {
+    public void chatClicked(MouseEvent mouseEvent) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
             contextMenu.setId("contextMenu");
@@ -225,26 +259,38 @@ public class ChatViewController {
             item3.setId("deleteItem");
             contextMenu.getItems().addAll(item1, item2, item3);
         }
-        if (messageList.getSelectionModel().getSelectedItem() == null) {
-            messageList.setContextMenu(null);
-        } else {
-            messageList.setContextMenu(contextMenu);
-            text = messageList.getSelectionModel().getSelectedItem().getMessage();
 
-            if (!messageList.getSelectionModel().getSelectedItem().getFrom().equals(builder.getPersonalUser().getName())
-                    || !builder.getInServerChat()) {
+        StackPane selected = null;
+        System.out.println(mouseEvent.getPickResult().getIntersectedNode().toString());
+        if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
+        }
+        //if video gets clicked
+        else if (mouseEvent.getPickResult().getIntersectedNode().getParent().getParent() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode().getParent().getParent();
+        }
+
+        if (selected != null) {
+            StackPane finalSelected = selected;
+            selected.setOnContextMenuRequested(event -> {
+                contextMenu.setY(event.getScreenY());
+                contextMenu.setX(event.getScreenX());
+                contextMenu.show(finalSelected.getScene().getWindow());
+            });
+            // if message is a text message
+            text = messagesHashMap.get(selected).getMessage();
+            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
             } else {
                 contextMenu.getItems().get(1).setVisible(true);
                 contextMenu.getItems().get(2).setVisible(true);
             }
+            selectedMsg = messagesHashMap.get(selected);
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
-        selectedMsg = messageList.getSelectionModel().getSelectedItem();
-        messageList.getSelectionModel().select(null);
     }
 
     /**
@@ -268,10 +314,19 @@ public class ChatViewController {
             }
             EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
-            String msgText = formattedText(text);
-            deleteMsg.parseAndAppend(msgText);
-            deleteMsg.setMinWidth(530);
-            pane.setContent(deleteMsg);
+            String msgText = null;
+            if (text != null) {
+                msgText = formattedText(text);
+                deleteMsg.parseAndAppend(msgText);
+                deleteMsg.setMinWidth(530);
+                pane.setContent(deleteMsg);
+            } else {
+                text = selectedMsg.getMessage();
+                msgText = formattedText(text);
+                deleteMsg.parseAndAppend(msgText);
+                deleteMsg.setMinWidth(530);
+                pane.setContent(deleteMsg);
+            }
             Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
             yes.setOnAction(this::deleteMessage);
@@ -335,7 +390,11 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.deleteMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
-        refreshMessageListView();
+        StackPane toRemoveStack = stackPaneHashMap.get(selectedMsg);
+        Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
+        stackPaneHashMap.remove(toRemoveMsg);
+        messagesHashMap.remove(toRemoveStack);
+        container.getChildren().remove(toRemoveStack);
         stage.close();
     }
 
@@ -379,7 +438,6 @@ public class ChatViewController {
         String msgId = selectedMsg.getId();
         restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
         });
-        refreshMessageListView();
         abortEdit(actionEvent);
     }
 
@@ -416,7 +474,6 @@ public class ChatViewController {
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
                 if (!builder.getInServerChat()) {
-                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
                             builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
@@ -425,7 +482,6 @@ public class ChatViewController {
                         e.printStackTrace();
                     }
                 } else {
-                    messageListCellFactory.setCurrentUser(builder.getPersonalUser());
                     try {
                         if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
                             builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
@@ -443,13 +499,17 @@ public class ChatViewController {
     public void printMessage(Message msg) {
         if (!builder.getInServerChat()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
-                messages.add(msg);
-                refreshMessageListView();
+                MessageView messageView = new MessageView();
+                messageView.setBuilder(builder);
+                messageView.setChatViewController(this);
+                messageView.updateItem(msg, true);
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
-                messages.add(msg);
-                refreshMessageListView();
+                MessageView messageView = new MessageView();
+                messageView.setBuilder(builder);
+                messageView.setChatViewController(this);
+                messageView.updateItem(msg, true);
             }
         }
     }
@@ -460,24 +520,29 @@ public class ChatViewController {
     public void removeMessage(Message msg) {
         if (!builder.getInServerChat()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) {
-                messages.remove(msg);
-                refreshMessageListView();
+                StackPane toRemoveStack = stackPaneHashMap.get(msg);
+                Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
+                stackPaneHashMap.remove(toRemoveMsg);
+                messagesHashMap.remove(toRemoveStack);
+                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
-                messages.remove(msg);
-                refreshMessageListView();
+                StackPane toRemoveStack = stackPaneHashMap.get(msg);
+                Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
+                stackPaneHashMap.remove(toRemoveMsg);
+                messagesHashMap.remove(toRemoveStack);
+                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
+
             }
         }
     }
 
-    public void refreshMessageListView() {
-        Platform.runLater(() -> {
-            messageList.setItems(FXCollections.observableArrayList(messages));
-            checkScrollToBottom();
-        });
 
+    public void updateMessage(Message msg) {
+        ((Text) (((EmojiTextFlow) ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
     }
+
 
     public void checkScrollToBottom() {
         ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
@@ -512,6 +577,13 @@ public class ChatViewController {
 
     public void stop() {
         sendButton.setOnAction(null);
+        stopMediaPlayers();
+    }
+
+    public void stopMediaPlayers() {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
     }
 
     public void setTheme() {
@@ -525,13 +597,10 @@ public class ChatViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
-        refreshMessageListView();
-
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
-        refreshMessageListView();
     }
 }

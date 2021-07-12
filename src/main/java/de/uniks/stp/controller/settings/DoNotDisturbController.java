@@ -38,6 +38,8 @@ public class DoNotDisturbController extends SubSetting {
         playSound.setOnAction(this::updateSettings);
 
         System.out.println("Volume: " + ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        volume.setMin(-80.0);
+        volume.setMax(6.0206);
         volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
         volume.valueProperty().addListener((observable, oldValue, newValue) -> builder.setVolume(newValue.floatValue()));
     }

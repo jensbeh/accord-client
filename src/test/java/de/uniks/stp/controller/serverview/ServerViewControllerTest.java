@@ -92,6 +92,9 @@ public class ServerViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response8;
 
     @Mock
+    private HttpResponse<JsonNode> response9;
+
+    @Mock
     private DatagramSocket mockAudioSocket;
 
     @Mock
@@ -120,6 +123,9 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
 
     private ModelBuilder builder;
 
@@ -334,6 +340,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         mockGetChannelMessages();
         mockJoinVoiceChannel();
         mockLeaveVoiceChannel();
+        mockLogout();
 
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -365,6 +372,20 @@ public class ServerViewControllerTest extends ApplicationTest {
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
+    }
+
+    public void mockLogout() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Logged out")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
+        }).when(restClient).logout(anyString(), callbackCaptor9.capture());
     }
 
 
@@ -731,5 +752,18 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
+    }
+
+    @Test
+    public void serverViewStopTest() throws InterruptedException {
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Clicking logout...
+        clickOn("#logoutButton");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

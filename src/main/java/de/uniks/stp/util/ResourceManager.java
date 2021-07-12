@@ -4,6 +4,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import javafx.scene.image.Image;
@@ -88,7 +89,7 @@ public class ResourceManager {
      * load snakeGameIcons from file
      */
     public static Image loadSnakeGameIcon(String image) {
-        return new Image(Objects.requireNonNull(ResourceManager.class.getResource("controller/snake" + image + ".png")).toString());
+        return new Image(Objects.requireNonNull(StageManager.class.getResource("controller/snake/" + image + ".png")).toString());
     }
 
     /**
