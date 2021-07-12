@@ -669,4 +669,71 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
         clickOn("#logoutButton");
     }
+
+    @Test
+    public void generateAndCopyTempLink() throws InterruptedException {
+        loginInit(false);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Label linkLabel = lookup("#linkLabel").query();
+
+        ComboBox<String> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (String s : links.getItems()) {
+            if (s.equals(linkLabel.getText())) {
+                certainLink = s;
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+
+        clickOn("#button_copyLink");
+    }
+
+    @Test
+    public void generateAndCopyUserLimitLink() throws InterruptedException {
+        loginInit(false);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#userLimitSelected");
+
+        TextField userLimit = lookup("#maxUsers").query();
+        userLimit.setText("1");
+
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Label linkLabel = lookup("#linkLabel").query();
+
+        ComboBox<List<String>> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (List<String> s : links.getItems()) {
+            if ((s.get(0)).equals(linkLabel.getText())) {
+                certainLink = s.get(0);
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+
+        clickOn("#button_copyLink");
+    }
 }
