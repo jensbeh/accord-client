@@ -22,6 +22,7 @@ public class ThemeController extends SubSetting {
         this.themeSelector = (ComboBox<String>) view.lookup("#comboBox_themeSelect");
         this.themeSelector.getItems().add("Dark");
         this.themeSelector.getItems().add("Bright");
+        this.themeSelector.getSelectionModel().select(builder.getTheme());
         themeSelector.setOnAction(this::onThemeChanged);
     }
 
