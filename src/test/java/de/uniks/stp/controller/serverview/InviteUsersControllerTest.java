@@ -658,6 +658,8 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals(errorLabel.getText(), "Wrong server id or Invalid link");
 
         insertInviteLink.setText("KkDs0K3Dak");
+        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(errorLabel.getText(), "Invalid link");
