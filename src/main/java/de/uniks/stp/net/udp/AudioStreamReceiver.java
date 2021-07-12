@@ -76,6 +76,7 @@ public class AudioStreamReceiver implements Runnable {
                     String senderName = jsonData.getString("name");
 
                     // set receivedData to speaker of the senderName
+                    System.out.println(mutedUser);
                     if (!builder.getMuteHeadphones() && !senderName.equals(builder.getPersonalUser().getName())) {
                         if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
                             receiverSpeakerMap.get(senderName).writeData(receivedData);

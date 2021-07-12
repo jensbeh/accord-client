@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private ListView<ServerChannel> channelListView;
@@ -168,16 +169,18 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 mute.setId("unMuteAudioMember");
                 menu.getItems().addAll(mute, unMute);
                 unMute.setVisible(false);
-                if (theme.equals("Dark")) {
+                mute.setVisible(false);
+                /*if (theme.equals("Dark")) {
                     menu.setStyle("-fx-background-color: #23272a");
                     mute.setStyle("-fx-text-fill: #FFFFFF");
                     unMute.setStyle("-fx-text-fill: #FFFFFF");
-                }
+                }*/
 
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
                     channelAudioUserCell.setStyle("-fx-padding: 0 10 0 45;");
                     audioMemberCount = 0;
+
                     for (AudioMember audioMember : item.getAudioMember()) {
                         for (User user : item.getCategories().getServer().getUser()) {
                             if (audioMember.getId().equals(user.getId())) {
@@ -197,23 +200,29 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     audioMemberName.setContextMenu(menu);
                                 }
 
+                                boolean currenUserAudio = false;
+                                for (AudioMember member : item.getAudioMember()){
+                                    if (member.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
+                                        currenUserAudio = true;
+                                        break;
+                                    }
+                                }
+                                if (currenUserAudio){
+                                    mute.setVisible(true);
+                                    unMute.setVisible(false);
+                                }
+
                                 //remember the muted user
                                 if (serverViewController.getMutedAudioMember().contains(user.getName())) {
                                     mute.setVisible(false);
                                     unMute.setVisible(true);
-                                    audioMemberName.setText(user.getName() + " \uD83D\uDD07");
-                                }
-
-                                //set contextMenu not visible if you´re not in audiochannel
-                                if (serverViewController.getCurrentAudioChannel() == null) {
-                                    mute.setVisible(false);
-                                    unMute.setVisible(false);
+                                    audioMemberName.setText("\uD83D\uDD07 " + user.getName());
                                 }
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
                                 audioMemberCell.setOnMouseClicked((ae) -> {
                                     mute.setOnAction((act) -> {
-                                        audioMemberName.setText(user.getName() + " \uD83D\uDD07");
+                                        audioMemberName.setText("\uD83D\uDD07 " + user.getName());
                                         serverViewController.setMutedAudioMember(user.getName());
                                         unMute.setVisible(true);
                                         mute.setVisible(false);
@@ -226,6 +235,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     });
                                 });
                                 audioMemberCount++;
+                                channelListView.refresh();//TODO
                             }
                         }
                     }
