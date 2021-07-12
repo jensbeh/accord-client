@@ -348,3 +348,18 @@
     -fx-padding: 0 0 0 0;
     -fx-text-fill: BLACK;
 }
+
+#linkLabel {
+    -fx-text-fill: BLACK;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #f2f3f5;
+}
+
+#button_copyLink {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 20px;
+    -fx-text-fill: BLACK;
+}

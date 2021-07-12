@@ -4,12 +4,12 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,9 +23,10 @@ public class InviteUsersTempSubController {
     private final Server server;
     private final RestClient restClient;
     private Button createLink;
+    private Button copyLink;
     private Label inviteLinksLabel;
     private Button deleteLink;
-    private TextField linkTextField;
+    private Label linkLabel;
     private ComboBox<String> linkComboBox;
     private String selectedLink;
     private HashMap<String, String> links;
@@ -41,13 +42,15 @@ public class InviteUsersTempSubController {
     @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
+        copyLink = (Button) view.lookup("#button_copyLink");
         inviteLinksLabel = (Label) view.lookup("#inviteLinksLabel");
         deleteLink = (Button) view.lookup("#deleteLink");
-        linkTextField = (TextField) view.lookup("#linkTextField");
+        linkLabel = (Label) view.lookup("#linkLabel");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
 
         links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
+        copyLink.setOnAction(this::onCopyLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
         loadLinks();
@@ -84,7 +87,7 @@ public class InviteUsersTempSubController {
             if (status.equals("success")) {
                 String link = body.getObject().getJSONObject("data").getString("link");
                 String id = body.getObject().getJSONObject("data").getString("id");
-                linkTextField.setText(link);
+                Platform.runLater(() -> linkLabel.setText(link));
                 linkComboBox.getItems().add(link);
                 links.put(link, id);
             } else if (status.equals("failure")) {
@@ -94,12 +97,19 @@ public class InviteUsersTempSubController {
     }
 
     /**
+     * when clicked the button the link text is copied to clipboard
+     */
+    private void onCopyLinkClicked(ActionEvent actionEvent) {
+
+    }
+
+    /**
      * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (selectedLink != null) {
-            if (selectedLink.equals(linkTextField.getText())) {
-                linkTextField.setText("Links ...");
+            if (selectedLink.equals(linkLabel.getText())) {
+                Platform.runLater(() -> linkLabel.setText("Links ..."));
             }
             String invId = links.get(selectedLink);
             restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {
@@ -115,11 +125,12 @@ public class InviteUsersTempSubController {
     private void onLinkChanged(ActionEvent actionEvent) {
         selectedLink = this.linkComboBox.getSelectionModel().getSelectedItem();
         this.linkComboBox.setPromptText(selectedLink);
-        linkTextField.setText(selectedLink);
+        Platform.runLater(() -> linkLabel.setText(selectedLink));
     }
 
     public void stop() {
         createLink.setOnAction(null);
+        copyLink.setOnAction(null);
         deleteLink.setOnAction(null);
         linkComboBox.setOnAction(null);
     }
