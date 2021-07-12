@@ -741,6 +741,15 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
+    }
+
+    @Test
+    public void serverViewStopTest() throws InterruptedException {
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
 
         // Clicking logout...
         clickOn("#logoutButton");
