@@ -14,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private ListView<ServerChannel> channelListView;
@@ -200,14 +199,15 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     audioMemberName.setContextMenu(menu);
                                 }
 
-                                boolean currenUserAudio = false;
+                                //set mute option only when currentUser in the same AudioChannel
+                                boolean currentUserAudio = false;
                                 for (AudioMember member : item.getAudioMember()){
                                     if (member.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
-                                        currenUserAudio = true;
+                                        currentUserAudio = true;
                                         break;
                                     }
                                 }
-                                if (currenUserAudio){
+                                if (currentUserAudio){
                                     mute.setVisible(true);
                                     unMute.setVisible(false);
                                 }
