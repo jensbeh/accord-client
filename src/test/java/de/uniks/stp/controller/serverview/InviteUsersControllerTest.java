@@ -487,11 +487,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
 
-        TextField link = lookup("#linkTextField").query();
+        Label linkLabel = lookup("#linkLabel").query();
         ComboBox<List<String>> links = lookup("#LinkComboBox").query();
         String certainLink = "";
         for (List<String> s : links.getItems()) {
-            if ((s.get(0)).equals(link.getText())) {
+            if ((s.get(0)).equals(linkLabel.getText())) {
                 certainLink = s.get(0);
                 break;
             }
@@ -507,7 +507,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         String checkDel = "";
         for (List<String> s : links.getItems()) {
-            if (s.get(0).equals(link.getText())) {
+            if (s.get(0).equals(linkLabel.getText())) {
                 checkDel = s.get(0);
                 break;
             }
@@ -538,7 +538,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         String checkDelete = "";
         for (List<String> s : links.getItems()) {
-            if (s.get(0).equals(link.getText())) {
+            if (s.get(0).equals(linkLabel.getText())) {
                 checkDelete = s.get(0);
                 break;
             }
@@ -571,11 +571,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#createLink");
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
-        TextField link = lookup("#linkTextField").query();
+        Label linkLabel = lookup("#linkLabel").query();
         ComboBox<String> links = lookup("#LinkComboBox").query();
         String certainLink = "";
         for (String s : links.getItems()) {
-            if (s.equals(link.getText())) {
+            if (s.equals(linkLabel.getText())) {
                 certainLink = s;
                 break;
             }
@@ -588,7 +588,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#deleteLink");
         String checkDel = "";
         for (String s : links.getItems()) {
-            if (s.equals(link.getText())) {
+            if (s.equals(linkLabel.getText())) {
                 checkDel = s;
                 break;
             }
@@ -623,8 +623,8 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
-        TextField linkField = lookup("#linkTextField").query();
-        String inviteLink = linkField.getText();
+        Label linkLabel = lookup("#linkLabel").query();
+        String inviteLink = linkLabel.getText();
 
         String serverSettingsTitle;
         for (Object object : this.listTargetWindows()) {
