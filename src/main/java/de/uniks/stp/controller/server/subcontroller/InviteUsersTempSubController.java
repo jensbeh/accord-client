@@ -14,6 +14,9 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -100,7 +103,10 @@ public class InviteUsersTempSubController {
      * when clicked the button the link text is copied to clipboard
      */
     private void onCopyLinkClicked(ActionEvent actionEvent) {
-
+        String link = linkLabel.getText();
+        StringSelection stringSelection = new StringSelection(link);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
 
     /**
