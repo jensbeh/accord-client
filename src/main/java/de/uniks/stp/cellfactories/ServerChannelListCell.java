@@ -201,22 +201,21 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
                                 //set mute option only when currentUser in the same AudioChannel
                                 boolean currentUserAudio = false;
-                                for (AudioMember member : item.getAudioMember()){
+                                for (AudioMember member : item.getAudioMember()) {
                                     if (member.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
                                         currentUserAudio = true;
                                         break;
                                     }
                                 }
-                                if (currentUserAudio){
+                                if (currentUserAudio) {
                                     mute.setVisible(true);
                                     unMute.setVisible(false);
-                                }
-
-                                //remember the muted user
-                                if (serverViewController.getMutedAudioMember().contains(user.getName())) {
-                                    mute.setVisible(false);
-                                    unMute.setVisible(true);
-                                    audioMemberName.setText("\uD83D\uDD07 " + user.getName());
+                                } else {
+                                    audioMemberName.setContextMenu(null);
+                                    if (serverViewController.getMutedAudioMember().contains(user.getName())) {
+                                        audioMemberName.setText(user.getName());
+                                        serverViewController.setUnMutedAudioMember(user.getName());
+                                    }
                                 }
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
@@ -235,7 +234,6 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     });
                                 });
                                 audioMemberCount++;
-                                channelListView.refresh();//TODO
                             }
                         }
                     }
