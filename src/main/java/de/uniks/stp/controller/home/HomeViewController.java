@@ -248,6 +248,10 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+
+                            builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
+                            builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
+
                             serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
@@ -279,6 +283,10 @@ public class HomeViewController {
                                 updateServerListColor();
                                 showServerView();
                             }));
+
+                            builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
+                            builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
+
                             serverController.get(server).setTheme();
                         }
                     } catch (IOException e) {
