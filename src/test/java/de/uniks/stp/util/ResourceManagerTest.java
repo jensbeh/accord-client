@@ -238,9 +238,10 @@ public class ResourceManagerTest extends ApplicationTest {
     }
 
     @Test
-    public void saveUserNameAndSound() throws InterruptedException {
+    public void saveUserNameAndSound() throws InterruptedException, IOException {
         loginInit();
-        ResourceManager.saveUserNameAndSound("GustavTest", "default.wav");
+        Files.createDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
+        ResourceManager.saveUserNameAndSound("GustavTest", "test");
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + "GustavTest" + ".json")));
     }
 
