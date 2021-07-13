@@ -34,6 +34,8 @@ import org.testfx.util.WaitForAsyncUtils;
 import javax.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -246,10 +248,18 @@ public class ResourceManagerTest extends ApplicationTest {
     }
 
     @Test
-    public void saveGetVolumeTest() throws InterruptedException {
+    public void saveGetVolumeTest() throws InterruptedException, IOException {
         loginInit();
         ResourceManager.saveVolume("GustavTest", 50.00F);
         float volume = ResourceManager.getVolume("GustavTest");
         Assert.assertEquals(50.00F, volume, 0.0);
+        Writer writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + "GustavTest" + ".json"));
+        writer.write(234234325);
+        ResourceManager.getVolume("GustavTest");
+        Files.delete(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + "GustavTest" + ".json"));
+        Files.delete(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"));
+        ResourceManager.saveVolume("/GustavTest/", 50.00F);
+        ResourceManager.getVolume("GustavTest");
+
     }
 }
