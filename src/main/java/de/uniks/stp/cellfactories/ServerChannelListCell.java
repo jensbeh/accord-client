@@ -159,7 +159,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 channelNameCell.getChildren().add(name);
 
-                //inizialize ContextMenu
+                //initialize ContextMenu
                 ContextMenu menu = new ContextMenu();
                 MenuItem mute = new MenuItem("mute");
                 MenuItem unMute = new MenuItem("unmute");
@@ -169,11 +169,15 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 menu.getItems().addAll(mute, unMute);
                 unMute.setVisible(false);
                 mute.setVisible(false);
-                /*if (theme.equals("Dark")) {
+                if (serverViewController.getTheme().equals("Dark")) {
                     menu.setStyle("-fx-background-color: #23272a");
                     mute.setStyle("-fx-text-fill: #FFFFFF");
                     unMute.setStyle("-fx-text-fill: #FFFFFF");
-                }*/
+                } else {
+                    menu.setStyle("-fx-background-color: White");
+                    mute.setStyle("-fx-text-fill: #000000");
+                    unMute.setStyle("-fx-text-fill: #000000");
+                }
 
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
@@ -216,6 +220,12 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                         audioMemberName.setText(user.getName());
                                         serverViewController.setUnMutedAudioMember(user.getName());
                                     }
+                                }
+
+                                if (serverViewController.getMutedAudioMember().contains(user.getName())) {
+                                    unMute.setVisible(true);
+                                    mute.setVisible(false);
+                                    audioMemberName.setText("\uD83D\uDD07 " + user.getName());
                                 }
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user

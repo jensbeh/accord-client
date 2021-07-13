@@ -147,7 +147,6 @@ public class ServerViewController {
         } else {
             return builder.getAudioStreamClient().getMutedAudioMember();
         }
-
     }
 
 
@@ -730,6 +729,7 @@ public class ServerViewController {
         } else {
             setDarkMode();
         }
+        refreshAllChannelLists();
     }
 
     private void setWhiteMode() {
@@ -757,5 +757,9 @@ public class ServerViewController {
                 categorySubControllerList.get(categories).setTheme();
             }
         }
+    }
+
+    public String getTheme(){
+        return builder.getTheme();
     }
 }
