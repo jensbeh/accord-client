@@ -125,12 +125,6 @@
     -fx-text-fill: WHITE;
 }
 
-#contextMenu {
-    -fx-background-color: #202225;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-}
-
 .menu-item .label {
     -fx-text-fill: white;
 }

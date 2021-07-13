@@ -314,18 +314,13 @@ public class ChatViewController {
             EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
             String msgText = null;
-            if (text != null) {
-                msgText = formattedText(text);
-                deleteMsg.parseAndAppend(msgText);
-                deleteMsg.setMinWidth(530);
-                pane.setContent(deleteMsg);
-            } else {
+            if (text == null) {
                 text = selectedMsg.getMessage();
-                msgText = formattedText(text);
-                deleteMsg.parseAndAppend(msgText);
-                deleteMsg.setMinWidth(530);
-                pane.setContent(deleteMsg);
             }
+            msgText = formattedText(text);
+            deleteMsg.parseAndAppend(msgText);
+            deleteMsg.setMinWidth(530);
+            pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
             yes.setOnAction(this::deleteMessage);
