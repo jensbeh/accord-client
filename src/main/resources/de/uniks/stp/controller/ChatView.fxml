@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox id="root" fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" fx:id="topVbox" prefHeight="2110.0" prefWidth="3469.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <StackPane id="stack" prefHeight="2074.0" prefWidth="200.0">
          <children>
@@ -24,7 +24,7 @@
                </children></VBox>
             <ScrollPane id="messageScrollPane" hbarPolicy="NEVER" vbarPolicy="NEVER">
                <content>
-                  <VBox id="messageVBox" alignment="CENTER" />
+                  <VBox id="messageVBox" alignment="TOP_CENTER" />
                </content>
             </ScrollPane>
          </children>
