@@ -159,10 +159,31 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
                 channelNameCell.getChildren().add(name);
 
+                //initialize ContextMenu
+                ContextMenu menu = new ContextMenu();
+                MenuItem mute = new MenuItem("mute");
+                MenuItem unMute = new MenuItem("unmute");
+                menu.setId("AudioMemberControl");
+                mute.setId("muteAudioMember");
+                mute.setId("unMuteAudioMember");
+                menu.getItems().addAll(mute, unMute);
+                unMute.setVisible(false);
+                mute.setVisible(false);
+                if (serverViewController.getTheme().equals("Dark")) {
+                    menu.setStyle("-fx-background-color: #23272a");
+                    mute.setStyle("-fx-text-fill: #FFFFFF");
+                    unMute.setStyle("-fx-text-fill: #FFFFFF");
+                } else {
+                    menu.setStyle("-fx-background-color: White");
+                    mute.setStyle("-fx-text-fill: #000000");
+                    unMute.setStyle("-fx-text-fill: #000000");
+                }
+
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
                     channelAudioUserCell.setStyle("-fx-padding: 0 10 0 45;");
                     audioMemberCount = 0;
+
                     for (AudioMember audioMember : item.getAudioMember()) {
                         for (User user : item.getCategories().getServer().getUser()) {
                             if (audioMember.getId().equals(user.getId())) {
@@ -177,9 +198,50 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                 audioMemberCell.getChildren().add(audioMemberName);
                                 channelAudioUserCell.getChildren().add(audioMemberCell);
 
+                                //set ContextMenu when user is not personal user
+                                if (!user.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
+                                    audioMemberName.setContextMenu(menu);
+                                }
 
+                                //set mute option only when currentUser in the same AudioChannel
+                                boolean currentUserAudio = false;
+                                for (AudioMember member : item.getAudioMember()) {
+                                    if (member.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
+                                        currentUserAudio = true;
+                                        break;
+                                    }
+                                }
+                                if (currentUserAudio) {
+                                    mute.setVisible(true);
+                                    unMute.setVisible(false);
+                                } else {
+                                    audioMemberName.setContextMenu(null);
+                                    if (serverViewController.getMutedAudioMember().contains(user.getName())) {
+                                        audioMemberName.setText(user.getName());
+                                        serverViewController.setUnMutedAudioMember(user.getName());
+                                    }
+                                }
+
+                                if (serverViewController.getMutedAudioMember().contains(user.getName())) {
+                                    unMute.setVisible(true);
+                                    mute.setVisible(false);
+                                    audioMemberName.setText("\uD83D\uDD07 " + user.getName());
+                                }
+
+                                //set on action from contextMenu in action from audioMemberCell to get the selected user
                                 audioMemberCell.setOnMouseClicked((ae) -> {
-                                    System.out.println(audioMemberName.getText());
+                                    mute.setOnAction((act) -> {
+                                        audioMemberName.setText("\uD83D\uDD07 " + user.getName());
+                                        serverViewController.setMutedAudioMember(user.getName());
+                                        unMute.setVisible(true);
+                                        mute.setVisible(false);
+                                    });
+                                    unMute.setOnAction((act) -> {
+                                        audioMemberName.setText(user.getName());
+                                        serverViewController.setUnMutedAudioMember(user.getName());
+                                        unMute.setVisible(false);
+                                        mute.setVisible(true);
+                                    });
                                 });
                                 audioMemberCount++;
                             }
