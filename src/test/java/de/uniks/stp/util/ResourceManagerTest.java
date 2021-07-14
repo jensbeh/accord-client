@@ -21,7 +21,6 @@ import kong.unirest.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
@@ -39,7 +38,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 import static de.uniks.stp.util.Constants.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -153,12 +151,17 @@ public class ResourceManagerTest extends ApplicationTest {
 
 
     @Test
-    public void saveAndLoadHighScoreTest() throws InterruptedException {
+    public void saveAndLoadHighScoreTest() throws InterruptedException, IOException {
         loginInit();
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
         ResourceManager.loadHighScore("GustavTest");
         ResourceManager.saveHighScore("GustavTest", 9999);
         int highScore = ResourceManager.loadHighScore("GustavTest");
         Assert.assertEquals(highScore, 9999);
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
+        ResourceManager.loadHighScore("GustavTest");
+        ResourceManager.loadHighScore("/GustavTest/");
+        ResourceManager.saveHighScore("/GustavTest/", 10);
     }
 
     @Test
@@ -169,7 +172,7 @@ public class ResourceManagerTest extends ApplicationTest {
     }
 
     @Test
-    public void loadMuteGameStateTest() throws InterruptedException {
+    public void loadMuteGameStateTest() throws InterruptedException, IOException {
         loginInit();
         ResourceManager.saveMuteGameState(true, "GustavTest");
         Boolean isMute = ResourceManager.loadMuteGameState("GustavTest");
@@ -177,6 +180,12 @@ public class ResourceManagerTest extends ApplicationTest {
         ResourceManager.saveMuteGameState(false, "GustavTest");
         isMute = ResourceManager.loadMuteGameState("GustavTest");
         Assert.assertFalse(isMute);
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
+        ResourceManager.loadMuteGameState("GustavTest");
+        ResourceManager.loadMuteGameState("/GustavTest/");
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + SNAKE_PATH));
+        ResourceManager.saveMuteGameState(true, "GustavTest");
+        ResourceManager.saveMuteGameState(true, "/GustavTest/");
     }
 
 
@@ -189,21 +198,28 @@ public class ResourceManagerTest extends ApplicationTest {
         ResourceManager.savePrivatChat("GustavTest", "OttoTest", message);
         ResourceManager.loadPrivatChat("GustavTest", "OttoTest", privateChat);
         Assert.assertEquals(message.getMessage(), privateChat.getMessage().get(0).getMessage());
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
+        ResourceManager.savePrivatChat("GustavTest", "OttoTest", message);
+        ResourceManager.savePrivatChat("/GustavTes/t", "/OttoTest/", message);
     }
 
     @Test
-    public void extractEmojisTest() throws InterruptedException {
+    public void extractEmojisTest() throws InterruptedException, IOException {
         loginInit();
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
         ResourceManager.extractEmojis();
         Assert.assertTrue(Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH)));
     }
 
     @Test
-    public void saveNotificationsTest() throws InterruptedException {
+    public void saveNotificationsTest() throws InterruptedException, IOException {
         loginInit();
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
         File file = new File("de/uniks/stp/sounds/notification/default.wav");
         ResourceManager.saveNotifications(file);
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName())));
+        file = new File("de/uniks/stp/sounds/notification/defdault.wdddav");
+        ResourceManager.saveNotifications(file);
     }
 
     @Test
@@ -219,11 +235,15 @@ public class ResourceManagerTest extends ApplicationTest {
         ResourceManager.deleteNotificationSound("default");
         List<File> files = ResourceManager.getNotificationSoundFiles();
         Assert.assertEquals(0, files.size());
+        File file = new File("de/uniks/stp/sounds/notification/default.wav");
+        ResourceManager.saveNotifications(file);
+        ResourceManager.deleteNotificationSound("defaudjjdlt");
     }
 
     @Test
-    public void setGetComboValueTest() throws InterruptedException {
+    public void setGetComboValueTest() throws InterruptedException, IOException {
         loginInit();
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
         ResourceManager.setComboValue("GustavTest", "default");
         String value = ResourceManager.getComboValue("GustavTest");
         Assert.assertEquals(value, "default");
@@ -236,6 +256,8 @@ public class ResourceManagerTest extends ApplicationTest {
         String targetPath = APPDIR_ACCORD_PATH + TEMP_PATH + "/" + file.getName();
         ResourceManager.copyFile(file, targetPath);
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + "/" + file.getName())));
+        file = new File("src/test/resources/de/uniks/stp/testVideo.mp4");
+        ResourceManager.copyFile(file, targetPath);
     }
 
     @Test
@@ -245,6 +267,7 @@ public class ResourceManagerTest extends ApplicationTest {
         Files.createDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
         ResourceManager.saveUserNameAndSound("GustavTest", "test");
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + "GustavTest" + ".json")));
+        ResourceManager.saveUserNameAndSound("/GustavTest/", "/test/");
     }
 
     @Test
