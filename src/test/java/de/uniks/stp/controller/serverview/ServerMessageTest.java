@@ -547,7 +547,16 @@ public class ServerMessageTest extends ApplicationTest {
         JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "src/test/resources/de/uniks/stp/testVideo.mp4").put("from", testUserMainName).put("id", messageIdA);
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
+        VBox messageBox = lookup("#messageScrollPane").lookup("#messageVBox").query();
+        Button playButton = (Button) messageBox.lookup("#playButton");
+        Slider timeSlider = (Slider) messageBox.lookup("#timeSlider");
+        Slider volumeSlider = (Slider) messageBox.lookup("#volumeSlider");
+        clickOn(playButton);
+        clickOn(timeSlider);
+        clickOn(volumeSlider);
+        clickOn(playButton);
     }
 
     @Test
