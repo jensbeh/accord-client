@@ -3,7 +3,7 @@
     -fx-border-color: #36393f;
 }
 
-#editButton {
+#editButton, #deleteEditMessage {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-text-fill: WHITE;
@@ -24,7 +24,7 @@
     -fx-background: #36393f;
 }
 
-#deleteWarning {
+#deleteWarning, #editWarningText {
     -fx-text-fill: WHITE;
 }
 
@@ -38,7 +38,7 @@
     -fx-background-radius: 80;
 }
 
-#chooseCancel {
+#chooseCancel, #abortEditMessage {
     -fx-background-radius: 80;
     -fx-background-color: #717177;
 }

@@ -37,7 +37,7 @@ import static de.uniks.stp.util.Constants.*;
  */
 public class ServerViewController {
 
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private final RestClient restClient;
     private final Server server;
     private final Parent view;
@@ -65,8 +65,6 @@ public class ServerViewController {
     private ServerChatWebSocket chatWebSocketClient;
     private VBox audioConnectionBox;
     private Button disconnectAudioButton;
-    private Button headphoneButton;
-    private Button microphoneButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
 
@@ -303,8 +301,8 @@ public class ServerViewController {
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
-            headphoneButton = (Button) view.lookup("#mute_headphone");
-            microphoneButton = (Button) view.lookup("#mute_microphone");
+            Button headphoneButton = (Button) view.lookup("#mute_headphone");
+            Button microphoneButton = (Button) view.lookup("#mute_microphone");
             headphoneLabel = (Label) view.lookup("#unmute_headphone");
             microphoneLabel = (Label) view.lookup("#unmute_microphone");
             //load headset settings
@@ -759,7 +757,7 @@ public class ServerViewController {
         }
     }
 
-    public String getTheme(){
+    public String getTheme() {
         return builder.getTheme();
     }
 }
