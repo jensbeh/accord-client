@@ -3,11 +3,10 @@ package de.uniks.stp.controller.serverview;
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -16,6 +15,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -375,11 +375,10 @@ public class ServerMessageTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        ListView<Message> privateChatMessageList = lookup("#messageListView").query();
 
-        ScrollPane messageScrollPane = (ScrollPane) lookup("#messageScrollPane");
-        VBox container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
-        Assert.assertEquals(1, container.getChildren().size());
+        ScrollPane messageScrollPane = (ScrollPane) lookup("#messageScrollPane").query();
+        VBox messageVBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
+        Assert.assertEquals(1, messageVBox.getChildren().size());
 
         messageField.setText("Okay");
         write("\n");
@@ -391,16 +390,19 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         boolean msgArrived = false;
-        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
-            if (privateChatMessageList.getItems().get(i).getMessage().equals("Okay")) {
+
+        String firstMessage = app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(0))).getMessage();
+        for (int i = 0; i < messageVBox.getChildren().size(); i++) {
+            String msg = app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(i))).getMessage();
+            if (msg.equals("Okay")) {
                 msgArrived = true;
             }
         }
         Assert.assertTrue(msgArrived);
 
-        privateChatMessageList.getSelectionModel().select(0);
-        rightClickOn(privateChatMessageList);
-        ContextMenu contextMenu = lookup("#messageListView").queryListView().getContextMenu();
+        rightClickOn((((StackPane) messageVBox.getChildren().get(0)).getChildren().get(0)));
+
+        ContextMenu contextMenu = app.getBuilder().getCurrentChatViewController().getContextMenu();
         Assert.assertEquals(3, contextMenu.getItems().size());
         Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
         Assert.assertTrue(contextMenu.getItems().get(1).isVisible());
@@ -410,12 +412,13 @@ public class ServerMessageTest extends ApplicationTest {
         clickOn(messageField);
 
         write("\n");
-        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", privateChatMessageList.getItems().get(0).getMessage()).put("from", testUserMainName).put("id", messageIdC);
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", firstMessage).put("from", testUserMainName).put("id", messageIdC);
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals(privateChatMessageList.getItems().get(2).getMessage(), privateChatMessageList.getItems().get(0).getMessage());
+        String secondMessage = app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(2))).getMessage();
+        Assert.assertEquals(secondMessage, firstMessage);
 
         String text = "Hier ein langer Text zum Testen: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut " +
                 "labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. " +
@@ -431,8 +434,7 @@ public class ServerMessageTest extends ApplicationTest {
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
-        privateChatMessageList.getSelectionModel().select(3);
-        rightClickOn(privateChatMessageList);
+        rightClickOn(app.getBuilder().getCurrentChatViewController().getContainer().getChildren().get(3));
         interact(() -> contextMenu.getItems().get(2).fire());
         Label msg = lookup("#deleteWarning").query();
         Assert.assertEquals(msg.getText(), "Are you sure you want to delete " + "\n" + "the following message:");
@@ -450,8 +452,8 @@ public class ServerMessageTest extends ApplicationTest {
         }
 
         msgArrived = false;
-        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
-            if (privateChatMessageList.getItems().get(i).getMessage().equals(text)) {
+        for (int i = 0; i < app.getBuilder().getCurrentChatViewController().getContainer().getChildren().size(); i++) {
+            if (app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(i))).getMessage().equals(text)) {
                 msgArrived = true;
             }
         }
@@ -468,8 +470,8 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         msgArrived = false;
-        for (int i = 0; i < privateChatMessageList.getItems().size(); i++) {
-            if (privateChatMessageList.getItems().get(i).getMessage().equals(text)) {
+        for (int i = 0; i < app.getBuilder().getCurrentChatViewController().getContainer().getChildren().size(); i++) {
+            if (app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(i))).getMessage().equals(text)) {
                 msgArrived = true;
             }
         }
@@ -478,8 +480,7 @@ public class ServerMessageTest extends ApplicationTest {
         Button send = lookup("#sendButton").query();
         Assert.assertEquals(send.getText(), "send");
 
-        privateChatMessageList.getSelectionModel().select(0);
-        rightClickOn(privateChatMessageList);
+        rightClickOn("#messageCell");
         interact(() -> contextMenu.getItems().get(1).fire());
         Button edit = lookup("#editButton").query();
         Assert.assertEquals(edit.getText(), "edit");
@@ -503,7 +504,7 @@ public class ServerMessageTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Okay?", privateChatMessageList.getItems().get(0).getMessage());
+        Assert.assertEquals("Okay?", app.getBuilder().getCurrentChatViewController().getMessagesHashMap().get(((StackPane) messageVBox.getChildren().get(0))).getMessage());
         Assert.assertFalse(messageBox.getChildren().contains(edit));
         Assert.assertFalse(messageBox.getChildren().contains(abort));
         Assert.assertTrue(messageBox.getChildren().contains(send));
@@ -515,5 +516,101 @@ public class ServerMessageTest extends ApplicationTest {
         moveBy(-290, -150);
         clickOn();
         //Assert.assertEquals(":ng:", messageField.getText());
+    }
+
+    @Test
+    public void videoTest() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        String messageIdA = "5e2fbd8770dd077d03dr458A";
+        loginInit(true);
+
+        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+        int messageSize = app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size();
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "src/test/resources/de/uniks/stp/testVideo.mp4").put("from", testUserMainName).put("id", messageIdA);
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
+    }
+
+    @Test
+    public void videoGif() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        String messageIdA = "5e2fbd8770dd077d03dr458A";
+        loginInit(true);
+
+        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+        int messageSize = app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size();
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "src/test/resources/de/uniks/stp/testGif.gif").put("from", testUserMainName).put("id", messageIdA);
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
+    }
+
+    @Test
+    public void videoPng() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        String messageIdA = "5e2fbd8770dd077d03dr458A";
+        loginInit(true);
+
+        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+        int messageSize = app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size();
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", "src/test/resources/de/uniks/stp/testPNG.png").put("from", testUserMainName).put("id", messageIdA);
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
     }
 }

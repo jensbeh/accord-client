@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
+    private ContextMenu contextMenu;
     private ModelBuilder builder;
     private ServerChannel currentChannel;
     private final Parent view;
@@ -54,7 +55,6 @@ public class ChatViewController {
     private ScrollPane scrollPane;
     private List<String> searchList;
     private String text;
-    private ContextMenu contextMenu;
     private ResourceBundle lang;
     private HBox messageBox;
     private Stage stage;
@@ -127,6 +127,10 @@ public class ChatViewController {
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
         builder.setCurrentChatViewController(this);
+    }
+
+    public ContextMenu getContextMenu() {
+        return contextMenu;
     }
 
     public ArrayList<MediaPlayer> getMediaPlayers() {
@@ -234,58 +238,46 @@ public class ChatViewController {
     public void chatClicked(MouseEvent mouseEvent) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
-            contextMenu.setId("contextMenu");
-            contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
-            final MenuItem item1 = new MenuItem("copy");
-            final MenuItem item2 = new MenuItem("edit");
-            final MenuItem item3 = new MenuItem("delete");
-            item1.setStyle("-fx-text-fill: #FFFFFF");
-            item2.setStyle("-fx-text-fill: #FFFFFF");
-            item3.setStyle("-fx-text-fill: #FFFFFF");
-            item1.setId("copy");
-            item2.setId("editItem");
-            item3.setId("deleteItem");
+
+            MenuItem item1 = new MenuItem("copy");
+            MenuItem item2 = new MenuItem("edit");
+            MenuItem item3 = new MenuItem("delete");
+
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
-        VBox selected = null;
-        if (mouseEvent.getPickResult().getIntersectedNode().getParent() instanceof VBox) {
-            selected = (VBox) mouseEvent.getPickResult().getIntersectedNode().getParent();
+        StackPane selected = null;
+        if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
+        }
+        //if video gets clicked
+        else if (mouseEvent.getPickResult().getIntersectedNode().getParent().getParent() instanceof StackPane) {
+            selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode().getParent().getParent();
         }
 
         if (selected != null) {
-            VBox finalSelected = selected;
+            StackPane finalSelected = selected;
+            //needs to happen here, otherwise contextMenu won't get the css
+            if (builder.getTheme().equals("Bright")) {
+                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
+            } else {
+                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+            }
             selected.setOnContextMenuRequested(event -> {
                 contextMenu.setY(event.getScreenY());
                 contextMenu.setX(event.getScreenX());
                 contextMenu.show(finalSelected.getScene().getWindow());
             });
             // if message is a text message
-            if (selected.getParent() instanceof StackPane) {
-                StackPane stackPane = (StackPane) selected.getParent();
-                text = messagesHashMap.get(stackPane).getMessage();
-                if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
-                    contextMenu.getItems().get(1).setVisible(false);
-                    contextMenu.getItems().get(2).setVisible(false);
-                } else {
-                    contextMenu.getItems().get(1).setVisible(true);
-                    contextMenu.getItems().get(2).setVisible(true);
-                }
-                selectedMsg = messagesHashMap.get(stackPane);
+            text = messagesHashMap.get(selected).getMessage();
+            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
+                contextMenu.getItems().get(1).setVisible(false);
+                contextMenu.getItems().get(2).setVisible(false);
             } else {
-                // if message is a video
-                if (selected.getParent() != null && selected.getParent().getParent() instanceof StackPane) {
-                    StackPane stackPane = (StackPane) selected.getParent().getParent();
-                    if (!messagesHashMap.get(stackPane).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
-                        contextMenu.getItems().get(1).setVisible(false);
-                        contextMenu.getItems().get(2).setVisible(false);
-                    } else {
-                        contextMenu.getItems().get(1).setVisible(true);
-                        contextMenu.getItems().get(2).setVisible(true);
-                    }
-                    selectedMsg = messagesHashMap.get(stackPane);
-                }
+                contextMenu.getItems().get(1).setVisible(true);
+                contextMenu.getItems().get(2).setVisible(true);
             }
+            selectedMsg = messagesHashMap.get(selected);
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);

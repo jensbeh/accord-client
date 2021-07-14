@@ -365,6 +365,7 @@ public class ServerViewController {
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 System.out.println(body);
+                builder.playChannelSound("left");
             }
 
             this.disconnectAudioButton.setOnAction(null);
@@ -606,6 +607,7 @@ public class ServerViewController {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
         }
     }
 

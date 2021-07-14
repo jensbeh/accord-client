@@ -144,6 +144,7 @@ public class LoginViewController {
                         restClient.login(username, password, response -> {
                             JsonNode body = response.getBody();
                             String status = body.getObject().getString("status");
+                            System.out.println(status);
                             if (status.equals("success")) {
                                 //build user with key
                                 String userKey = body.getObject().getJSONObject("data").getString("userKey");

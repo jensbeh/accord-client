@@ -163,7 +163,6 @@ public class StageManager extends Application {
     public void stop() throws IOException {
         try {
             super.stop();
-            stopAll();
         } catch (Exception e) {
             System.err.println("Error while shutdown");
             e.printStackTrace();
@@ -189,12 +188,12 @@ public class StageManager extends Application {
         if (!Objects.isNull(builder.getPersonalUser())) {
             String userKey = builder.getPersonalUser().getUserKey();
             if (userKey != null && !userKey.isEmpty()) {
+                cleanup();
                 Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
                 System.out.println("Logged out");
             }
         }
         Unirest.shutDown();
-        cleanup();
     }
 
     public static void showSettingsScreen() {
