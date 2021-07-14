@@ -541,11 +541,9 @@ public class ChatViewController {
     public void checkScrollToBottom() {
         Platform.runLater(() -> {
             double vValue = messageScrollPane.getVvalue();
-            System.out.println(0.92 - 10.0 / messagesBox.getChildren().size());
             if (vValue == 0 || vValue >= 0.92 - 10.0 / messagesBox.getChildren().size()) {
                 messageScrollPane.setVvalue(1.0);
             }
-            System.out.println(vValue);
         });
     }
 
