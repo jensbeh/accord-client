@@ -255,6 +255,7 @@ public class MessageView {
                 engine.setJavaScriptEnabled(true);
                 break;
         }
+        chatViewController.getWebEngines().add(engine);
         engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
     }
 

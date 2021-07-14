@@ -31,6 +31,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -70,6 +72,7 @@ public class ChatViewController {
     private HashMap<StackPane, Message> messagesHashMap;
     private HashMap<Message, StackPane> stackPaneHashMap;
     private ArrayList<MediaPlayer> mediaPlayers;
+    private ArrayList<WebEngine> webEngines;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -123,6 +126,7 @@ public class ChatViewController {
             }
         });
         mediaPlayers = new ArrayList<>();
+        webEngines = new ArrayList<>();
         pngNames = new ArrayList<>();
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
@@ -569,6 +573,13 @@ public class ChatViewController {
         for (MediaPlayer mediaPlayer : mediaPlayers) {
             mediaPlayer.stop();
         }
+        stopVideoPlayers();
+    }
+
+    public void stopVideoPlayers() {
+        for (WebEngine webEngine : webEngines) {
+            webEngine.load(null);
+        }
     }
 
     public void setTheme() {
@@ -587,5 +598,9 @@ public class ChatViewController {
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+    }
+
+    public ArrayList<WebEngine> getWebEngines() {
+        return webEngines;
     }
 }
