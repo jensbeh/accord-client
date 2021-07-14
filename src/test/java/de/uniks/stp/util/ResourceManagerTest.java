@@ -18,34 +18,33 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 import static de.uniks.stp.util.Constants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doCallRealMethod;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ResourceManagerTest extends ApplicationTest {
@@ -234,14 +233,15 @@ public class ResourceManagerTest extends ApplicationTest {
     public void copyFileTest() throws IOException, URISyntaxException, InterruptedException {
         loginInit();
         File file = ResourceManager.getNotificationSoundFiles().get(0);
-        String targetPath = APPDIR_ACCORD_PATH + TEMP_PATH  + "/" + file.getName();
+        String targetPath = APPDIR_ACCORD_PATH + TEMP_PATH + "/" + file.getName();
         ResourceManager.copyFile(file, targetPath);
-        Assert.assertTrue(Files.exists(Path.of( APPDIR_ACCORD_PATH + TEMP_PATH  + "/" + file.getName())));
+        Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + "/" + file.getName())));
     }
 
     @Test
     public void saveUserNameAndSound() throws InterruptedException, IOException {
         loginInit();
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
         Files.createDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
         ResourceManager.saveUserNameAndSound("GustavTest", "test");
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + "GustavTest" + ".json")));
@@ -257,9 +257,7 @@ public class ResourceManagerTest extends ApplicationTest {
         writer.write(234234325);
         ResourceManager.getVolume("GustavTest");
         Files.delete(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + "GustavTest" + ".json"));
-        Files.delete(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume"));
         ResourceManager.saveVolume("/GustavTest/", 50.00F);
         ResourceManager.getVolume("GustavTest");
-
     }
 }

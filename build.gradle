@@ -20,11 +20,13 @@ repositories {
 }
 
 javafx {
-    version = '16'
+    version = '13'
     modules = ['javafx.graphics', 'javafx.fxml', 'javafx.base', 'javafx.controls', 'javafx.media', 'javafx.web']
 }
 
 dependencies {
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
     // https://mvnrepository.com/artifact/org.fulib/fulibScenarios
     fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
 
