@@ -654,6 +654,9 @@ public class ServerViewController {
 
         if (inviteUsers != null)
             inviteUsers.setText(lang.getString("menuItem.inviteUsers"));
+
+        if (chatViewController != null)
+            chatViewController.onLanguageChanged();
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
