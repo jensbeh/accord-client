@@ -231,6 +231,7 @@ public class ScenarioTest {
         server.firePropertyChange("name", user1, user2);
         PropertyChangeSupport listener = server.listeners();
         Assert.assertNotNull(listener);
+        server.firePropertyChange("name", user1, user2);
 
         server.removeCategories();
         Assert.assertEquals(server.getCategories().size(), 0);

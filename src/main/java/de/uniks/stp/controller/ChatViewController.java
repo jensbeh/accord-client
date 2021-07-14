@@ -32,7 +32,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -47,7 +46,7 @@ import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
     private ContextMenu contextMenu;
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private ServerChannel currentChannel;
     private final Parent view;
     private VBox root;
@@ -55,7 +54,6 @@ public class ChatViewController {
     private TextField messageTextField;
     private StackPane stack;
     private ScrollPane scrollPane;
-    private List<String> searchList;
     private String text;
     private ResourceBundle lang;
     private HBox messageBox;
@@ -85,7 +83,6 @@ public class ChatViewController {
         this.currentChannel = currentChannel;
     }
 
-    @SuppressWarnings("unchecked")
     public void init() throws JsonException, IOException {
         restClient = builder.getRestClient();
 
@@ -103,7 +100,7 @@ public class ChatViewController {
         messageTextField.setText("");
         sendButton.setOnAction(this::sendButtonClicked);
         messageBox = (HBox) view.lookup("#messageBox");
-        messageBox.setHgrow(messageTextField, Priority.ALWAYS);
+        HBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
         scrollPane = (ScrollPane) view.lookup("#scroll");
         messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
@@ -298,7 +295,6 @@ public class ChatViewController {
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.setTitle("Delete Message");
-            VBox root = (VBox) subview.lookup("#root");
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText("Are you sure you want to delete " + "\n" + "the following message:");
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
@@ -309,19 +305,14 @@ public class ChatViewController {
             }
             EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
-            String msgText = null;
-            if (text != null) {
-                msgText = formattedText(text);
-                deleteMsg.parseAndAppend(msgText);
-                deleteMsg.setMinWidth(530);
-                pane.setContent(deleteMsg);
-            } else {
+            String msgText;
+            if (text == null) {
                 text = selectedMsg.getMessage();
-                msgText = formattedText(text);
-                deleteMsg.parseAndAppend(msgText);
-                deleteMsg.setMinWidth(530);
-                pane.setContent(deleteMsg);
             }
+            msgText = formattedText(text);
+            deleteMsg.parseAndAppend(msgText);
+            deleteMsg.setMinWidth(530);
+            pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
             yes.setOnAction(this::deleteMessage);
@@ -431,9 +422,50 @@ public class ChatViewController {
         String channelId = selectedMsg.getServerChannel().getId();
         String userKey = builder.getPersonalUser().getUserKey();
         String msgId = selectedMsg.getId();
-        restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
-        });
-        abortEdit(actionEvent);
+        //edit message or show pop-up by empty message
+        if (messageTextField.getText().equals("")) {
+            try {
+                //create pop-up
+                Parent subview = FXMLLoader.load(Objects.requireNonNull(
+                        StageManager.class.getResource("alert/EditWarningMessage.fxml")), StageManager.getLangBundle());
+                Scene scene = new Scene(subview);
+                stage = new Stage();
+                Label msg = (Label) subview.lookup("#editWarningText");
+                Button yes = (Button) subview.lookup("#deleteEditMessage");
+                Button no = (Button) subview.lookup("#abortEditMessage");
+                //language
+                lang = StageManager.getLangBundle();
+                stage.setTitle(lang.getString("title.edit_warning"));
+                msg.setText(lang.getString("label.edit_warning"));
+                yes.setText(lang.getString("button.edit_delete"));
+                no.setText(lang.getString("button.abort_edit_delete"));
+                yes.setOnAction((event) -> {
+                    stage.close();
+                    deleteMessage(event);
+                });
+                //by click on delete close pop-up and edit menu
+                no.setOnAction((event -> stage.close()));
+                //theme
+                if (builder.getTheme().equals("Bright")) {
+                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
+                } else {
+                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+                }
+                //show pop-up and leave edit mode
+                abortEdit(actionEvent);
+                stage.setScene(scene);
+                stage.setResizable(false);
+                stage.initOwner(messageBox.getScene().getWindow());
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            restClient.updateMessage(serverId, catId, channelId, msgId, messageTextField.getText(), userKey, response -> {
+            });
+            abortEdit(actionEvent);
+        }
     }
 
     /**
@@ -535,12 +567,10 @@ public class ChatViewController {
         }
     }
 
-
     public void updateMessage(Message msg) {
         ((Text) (((EmojiTextFlow) ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
         checkScrollToBottom();
     }
-
 
     public void checkScrollToBottom() {
         Platform.runLater(() -> {
