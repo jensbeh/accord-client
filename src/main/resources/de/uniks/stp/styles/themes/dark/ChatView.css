@@ -124,3 +124,22 @@
 #volumeLabel {
     -fx-text-fill: WHITE;
 }
+
+#contextMenu {
+    -fx-background-color: #202225;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+}
+
+.menu-item:focused {
+    -fx-background-color: #ffc7c7;
+}
+
+.context-menu {
+    -fx-background-color: #202225;
+    -fx-background-radius: 6;
+}

@@ -246,22 +246,15 @@ public class ChatViewController {
     public void chatClicked(MouseEvent mouseEvent) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
-            contextMenu.setId("contextMenu");
-            contextMenu.setStyle("-fx-background-color: #23272a;" + "-fx-background-radius: 4;");
-            final MenuItem item1 = new MenuItem("copy");
-            final MenuItem item2 = new MenuItem("edit");
-            final MenuItem item3 = new MenuItem("delete");
-            item1.setStyle("-fx-text-fill: #FFFFFF");
-            item2.setStyle("-fx-text-fill: #FFFFFF");
-            item3.setStyle("-fx-text-fill: #FFFFFF");
-            item1.setId("copy");
-            item2.setId("editItem");
-            item3.setId("deleteItem");
+
+            MenuItem item1 = new MenuItem("copy");
+            MenuItem item2 = new MenuItem("edit");
+            MenuItem item3 = new MenuItem("delete");
+
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
         StackPane selected = null;
-        System.out.println(mouseEvent.getPickResult().getIntersectedNode().toString());
         if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
             selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
         }
@@ -272,6 +265,12 @@ public class ChatViewController {
 
         if (selected != null) {
             StackPane finalSelected = selected;
+            //needs to happen here, otherwise contextMenu won't get the css
+            if (builder.getTheme().equals("Bright")) {
+                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
+            } else {
+                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+            }
             selected.setOnContextMenuRequested(event -> {
                 contextMenu.setY(event.getScreenY());
                 contextMenu.setX(event.getScreenX());
