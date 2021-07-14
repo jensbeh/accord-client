@@ -459,7 +459,7 @@ public class ChatViewController {
      * copied the selected text
      */
     private void copy(ActionEvent actionEvent) {
-        final ClipboardContent clipboardContent = new ClipboardContent();
+        ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(text);
         Clipboard.getSystemClipboard().setContent(clipboardContent);
     }

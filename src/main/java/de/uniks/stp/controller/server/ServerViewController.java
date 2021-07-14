@@ -123,6 +123,32 @@ public class ServerViewController {
         return builder.getCurrentAudioChannel();
     }
 
+    /**
+     * set User to MuteList
+     */
+    public void setMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setMutedUser(user);
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setUnMutedUser(user);
+    }
+
+    /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        //return empty array if audioStreamClient doesn´t exist
+        if (builder.getAudioStreamClient() == null) {
+            return new ArrayList<>();
+        } else {
+            return builder.getAudioStreamClient().getMutedAudioMember();
+        }
+    }
+
 
     /**
      * Callback, when all server information are loaded
@@ -703,6 +729,7 @@ public class ServerViewController {
         } else {
             setDarkMode();
         }
+        refreshAllChannelLists();
     }
 
     private void setWhiteMode() {
@@ -730,5 +757,9 @@ public class ServerViewController {
                 categorySubControllerList.get(categories).setTheme();
             }
         }
+    }
+
+    public String getTheme(){
+        return builder.getTheme();
     }
 }
