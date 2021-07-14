@@ -176,38 +176,38 @@ public class ModelBuilder {
      * play notification sound
      */
     public void playSound() {
-//        if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
-//            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
-//        }else{
-//            String newValue = ResourceManager.getComboValue(personalUser.getName());
-//            for(File file : ResourceManager.getNotificationSoundFiles()){
-//                String fileName = file.getName().substring(0, file.getName().length() - 4);
-//                if (fileName.equals(newValue)) {
-//                    try {
-//                        URL url = file.toURI().toURL();
-//                        this.setSoundFile(url);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }
-//        if (clip != null) {
-//            clip.stop();
-//        }
-//        try {
-//            System.out.println("ComboBox: " + ResourceManager.getComboValue(personalUser.getName()));
-//            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile().openStream()));
-//            clip = AudioSystem.getClip();
-//            clip.open(audioInputStream);
-//            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-//            gainControl.setValue(getVolume());
-//            clip.start();
-//            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
-//            // If you want to stop the sound, then use clip.stop();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
+        if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
+            setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
+        }else{
+            String newValue = ResourceManager.getComboValue(personalUser.getName());
+            for(File file : ResourceManager.getNotificationSoundFiles()){
+                String fileName = file.getName().substring(0, file.getName().length() - 4);
+                if (fileName.equals(newValue)) {
+                    try {
+                        URL url = file.toURI().toURL();
+                        this.setSoundFile(url);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        if (clip != null) {
+            clip.stop();
+        }
+        try {
+            System.out.println("ComboBox: " + ResourceManager.getComboValue(personalUser.getName()));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile().openStream()));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(getVolume());
+            clip.start();
+            // If you want the sound to loop infinitely, then put: clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // If you want to stop the sound, then use clip.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
