@@ -18,8 +18,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.skin.ListViewSkin;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
@@ -33,6 +31,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -53,8 +53,6 @@ public class ChatViewController {
     private VBox root;
     private Button sendButton;
     private TextField messageTextField;
-    private ListView<Message> messageList;
-    private ArrayList<Message> messages;
     private StackPane stack;
     private ScrollPane scrollPane;
     private List<String> searchList;
@@ -69,15 +67,12 @@ public class ChatViewController {
     private RestClient restClient;
     private Message selectedMsg;
     private ArrayList<String> pngNames;
-
-    private VBox container;
-
     private VBox messagesBox;
     private ScrollPane messageScrollPane;
-
     private HashMap<StackPane, Message> messagesHashMap;
     private HashMap<Message, StackPane> stackPaneHashMap;
     private ArrayList<MediaPlayer> mediaPlayers;
+    private ArrayList<WebEngine> webEngines;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -121,7 +116,7 @@ public class ChatViewController {
 
         messageScrollPane.setFitToHeight(true);
         messageScrollPane.setFitToWidth(true);
-        container = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
+        messagesBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
         messagesHashMap = new HashMap<>();
         stackPaneHashMap = new HashMap<>();
         lang = StageManager.getLangBundle();
@@ -131,6 +126,7 @@ public class ChatViewController {
             }
         });
         mediaPlayers = new ArrayList<>();
+        webEngines = new ArrayList<>();
         pngNames = new ArrayList<>();
         Button emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
@@ -150,7 +146,7 @@ public class ChatViewController {
     }
 
     public VBox getContainer() {
-        return container;
+        return messagesBox;
     }
 
     public HashMap<StackPane, Message> getMessagesHashMap() {
@@ -393,7 +389,7 @@ public class ChatViewController {
         Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
         stackPaneHashMap.remove(toRemoveMsg);
         messagesHashMap.remove(toRemoveStack);
-        container.getChildren().remove(toRemoveStack);
+        messagesBox.getChildren().remove(toRemoveStack);
         stage.close();
     }
 
@@ -501,14 +497,16 @@ public class ChatViewController {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
-                messageView.updateItem(msg, true);
+                messageView.setScroll(this::checkScrollToBottom);
+                messageView.updateItem(msg);
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
-                messageView.updateItem(msg, true);
+                messageView.setScroll(this::checkScrollToBottom);
+                messageView.updateItem(msg);
             }
         }
     }
@@ -523,7 +521,7 @@ public class ChatViewController {
                 Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
                 stackPaneHashMap.remove(toRemoveMsg);
                 messagesHashMap.remove(toRemoveStack);
-                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
+                Platform.runLater(() -> messagesBox.getChildren().remove(toRemoveStack));
             }
         } else {
             if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
@@ -531,7 +529,7 @@ public class ChatViewController {
                 Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
                 stackPaneHashMap.remove(toRemoveMsg);
                 messagesHashMap.remove(toRemoveStack);
-                Platform.runLater(() -> container.getChildren().remove(toRemoveStack));
+                Platform.runLater(() -> messagesBox.getChildren().remove(toRemoveStack));
 
             }
         }
@@ -540,25 +538,17 @@ public class ChatViewController {
 
     public void updateMessage(Message msg) {
         ((Text) (((EmojiTextFlow) ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
+        checkScrollToBottom();
     }
 
 
     public void checkScrollToBottom() {
-        ListViewSkin<?> ts = (ListViewSkin<?>) messageList.getSkin();
-        int lastMessagePosition = 0;
-        int firstMessagePosition = 0;
-        if (ts != null) {
-            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
-            if (vf != null) {
-                if (vf.getFirstVisibleCell() != null && vf.getFirstVisibleCell() != null) {
-                    lastMessagePosition = vf.getFirstVisibleCell().getIndex();
-                    firstMessagePosition = vf.getFirstVisibleCell().getIndex();
-                }
+        Platform.runLater(() -> {
+            double vValue = messageScrollPane.getVvalue();
+            if (vValue == 0 || vValue >= 0.92 - 10.0 / messagesBox.getChildren().size()) {
+                messageScrollPane.setVvalue(1.0);
             }
-        }
-        if (lastMessagePosition == messages.size() || firstMessagePosition == 0) {
-            messageList.scrollTo(messages.size());
-        }
+        });
     }
 
     public void clearMessageField() {
@@ -583,6 +573,13 @@ public class ChatViewController {
         for (MediaPlayer mediaPlayer : mediaPlayers) {
             mediaPlayer.stop();
         }
+        stopVideoPlayers();
+    }
+
+    public void stopVideoPlayers() {
+        for (WebEngine webEngine : webEngines) {
+            webEngine.load(null);
+        }
     }
 
     public void setTheme() {
@@ -601,5 +598,9 @@ public class ChatViewController {
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+    }
+
+    public ArrayList<WebEngine> getWebEngines() {
+        return webEngines;
     }
 }

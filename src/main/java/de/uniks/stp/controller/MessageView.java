@@ -36,6 +36,7 @@ public class MessageView {
     private ModelBuilder builder;
     private ChatViewController chatViewController;
     boolean loadVideo;
+    private Runnable scroll;
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
@@ -45,98 +46,100 @@ public class MessageView {
         this.chatViewController = chatViewController;
     }
 
-    public void updateItem(Message item, boolean empty) {
+    public void updateItem(Message item) {
         boolean loadImage;
         boolean loadVideo;
         StackPane cell = new StackPane();
         cell.setId("messageCell");
         //Background for the messages
-        if (empty) {
-            VBox vbox = new VBox();
-            Label userName = new Label();
-            userName.setId("userNameLabel");
-            if (builder.getTheme().equals("Bright")) {
-                userName.setTextFill(Color.BLACK);
-            } else {
-                userName.setTextFill(Color.WHITE);
-            }
-            EmojiTextFlow message;
 
-            //right alignment if User is currentUser else left
-            Date date = new Date(item.getTimestamp());
-            DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
-            String textMessage = item.getMessage();
-            String url = searchUrl(textMessage);
-            loadImage = false;
-            loadVideo = false;
-            WebView webView = new WebView();
-            MediaView mediaView = new MediaView();
-            if (urlType.equals("video")) {
-                loadVideo = true;
-                setMedia(url, mediaView);
-                if (loadVideo) {
-                    setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-                    textMessage = textMessage.replace(url, "");
-                }
-            } else if (!urlType.equals("None")) {
-                loadImage = true;
-                setMedia(url, webView.getEngine());
+        VBox vbox = new VBox();
+        Label userName = new Label();
+        userName.setId("userNameLabel");
+        if (builder.getTheme().equals("Bright")) {
+            userName.setTextFill(Color.BLACK);
+        } else {
+            userName.setTextFill(Color.WHITE);
+        }
+        EmojiTextFlow message;
+
+        //right alignment if User is currentUser else left
+        Date date = new Date(item.getTimestamp());
+        DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
+        String textMessage = item.getMessage();
+        String url = searchUrl(textMessage);
+        loadImage = false;
+        loadVideo = false;
+        WebView webView = new WebView();
+        MediaView mediaView = new MediaView();
+        if (urlType.equals("video")) {
+            loadVideo = true;
+            setMedia(url, mediaView);
+            if (loadVideo) {
+                setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
                 textMessage = textMessage.replace(url, "");
             }
-            if (loadImage) {
-                webView.setContextMenuEnabled(false);
-                setImageSize(chatViewController.getMessageScrollPane(), url, webView);
-            }
+        } else if (!urlType.equals("None")) {
+            loadImage = true;
+            setMedia(url, webView.getEngine());
+            textMessage = textMessage.replace(url, "");
+        }
+        if (loadImage) {
+            webView.setContextMenuEnabled(false);
+            setImageSize(chatViewController.getMessageScrollPane(), url, webView);
+        }
 
-            if (builder.getPersonalUser().getName().equals(item.getFrom())) {
-                vbox.setAlignment(Pos.CENTER_RIGHT);
-                userName.setText((formatterTime.format(date)) + " " + item.getFrom());
+        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+            vbox.setAlignment(Pos.CENTER_RIGHT);
+            userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-                message = handleEmojis(true);
-                //Message background own user
-                message.getStyleClass().clear();
-                message.getStyleClass().add("messageLabelTo");
+            message = handleEmojis(true);
+            //Message background own user
+            message.getStyleClass().clear();
+            message.getStyleClass().add("messageLabelTo");
 
-            } else {
-                vbox.setAlignment(Pos.CENTER_LEFT);
-                userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
+        } else {
+            vbox.setAlignment(Pos.CENTER_LEFT);
+            userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-                message = handleEmojis(false);
-                //Message background
-                message.getStyleClass().clear();
-                message.getStyleClass().add("messageLabelFrom");
-            }
-            if (!textMessage.equals("")) {
-                message.setId("messageLabel");
-                message.setMaxWidth(320);
-                message.setPrefWidth(textMessage.length());
-                String str = handleSpacing(textMessage);
-                message.parseAndAppend(" " + str + " ");
-            }
+            message = handleEmojis(false);
+            //Message background
+            message.getStyleClass().clear();
+            message.getStyleClass().add("messageLabelFrom");
+        }
+        if (!textMessage.equals("")) {
+            message.setId("messageLabel");
+            message.setMaxWidth(320);
+            message.setPrefWidth(textMessage.length());
+            String str = handleSpacing(textMessage);
+            message.parseAndAppend(" " + str + " ");
+        }
 
-            if (loadImage) {
+        if (loadImage) {
 //                vbox.setPrefSize(webView.getMaxWidth(), webView.getMaxHeight());
-                vbox.getChildren().addAll(userName, message, webView);
+            vbox.getChildren().addAll(userName, message, webView);
 //                cell.setPrefSize(chatViewController.getContainer().getMaxWidth(), chatViewController.getContainer().getMaxHeight());
-                cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
-            } else if (loadVideo) {
-                MediaControl mediaControl = new MediaControl();
-                VBox mediaBox = mediaControl.setMediaControls(mediaView);
-                setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-                vbox.getChildren().addAll(userName, message, mediaBox);
+            cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
+        } else if (loadVideo) {
+            MediaControl mediaControl = new MediaControl();
+            VBox mediaBox = mediaControl.setMediaControls(mediaView);
+            setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+            vbox.getChildren().addAll(userName, message, mediaBox);
 
-            } else {
-                vbox.getChildren().addAll(userName, message);
-                vbox.setMouseTransparent(true);
-            }
+        } else {
+            vbox.getChildren().addAll(userName, message);
+            vbox.setMouseTransparent(true);
+        }
 
-            cell.setAlignment(Pos.CENTER_RIGHT);
-            cell.getChildren().addAll(vbox);
+        cell.setAlignment(Pos.CENTER_RIGHT);
+        cell.getChildren().addAll(vbox);
 //            cell.setMinSize(420, 60);
-            cell.setOnMouseClicked(chatViewController::chatClicked);
-            chatViewController.getContainer().getChildren().add(cell);
-            chatViewController.getMessagesHashMap().put(cell, item);
-            chatViewController.getStackPaneHashMap().put(item, cell);
+        cell.setOnMouseClicked(chatViewController::chatClicked);
+        chatViewController.getContainer().getChildren().add(cell);
+        chatViewController.getMessagesHashMap().put(cell, item);
+        chatViewController.getStackPaneHashMap().put(item, cell);
+        if (scroll != null) {
+            scroll.run();
         }
     }
 
@@ -252,6 +255,7 @@ public class MessageView {
                 engine.setJavaScriptEnabled(true);
                 break;
         }
+        chatViewController.getWebEngines().add(engine);
         engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
     }
 
@@ -326,5 +330,7 @@ public class MessageView {
         }
     }
 
-
+    public void setScroll(Runnable scroll) {
+        this.scroll = scroll;
+    }
 }
