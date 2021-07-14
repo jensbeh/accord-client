@@ -73,7 +73,6 @@ public class ResourceManagerTest extends ApplicationTest {
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
 
-
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
