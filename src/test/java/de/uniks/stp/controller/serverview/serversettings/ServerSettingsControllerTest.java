@@ -122,7 +122,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -443,84 +443,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         Button changeButton = lookup("#serverChangeButton").query();
         clickOn(changeButton);
         Assert.assertEquals(serverNameField.getText(), serverNameLabel.getText());
-    }
-
-    @Test
-    public void clickOnOwnerOverviewBright() throws InterruptedException {
-        changeTheme("Bright");
-        WaitForAsyncUtils.waitForFxEvents();
-        loginInit(false);
-
-        mockPutServer();
-
-        String result;
-        for (Object s : this.listTargetWindows()) {
-            if (s != stage) {
-                result = ((Stage) s).getTitle();
-                Assert.assertEquals("Accord - Settings", result);
-                Platform.runLater(((Stage) s)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
-        clickOn("#loginButton");
-        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        clickOn(serverListView.lookup("#server"));
-        WaitForAsyncUtils.waitForFxEvents();
-
-        clickOn("#serverMenuButton");
-        moveBy(0, 25);
-        write("\n");
-        Assert.assertNotEquals(1, this.listTargetWindows().size());
-        clickOn("#overviewBtn");
-        Label serverNameLabel = lookup("#serverName").query();
-        Button leaveButton = lookup("#deleteServer").query();
-        Assert.assertEquals("TestServer Team Bit Shift", serverNameLabel.getText());
-        Assert.assertEquals("Delete Server", leaveButton.getText());
-        TextField serverNameField = lookup("#nameText").query();
-        serverNameField.setText("testServer");
-        Button changeButton = lookup("#serverChangeButton").query();
-        clickOn(changeButton);
-        Assert.assertEquals(serverNameField.getText(), serverNameLabel.getText());
-        clickOn("#deleteServer");
-
-        moveBy(-50, -105);
-        clickOn();
-        for (Object s : this.listTargetWindows()) {
-            if (s != stage) {
-                result = ((Stage) s).getTitle();
-                Assert.assertEquals("ServerSettings", result);
-                Platform.runLater(((Stage) s)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
-
-        clickOn("#logoutButton");
-        changeTheme("Dark");
-
-        for (Object s : this.listTargetWindows()) {
-            if (s != stage) {
-                result = ((Stage) s).getTitle();
-                Assert.assertEquals("Accord - Settings", result);
-                Platform.runLater(((Stage) s)::close);
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
-    }
-
-    public void changeTheme(String theme) {
-        Button settingsButton = lookup("#settingsButton").query();
-        clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
-        clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-
-        clickOn(comboBox_themeSelect);
-        clickOn(theme);
-        WaitForAsyncUtils.waitForFxEvents();
-
     }
 
     @Test
