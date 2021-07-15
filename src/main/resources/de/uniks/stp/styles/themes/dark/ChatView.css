@@ -3,7 +3,7 @@
     -fx-border-color: #36393f;
 }
 
-#editButton {
+#editButton, #deleteEditMessage {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-text-fill: WHITE;
@@ -24,11 +24,11 @@
     -fx-background: #36393f;
 }
 
-#deleteWarning {
+#deleteWarning, #editWarningText {
     -fx-text-fill: WHITE;
 }
 
-#deleteMsg .color{
+#deleteMsg .color {
     -fx-text-fill: WHITE;
     -fx-background-color: #36393f;
 }
@@ -38,53 +38,53 @@
     -fx-background-radius: 80;
 }
 
-#chooseCancel {
+#chooseCancel, #abortEditMessage {
     -fx-background-radius: 80;
     -fx-background-color: #717177;
 }
 
 
-#messageListView #messageListView {
+#messageScrollPane #messageScrollPane {
     -fx-background-color: #36393f;
     -fx-border-color: #36393f;
 }
 
-#messageListView .scroll-bar:vertical {
+#messageScrollPane .scroll-bar:vertical {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #36393f;
 }
 
-#messageListView .scroll-bar:horizontal {
+#messageScrollPane .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #36393f;
 }
 
-#messageListView  {
+#messageScrollPane {
     -fx-border-color: #36393f;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #36393f;
     -fx-padding: 1;
 }
 
-#messageListView .list-cell {
-    -fx-background-color:#36393f;
+.list-cell {
+    -fx-background-color: #36393f;
 }
 
-#messageListView .list-cell .messageLabelTo {
+.messageLabelTo {
     -fx-background-color: #ff9999;
     -fx-background-radius: 4;
 }
 
-#messageListView .list-cell #userNameLabel {
+#userNameLabel {
     -fx-text-fill: WHITE;
     -fx-background-color: #36393f;
 }
 
-#messageListView .list-cell .messageLabelFrom {
+.messageLabelFrom {
     -fx-background-color: WHITE;
     -fx-background-radius: 4;
 }
@@ -101,4 +101,45 @@
 #sendButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
+}
+
+#messageVBox {
+    -fx-background-color: #36393f;
+}
+
+#playButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+
+#timeLabel {
+    -fx-text-fill: WHITE;
+}
+
+#playTimeLabel {
+    -fx-text-fill: WHITE;
+}
+
+#volumeLabel {
+    -fx-text-fill: WHITE;
+}
+
+#contextMenu {
+    -fx-background-color: #202225;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+}
+
+.menu-item:focused {
+    -fx-background-color: #ffc7c7;
+}
+
+.context-menu {
+    -fx-background-color: #202225;
+    -fx-background-radius: 6;
 }

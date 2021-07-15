@@ -4,12 +4,15 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -26,9 +29,10 @@ public class InviteUsersUserLimitSubController {
     private final Server server;
     private final RestClient restClient;
     private Button createLink;
+    private Button copyLink;
     private Label inviteLinksLabel;
     private Button deleteLink;
-    private TextField linkTextField;
+    private Label linkLabel;
     private TextField userLimit;
     private ComboBox<List<String>> linkComboBox;
     private List<String> selectedList;
@@ -44,14 +48,16 @@ public class InviteUsersUserLimitSubController {
     @SuppressWarnings("unchecked")
     public void init() {
         createLink = (Button) view.lookup("#createLink");
+        copyLink = (Button) view.lookup("#button_copyLink");
         inviteLinksLabel = (Label) view.lookup("#inviteLinksLabel");
         deleteLink = (Button) view.lookup("#deleteLink");
-        linkTextField = (TextField) view.lookup("#linkTextField");
+        linkLabel = (Label) view.lookup("#linkLabel");
         userLimit = (TextField) view.lookup("#maxUsers");
         linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
 
         links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
+        copyLink.setOnAction(this::onCopyLinkClicked);
         deleteLink.setOnAction(this::onDeleteLinkClicked);
         linkComboBox.setOnAction(this::onLinkChanged);
         linkComboBox.setConverter(new StringConverter<>() {
@@ -113,7 +119,7 @@ public class InviteUsersUserLimitSubController {
                         String link = body.getObject().getJSONObject("data").getString("link");
                         String maxUsers = String.valueOf(body.getObject().getJSONObject("data").getInt("max"));
                         String id = body.getObject().getJSONObject("data").getString("id");
-                        linkTextField.setText(link);
+                        Platform.runLater(() -> linkLabel.setText(link));
                         linkComboBox.getItems().add(List.of(link, maxUsers));
                         links.put(link, id);
                     } else if (status.equals("failure")) {
@@ -124,14 +130,24 @@ public class InviteUsersUserLimitSubController {
     }
 
     /**
+     * when clicked the button the link text is copied to clipboard
+     */
+    private void onCopyLinkClicked(ActionEvent actionEvent) {
+        javafx.scene.input.Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(linkLabel.getText());
+        clipboard.setContent(content);
+    }
+
+    /**
      * OnDelete clicked removes selected Link from the ComboBox
      */
     private void onDeleteLinkClicked(ActionEvent actionEvent) {
         if (this.selectedList != null) {
             String link = selectedList.get(0);
-            String link2 = linkTextField.getText();
+            String link2 = linkLabel.getText();
             if (link.equals(link2)) {
-                linkTextField.setText("Links ...");
+                Platform.runLater(() -> linkLabel.setText("Links ..."));
             }
             String invId = links.get(selectedList.get(0));
             restClient.deleteInvLink(server.getId(), invId, builder.getPersonalUser().getUserKey(), response -> {
@@ -156,12 +172,13 @@ public class InviteUsersUserLimitSubController {
             maxUsers = "";
         }
         this.linkComboBox.setPromptText(selectedLink);
-        linkTextField.setText(selectedLink);
+        Platform.runLater(() -> linkLabel.setText(selectedLink));
         userLimit.setText(maxUsers);
     }
 
     public void stop() {
         createLink.setOnAction(null);
+        copyLink.setOnAction(null);
         deleteLink.setOnAction(null);
         linkComboBox.setOnAction(null);
     }

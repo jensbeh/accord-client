@@ -37,7 +37,7 @@ import static de.uniks.stp.util.Constants.*;
  */
 public class ServerViewController {
 
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private final RestClient restClient;
     private final Server server;
     private final Parent view;
@@ -50,7 +50,7 @@ public class ServerViewController {
     private VBox currentUserBox;
     private HBox root;
     private VBox chatBox;
-    private ChatViewController messageViewController;
+    private ChatViewController chatViewController;
     private MenuItem serverSettings;
     private MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
@@ -65,8 +65,6 @@ public class ServerViewController {
     private ServerChatWebSocket chatWebSocketClient;
     private VBox audioConnectionBox;
     private Button disconnectAudioButton;
-    private Button headphoneButton;
-    private Button microphoneButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
 
@@ -83,8 +81,8 @@ public class ServerViewController {
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
     }
 
-    public ChatViewController getMessageViewController() {
-        return messageViewController;
+    public ChatViewController getChatViewController() {
+        return chatViewController;
     }
 
     public Map<Categories, CategorySubController> getCategorySubControllerList() {
@@ -121,6 +119,32 @@ public class ServerViewController {
 
     public ServerChannel getCurrentAudioChannel() {
         return builder.getCurrentAudioChannel();
+    }
+
+    /**
+     * set User to MuteList
+     */
+    public void setMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setMutedUser(user);
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedAudioMember(String user) {
+        builder.getAudioStreamClient().setUnMutedUser(user);
+    }
+
+    /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        //return empty array if audioStreamClient doesn´t exist
+        if (builder.getAudioStreamClient() == null) {
+            return new ArrayList<>();
+        } else {
+            return builder.getAudioStreamClient().getMutedAudioMember();
+        }
     }
 
 
@@ -240,17 +264,22 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            this.messageViewController = new ChatViewController(root, builder, currentChannel);
+            // stop videos from recent channel
+            if (chatViewController != null) {
+                chatViewController.stopMediaPlayers();
+            }
+            this.chatViewController = new ChatViewController(root, builder, currentChannel);
             this.chatBox.getChildren().clear();
-            this.messageViewController.init();
+            this.chatViewController.init();
             this.chatBox.getChildren().add(root);
-            messageViewController.setTheme();
-            chatWebSocketClient.setChatViewController(messageViewController);
-            serverSystemWebSocket.setChatViewController(messageViewController);
+            chatViewController.setTheme();
+            builder.setCurrentChatViewController(chatViewController);
+            chatWebSocketClient.setChatViewController(chatViewController);
+            serverSystemWebSocket.setChatViewController(chatViewController);
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
-                    messageViewController.printMessage(msg);
+                    chatViewController.printMessage(msg);
                 }
             }
         } catch (IOException e) {
@@ -272,8 +301,8 @@ public class ServerViewController {
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
 
-            headphoneButton = (Button) view.lookup("#mute_headphone");
-            microphoneButton = (Button) view.lookup("#mute_microphone");
+            Button headphoneButton = (Button) view.lookup("#mute_headphone");
+            Button microphoneButton = (Button) view.lookup("#mute_microphone");
             headphoneLabel = (Label) view.lookup("#unmute_headphone");
             microphoneLabel = (Label) view.lookup("#unmute_microphone");
             //load headset settings
@@ -360,6 +389,7 @@ public class ServerViewController {
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
                 System.out.println(body);
+                builder.playChannelSound("left");
             }
 
             this.disconnectAudioButton.setOnAction(null);
@@ -601,6 +631,7 @@ public class ServerViewController {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
         }
     }
 
@@ -623,6 +654,9 @@ public class ServerViewController {
 
         if (inviteUsers != null)
             inviteUsers.setText(lang.getString("menuItem.inviteUsers"));
+
+        if (chatViewController != null)
+            chatViewController.onLanguageChanged();
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
@@ -675,8 +709,8 @@ public class ServerViewController {
      */
     public void throwOutUserFromChatView() {
         setCurrentChannel(null);
-        if (this.messageViewController != null) {
-            this.messageViewController.stop();
+        if (this.chatViewController != null) {
+            this.chatViewController.stop();
         }
         Platform.runLater(() -> this.chatBox.getChildren().clear());
     }
@@ -696,13 +730,14 @@ public class ServerViewController {
         } else {
             setDarkMode();
         }
+        refreshAllChannelLists();
     }
 
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
         for (Categories categories : server.getCategories()) {
             if (categorySubControllerList.size() != 0) {
@@ -715,13 +750,17 @@ public class ServerViewController {
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerView.css")).toExternalForm());
-        if (messageViewController != null) {
-            messageViewController.setTheme();
+        if (chatViewController != null) {
+            chatViewController.setTheme();
         }
         for (Categories categories : server.getCategories()) {
             if (categorySubControllerList.size() != 0) {
                 categorySubControllerList.get(categories).setTheme();
             }
         }
+    }
+
+    public String getTheme() {
+        return builder.getTheme();
     }
 }

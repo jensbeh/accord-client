@@ -203,6 +203,8 @@ public class ServerSystemWebSocket extends Endpoint {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
 
+
+
                         // put name and id
                         String userName = "";
                         for (User user : builder.getPersonalUser().getUser()) {
@@ -218,11 +220,16 @@ public class ServerSystemWebSocket extends Endpoint {
                                 builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
                             }
                         }
-
+                        if(builder.getPersonalUser().getId().equals(jsonData.getString("id"))
+                                || (builder.getCurrentAudioChannel() != null &&
+                                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
+                            builder.playChannelSound("join");
+                        }
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
                             if (builder.getAudioStreamClient() != null) {
                                 builder.getAudioStreamClient().disconnectStream();
+                                builder.setAudioStreamClient(null);
                             }
                             AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
                             serverChannel.withAudioMember(audioMemberPersonalUser);
@@ -253,17 +260,20 @@ public class ServerSystemWebSocket extends Endpoint {
             if (jsonData.getString("category").equals(category.getId())) {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
-
                         // which audioMember disconnects?
                         for (AudioMember audioMember : serverChannel.getAudioMember()) {
                             if (audioMember.getId().equals(userId)) {
                                 serverChannel.withoutAudioMember(audioMember);
 
+                                if(!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
+                                        builder.getCurrentAudioChannel() != null &&
+                                        builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
+                                    builder.playChannelSound("left");
+                                }
                                 // personalUser disconnects
                                 if (userId.equals(builder.getPersonalUser().getId())) {
                                     builder.setCurrentAudioChannel(null);
                                     builder.getAudioStreamClient().disconnectStream();
-
                                     builder.setAudioStreamClient(null);
                                 }
                                 // other user disconnects
@@ -292,7 +302,7 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 msg.setMessage(text);
-                chatViewController.refreshMessageListView();
+                chatViewController.updateMessage(msg);
                 break;
             }
         }
@@ -308,7 +318,6 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 chatViewController.removeMessage(msg);
-                chatViewController.refreshMessageListView();
                 msg.removeYou();
                 break;
             }

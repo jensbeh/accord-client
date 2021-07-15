@@ -3,7 +3,7 @@ package de.uniks.stp.controller.serverview;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -487,11 +487,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
 
-        TextField link = lookup("#linkTextField").query();
+        Label linkLabel = lookup("#linkLabel").query();
         ComboBox<List<String>> links = lookup("#LinkComboBox").query();
         String certainLink = "";
         for (List<String> s : links.getItems()) {
-            if ((s.get(0)).equals(link.getText())) {
+            if ((s.get(0)).equals(linkLabel.getText())) {
                 certainLink = s.get(0);
                 break;
             }
@@ -507,7 +507,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         String checkDel = "";
         for (List<String> s : links.getItems()) {
-            if (s.get(0).equals(link.getText())) {
+            if (s.get(0).equals(linkLabel.getText())) {
                 checkDel = s.get(0);
                 break;
             }
@@ -538,7 +538,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         String checkDelete = "";
         for (List<String> s : links.getItems()) {
-            if (s.get(0).equals(link.getText())) {
+            if (s.get(0).equals(linkLabel.getText())) {
                 checkDelete = s.get(0);
                 break;
             }
@@ -571,11 +571,11 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#createLink");
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
-        TextField link = lookup("#linkTextField").query();
+        Label linkLabel = lookup("#linkLabel").query();
         ComboBox<String> links = lookup("#LinkComboBox").query();
         String certainLink = "";
         for (String s : links.getItems()) {
-            if (s.equals(link.getText())) {
+            if (s.equals(linkLabel.getText())) {
                 certainLink = s;
                 break;
             }
@@ -588,7 +588,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#deleteLink");
         String checkDel = "";
         for (String s : links.getItems()) {
-            if (s.equals(link.getText())) {
+            if (s.equals(linkLabel.getText())) {
                 checkDel = s;
                 break;
             }
@@ -609,8 +609,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
     public void inviteUsersErrorMessagesTest() throws InterruptedException {
         loginInit(false);
 
-        Circle addServer = lookup("#addServer").query();
-
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();
@@ -623,8 +621,8 @@ public class InviteUsersControllerTest extends ApplicationTest {
 
         clickOn("#createLink");
         WaitForAsyncUtils.waitForFxEvents();
-        TextField linkField = lookup("#linkTextField").query();
-        String inviteLink = linkField.getText();
+        Label linkLabel = lookup("#linkLabel").query();
+        String inviteLink = linkLabel.getText();
 
         String serverSettingsTitle;
         for (Object object : this.listTargetWindows()) {
@@ -637,8 +635,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
             }
         }
 
+        Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
         WaitForAsyncUtils.waitForFxEvents();
+
         TabPane tapPane = lookup("#tabView").query();
         tapPane.getSelectionModel().select(tapPane.getTabs().get(1));
         TextField insertInviteLink = lookup("#inviteLink").query();
@@ -658,6 +658,8 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals(errorLabel.getText(), "Wrong server id or Invalid link");
 
         insertInviteLink.setText("KkDs0K3Dak");
+        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(errorLabel.getText(), "Invalid link");
@@ -668,5 +670,72 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals(errorLabel.getText(), "Insert invite link first");
 
         clickOn("#logoutButton");
+    }
+
+    @Test
+    public void generateAndCopyTempLink() throws InterruptedException {
+        loginInit(false);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Label linkLabel = lookup("#linkLabel").query();
+
+        ComboBox<String> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (String s : links.getItems()) {
+            if (s.equals(linkLabel.getText())) {
+                certainLink = s;
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+
+        clickOn("#button_copyLink");
+    }
+
+    @Test
+    public void generateAndCopyUserLimitLink() throws InterruptedException {
+        loginInit(false);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 50);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#userLimitSelected");
+
+        TextField userLimit = lookup("#maxUsers").query();
+        userLimit.setText("1");
+
+        clickOn("#createLink");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Label linkLabel = lookup("#linkLabel").query();
+
+        ComboBox<List<String>> links = lookup("#LinkComboBox").query();
+        String certainLink = "";
+        for (List<String> s : links.getItems()) {
+            if ((s.get(0)).equals(linkLabel.getText())) {
+                certainLink = s.get(0);
+                break;
+            }
+        }
+        Assert.assertNotEquals("", certainLink);
+
+        clickOn("#button_copyLink");
     }
 }
