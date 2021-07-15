@@ -376,7 +376,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
 
-        ScrollPane messageScrollPane = (ScrollPane) lookup("#messageScrollPane").query();
+        ScrollPane messageScrollPane = lookup("#messageScrollPane").query();
         VBox messageVBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
         Assert.assertEquals(1, messageVBox.getChildren().size());
 
@@ -509,7 +509,18 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertFalse(messageBox.getChildren().contains(abort));
         Assert.assertTrue(messageBox.getChildren().contains(send));
 
-        Thread.sleep(2000);
+        rightClickOn("#messageCell");
+        interact(() -> contextMenu.getItems().get(1).fire());
+
+        messageField.setText("");
+        clickOn(messageField);
+        write("\n");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#deleteEditMessage");
+
+        rightClickOn("#messageCell");
+        interact(() -> contextMenu.getItems().get(2).fire());
+        clickOn("#chooseCancel");
 
         //Emoji List test
         Platform.runLater(() -> clickOn("#emojiButton"));
