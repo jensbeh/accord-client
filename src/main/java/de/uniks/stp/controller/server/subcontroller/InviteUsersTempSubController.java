@@ -4,6 +4,7 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -12,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.util.Duration;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,6 +34,7 @@ public class InviteUsersTempSubController {
     private ComboBox<String> linkComboBox;
     private String selectedLink;
     private HashMap<String, String> links;
+    private Label copied;
 
 
     public InviteUsersTempSubController(Parent view, ModelBuilder builder, Server server) {
@@ -49,6 +52,8 @@ public class InviteUsersTempSubController {
         deleteLink = (Button) view.lookup("#deleteLink");
         linkLabel = (Label) view.lookup("#linkLabel");
         linkComboBox = (ComboBox<String>) view.lookup("#LinkComboBox");
+        copied = (Label) view.lookup("#copiedLabel");
+        copied.setVisible(false);
 
         links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
@@ -102,6 +107,14 @@ public class InviteUsersTempSubController {
      * when clicked the button the link text is copied to clipboard
      */
     private void onCopyLinkClicked(ActionEvent actionEvent) {
+        if(!linkLabel.getText().equals("link...")) {
+            copied.setVisible(true);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), copied);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.play();
+        }
+
         javafx.scene.input.Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(linkLabel.getText());

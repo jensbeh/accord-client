@@ -4,17 +4,28 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
 <VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
+      <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="590.0" spacing="200.0">
+         <children>
+            <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
+            <Label id="copiedLabel" prefHeight="17.0" prefWidth="61.0" text="copied">
+               <graphic>
+                  <ImageView fitHeight="15.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../icons/checkmark.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
+         </children>
+      </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="590.0" spacing="10.0">
          <children>
             <Label id="linkLabel" prefHeight="25.0" prefWidth="547.0" text="link...">
@@ -34,20 +45,6 @@
                </padding>
             </Button>
          </children>
-      <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
-         <children>
-            <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
-            <Label id="copiedLabel" prefHeight="17.0" prefWidth="88.0" text="copied">
-               <graphic>
-                  <ImageView fitHeight="19.0" fitWidth="11.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../icons/checkmark.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Label>
-         </children>
-      </HBox>
          <VBox.margin>
             <Insets top="25.0" />
          </VBox.margin>

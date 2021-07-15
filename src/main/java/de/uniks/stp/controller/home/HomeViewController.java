@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -63,7 +64,7 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() throws IOException {
+    public void init() throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerChat(false);
         // Load all view references
@@ -88,7 +89,7 @@ public class HomeViewController {
         serverController = new HashMap<>();
 
         ResourceManager.extractEmojis();
-        File file = new File("de/uniks/stp/sounds/notification/default.wav");
+        File file = new File(Objects.requireNonNull(StageManager.class.getResource("sounds/notification/default.wav")).toURI());
         ResourceManager.saveNotifications(file);
 
 
