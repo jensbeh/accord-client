@@ -27,7 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -91,10 +93,7 @@ public class HomeViewController {
         serverController = new HashMap<>();
 
         ResourceManager.extractEmojis();
-        //File file = new File(Objects.requireNonNull(StageManager.class.getResource("sounds/notification/default.wav")).toURI());
-        URL url = Objects.requireNonNull(StageManager.class.getResource("sounds/notification/default.wav"));
-        File file = new File(new URI(url.toString().replace(" ","%20")).getSchemeSpecificPart());
-        ResourceManager.saveNotifications(file);
+        ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
 
 
         showPrivateView();
