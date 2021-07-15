@@ -48,7 +48,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     private Stage stage;
     private StageManager app;
-    private static final String testUserOneName = "Peter Lustig";
+    private static final String testUserOneName = "Peter";
     private static final String testUserOnePw = "1234";
 
 
@@ -92,6 +92,9 @@ public class ServerViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response8;
 
     @Mock
+    private HttpResponse<JsonNode> response9;
+
+    @Mock
     private DatagramSocket mockAudioSocket;
 
     @Mock
@@ -120,6 +123,9 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
 
     private ModelBuilder builder;
 
@@ -363,13 +369,14 @@ public class ServerViewControllerTest extends ApplicationTest {
         mockGetChannelMessages();
         mockJoinVoiceChannel();
         mockLeaveVoiceChannel();
+        mockLogout();
+
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("name", name2)
                 .put("password", pw)
                 .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
-        System.out.println(jsonNode);
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
             String name = (String) invocation.getArguments()[0];
@@ -394,6 +401,20 @@ public class ServerViewControllerTest extends ApplicationTest {
         message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
+    }
+
+    public void mockLogout() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "Logged out")
+                .put("data", new JSONObject());
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
+        }).when(restClient).logout(anyString(), callbackCaptor9.capture());
     }
 
     public void loginInit2(String name2, String pw) throws InterruptedException {
@@ -697,6 +718,18 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 3);
 
+        rightClickOn("#audioMember");
+        WaitForAsyncUtils.waitForFxEvents();
+        ContextMenu contextMenu = lookup("#audioMember").queryLabeled().getContextMenu();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        //write("\n");
+        doubleClickOn("#60b77ba0026423ad521awd2");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+        interact(() -> contextMenu.getItems().get(1).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
         jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
@@ -828,5 +861,18 @@ public class ServerViewControllerTest extends ApplicationTest {
         Assert.assertFalse(builder.getMuteHeadphones());
         Assert.assertFalse(mutedMicrophone.isVisible());
         Assert.assertFalse(mutedMHeadphone.isVisible());
+    }
+
+    @Test
+    public void serverViewStopTest() throws InterruptedException {
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Clicking logout...
+        clickOn("#logoutButton");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

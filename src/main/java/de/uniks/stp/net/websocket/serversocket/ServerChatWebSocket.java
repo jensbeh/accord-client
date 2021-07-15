@@ -113,8 +113,8 @@ public class ServerChatWebSocket extends Endpoint {
                         setTimestamp(timestamp).
                         setId(id).
                         setServerChannel(serverViewController.getCurrentChannel());
-                if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
-                    Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
+                if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
+                    Platform.runLater(() -> serverViewController.getChatViewController().clearMessageField());
                 }
             }
             // currentUser received
@@ -124,8 +124,8 @@ public class ServerChatWebSocket extends Endpoint {
                         setTimestamp(timestamp).
                         setId(id).
                         setServerChannel(serverViewController.getCurrentChannel());
-                if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
-                    Platform.runLater(() -> serverViewController.getMessageViewController().clearMessageField());
+                if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
+                    Platform.runLater(() -> serverViewController.getChatViewController().clearMessageField());
                 }
 
                 for (Categories categories : this.serverViewController.getServer().getCategories()) {
@@ -148,10 +148,11 @@ public class ServerChatWebSocket extends Endpoint {
                     }
                 }
             }
-            if (serverViewController.getMessageViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
+            if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
                 assert message != null;
                 serverViewController.getCurrentChannel().withMessage(message);
-                chatViewController.printMessage(message);
+                Message finalMessage = message;
+                Platform.runLater(() -> chatViewController.printMessage(finalMessage));
             }
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {

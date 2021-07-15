@@ -229,6 +229,7 @@ public class ServerSystemWebSocket extends Endpoint {
                         if (userId.equals(builder.getPersonalUser().getId())) {
                             if (builder.getAudioStreamClient() != null) {
                                 builder.getAudioStreamClient().disconnectStream();
+                                builder.setAudioStreamClient(null);
                             }
                             AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
                             serverChannel.withAudioMember(audioMemberPersonalUser);
@@ -273,7 +274,6 @@ public class ServerSystemWebSocket extends Endpoint {
                                 if (userId.equals(builder.getPersonalUser().getId())) {
                                     builder.setCurrentAudioChannel(null);
                                     builder.getAudioStreamClient().disconnectStream();
-
                                     builder.setAudioStreamClient(null);
                                 }
                                 // other user disconnects
@@ -302,7 +302,7 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 msg.setMessage(text);
-                chatViewController.refreshMessageListView();
+                chatViewController.updateMessage(msg);
                 break;
             }
         }
@@ -318,7 +318,6 @@ public class ServerSystemWebSocket extends Endpoint {
         for (Message msg : serverViewController.getCurrentChannel().getMessage()) {
             if (msg.getId().equals(msgId)) {
                 chatViewController.removeMessage(msg);
-                chatViewController.refreshMessageListView();
                 msg.removeYou();
                 break;
             }

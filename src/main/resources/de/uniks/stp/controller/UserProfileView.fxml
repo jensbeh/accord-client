@@ -40,12 +40,12 @@
                <children>
                   <Button id="mute_headphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎧 " textAlignment="CENTER">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font>
                   </Button>
                   <Label id="unmute_headphone" alignment="CENTER" opacity="0.7" prefHeight="35.0" prefWidth="70.0" text="X" textAlignment="CENTER" textFill="RED">
                      <font>
-                        <Font size="36.0" />
+                        <Font name="Arial Narrow" size="36.0" />
                      </font>
                   </Label>
                </children>

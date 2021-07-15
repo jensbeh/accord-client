@@ -21,6 +21,7 @@ public class AudioStreamReceiver implements Runnable {
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
     private volatile boolean stopped;
+    private final ArrayList<String> mutedUser = new ArrayList<>();
 
     public AudioStreamReceiver(ModelBuilder builder, DatagramSocket socket) {
         this.builder = builder;
@@ -75,14 +76,11 @@ public class AudioStreamReceiver implements Runnable {
                     String senderName = jsonData.getString("name");
 
                     // set receivedData to speaker of the senderName
-                    if (!builder.getMuteHeadphones()) {
-                        if (!senderName.equals(builder.getPersonalUser().getName())) {
-                            if (receiverSpeakerMap != null) {
-                                receiverSpeakerMap.get(senderName).writeData(receivedData);
-                            }
+                    if (!builder.getMuteHeadphones() && !senderName.equals(builder.getPersonalUser().getName())) {
+                        if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
+                            receiverSpeakerMap.get(senderName).writeData(receivedData);
                         }
                     }
-
                 }
             }
         }
@@ -112,6 +110,28 @@ public class AudioStreamReceiver implements Runnable {
         receiverSpeakerMap.remove(removeMember.getName());
     }
 
+    /**
+     * set User to MuteList
+     */
+    public void setMutedUser(String mutedMember) {
+        if (!mutedUser.contains(mutedMember)) {
+            mutedUser.add(mutedMember);
+        }
+    }
+
+    /**
+     * remove User from MuteList
+     */
+    public void setUnMutedUser(String unMutedUser) {
+        mutedUser.remove(unMutedUser);
+    }
+
+    /**
+     * get all mutedUsers
+     */
+    public ArrayList<String> getMutedAudioMember() {
+        return mutedUser;
+    }
 
     /**
      * var stopped is for waiting till the current while is completed, to stop Receiver
@@ -122,5 +142,4 @@ public class AudioStreamReceiver implements Runnable {
             Thread.onSpinWait();
         }
     }
-
 }
