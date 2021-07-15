@@ -155,7 +155,7 @@ public class SnakeControllerTest extends ApplicationTest {
         clickOn("#button_exit");
     }
 
-    //@Test
+    @Test
     public void SnakeGameTest() throws InterruptedException {
         loginInit();
 
