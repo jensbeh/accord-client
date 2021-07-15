@@ -226,6 +226,8 @@ public class ModelBuilder {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getChannelSoundFile().openStream()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(0.0f);
             clip.start();
         } catch (Exception ex) {
             ex.printStackTrace();
