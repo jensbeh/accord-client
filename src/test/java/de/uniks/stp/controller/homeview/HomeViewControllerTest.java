@@ -75,10 +75,16 @@ public class HomeViewControllerTest extends ApplicationTest {
     private HttpResponse<JsonNode> response2;
 
     @Mock
+    private HttpResponse<JsonNode> response3;
+
+    @Mock
     private HttpResponse<JsonNode> response5;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
 
 
     @BeforeClass
@@ -126,18 +132,21 @@ public class HomeViewControllerTest extends ApplicationTest {
         }).when(restClient).logout(anyString(), callbackCaptor.capture());
     }
 
-    public void mockGetUsers(String id, String name) {
+    public void mockGetUsers() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", "60adc8aec77d3f78988b57a0");
+        jsonObject.put("name", "Otto");
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONArray().put(new JSONObject().put("id", id).put("name", name)));
+                .put("data", new JSONArray().put(jsonObject));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor.getValue();
-            callback.completed(response);
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
             return null;
-        }).when(restClient).getUsers(anyString(), callbackCaptor.capture());
+        }).when(restClient).getUsers(anyString(), callbackCaptor3.capture());
     }
 
     public void mockGetServers() {
@@ -166,6 +175,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         mockGetServers();
+        mockGetUsers();
 
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -310,13 +320,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertNotEquals(0, response2.getBody().getObject().getJSONArray("data").length());
     }
 
-    @Test
-    public void getUsersTest() {
-        mockGetUsers("Test User", "5e2ffg75dd077d03df505");
-        restClient.getUsers(userKey, response -> {
-        });
-        Assert.assertNotEquals(0, response.getBody().getObject().getJSONArray("data").length());
-    }
 
     @Test
     public void privateChatTest() throws InterruptedException {
