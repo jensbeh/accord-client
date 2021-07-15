@@ -63,7 +63,7 @@ public class CustomNotificationsController extends SubSetting {
             customSoundComboBox.getItems().add(fileName);
         }
         customSoundComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            deleteButton.setVisible(!newValue.equals("default"));
+            deleteButton.setDisable(newValue.equals("default"));
             customSoundComboBox.setPromptText(newValue);
             ResourceManager.setComboValue(builder.getPersonalUser().getName(), newValue);
             for (File file : files) {

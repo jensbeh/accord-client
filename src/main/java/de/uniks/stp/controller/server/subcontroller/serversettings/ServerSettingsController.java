@@ -82,6 +82,8 @@ public class ServerSettingsController {
      * Show Overview settings decide between owner and not owner
      */
     private void onOverViewClicked(ActionEvent actionEvent) {
+        System.out.println("builder: " + builder.getCurrentServer().getOwner());
+        System.out.println("userid: " + userId);
         if (selectedButton != overview) {
             newSelectedButton(overview);
         }

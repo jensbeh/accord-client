@@ -5,12 +5,27 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
+      <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+         <children>
+            <Button id="createLink" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%button.create" textFill="WHITE" />
+            <Label id="copiedLabel" prefHeight="17.0" prefWidth="88.0" text="copied">
+               <graphic>
+                  <ImageView fitHeight="19.0" fitWidth="11.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../icons/checkmark.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
+         </children>
+      </HBox>
       <TextField id="linkTextField" alignment="CENTER" text="link ...">
          <VBox.margin>
             <Insets top="25.0" />

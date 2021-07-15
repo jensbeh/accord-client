@@ -41,7 +41,10 @@ public class DoNotDisturbController extends SubSetting {
         volume.setMin(-80.0);
         volume.setMax(6.0206);
         volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
-        volume.valueProperty().addListener((observable, oldValue, newValue) -> builder.setVolume(newValue.floatValue()));
+        volume.valueProperty().addListener((observable, oldValue, newValue) -> {
+                builder.setVolume(newValue.floatValue());
+                builder.playSound();
+            });
     }
 
     private void checkIfDoNotDisturbIsSelected(ActionEvent actionEvent) {

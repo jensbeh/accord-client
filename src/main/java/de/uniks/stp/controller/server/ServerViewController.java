@@ -407,8 +407,11 @@ public class ServerViewController {
     public void showOnlineOfflineUsers() {
         ArrayList<User> onlineUsers = new ArrayList<>();
         ArrayList<User> offlineUsers = new ArrayList<>();
+        System.out.println("Server users: " + this.server.getUser());
         for (User user : this.server.getUser()) {
             if (user.isStatus()) {
+                System.out.println("User name: " + user.getName());
+                System.out.println("Currentuser name: " + builder.getPersonalUser().getName());
                 if (user.getName().equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(() -> checkForOwnership(user.getId()));
                 }

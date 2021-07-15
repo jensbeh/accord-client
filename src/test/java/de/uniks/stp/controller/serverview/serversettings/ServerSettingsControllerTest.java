@@ -11,6 +11,7 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -41,7 +42,9 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     private Stage stage;
     private final String testUserName = "Hendry Bracken";
     private final String testServerId = "5e2fbd8770dd077d03df505";
+    private final String testServerId2 = "5e2fbd8770dd077d03df504";
     private final String testServerName = "TestServer Team Bit Shift";
+    private final String testServerName2 = "TestServer Team Bit Shift 2";
 
     @Mock
     private RestClient restClient;
@@ -119,7 +122,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -175,11 +178,39 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         }).when(restClient).postServer(anyString(), anyString(), callbackCaptor2.capture());
     }
 
+    public void mockPostServer2() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df504").put("name", testServerName2));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            return null;
+        }).when(restClient).postServer(anyString(), anyString(), callbackCaptor2.capture());
+    }
+
     public void mockGetServers() {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
                 .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testServerName)));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            return null;
+        }).when(restClient).getServers(anyString(), callbackCaptor3.capture());
+    }
+
+    public void mockGetServers2() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONArray().put(new JSONObject().put("id", "5e2fbd8770dd077d03df504").put("name", testServerName2)));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -199,6 +230,26 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner).put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor4.getValue();
+            callback.completed(response4);
+            return null;
+        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor4.capture());
+    }
+
+    public void mockGetServerUsers2() {
+        String[] categories = new String[1];
+        categories[0] = "5e2fbd8770dd077d03df600";
+        String testServerOwner = "5e2iof875dd077d03df504";
+        String testServerOwner2 = "5e2iof875dd077d03df505";
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true));
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", testServerId2).put("name", testServerName).put("owner", testServerOwner2).put("categories", categories).put("members", members));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        System.out.println("json: " + jsonNode);
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
             Callback<JsonNode> callback = callbackCaptor4.getValue();
@@ -284,6 +335,20 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         }).when(restClient).putServer(anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
+    public void mockPutServer2() {
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject().put("id", testServerId2).put("name", "TestServer Team Bit Shift Renamed 2"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response9.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor9.getValue();
+            callback.completed(response9);
+            return null;
+        }).when(restClient).putServer(anyString(), anyString(), anyString(), callbackCaptor9.capture());
+    }
+
     public void loginInit(boolean emptyServers) throws InterruptedException {
         mockPostServer();
         if (!emptyServers)
@@ -295,6 +360,29 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         mockGetCategoryChannels();
         mockGetChannelMessages();
         mockPutServer();
+
+        mockLogin();
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText(testUserName);
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        String testUserPw = "stp2021pw";
+        passwordField.setText(testUserPw);
+        clickOn("#loginButton");
+
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    public void loginInit2(boolean emptyServers) throws InterruptedException {
+        mockPostServer2();
+        if (!emptyServers)
+            mockGetServers2();
+        else
+            mockGetServersEmpty();
+        mockGetServerUsers2();
+        mockGetServerCategories();
+        mockGetCategoryChannels();
+        mockGetChannelMessages();
+        mockPutServer2();
 
         mockLogin();
         TextField usernameTextField = lookup("#usernameTextfield").query();
@@ -346,11 +434,114 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         write("\n");
         Assert.assertNotEquals(1, this.listTargetWindows().size());
         clickOn("#overviewBtn");
-        clickOn("#deleteServer");
         Label serverNameLabel = lookup("#serverName").query();
         Button leaveButton = lookup("#deleteServer").query();
         Assert.assertEquals("TestServer Team Bit Shift", serverNameLabel.getText());
         Assert.assertEquals("Delete Server", leaveButton.getText());
+        TextField serverNameField = lookup("#nameText").query();
+        serverNameField.setText("testServer");
+        Button changeButton = lookup("#serverChangeButton").query();
+        clickOn(changeButton);
+        Assert.assertEquals(serverNameField.getText(), serverNameLabel.getText());
+    }
+
+    @Test
+    public void clickOnOwnerOverviewBright() throws InterruptedException {
+        changeTheme("Bright");
+        WaitForAsyncUtils.waitForFxEvents();
+        loginInit(false);
+
+        mockPutServer();
+
+        String result;
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+                Assert.assertEquals("Accord - Settings", result);
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        clickOn("#loginButton");
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#server"));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        clickOn("#overviewBtn");
+        Label serverNameLabel = lookup("#serverName").query();
+        Button leaveButton = lookup("#deleteServer").query();
+        Assert.assertEquals("TestServer Team Bit Shift", serverNameLabel.getText());
+        Assert.assertEquals("Delete Server", leaveButton.getText());
+        TextField serverNameField = lookup("#nameText").query();
+        serverNameField.setText("testServer");
+        Button changeButton = lookup("#serverChangeButton").query();
+        clickOn(changeButton);
+        Assert.assertEquals(serverNameField.getText(), serverNameLabel.getText());
+        clickOn("#deleteServer");
+
+        moveBy(-50, -105);
+        clickOn();
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+                Assert.assertEquals("ServerSettings", result);
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        clickOn("#logoutButton");
+        changeTheme("Dark");
+
+        for (Object s : this.listTargetWindows()) {
+            if (s != stage) {
+                result = ((Stage) s).getTitle();
+                Assert.assertEquals("Accord - Settings", result);
+                Platform.runLater(((Stage) s)::close);
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+    }
+
+    public void changeTheme(String theme) {
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button themeButton = lookup("#button_Theme").query();
+        clickOn(themeButton);
+        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+
+        clickOn(comboBox_themeSelect);
+        clickOn(theme);
+        WaitForAsyncUtils.waitForFxEvents();
+
+    }
+
+    @Test
+    public void clickOnOverview() throws InterruptedException {
+        loginInit2(false);
+
+        mockPutServer2();
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#server"));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        moveBy(0, 25);
+        write("\n");
+        Assert.assertNotEquals(1, this.listTargetWindows().size());
+        clickOn("#overviewBtn");
+        Label serverNameLabel = lookup("#serverName").query();
+        Button leaveButton = lookup("#leaveServer").query();
+        Assert.assertEquals("TestServer Team Bit Shift 2", serverNameLabel.getText());
+        Assert.assertEquals("Leave Server", leaveButton.getText());
+        clickOn(leaveButton);
     }
 
     @Test

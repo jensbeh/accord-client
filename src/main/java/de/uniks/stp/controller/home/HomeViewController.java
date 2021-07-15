@@ -376,6 +376,7 @@ public class HomeViewController {
                 if (builder.getPrivateChatWebSocketClient().getSession() != null) {
                     builder.getPrivateChatWebSocketClient().stop();
                 }
+                builder.setPrivateChatWebSocketClient(null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
