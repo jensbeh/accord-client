@@ -153,6 +153,18 @@ public class SettingsController {
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
+        for (Button button: itemList) {
+            button.getId();
+            switch (button.getId()) {
+                case "button_DnD":
+                    button.setText(lang.getString("button.notifications"));
+                    break;
+                case "button_CN":
+                    button.setText(lang.getString("button.custom_notification"));
+                    break;
+
+            }
+        }
     }
 
     public void setTheme() {

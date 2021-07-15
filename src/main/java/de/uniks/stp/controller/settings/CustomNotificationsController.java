@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.settings;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -80,6 +82,7 @@ public class CustomNotificationsController extends SubSetting {
                 }
             }
         });
+        onLanguageChanged();
     }
 
     private void delete(ActionEvent actionEvent) {
@@ -113,6 +116,12 @@ public class CustomNotificationsController extends SubSetting {
         } else {
             System.out.println("File is not valid!");
         }
+    }
+
+    public void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        addButton.setText(lang.getString("button.CN_add"));
+        deleteButton.setText(lang.getString("button.CN_delete"));
     }
 
     public void cleanUp() {
