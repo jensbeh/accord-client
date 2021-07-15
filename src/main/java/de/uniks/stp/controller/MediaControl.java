@@ -84,6 +84,7 @@ public class MediaControl extends BorderPane {
         mediaBar.getChildren().add(timeLabel);
 
         timeSlider = new Slider();
+        timeSlider.setId("timeSlider");
         HBox.setHgrow(timeSlider, Priority.SOMETIMES);
         timeSlider.setMinWidth(50);
         timeSlider.setMaxWidth(Double.MAX_VALUE);
@@ -100,6 +101,7 @@ public class MediaControl extends BorderPane {
         mediaBar.getChildren().add(volumeLabel);
 
         volumeSlider = new Slider();
+        volumeSlider.setId("volumeSlider");
         volumeSlider.setPrefWidth(70);
         volumeSlider.setMaxWidth(Region.USE_PREF_SIZE);
         volumeSlider.setMinWidth(30);
