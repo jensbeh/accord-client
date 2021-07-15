@@ -6,7 +6,9 @@ branches:
     - master
 before_install:
   - sudo apt-get install ffmpeg
-  - pactl set-default-sink 0
+  - sudo apt install pulseaudio
+  - pacmd set-default-sink 0
+  - pulseaudio -k
   - chmod +x ./gradlew
 script:
   - ./gradlew check
