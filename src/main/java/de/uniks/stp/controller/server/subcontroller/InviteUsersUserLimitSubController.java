@@ -209,5 +209,8 @@ public class InviteUsersUserLimitSubController {
 
         if (deleteLink != null)
             deleteLink.setText(lang.getString("button.delete"));
+
+        if (copied != null)
+            copied.setText(lang.getString("label.copied"));
     }
 }

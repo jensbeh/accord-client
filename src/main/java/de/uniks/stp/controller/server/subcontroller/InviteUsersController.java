@@ -109,6 +109,7 @@ public class InviteUsersController {
         if (inviteUsersUserLimitSubController != null) {
             inviteUsersUserLimitSubController.onLanguageChanged();
         }
+
     }
 
     public void setTheme() {
