@@ -484,6 +484,24 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void throwOutUserFromChat() throws InterruptedException {
+        loginInit(testUserOneName, testUserOnePw);
+
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ListView<Channel> channels = lookup("#channelList").queryListView();
+        clickOn(app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text")).getId());
+        Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
+
+
+        String message = new JSONObject().put("action", "”channelDeleted").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testUserOneName)).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+    }
+
+    @Test
     public void onNewMessageIconCounterTest() throws InterruptedException {
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
