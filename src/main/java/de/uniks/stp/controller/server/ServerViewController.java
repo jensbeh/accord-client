@@ -188,6 +188,7 @@ public class ServerViewController {
         }); // members & (categories)
         buildSystemWebSocket();
         buildChatWebSocket();
+        onLanguageChanged();
     }
 
     /**
@@ -370,6 +371,7 @@ public class ServerViewController {
                     this.audioConnectionBox.getChildren().add(root);
                     disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
                     disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                    onLanguageChanged();
                 });
 
             } catch (IOException e) {
@@ -642,6 +644,9 @@ public class ServerViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (textChannelLabel != null)
             textChannelLabel.setText(lang.getString("label.textChannel"));
+
+        if (disconnectAudioButton != null)
+            disconnectAudioButton.setText(lang.getString("Button.disconnect"));
 
         if (generalLabel != null)
             generalLabel.setText(lang.getString("label.general"));

@@ -478,14 +478,14 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertFalse(msgArrived);
 
         Button send = lookup("#sendButton").query();
-        Assert.assertEquals(send.getText(), "send");
+        Assert.assertEquals(send.getText(), "Send");
 
         rightClickOn("#messageCell");
         interact(() -> contextMenu.getItems().get(1).fire());
         Button edit = lookup("#editButton").query();
-        Assert.assertEquals(edit.getText(), "edit");
+        Assert.assertEquals(edit.getText(), "Edit");
         Button abort = lookup("#abortButton").query();
-        Assert.assertEquals(abort.getText(), "abort");
+        Assert.assertEquals(abort.getText(), "Abort");
 
         HBox messageBox = lookup("#messageBox").query();
         Assert.assertTrue(messageBox.getChildren().contains(edit));

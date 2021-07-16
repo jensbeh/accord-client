@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="161.0" prefWidth="196.0" spacing="5.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="161.0" prefWidth="196.0" spacing="5.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <CheckBox id="doNotDisturbSelected" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Do not disturb :" textFill="WHITE">
          <font>
@@ -29,7 +29,7 @@
       </CheckBox>
       <HBox alignment="CENTER" prefHeight="31.0" prefWidth="202.0" spacing="20.0">
          <children>
-            <Label prefHeight="25.0" prefWidth="82.0" text="Volume" textFill="WHITE">
+            <Label id="volumeLabel" prefHeight="25.0" prefWidth="82.0" text="Volume" textFill="WHITE">
                <font>
                   <Font size="16.0" />
                </font>
