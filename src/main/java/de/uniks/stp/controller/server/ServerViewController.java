@@ -384,7 +384,11 @@ public class ServerViewController {
      * when audio disconnect button is clicked
      */
     public void onAudioDisconnectClicked(ActionEvent actionEvent) {
-        builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
+        leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId());
+    }
+
+    public void leaveVoiceChannel(String serverId, String categoryId, String channelId) {
+        builder.getRestClient().leaveVoiceChannel(serverId, categoryId, channelId, builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {

@@ -307,14 +307,10 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
-            ServerChannel channel = selectedChannel;
+            if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
+                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+            }
             restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-//                if (channel.getType().equals("audio")) {
-//                    if (builder.getAudioStreamClient() != null) {
-//
-//                        builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
-//                    }
-//                }
             });
         }
     }

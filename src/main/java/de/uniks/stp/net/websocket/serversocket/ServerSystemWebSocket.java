@@ -502,16 +502,7 @@ public class ServerSystemWebSocket extends Endpoint {
                         if (channel.getId().equals(channelId)) {
                             if (channel.getType().equals("audio")) {
                                 if (builder.getAudioStreamClient() != null) {
-                                    builder.setCurrentAudioChannel(null);
-                                    builder.getAudioStreamClient().disconnectStream();
-                                    builder.setAudioStreamClient(null);
-                                    builder.playChannelSound("left");
-//                                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
-                                    if (builder.getInServerState()) {
-                                        serverViewController.showAudioConnectedBox();
-                                    } else {
-                                        builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
-                                    }
+                                    disconnectAudioChannelNotOwner(server.getId(), categoryId, channelId);
                                 }
                             }
                             cat.withoutChannel(channel);
@@ -526,6 +517,20 @@ public class ServerSystemWebSocket extends Endpoint {
                     }
                 }
             }
+        }
+    }
+
+    private void disconnectAudioChannelNotOwner(String serverId, String categoryId, String channelId) {
+        serverViewController.leaveVoiceChannel(serverId, categoryId, channelId);
+        builder.setCurrentAudioChannel(null);
+        builder.getAudioStreamClient().disconnectStream();
+        builder.setAudioStreamClient(null);
+        builder.playChannelSound("left");
+//                                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+        if (builder.getInServerState()) {
+            serverViewController.showAudioConnectedBox();
+        } else {
+            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
         }
     }
 
