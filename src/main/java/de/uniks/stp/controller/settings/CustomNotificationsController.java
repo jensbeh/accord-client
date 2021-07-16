@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.settings;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
@@ -8,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -32,6 +35,7 @@ public class CustomNotificationsController extends SubSetting {
     private List<String> addedFiles;
     private ObservableList<File> ob;
     private InputStream stream;
+    private Label selectedSound;
 
     public CustomNotificationsController(Parent view, ModelBuilder builder) {
         this.builder = builder;
@@ -44,6 +48,7 @@ public class CustomNotificationsController extends SubSetting {
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
         deleteButton = (Button) view.lookup("#delete");
+        selectedSound = (Label) view.lookup("#selectedSound");
         if (addedFiles == null) {
             addedFiles = new ArrayList<>();
         }
@@ -80,6 +85,7 @@ public class CustomNotificationsController extends SubSetting {
                 }
             }
         });
+        onLanguageChanged();
     }
 
     private void delete(ActionEvent actionEvent) {
@@ -113,6 +119,14 @@ public class CustomNotificationsController extends SubSetting {
         } else {
             System.out.println("File is not valid!");
         }
+    }
+
+    public void onLanguageChanged() {
+        ResourceBundle lang = StageManager.getLangBundle();
+        addButton.setText(lang.getString("button.CN_add"));
+        deleteButton.setText(lang.getString("button.CN_delete"));
+        selectedSound.setText(lang.getString("label.CN_selected_sound"));
+        customSoundComboBox.setPromptText(lang.getString("comboBox.CN_saved_sounds"));
     }
 
     public void cleanUp() {

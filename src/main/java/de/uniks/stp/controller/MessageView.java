@@ -255,7 +255,12 @@ public class MessageView {
                 break;
         }
         chatViewController.getWebEngines().add(engine);
-        engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
+        if (builder.getTheme().equals("Bright")) {
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/webView.css")).toExternalForm());
+        } else {
+            engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/dark/webView.css")).toExternalForm());
+        }
+
     }
 
     private void setVideoSize(Parent parent, String url, MediaView mediaView) {

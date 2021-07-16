@@ -300,20 +300,6 @@ public class ServerMessageTest extends ApplicationTest {
         }).when(restClient).updateMessage(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
-    public void mockGetChannelMessagesURL() {
-        JSONObject jsonString = new JSONObject()
-                .put("status", "success")
-                .put("message", "")
-                .put("data", new JSONArray());
-        String jsonNode = new JsonNode(jsonString.toString()).toString();
-        when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
-        doAnswer((Answer<Void>) invocation -> {
-            Callback<JsonNode> callback = callbackCaptor8.getValue();
-            callback.completed(response10);
-            return null;
-        }).when(restClient).getChannelMessages(anyLong(), anyString(), anyString(), anyString(), anyString(), callbackCaptor10.capture());
-    }
-
     public void loginInit(boolean emptyServers) throws InterruptedException {
         mockPostServer();
         if (!emptyServers)
@@ -478,14 +464,14 @@ public class ServerMessageTest extends ApplicationTest {
         Assert.assertFalse(msgArrived);
 
         Button send = lookup("#sendButton").query();
-        Assert.assertEquals(send.getText(), "send");
+        Assert.assertEquals(send.getText(), "Send");
 
         rightClickOn("#messageCell");
         interact(() -> contextMenu.getItems().get(1).fire());
         Button edit = lookup("#editButton").query();
-        Assert.assertEquals(edit.getText(), "edit");
+        Assert.assertEquals(edit.getText(), "Edit");
         Button abort = lookup("#abortButton").query();
-        Assert.assertEquals(abort.getText(), "abort");
+        Assert.assertEquals(abort.getText(), "Abort");
 
         HBox messageBox = lookup("#messageBox").query();
         Assert.assertTrue(messageBox.getChildren().contains(edit));

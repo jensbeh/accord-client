@@ -126,6 +126,10 @@ public class ServerSettingsCategoryController extends SubSetting {
      */
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
+            // disconnect from audioChannel
+            if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
+                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+            }
             restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");

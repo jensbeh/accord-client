@@ -91,7 +91,7 @@ public class PrivateViewController {
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
         showUsers();
-
+        onLanguageChanged();
         if (privateChatWebSocket == null) {
             privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
                     getPersonalUser().getName().replace(" ", "+")), builder.getPersonalUser().getUserKey());
@@ -387,7 +387,8 @@ public class PrivateViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
-
+        if (disconnectAudioButton != null)
+            disconnectAudioButton.setText(lang.getString("Button.disconnect"));
         if (chatViewController != null) {
             chatViewController.onLanguageChanged();
         }
