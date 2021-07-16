@@ -308,6 +308,7 @@ public class StageManager extends Application {
             subStage.setScene(scene);
             subStage.centerOnScreen();
             subStage.initOwner(stage);
+            subStage.setAlwaysOnTop(true);
             subStage.initModality(Modality.WINDOW_MODAL);
             subStage.setOnCloseRequest(event -> {
                 if (startSnakeController != null) {

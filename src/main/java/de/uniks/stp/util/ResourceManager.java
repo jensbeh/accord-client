@@ -343,7 +343,7 @@ public class ResourceManager {
     /**
      * copy file
      */
-    private static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
+    public static void copyFile(File file, String targetPath) throws IOException, URISyntaxException {
         FileChannel source;
         if (file.getName().equals("default.wav")) {
             URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/sounds/notification/default.wav");

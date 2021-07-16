@@ -72,13 +72,10 @@ public class MessageView {
         loadVideo = false;
         WebView webView = new WebView();
         MediaView mediaView = new MediaView();
-        if (urlType.equals("video")) {
+        if (urlType.equals("video") || urlType.equals("localVideo")) {
             loadVideo = true;
-            setMedia(url, mediaView);
-            if (loadVideo) {
-                setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-                textMessage = textMessage.replace(url, "");
-            }
+            setVideo(url, mediaView);
+            textMessage = textMessage.replace(url, "");
         } else if (!urlType.equals("None")) {
             loadImage = true;
             setMedia(url, webView.getEngine());
@@ -197,7 +194,7 @@ public class MessageView {
     }
 
     private String searchUrl(String msg) {
-        String urlRegex = "\\b(https?|ftp|file|src)(://|/test)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+        String urlRegex = "\\b(https?|ftp|file|src)(://|/)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         Pattern pattern = Pattern.compile(urlRegex);
         Matcher matcher = pattern.matcher(msg);
         String url = "";
@@ -210,6 +207,8 @@ public class MessageView {
             urlType = "gif";
         } else if (url.contains("youtube")) {
             urlType = "youtube";
+        } else if ((url.contains("src/") || url.contains("file://")) && url.contains(".mp4")) {
+            urlType = "localVideo";
         } else if (url.contains(".mp4")) {
             urlType = "video";
         } else {
@@ -220,7 +219,7 @@ public class MessageView {
 
     private void setVideo(String url, MediaView mediaView) {
         Media mediaUrl = null;
-        if (url.contains("src/test")) {
+        if (urlType.equals("localVideo")) {
             File file = new File(url);
             mediaUrl = new Media(file.toURI().toString());
         } else {
@@ -257,13 +256,6 @@ public class MessageView {
         }
         chatViewController.getWebEngines().add(engine);
         engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/message/webView.css")).toExternalForm());
-    }
-
-    private void setMedia(String url, MediaView mediaView) {
-        if (urlType.equals("video")) {
-            setVideo(url, mediaView);
-            loadVideo = true;
-        }
     }
 
     private void setVideoSize(Parent parent, String url, MediaView mediaView) {
