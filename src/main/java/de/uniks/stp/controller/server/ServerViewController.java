@@ -376,7 +376,7 @@ public class ServerViewController {
                 e.printStackTrace();
             }
         } else if (this.audioConnectionBox.getChildren().size() > 0) {
-            this.audioConnectionBox.getChildren().clear();
+            Platform.runLater(() -> this.audioConnectionBox.getChildren().clear());
         }
     }
 

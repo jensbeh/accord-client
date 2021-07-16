@@ -11,7 +11,6 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.ResourceManager;
-import javafx.scene.control.ComboBox;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -51,7 +50,7 @@ public class ModelBuilder {
     private boolean muteHeadphones;
 
     private boolean loadUserData = true;
-    private boolean inServerChat;
+    private boolean inServerState;
     private PrivateChat currentPrivateChat;
     private boolean firstMuted;
     /////////////////////////////////////////
@@ -369,12 +368,12 @@ public class ModelBuilder {
         return loadUserData;
     }
 
-    public void setInServerChat(boolean state) {
-        this.inServerChat = state;
+    public void setInServerState(boolean state) {
+        this.inServerState = state;
     }
 
-    public boolean getInServerChat() {
-        return this.inServerChat;
+    public boolean getInServerState() {
+        return this.inServerState;
     }
 
     public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {

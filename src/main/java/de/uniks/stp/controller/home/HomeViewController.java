@@ -65,7 +65,7 @@ public class HomeViewController {
     @SuppressWarnings("unchecked")
     public void init() throws IOException {
         builder.loadSettings();
-        builder.setInServerChat(false);
+        builder.setInServerState(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
@@ -130,7 +130,7 @@ public class HomeViewController {
      * refreshed the serverList when a server was deleted.
      */
     public void serverDeleted() {
-        builder.setInServerChat(false);
+        builder.setInServerState(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();
@@ -192,7 +192,7 @@ public class HomeViewController {
      * Also changes the online user list to an online and offline list of users in that server.
      */
     public void showServerView() {
-        builder.setInServerChat(true);
+        builder.setInServerState(true);
         try {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
@@ -408,7 +408,7 @@ public class HomeViewController {
         if (builder.getCurrentChatViewController() != null) {
             builder.getCurrentChatViewController().stopMediaPlayers();
         }
-        builder.setInServerChat(false);
+        builder.setInServerState(false);
         this.builder.setCurrentServer(null);
         showPrivateView();
         updateServerListColor();

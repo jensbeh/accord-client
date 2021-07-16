@@ -271,7 +271,7 @@ public class ChatViewController {
             });
             // if message is a text message
             text = messagesHashMap.get(selected).getMessage();
-            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerChat()) {
+            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerState()) {
                 contextMenu.getItems().get(1).setVisible(false);
                 contextMenu.getItems().get(2).setVisible(false);
             } else {
@@ -500,7 +500,7 @@ public class ChatViewController {
         String textMessage = messageTextField.getText();
         if (textMessage.length() <= 700) {
             if (!textMessage.isEmpty()) {
-                if (!builder.getInServerChat()) {
+                if (!builder.getInServerState()) {
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
                             builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
@@ -524,7 +524,7 @@ public class ChatViewController {
      * insert new message in observableList
      */
     public void printMessage(Message msg) {
-        if (!builder.getInServerChat()) {
+        if (!builder.getInServerState()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
@@ -547,7 +547,7 @@ public class ChatViewController {
      * removes message from observableList
      */
     public void removeMessage(Message msg) {
-        if (!builder.getInServerChat()) {
+        if (!builder.getInServerState()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) {
                 StackPane toRemoveStack = stackPaneHashMap.get(msg);
                 Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
