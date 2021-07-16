@@ -11,7 +11,6 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.ResourceManager;
-import javafx.scene.control.ComboBox;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -51,7 +50,7 @@ public class ModelBuilder {
     private boolean muteHeadphones;
 
     private boolean loadUserData = true;
-    private boolean inServerChat;
+    private boolean inServerState;
     private PrivateChat currentPrivateChat;
     private boolean firstMuted;
     /////////////////////////////////////////
@@ -176,11 +175,11 @@ public class ModelBuilder {
      * play notification sound
      */
     public void playSound() {
-        if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
+        if (ResourceManager.getComboValue(personalUser.getName()).isEmpty()) {
             setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
-        }else{
+        } else {
             String newValue = ResourceManager.getComboValue(personalUser.getName());
-            for(File file : ResourceManager.getNotificationSoundFiles()){
+            for (File file : ResourceManager.getNotificationSoundFiles()) {
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
                 if (fileName.equals(newValue)) {
                     try {
@@ -214,9 +213,9 @@ public class ModelBuilder {
      * play notification sound when you join/leave an audio channel
      */
     public void playChannelSound(String action) {
-        if(action.equals("join")) {
+        if (action.equals("join")) {
             setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/join.wav"));
-        }else{
+        } else {
             setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/left.wav"));
         }
         if (clip != null) {
@@ -369,12 +368,12 @@ public class ModelBuilder {
         return loadUserData;
     }
 
-    public void setInServerChat(boolean state) {
-        this.inServerChat = state;
+    public void setInServerState(boolean state) {
+        this.inServerState = state;
     }
 
-    public boolean getInServerChat() {
-        return this.inServerChat;
+    public boolean getInServerState() {
+        return this.inServerState;
     }
 
     public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {
