@@ -222,7 +222,6 @@ public class HomeViewController {
             createJoinServerController.setTheme();
             createJoinServerController.showCreateServerView(this::onServerCreated);
             createJoinServerController.joinNewServer(this::joinNewServer);
-            stage.setTitle("Create or Join a new Server");
             stage.setScene(scene);
             stage.show();
             updateServerListColor();

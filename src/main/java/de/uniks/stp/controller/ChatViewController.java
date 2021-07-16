@@ -404,6 +404,7 @@ public class ChatViewController {
             messageBox.getChildren().add(abortButton);
             textWrote = messageTextField.getText();
             setTheme();
+            onLanguageChanged();
         }
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);
@@ -595,6 +596,10 @@ public class ChatViewController {
         ResourceBundle lang = StageManager.getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
+        if (editButton != null)
+            editButton.setText(lang.getString("button.edit"));
+        if (abortButton != null)
+            abortButton.setText(lang.getString("button.abort"));
     }
 
     public void stop() {
