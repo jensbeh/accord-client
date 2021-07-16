@@ -248,6 +248,8 @@ public class ResourceManager {
             }
             OutputStream outputStream = new FileOutputStream(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav");
             inputStream.transferTo(outputStream);
+            inputStream.close();
+            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

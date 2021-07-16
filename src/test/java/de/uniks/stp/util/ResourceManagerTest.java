@@ -211,9 +211,8 @@ public class ResourceManagerTest extends ApplicationTest {
     }
 
     @Test
-    public void saveNotificationsTest() throws InterruptedException, IOException {
+    public void saveNotificationsTest() throws InterruptedException{
         loginInit();
-        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
         File file = new File("de/uniks/stp/sounds/notification/default.wav");
         ResourceManager.saveNotifications(file);
         Assert.assertTrue(Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName())));
