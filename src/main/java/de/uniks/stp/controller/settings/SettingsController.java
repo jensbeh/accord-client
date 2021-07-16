@@ -153,6 +153,7 @@ public class SettingsController {
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
+        themeButton.setText(lang.getString("button.DB_mode"));
         for (Button button: itemList) {
             button.getId();
             switch (button.getId()) {
