@@ -74,6 +74,7 @@ public class CreateJoinServerController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        onLanguageChanged();
     }
 
     private void changeEnter(Event event) {
@@ -154,8 +155,16 @@ public class CreateJoinServerController {
      */
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
+        stage.setTitle(lang.getString("window_title_create"));
+        createServer.setText(lang.getString("Button.create_server"));
+        joinServer.setText(lang.getString("Button.join_server"));
+        create_tab.setText(lang.getString("tabPane.create_server"));
+        join_tab.setText(lang.getString("tabPane.join_server"));
         if (serverName != null)
-            serverName.setText(lang.getString("textField.server_name"));
+            serverName.setPromptText(lang.getString("textField.server_name"));
+        if (linkTextField != null) {
+            linkTextField.setPromptText(lang.getString("textField.invite_link"));
+        }
 
         if (error != null && !error.equals("")) {
             if (last_error_type.equals("join")) {

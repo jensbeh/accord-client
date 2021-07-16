@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -34,6 +35,7 @@ public class CustomNotificationsController extends SubSetting {
     private List<String> addedFiles;
     private ObservableList<File> ob;
     private InputStream stream;
+    private Label selectedSound;
 
     public CustomNotificationsController(Parent view, ModelBuilder builder) {
         this.builder = builder;
@@ -46,6 +48,7 @@ public class CustomNotificationsController extends SubSetting {
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
         deleteButton = (Button) view.lookup("#delete");
+        selectedSound = (Label) view.lookup("#selectedSound");
         if (addedFiles == null) {
             addedFiles = new ArrayList<>();
         }
@@ -122,6 +125,8 @@ public class CustomNotificationsController extends SubSetting {
         ResourceBundle lang = StageManager.getLangBundle();
         addButton.setText(lang.getString("button.CN_add"));
         deleteButton.setText(lang.getString("button.CN_delete"));
+        selectedSound.setText(lang.getString("label.CN_selected_sound"));
+        customSoundComboBox.setPromptText(lang.getString("comboBox.CN_saved_sounds"));
     }
 
     public void cleanUp() {

@@ -6,6 +6,7 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 
 import java.util.ResourceBundle;
@@ -18,6 +19,7 @@ public class DoNotDisturbController extends SubSetting {
     private CheckBox showNotifications;
     private CheckBox playSound;
     private Slider volume;
+    private Label volumeLabel;
 
     public DoNotDisturbController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -32,6 +34,7 @@ public class DoNotDisturbController extends SubSetting {
         showNotifications = (CheckBox) view.lookup("#ShowNotifications");
         showNotifications.setSelected(builder.isShowNotifications());
         volume = (Slider) view.lookup("#volume");
+        volumeLabel = (Label) view.lookup("#volumeLabel");
         playSound = (CheckBox) view.lookup("#playSound");
         playSound.setSelected(builder.isPlaySound());
         checkIfDoNotDisturbIsSelected(null);
@@ -71,6 +74,7 @@ public class DoNotDisturbController extends SubSetting {
         doNotDisturbSelected.setText(lang.getString("checkbox.dnd"));
         showNotifications.setText(lang.getString(("checkbox.show_notifications")));
         playSound.setText(lang.getString("checkbox.play_sound"));
+        volumeLabel.setText(lang.getString("slider.volume"));
     }
 
     @Override
