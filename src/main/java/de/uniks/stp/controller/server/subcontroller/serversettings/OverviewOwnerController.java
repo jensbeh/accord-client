@@ -21,7 +21,6 @@ public class OverviewOwnerController {
     private TextField nameText;
     private final RestClient restClient;
 
-
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
@@ -29,7 +28,6 @@ public class OverviewOwnerController {
     }
 
     public void init() {
-
         this.serverName = (Label) view.lookup("#serverName");
         serverName.setText(builder.getCurrentServer().getName());
         Button deleteServer = (Button) view.lookup("#deleteServer");
@@ -82,6 +80,9 @@ public class OverviewOwnerController {
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == button) {
+            if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
+                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+            }
             //delete server
             restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();

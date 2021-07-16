@@ -355,6 +355,21 @@ public class ServerSystemWebSocket extends Endpoint {
      * deletes server
      */
     private void deleteServer() {
+        // thrown out from audioChannel
+        if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
+            for (Categories categories : serverViewController.getServer().getCategories()) {
+                if (categories.getId().equals(builder.getCurrentAudioChannel().getCategories().getId())) {
+                    for (ServerChannel channel : categories.getChannel()) {
+                        if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
+                            disconnectAudioChannelNotOwner(serverViewController.getServer().getId(), categories.getId(), builder.getCurrentAudioChannel().getId());
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+
         Platform.runLater(() -> {
             if (builder.getCurrentServer() == serverViewController.getServer()) {
                 builder.getPersonalUser().withoutServer(serverViewController.getServer());
@@ -429,6 +444,16 @@ public class ServerSystemWebSocket extends Endpoint {
             }
         }
         if (deletedNode != null) {
+            // thrown out from audioChannel
+            if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
+                for (ServerChannel channel : deletedCategory.getChannel()) {
+                    if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
+                        disconnectAudioChannelNotOwner(currentServer.getId(), categoryId, builder.getCurrentAudioChannel().getId());
+                        break;
+                    }
+                }
+            }
+
             currentServer.withoutCategories(deletedCategory);
             Node finalDeletedNode = deletedNode;
             Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(finalDeletedNode));
@@ -500,8 +525,9 @@ public class ServerSystemWebSocket extends Endpoint {
                 if (cat.getId().equals(categoryId)) {
                     for (ServerChannel channel : cat.getChannel()) {
                         if (channel.getId().equals(channelId)) {
+                            // thrown out from audioChannel
                             if (channel.getType().equals("audio")) {
-                                if (builder.getAudioStreamClient() != null) {
+                                if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null && builder.getCurrentAudioChannel().getId().equals(channelId)) {
                                     disconnectAudioChannelNotOwner(server.getId(), categoryId, channelId);
                                 }
                             }
@@ -526,7 +552,6 @@ public class ServerSystemWebSocket extends Endpoint {
         builder.getAudioStreamClient().disconnectStream();
         builder.setAudioStreamClient(null);
         builder.playChannelSound("left");
-//                                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
         if (builder.getInServerState()) {
             serverViewController.showAudioConnectedBox();
         } else {
