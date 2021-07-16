@@ -27,7 +27,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -63,7 +68,7 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() throws IOException {
+    public void init() throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references
@@ -88,8 +93,7 @@ public class HomeViewController {
         serverController = new HashMap<>();
 
         ResourceManager.extractEmojis();
-        File file = new File("de/uniks/stp/sounds/notification/default.wav");
-        ResourceManager.saveNotifications(file);
+        ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
 
 
         showPrivateView();
@@ -376,7 +380,16 @@ public class HomeViewController {
             this.stage.close();
             stage = null;
         }
-
+        if (builder.getPrivateChatWebSocketClient() != null) {
+            try {
+                if (builder.getPrivateChatWebSocketClient().getSession() != null) {
+                    builder.getPrivateChatWebSocketClient().stop();
+                }
+                builder.setPrivateChatWebSocketClient(null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         cleanup();
     }
 

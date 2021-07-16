@@ -43,11 +43,13 @@ public class DoNotDisturbController extends SubSetting {
         showNotifications.setOnAction(this::updateSettings);
         playSound.setOnAction(this::updateSettings);
 
-        System.out.println("Volume: " + ResourceManager.getVolume(builder.getPersonalUser().getName()));
         volume.setMin(-80.0);
         volume.setMax(6.0206);
         volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
-        volume.valueProperty().addListener((observable, oldValue, newValue) -> builder.setVolume(newValue.floatValue()));
+        volume.valueProperty().addListener((observable, oldValue, newValue) -> {
+            builder.setVolume(newValue.floatValue());
+            builder.playSound();
+        });
         onLanguageChanged();
     }
 

@@ -42,6 +42,7 @@ public class OverviewOwnerController {
      * Changes name of current server
      */
     private void onChangeNameClicked(ActionEvent actionEvent) {
+        this.serverName.setText(nameText.getText());
         builder.getCurrentServer().setName(nameText.getText());
         restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
             builder.getCurrentServer().setName(nameText.getText());

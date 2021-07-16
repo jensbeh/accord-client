@@ -238,16 +238,30 @@ public class ResourceManager {
     /**
      * save sound
      */
-    public static void saveNotifications(File file) {
+
+    public static void copyDefaultSound(InputStream inputStream) {
         try {
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName()))) {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav"))) {
                 if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
                     Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
                 }
-                String targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
-                copyFile(file, targetPath);
             }
-        } catch (IOException | URISyntaxException e) {
+            OutputStream outputStream = new FileOutputStream(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav");
+            inputStream.transferTo(outputStream);
+            inputStream.close();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void saveNotifications(File file) {
+        try {
+            String targetPath = APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/" + file.getName();
+            copyFile(file, targetPath);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

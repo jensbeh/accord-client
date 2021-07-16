@@ -4,6 +4,7 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -37,6 +39,7 @@ public class InviteUsersUserLimitSubController {
     private ComboBox<List<String>> linkComboBox;
     private List<String> selectedList;
     private HashMap<String, String> links;
+    private Label copied;
 
     public InviteUsersUserLimitSubController(Parent view, ModelBuilder builder, Server server) {
         this.restClient = builder.getRestClient();
@@ -54,6 +57,8 @@ public class InviteUsersUserLimitSubController {
         linkLabel = (Label) view.lookup("#linkLabel");
         userLimit = (TextField) view.lookup("#maxUsers");
         linkComboBox = (ComboBox<List<String>>) view.lookup("#LinkComboBox");
+        copied = (Label) view.lookup("#copiedLabel");
+        copied.setVisible(false);
 
         links = new HashMap<>();
         createLink.setOnAction(this::onCreateLinkClicked);
@@ -133,6 +138,14 @@ public class InviteUsersUserLimitSubController {
      * when clicked the button the link text is copied to clipboard
      */
     private void onCopyLinkClicked(ActionEvent actionEvent) {
+        if(!linkLabel.getText().equals("link...")) {
+            copied.setVisible(true);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), copied);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.play();
+        }
+
         javafx.scene.input.Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(linkLabel.getText());
@@ -196,5 +209,8 @@ public class InviteUsersUserLimitSubController {
 
         if (deleteLink != null)
             deleteLink.setText(lang.getString("button.delete"));
+
+        if (copied != null)
+            copied.setText(lang.getString("label.copied"));
     }
 }

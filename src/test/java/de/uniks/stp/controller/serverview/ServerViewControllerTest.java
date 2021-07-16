@@ -209,6 +209,35 @@ public class ServerViewControllerTest extends ApplicationTest {
         }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor3.capture());
     }
 
+    public void mockGetServerUser2() {
+        JSONArray members = new JSONArray();
+        JSONArray categories = new JSONArray();
+        categories.put("60b77ba0026b3534ca5a61ae");
+        JSONObject member = new JSONObject();
+        member.put("id", "60ad230ac77d3f78988b3e5b")
+                .put("name", "Peter Lustig")
+                .put("online", true);
+        members.put(member);
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("message", "")
+                .put("data", new JSONObject()
+                        .put("id", "5e2fbd8770dd077d03df505")
+                        .put("name", "JOIdk")
+                        .put("owner", "60ad230ac77d3f78988b3e5a")
+                        .put("categories", categories)
+                        .put("members", members)
+                );
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response3.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor3.getValue();
+            callback.completed(response3);
+            mockGetCategories();
+            return null;
+        }).when(restClient).getServerUsers(anyString(), anyString(), callbackCaptor3.capture());
+    }
+
     public void mockGetCategories() {
         JSONArray channels = new JSONArray();
         channels.put("60b77ba0026b3534ca5a61af");
@@ -388,6 +417,56 @@ public class ServerViewControllerTest extends ApplicationTest {
         }).when(restClient).logout(anyString(), callbackCaptor9.capture());
     }
 
+    public void loginInit2(String name2, String pw) throws InterruptedException {
+        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
+        doCallRealMethod().when(privateChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(privateChatWebSocket).setPrivateViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        mockGetServers();
+        mockGetServerUser2();
+        mockGetCategories();
+        mockGetChannels();
+        mockGetChannelMessages();
+        mockJoinVoiceChannel();
+        mockLeaveVoiceChannel();
+        JSONObject jsonString = new JSONObject()
+                .put("status", "success")
+                .put("name", name2)
+                .put("password", pw)
+                .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        System.out.println(jsonNode);
+        when(response.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            String name = (String) invocation.getArguments()[0];
+            String password = (String) invocation.getArguments()[1];
+            System.out.println(name);
+            System.out.println(password);
+            Callback<JsonNode> callback = callbackCaptor.getValue();
+            callback.completed(response);
+            return null;
+        }).when(restClient).login(anyString(), anyString(), callbackCaptor.capture());
+        TextField usernameTextField = lookup("#usernameTextfield").query();
+        usernameTextField.setText("Peter Lustig");
+        PasswordField passwordField = lookup("#passwordTextField").query();
+        passwordField.setText("1234");
+        clickOn("#loginButton");
+
+        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateSystemWebSocketClient.handleMessage(jsonObject);
+
+
+        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateChatWebSocket.handleMessage(jsonObject);
+    }
+
 
     @Test
     public void showServerTest() throws InterruptedException {
@@ -441,6 +520,35 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals(2, onlineUserList.getItems().size());
+        Assert.assertEquals(1, offlineUserList.getItems().size());
+
+
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testUserOneName)).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+    }
+
+    @Test
+    public void showServerUsersTest2() throws InterruptedException {
+        loginInit2(testUserOneName, testUserOnePw);
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String message = new JSONObject().put("action", "userJoined").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true)).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false);
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true);
+
+        ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
+        ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");
+        ListView<User> offlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#offlineUsers");
+        app.getHomeViewController().getServerController().showOnlineOfflineUsers();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Assert.assertEquals(1, onlineUserList.getItems().size());
         Assert.assertEquals(1, offlineUserList.getItems().size());
 
 
@@ -611,6 +719,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         doubleClickOn("#60b77ba0026b3534ca5a61dd");
         WaitForAsyncUtils.waitForFxEvents();

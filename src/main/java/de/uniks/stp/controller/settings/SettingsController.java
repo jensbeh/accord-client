@@ -47,9 +47,7 @@ public class SettingsController {
         languageButton = addItem("Language");
         addAction(languageButton, "Language");
 
-        themeButton = addItem("Theme");
-        themeButton.setText("Dark/Bright - Mode");
-        addAction(themeButton, "Theme");
+
 
         if (builder.getPersonalUser() != null) {
             Button doNotDisturbButton = addItem("DnD");
@@ -59,6 +57,10 @@ public class SettingsController {
             customNotifications.setText("Custom Notifications");
             addAction(customNotifications, "CustomNotifications");
         }
+
+        themeButton = addItem("Theme");
+        themeButton.setText("Dark/Bright - Mode");
+        addAction(themeButton, "Theme");
 
         onLanguageChanged(); // needs to be called because new buttons added
     }
