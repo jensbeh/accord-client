@@ -175,11 +175,11 @@ public class ModelBuilder {
      * play notification sound
      */
     public void playSound() {
-        if(ResourceManager.getComboValue(personalUser.getName()).isEmpty()){
+        if (ResourceManager.getComboValue(personalUser.getName()).isEmpty()) {
             setSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/notification/default.wav"));
-        }else{
+        } else {
             String newValue = ResourceManager.getComboValue(personalUser.getName());
-            for(File file : ResourceManager.getNotificationSoundFiles()){
+            for (File file : ResourceManager.getNotificationSoundFiles()) {
                 String fileName = file.getName().substring(0, file.getName().length() - 4);
                 if (fileName.equals(newValue)) {
                     try {
@@ -213,9 +213,9 @@ public class ModelBuilder {
      * play notification sound when you join/leave an audio channel
      */
     public void playChannelSound(String action) {
-        if(action.equals("join")) {
+        if (action.equals("join")) {
             setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/join.wav"));
-        }else{
+        } else {
             setChannelSoundFile(ModelBuilder.class.getResource(ROOT_PATH + "/sounds/channelAction/left.wav"));
         }
         if (clip != null) {
