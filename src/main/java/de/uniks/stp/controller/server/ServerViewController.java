@@ -387,6 +387,9 @@ public class ServerViewController {
         leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId());
     }
 
+    /**
+     * is called when server owner and not server owner disconnects from audioChannel
+     */
     public void leaveVoiceChannel(String serverId, String categoryId, String channelId) {
         builder.getRestClient().leaveVoiceChannel(serverId, categoryId, channelId, builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();

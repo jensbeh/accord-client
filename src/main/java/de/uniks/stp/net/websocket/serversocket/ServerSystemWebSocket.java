@@ -546,6 +546,9 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+    /**
+     * is called when not server owner should disconnect from a audioChannel which is deleted
+     */
     private void disconnectAudioChannelNotOwner(String serverId, String categoryId, String channelId) {
         serverViewController.leaveVoiceChannel(serverId, categoryId, channelId);
         builder.setCurrentAudioChannel(null);

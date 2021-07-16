@@ -80,6 +80,7 @@ public class OverviewOwnerController {
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == button) {
+            // disconnect from audioChannel
             if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
                 builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
             }
