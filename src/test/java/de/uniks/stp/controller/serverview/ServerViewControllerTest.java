@@ -485,18 +485,25 @@ public class ServerViewControllerTest extends ApplicationTest {
 
     @Test
     public void throwOutUserFromChat() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
         loginInit(testUserOneName, testUserOnePw);
 
-
-        clickOn("#serverName_5e2fbd8770dd077d03df505");
         WaitForAsyncUtils.waitForFxEvents();
-
+        builder.setPlaySound(false);
+        builder.setShowNotifications(true);
+        builder.setDoNotDisturb(false);
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
         ListView<Channel> channels = lookup("#channelList").queryListView();
-        clickOn(app.getBuilder().getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text")).getId());
-        Assert.assertEquals(app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().size(), channels.getItems().size());
+        builder.getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text")).getId();
+        String channelId = builder.getCurrentServer().getCategories().get(0).getChannel().get(0).getId();
+        String categoryId = builder.getCurrentServer().getCategories().get(0).getId();
 
+        doubleClickOn("#" + channelId);
 
-        String message = new JSONObject().put("action", "”channelDeleted").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", testUserOneName)).toString();
+        String message = new JSONObject().put("action", "channelDeleted").put("data", new JSONObject().put("id", channelId).put("category", categoryId).put("name", "testChannel")).toString();
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
     }
