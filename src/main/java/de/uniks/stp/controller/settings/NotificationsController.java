@@ -7,9 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -23,10 +21,15 @@ import java.util.ResourceBundle;
 
 import static de.uniks.stp.util.Constants.*;
 
-public class CustomNotificationsController extends SubSetting {
+public class NotificationsController extends SubSetting {
 
-    private final ModelBuilder builder;
     private final Parent view;
+    private final ModelBuilder builder;
+    private CheckBox doNotDisturbSelected;
+    private CheckBox showNotifications;
+    private CheckBox playSound;
+    private Slider volume;
+    private Label volumeLabel;
     private ComboBox<String> customSoundComboBox;
     private Button addButton;
     private Button deleteButton;
@@ -37,14 +40,35 @@ public class CustomNotificationsController extends SubSetting {
     private InputStream stream;
     private Label selectedSound;
 
-    public CustomNotificationsController(Parent view, ModelBuilder builder) {
-        this.builder = builder;
+    public NotificationsController(Parent view, ModelBuilder builder) {
         this.view = view;
+        this.builder = builder;
     }
 
+
     @Override
-    @SuppressWarnings("unchecked")
     public void init() {
+        doNotDisturbSelected = (CheckBox) view.lookup("#doNotDisturbSelected");
+        doNotDisturbSelected.setSelected(builder.isDoNotDisturb());
+        showNotifications = (CheckBox) view.lookup("#ShowNotifications");
+        showNotifications.setSelected(builder.isShowNotifications());
+        volume = (Slider) view.lookup("#volume");
+        volumeLabel = (Label) view.lookup("#volumeLabel");
+        playSound = (CheckBox) view.lookup("#playSound");
+        playSound.setSelected(builder.isPlaySound());
+        checkIfDoNotDisturbIsSelected(null);
+
+        doNotDisturbSelected.setOnAction(this::checkIfDoNotDisturbIsSelected);
+        showNotifications.setOnAction(this::updateSettings);
+        playSound.setOnAction(this::updateSettings);
+
+        volume.setMin(-80.0);
+        volume.setMax(6.0206);
+        volume.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        volume.valueProperty().addListener((observable, oldValue, newValue) -> {
+            builder.setVolume(newValue.floatValue());
+            builder.playSound();
+        });
         customSoundComboBox = (ComboBox<String>) view.lookup("#comboBox");
         addButton = (Button) view.lookup("#add");
         deleteButton = (Button) view.lookup("#delete");
@@ -85,7 +109,27 @@ public class CustomNotificationsController extends SubSetting {
                 }
             }
         });
+
+
         onLanguageChanged();
+    }
+
+    private void checkIfDoNotDisturbIsSelected(ActionEvent actionEvent) {
+        if (!doNotDisturbSelected.isSelected()) {
+            showNotifications.setDisable(false);
+            playSound.setDisable(false);
+        } else {
+            showNotifications.setDisable(true);
+            playSound.setDisable(true);
+        }
+        updateSettings(null);
+    }
+
+    private void updateSettings(ActionEvent actionEvent) {
+        builder.setDoNotDisturb(doNotDisturbSelected.isSelected());
+        builder.setShowNotifications(showNotifications.isSelected());
+        builder.setPlaySound(playSound.isSelected());
+        builder.saveSettings();
     }
 
     private void delete(ActionEvent actionEvent) {
@@ -127,6 +171,10 @@ public class CustomNotificationsController extends SubSetting {
         deleteButton.setText(lang.getString("button.CN_delete"));
         selectedSound.setText(lang.getString("label.CN_selected_sound"));
         customSoundComboBox.setPromptText(lang.getString("comboBox.CN_saved_sounds"));
+        doNotDisturbSelected.setText(lang.getString("checkbox.dnd"));
+        showNotifications.setText(lang.getString(("checkbox.show_notifications")));
+        playSound.setText(lang.getString("checkbox.play_sound"));
+        volumeLabel.setText(lang.getString("slider.volume"));
     }
 
     public void cleanUp() {
@@ -136,4 +184,13 @@ public class CustomNotificationsController extends SubSetting {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void stop() {
+        super.stop();
+        doNotDisturbSelected.setOnAction(null);
+        showNotifications.setOnAction(null);
+        playSound.setOnAction(null);
+    }
+
 }

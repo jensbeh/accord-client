@@ -50,9 +50,9 @@ public class SettingsController {
 
 
         if (builder.getPersonalUser() != null) {
-            Button doNotDisturbButton = addItem("DnD");
-            doNotDisturbButton.setText("Notification");
-            addAction(doNotDisturbButton, "DoNotDisturb");
+            Button notificationsButton = addItem("Notifications");
+            notificationsButton.setText("Notification");
+            addAction(notificationsButton, "Notifications");
             Button customNotifications = addItem("CN");
             customNotifications.setText("Custom Notifications");
             addAction(customNotifications, "CustomNotifications");
@@ -129,8 +129,8 @@ public class SettingsController {
                     subController.setup();
                     subController.init();
                     break;
-                case "DoNotDisturb":
-                    subController = new DoNotDisturbController(settingsField, builder);
+                case "Notifications":
+                    subController = new NotificationsController(settingsField, builder);
                     subController.init();
                     break;
                 case "Theme":
@@ -159,7 +159,7 @@ public class SettingsController {
         for (Button button: itemList) {
             button.getId();
             switch (button.getId()) {
-                case "button_DnD":
+                case "button_Notifications":
                     button.setText(lang.getString("button.notifications"));
                     break;
                 case "button_CN":
