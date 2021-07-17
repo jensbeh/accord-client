@@ -423,7 +423,7 @@ public class ServerMessageTest extends ApplicationTest {
         rightClickOn(app.getBuilder().getCurrentChatViewController().getContainer().getChildren().get(3));
         interact(() -> contextMenu.getItems().get(2).fire());
         Label msg = lookup("#deleteWarning").query();
-        Assert.assertEquals(msg.getText(), "Are you sure you want to delete " + "\n" + "the following message:");
+        Assert.assertEquals(msg.getText(), "Are you sure you want to delete\nthe following message:");
         Button no = lookup("#chooseCancel").query();
         Assert.assertEquals(no.getText(), "NO");
         Button yes = lookup("#chooseDelete").query();
