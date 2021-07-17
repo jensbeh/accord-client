@@ -60,7 +60,7 @@ public class CustomNotificationsController extends SubSetting {
         if (!ResourceManager.getComboValue(builder.getPersonalUser().getName()).equals("")) {
             customSoundComboBox.setPromptText(ResourceManager.getComboValue(builder.getPersonalUser().getName()));
         }
-        deleteButton.setVisible(!customSoundComboBox.getPromptText().equals("default"));
+        deleteButton.setDisable(!customSoundComboBox.getPromptText().equals("default"));
         for (File file : ob) {
             String fileName = file.getName().substring(0, file.getName().length() - 4);
             fileNames.add(fileName);
