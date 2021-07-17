@@ -53,9 +53,6 @@ public class SettingsController {
             Button notificationsButton = addItem("Notifications");
             notificationsButton.setText("Notification");
             addAction(notificationsButton, "Notifications");
-            Button customNotifications = addItem("CN");
-            customNotifications.setText("Custom Notifications");
-            addAction(customNotifications, "CustomNotifications");
         }
 
         themeButton = addItem("Theme");
@@ -135,10 +132,6 @@ public class SettingsController {
                     break;
                 case "Theme":
                     subController = new ThemeController(settingsField, builder);
-                    subController.init();
-                    break;
-                case "CustomNotifications":
-                    subController = new CustomNotificationsController(settingsField, builder);
                     subController.init();
                     break;
             }
