@@ -293,13 +293,14 @@ public class ChatViewController {
      */
     private void delete(ActionEvent actionEvent) {
         try {
+            ResourceBundle lang = StageManager.getLangBundle();
             Parent subview = FXMLLoader.load(Objects.requireNonNull(
                     StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
-            stage.setTitle("Delete Message");
+            stage.setTitle(lang.getString("window_title_delete_message"));
             Label msg = (Label) subview.lookup("#deleteWarning");
-            msg.setText("Are you sure you want to delete " + "\n" + "the following message:");
+            msg.setText(lang.getString("label.message_delete_info"));
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
             if (builder.getTheme().equals("Bright")) {
                 emojiTextFlowParameters.setTextColor(Color.BLACK);
@@ -318,6 +319,8 @@ public class ChatViewController {
             pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
             Button yes = (Button) subview.lookup("#chooseDelete");
+            yes.setText(lang.getString("button.yes"));
+            no.setText(lang.getString("button.no"));
             yes.setOnAction(this::deleteMessage);
             no.setOnAction(this::cancelDelete);
             if (builder.getTheme().equals("Bright")) {
