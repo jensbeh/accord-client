@@ -28,7 +28,6 @@ public class NotificationsController extends SubSetting {
     private CheckBox doNotDisturbSelected;
     private CheckBox showNotifications;
     private CheckBox playSound;
-    private Slider volume;
     private Label volumeLabel;
     private ComboBox<String> customSoundComboBox;
     private Button addButton;
@@ -52,7 +51,7 @@ public class NotificationsController extends SubSetting {
         doNotDisturbSelected.setSelected(builder.isDoNotDisturb());
         showNotifications = (CheckBox) view.lookup("#ShowNotifications");
         showNotifications.setSelected(builder.isShowNotifications());
-        volume = (Slider) view.lookup("#volume");
+        Slider volume = (Slider) view.lookup("#volume");
         volumeLabel = (Label) view.lookup("#volumeLabel");
         playSound = (CheckBox) view.lookup("#playSound");
         playSound.setSelected(builder.isPlaySound());
