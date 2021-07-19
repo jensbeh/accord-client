@@ -15,6 +15,9 @@ public class LinePoolService {
     public LinePoolService() {
     }
 
+    /**
+     * Collects all microphones and speaker and a mixerMap for later to set new Speaker while in/join a channel
+     */
     public void init() {
         microphones = new HashMap<>();
         speakers = new HashMap<>();
@@ -48,22 +51,37 @@ public class LinePoolService {
         }
     }
 
+    /**
+     * returns the Map with all microphones for comboBox in AudioController
+     */
     public HashMap<String, TargetDataLine> getMicrophones() {
         return this.microphones;
     }
 
+    /**
+     * returns the selected microphone
+     */
     public TargetDataLine getSelectedMicrophone() {
         return this.selectedMicrophone;
     }
 
+    /**
+     * returns the selected microphone name
+     */
     public String getSelectedMicrophoneName() {
         return this.selectedMicrophoneName;
     }
 
+    /**
+     * returns the Map with all speaker for comboBox in AudioController
+     */
     public HashMap<String, SourceDataLine> getSpeakers() {
         return this.speakers;
     }
 
+    /**
+     * returns the selected speaker - make every time a new one because of horrible audio when more then 1 user in a channel
+     */
     public SourceDataLine getSelectedSpeaker() {
         Line.Info[] sourceLineInfo = mixerMap.get(selectedSpeakerName).getSourceLineInfo();
         SourceDataLine speakerDataLine = null;
@@ -75,10 +93,16 @@ public class LinePoolService {
         return speakerDataLine;
     }
 
+    /**
+     * returns the selected speaker name
+     */
     public String getSelectedSpeakerName() {
         return this.selectedSpeakerName;
     }
 
+    /**
+     * sets a new selected microphone from comboBox - if no one is saved at start the first mic will set to selected
+     */
     public void setSelectedMicrophone(String newMicrophoneName) {
         if (microphones.containsKey(newMicrophoneName)) {
             this.selectedMicrophone = microphones.get(newMicrophoneName);
@@ -95,6 +119,9 @@ public class LinePoolService {
         }
     }
 
+    /**
+     * sets a new selected speaker from comboBox - if no one is saved at start the first speaker will set to selected
+     */
     public void setSelectedSpeaker(String newSpeakerName) {
         if (speakers.containsKey(newSpeakerName)) {
             this.selectedSpeakerName = newSpeakerName;
@@ -102,7 +129,7 @@ public class LinePoolService {
             System.out.println("speaker: " + newSpeakerName);
         } else {
             System.err.println("No speaker (" + newSpeakerName + ") found!");
-            // set first microphone in list to selected
+            // set first speaker in list to selected
             for (var speaker : speakers.entrySet()) {
                 this.selectedSpeakerName = speaker.getKey();
                 this.selectedSpeaker = speaker.getValue();

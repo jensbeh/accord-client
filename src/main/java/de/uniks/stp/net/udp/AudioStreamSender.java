@@ -103,6 +103,9 @@ public class AudioStreamSender implements Runnable {
         }
     }
 
+    /**
+     * Sets new Microphone when already connected to a channel
+     */
     public void setNewMicrophone() {
         microphone.stopRecording();
         microphone = new Microphone(builder);

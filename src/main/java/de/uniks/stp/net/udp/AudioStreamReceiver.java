@@ -147,6 +147,9 @@ public class AudioStreamReceiver implements Runnable {
         }
     }
 
+    /**
+     * Sets new Speaker for every user when already connected to a channel
+     */
     public void setNewSpeaker() {
         currentlySetNewSpeaker = true;
         for (var receiverSpeaker : receiverSpeakerMap.entrySet()) {

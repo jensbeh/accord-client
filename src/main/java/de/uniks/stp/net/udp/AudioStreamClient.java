@@ -124,6 +124,10 @@ public class AudioStreamClient {
         return receiver.getMutedAudioMember();
     }
 
+
+    /**
+     * Sets new Microphone when already connected to a channel
+     */
     public void setNewMicrophone() {
         sender.stop();
         sender.setNewMicrophone();
@@ -131,6 +135,9 @@ public class AudioStreamClient {
         senderThread.start();
     }
 
+    /**
+     * Sets new Speaker when already connected to a channel
+     */
     public void setNewSpeaker() {
         receiver.setNewSpeaker();
     }
