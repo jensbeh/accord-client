@@ -63,13 +63,20 @@ public class ConnectionController extends SubSetting {
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
         System.out.println("Spotify");
+        builder.setSpotifyToken("test");
+        builder.saveSettings();
+        init();
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
         System.out.println("Steam");
+        builder.setSteamToken("test");
+        builder.saveSettings();
+        init();
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
+        toggleStackPane.getChildren().clear();
         toggleStackPane.getChildren().addAll(backgroundToggleButton, toggleButton);
         toggleStackPane.setMinSize(30, 15);
         backgroundToggleButton.maxWidth(30);
@@ -87,34 +94,49 @@ public class ConnectionController extends SubSetting {
 
     private void toggleInit(StackPane stackPane, Rectangle backgroundToggle, Button toggleButton, Boolean toggleShow) {
         setBackgroundToggleButton(stackPane, backgroundToggle, toggleButton);
-        if (builder.isSpotifyShow()) {
+        if (toggleShow) {
             toggleButton.getStyleClass().clear();
             toggleButton.getStyleClass().add("buttonOn");
+            backgroundToggle.getStyleClass().clear();
+            backgroundToggle.getStyleClass().add("backgroundOn");
+            StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
         } else {
             toggleButton.getStyleClass().clear();
             toggleButton.getStyleClass().add("buttonOff");
+            backgroundToggle.getStyleClass().clear();
+            backgroundToggle.getStyleClass().add("backgroundOff");
+            StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
         }
         final boolean[] toggleShowFinal = {toggleShow};
         EventHandler<Event> click = new EventHandler<Event>() {
             @Override
             public void handle(Event e) {
+                toggleButton.getStyleClass().clear();
+                backgroundToggle.getStyleClass().clear();
                 if (toggleShowFinal[0]) {
                     //Button off
-                    toggleButton.getStyleClass().clear();
                     toggleButton.getStyleClass().add("buttonOff");
-                    backgroundToggle.getStyleClass().clear();
                     backgroundToggle.getStyleClass().add("backgroundOff");
                     StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
                     toggleShowFinal[0] = false;
+                    if (stackPane.getId().contains("spotifyToggleStackPane")) {
+                        builder.setSpotifyShow(false);
+                    } else {
+                        builder.setSteamShow(false);
+                    }
                 } else {
                     //Button on
-                    toggleButton.getStyleClass().clear();
                     toggleButton.getStyleClass().add("buttonOn");
-                    backgroundToggle.getStyleClass().clear();
                     backgroundToggle.getStyleClass().add("backgroundOn");
                     StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
                     toggleShowFinal[0] = true;
+                    if (stackPane.getId().contains("spotifyToggleStackPane")) {
+                        builder.setSpotifyShow(true);
+                    } else {
+                        builder.setSteamShow(true);
+                    }
                 }
+                builder.saveSettings();
             }
         };
         toggleButton.setFocusTraversable(false);
