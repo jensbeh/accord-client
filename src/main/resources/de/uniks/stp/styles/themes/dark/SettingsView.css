@@ -39,7 +39,7 @@
     -fx-text-fill: WHITE;
 }
 
-.button {
+.settingsButton {
     -fx-background-color: #2f3136;
     -fx-text-fill: WHITE;
     -fx-font-size: 14px;
@@ -47,7 +47,7 @@
     -fx-background-radius: 0;
     -fx-border-color: #2f3136;
 }
-.button:hover {
+.settingsButton:hover {
     -fx-background-color: #AAAAAA;
 }
 
@@ -77,4 +77,30 @@
 
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #AAAAAA;
+}
+
+#spotifyVbox {
+    -fx-background-color: #2f3136 ;
+    -fx-border-color: #36393f ;
+}
+
+#steamVbox {
+    -fx-background-color: #2f3136 ;
+    -fx-border-color: #36393f ;
+}
+
+.buttonOn {
+    -fx-background-color: #ff9999;
+}
+
+.buttonOff {
+    -fx-background-color: #ff9999;
+}
+
+.backgroundOn {
+    -fx-fill: #facbcb;
+}
+
+.backgroundOff {
+    -fx-fill: #ced5da;
 }

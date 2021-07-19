@@ -53,6 +53,11 @@ public class ModelBuilder {
     private boolean inServerState;
     private PrivateChat currentPrivateChat;
     private boolean firstMuted;
+
+    private boolean spotifyShow;
+    private boolean steamShow;
+    private String spotifyToken;
+    private String steamToken;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -260,6 +265,10 @@ public class ModelBuilder {
             settings.put("muteMicrophone", muteMicrophone);
             settings.put("muteHeadphones", muteHeadphones);
             settings.put("firstMuted", firstMuted);
+            settings.put("spotifyShow", spotifyShow);
+            settings.put("spotifyToken", spotifyToken);
+            settings.put("steamShow", steamShow);
+            settings.put("steamToken", steamToken);
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -279,6 +288,10 @@ public class ModelBuilder {
                 muteMicrophone = false;
                 muteHeadphones = false;
                 firstMuted = false;
+                spotifyShow = false;
+                spotifyToken = "";
+                steamShow = false;
+                steamToken = "";
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -290,6 +303,10 @@ public class ModelBuilder {
             muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
             muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
             firstMuted = (boolean) parsedSettings.get("firstMuted");
+            spotifyShow = (boolean) parsedSettings.get("spotifyShow");
+            steamShow = (boolean) parsedSettings.get("steamShow");
+            spotifyToken = (String) parsedSettings.get("spotifyToken");
+            steamToken = (String) parsedSettings.get("steamToken");
             reader.close();
 
         } catch (Exception e) {
@@ -401,5 +418,37 @@ public class ModelBuilder {
 
     public void setCurrentChatViewController(ChatViewController currentChatViewController) {
         this.currentChatViewController = currentChatViewController;
+    }
+
+    public boolean isSpotifyShow() {
+        return spotifyShow;
+    }
+
+    public void setSpotifyShow(boolean spotifyShow) {
+        this.spotifyShow = spotifyShow;
+    }
+
+    public boolean isSteamShow() {
+        return steamShow;
+    }
+
+    public void setSteamShow(boolean steamShow) {
+        this.steamShow = steamShow;
+    }
+
+    public String getSpotifyToken() {
+        return spotifyToken;
+    }
+
+    public void setSpotifyToken(String spotifyToken) {
+        this.spotifyToken = spotifyToken;
+    }
+
+    public String getSteamToken() {
+        return steamToken;
+    }
+
+    public void setSteamToken(String steamToken) {
+        this.steamToken = steamToken;
     }
 }
