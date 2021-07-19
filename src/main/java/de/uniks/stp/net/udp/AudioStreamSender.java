@@ -35,7 +35,7 @@ public class AudioStreamSender implements Runnable {
 
     public void init() {
         // Create the audio capture object to read information in.
-        microphone = new Microphone();
+        microphone = new Microphone(builder);
         microphone.init();
     }
 

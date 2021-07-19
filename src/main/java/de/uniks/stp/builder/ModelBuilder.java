@@ -10,12 +10,10 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -53,6 +51,8 @@ public class ModelBuilder {
     private boolean inServerState;
     private PrivateChat currentPrivateChat;
     private boolean firstMuted;
+    private TargetDataLine selectedMicrophone;
+    private LinePoolService linePoolService;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -401,5 +401,22 @@ public class ModelBuilder {
 
     public void setCurrentChatViewController(ChatViewController currentChatViewController) {
         this.currentChatViewController = currentChatViewController;
+    }
+
+
+    public void setSelectedMicrophone(TargetDataLine selectedMicrophone) {
+        this.selectedMicrophone = selectedMicrophone;
+    }
+    public TargetDataLine getSelectedMicrophone() {
+        return this.selectedMicrophone;
+    }
+
+
+    public void setLinePoolService(LinePoolService linePoolService) {
+        this.linePoolService = linePoolService;
+    }
+
+    public LinePoolService getLinePoolService() {
+        return this.linePoolService;
     }
 }
