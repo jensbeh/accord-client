@@ -51,9 +51,17 @@ public class AudioController extends SubSetting {
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
+        for (var microphone : builder.getLinePoolService().getMicrophones().entrySet()) {
+            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone name
+        }
+
         this.outputDeviceComboBox.setPromptText("Select Output Device:"); // lang.getString("comboBox.outputDevice")
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
+
+        for (var speaker : builder.getLinePoolService().getSpeakers().entrySet()) {
+            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set microphone name
+        }
 
         // Slider Settings
         volumeInput.setMin(-80.0);
@@ -75,13 +83,13 @@ public class AudioController extends SubSetting {
      * Sets the selected InputDevice (Microphone) when clicked on it in comboBox
      */
     private void onInputDeviceClicked(ActionEvent actionEvent) {
-
+        builder.getLinePoolService().setSelectedMicrophone(this.inputDeviceComboBox.getValue());
     }
 
     /**
      * Sets the selected OutputDevice (Speaker) when clicked on it in comboBox
      */
     private void onOutputDeviceClicked(ActionEvent actionEvent) {
-
+        builder.getLinePoolService().setSelectedSpeaker(this.outputDeviceComboBox.getValue());
     }
 }
