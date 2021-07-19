@@ -193,7 +193,7 @@ public class SettingsControllerTest extends ApplicationTest {
     public void doNotDisturbTest() throws InterruptedException {
         loginInit();
         clickOn("#settingsButton");
-        clickOn("#button_DnD");
+        clickOn("#button_Notifications");
 
         CheckBox doNotDisturb = lookup("#doNotDisturbSelected").query();
         CheckBox showNotifications = lookup("#ShowNotifications").query();
@@ -223,7 +223,7 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn();
 
         clickOn("#settingsButton");
-        clickOn("#button_DnD");
+        clickOn("#button_Notifications");
         Assert.assertEquals(6.0, volume.getValue(),0.001);
         volume.setValue(0.0);
     }
@@ -232,7 +232,7 @@ public class SettingsControllerTest extends ApplicationTest {
     public void notificationTest() throws InterruptedException {
         loginInit();
         clickOn("#settingsButton");
-        clickOn("#button_CN");
+        clickOn("#button_Notifications");
 
         ComboBox<String> customSoundComboBox = lookup("#comboBox").query();
         Button deleteButton = lookup("#delete").query();
@@ -244,6 +244,6 @@ public class SettingsControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn("#settingsButton");
-        clickOn("#button_DnD");
+        clickOn("#button_Notifications");
     }
 }
