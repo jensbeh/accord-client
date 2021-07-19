@@ -132,6 +132,9 @@ public class AudioStreamClient {
     }
 
     public void setNewSpeaker() {
+        receiver.stop();
         receiver.setNewSpeaker();
+        receiverThread = new Thread(receiver);
+        receiverThread.start();
     }
 }

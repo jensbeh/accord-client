@@ -79,10 +79,8 @@ public class AudioStreamReceiver implements Runnable {
 
                     // set receivedData to speaker of the senderName  && !senderName.equals(builder.getPersonalUser().getName())
                     if (!builder.getMuteHeadphones()) {
-                        if (!currentlySetNewSpeaker) {
-                            if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
-                                receiverSpeakerMap.get(senderName).writeData(receivedData);
-                            }
+                        if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
+                            receiverSpeakerMap.get(senderName).writeData(receivedData);
                         }
                     }
                 }
@@ -148,13 +146,11 @@ public class AudioStreamReceiver implements Runnable {
     }
 
     public void setNewSpeaker() {
-        currentlySetNewSpeaker = true;
         for (var receiverSpeaker : receiverSpeakerMap.entrySet()) {
             receiverSpeaker.getValue().stopPlayback();
             receiverSpeaker.setValue(new Speaker(builder));
             receiverSpeaker.getValue().init();
             receiverSpeaker.getValue().startPlayback();
         }
-        currentlySetNewSpeaker = false;
     }
 }
