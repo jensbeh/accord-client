@@ -59,6 +59,12 @@ public class SettingsController {
         themeButton.setText("Dark/Bright - Mode");
         addAction(themeButton, "Theme");
 
+        if (builder.getPersonalUser() != null) {
+            Button connectionButton = addItem("Connection");
+            connectionButton.setText("Connection");
+            addAction(connectionButton, "Connection");
+        }
+
         audioButton = addItem("Audio");
         audioButton.setText("Audio Settings");
         addAction(audioButton, "Audio");
@@ -91,6 +97,7 @@ public class SettingsController {
         button.setPrefWidth(198);
         button.setPrefHeight(32);
         button.setId("button_" + buttonName);
+        button.getStyleClass().add("settingsButton");
 
         this.itemList.add(button);
         this.settingsItems.getChildren().add(button);
@@ -136,6 +143,10 @@ public class SettingsController {
                     break;
                 case "Theme":
                     subController = new ThemeController(settingsField, builder);
+                    subController.init();
+                    break;
+                case "Connection":
+                    subController = new ConnectionController(settingsField, builder);
                     subController.init();
                     break;
                 case "Audio":

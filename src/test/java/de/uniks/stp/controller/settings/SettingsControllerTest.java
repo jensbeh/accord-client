@@ -9,6 +9,8 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -245,6 +247,33 @@ public class SettingsControllerTest extends ApplicationTest {
 
         clickOn("#settingsButton");
         clickOn("#button_Notifications");
+    }
+
+    @Test
+    public void connectionTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        app.getBuilder().setSpotifyShow(false);
+        app.getBuilder().setSteamShow(true);
+        ImageView spotify = lookup("#spotify").query();
+        ImageView steam = lookup("#steam").query();
+
+        clickOn(spotify);
+        clickOn(steam);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        StackPane spotifyToggleStackPane = lookup("#spotifyToggleStackPane").query();
+        StackPane steamToggleStackPane = lookup("#steamToggleStackPane").query();
+
+        clickOn(spotifyToggleStackPane);
+        clickOn(steamToggleStackPane);
+        clickOn(spotifyToggleStackPane);
+        clickOn(steamToggleStackPane);
+        Assert.assertNotEquals("", app.getBuilder().getSpotifyToken());
+        Assert.assertNotEquals("", app.getBuilder().getSteamToken());
+        Assert.assertFalse(app.getBuilder().isSpotifyShow());
+        Assert.assertTrue(app.getBuilder().isSteamShow());
     }
 
     @Test
