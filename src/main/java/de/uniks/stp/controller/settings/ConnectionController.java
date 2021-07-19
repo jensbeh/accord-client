@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
 public class ConnectionController extends SubSetting {
 
@@ -59,10 +61,8 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        //TODO functionality for steam connect
-        System.out.println("Steam");
-        builder.setSteamToken("test");
-        builder.saveSettings();
+        SteamLoginController steamLoginController = new SteamLoginController(builder);
+        steamLoginController.init();
         init();
     }
 
