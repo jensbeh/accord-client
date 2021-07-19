@@ -25,6 +25,7 @@ public class SettingsController {
     private List<Button> itemList;
     private Button languageButton;
     private Button themeButton;
+    private Button audioButton;
 
     private SubSetting subController;
 
@@ -58,6 +59,10 @@ public class SettingsController {
         themeButton = addItem("Theme");
         themeButton.setText("Dark/Bright - Mode");
         addAction(themeButton, "Theme");
+
+        audioButton = addItem("Audio");
+        audioButton.setText("Audio Settings");
+        addAction(audioButton, "Audio");
 
         onLanguageChanged(); // needs to be called because new buttons added
     }
@@ -132,6 +137,10 @@ public class SettingsController {
                     break;
                 case "Theme":
                     subController = new ThemeController(settingsField, builder);
+                    subController.init();
+                    break;
+                case "Audio":
+                    subController = new AudioController(settingsField, builder);
                     subController.init();
                     break;
             }
