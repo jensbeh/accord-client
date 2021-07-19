@@ -20,15 +20,6 @@ public class Speaker {
         format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
         speaker = builder.getLinePoolService().getSelectedSpeaker();
-
-//        // audio object (speaker information?)
-//        DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-//        try {
-//            // get speakerLine
-//            speaker = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-//        } catch (LineUnavailableException e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**
