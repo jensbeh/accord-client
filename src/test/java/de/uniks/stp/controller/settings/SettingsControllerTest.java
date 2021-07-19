@@ -312,4 +312,30 @@ public class SettingsControllerTest extends ApplicationTest {
         Assert.assertTrue(startButton.isVisible());
         Assert.assertTrue(microphoneProgressBar.isVisible());
     }
+
+    @Test
+    public void changeMicAndSpeakerTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        clickOn(inputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on mic
+        moveBy(0,25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(outputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on speaker
+        moveBy(0,25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+    }
 }

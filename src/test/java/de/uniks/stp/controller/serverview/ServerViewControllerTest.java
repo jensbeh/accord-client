@@ -813,6 +813,91 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void changeMicAndSpeakerTest() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        try {
+            doAnswer((Answer<Void>) invocation -> {
+                return null;
+            }).when(mockAudioSocket).send(any());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            doAnswer((Answer<Void>) invocation -> {
+                DatagramPacket mockPacket = invocation.getArgument(0);
+
+                byte[] data = new byte[1024];
+                JSONObject obj1 = new JSONObject().put("channel", "60b77ba0026b3534ca5a61dd")
+                        .put("name", builder.getPersonalUser().getName());
+
+
+                // set 255 with jsonObject - sendData is automatically init with zeros
+                byte[] jsonData = new byte[255];
+                byte[] objData = new byte[0];
+                objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
+
+                // set every byte new which is from jsonObject and let the rest be still 0
+                for (int i = 0; i < objData.length; i++) {
+                    Arrays.fill(jsonData, i, i + 1, objData[i]);
+                }
+
+                // put both byteArrays in one
+                byte[] sendData = new byte[1279];
+                System.arraycopy(jsonData, 0, sendData, 0, jsonData.length);
+                System.arraycopy(data, 0, sendData, jsonData.length, data.length);
+
+                mockPacket.setData(sendData);
+                return null;
+            }).when(mockAudioSocket).receive(any());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // join channel
+        doubleClickOn("#60b77ba0026b3534ca5a61dd");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // change mic & speaker
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        clickOn(inputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on mic
+        moveBy(0,25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(outputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on speaker
+        moveBy(0,25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
     public void headsetTest() throws InterruptedException {
         loginInit(testUserOneName, testUserOnePw);
         builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
