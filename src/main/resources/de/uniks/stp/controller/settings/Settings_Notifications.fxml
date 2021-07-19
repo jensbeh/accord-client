@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="300.0" minWidth="450.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="360.0" minWidth="580.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="300.0" prefWidth="280.0" spacing="5.0">
+      <VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="360.0" prefWidth="305.0" spacing="5.0">
          <children>
             <CheckBox id="doNotDisturbSelected" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="25.0" prefWidth="255.0" text="Do not disturb :" textFill="WHITE">
                <font>
@@ -49,7 +49,7 @@
             <Insets left="17.0" right="10.0" top="14.0" />
          </padding>
       </VBox>
-      <VBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="250.0" spacing="20.0">
+      <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="275.0" spacing="20.0">
          <children>
             <Label id="selectedSound" alignment="CENTER" prefHeight="20.0" prefWidth="130.0" text="Selected Sound:" textFill="WHITE">
                <font>
