@@ -270,4 +270,41 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn(spotifyToggleStackPane);
         clickOn(steamToggleStackPane);
     }
+
+    @Test
+    public void openAudioViewTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        Label inputLabel = lookup("#label_input").query();
+        Label outputLabel = lookup("#label_output").query();
+        Label volumeInputLabel = lookup("#label_volumeInput").query();
+        Label volumeOutputLabel = lookup("#label_volumeOutput").query();
+        Label microphoneCheckLabel = lookup("#label_microphoneCheck").query();
+
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        Slider volumeInput = lookup("#slider_volumeInput").query();
+        Slider volumeOutput = lookup("#slider_volumeOutput").query();
+
+        Button startButton = lookup("#button_audioStart").query();
+        ProgressBar microphoneProgressBar = lookup("#progressBar_microphone").query();
+
+        Assert.assertEquals("Input", inputLabel.getText());
+        Assert.assertEquals("Output", outputLabel.getText());
+        Assert.assertEquals("Volume Input", volumeInputLabel.getText());
+        Assert.assertEquals("Volume Output", volumeOutputLabel.getText());
+        Assert.assertEquals("Microphone Check", microphoneCheckLabel.getText());
+
+        Assert.assertTrue(inputDeviceComboBox.isVisible());
+        Assert.assertTrue(outputDeviceComboBox.isVisible());
+
+        Assert.assertTrue(volumeInput.isVisible());
+        Assert.assertTrue(volumeOutput.isVisible());
+
+        Assert.assertTrue(startButton.isVisible());
+        Assert.assertTrue(microphoneProgressBar.isVisible());
+    }
 }

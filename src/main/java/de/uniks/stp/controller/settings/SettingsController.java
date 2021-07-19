@@ -25,6 +25,7 @@ public class SettingsController {
     private List<Button> itemList;
     private Button languageButton;
     private Button themeButton;
+    private Button audioButton;
 
     private SubSetting subController;
 
@@ -48,7 +49,6 @@ public class SettingsController {
         addAction(languageButton, "Language");
 
 
-
         if (builder.getPersonalUser() != null) {
             Button notificationsButton = addItem("Notifications");
             notificationsButton.setText("Notification");
@@ -64,6 +64,10 @@ public class SettingsController {
             connectionButton.setText("Connection");
             addAction(connectionButton, "Connection");
         }
+
+        audioButton = addItem("Audio");
+        audioButton.setText("Audio Settings");
+        addAction(audioButton, "Audio");
 
         onLanguageChanged(); // needs to be called because new buttons added
     }
@@ -145,6 +149,10 @@ public class SettingsController {
                     subController = new ConnectionController(settingsField, builder);
                     subController.init();
                     break;
+                case "Audio":
+                    subController = new AudioController(settingsField, builder);
+                    subController.init();
+                    break;
             }
             this.settingsContainer.getChildren().add(settingsField);
         } catch (Exception e) {
@@ -160,7 +168,7 @@ public class SettingsController {
         ResourceBundle lang = StageManager.getLangBundle();
         languageButton.setText(lang.getString("button.Language"));
         themeButton.setText(lang.getString("button.DB_mode"));
-        for (Button button: itemList) {
+        for (Button button : itemList) {
             button.getId();
             switch (button.getId()) {
                 case "button_Notifications":

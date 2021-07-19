@@ -105,3 +105,19 @@
 .backgroundOff {
     -fx-fill: #ced5da;
 }
+
+#button_audioStart {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+}
+
+#button_audioStart:hover {
+    -fx-background-color: #9db9e0;
+}
+
+#button_audioStart:pressed {
+    -fx-background-color: #6599e0;
+}
