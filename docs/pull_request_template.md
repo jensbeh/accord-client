@@ -42,3 +42,7 @@
 >  ### ⇒ Did you leave comments?
 >  - [ ] Yes
 >  - [ ] No
+> 
+>  ### ⇒ Did you check all warnings / spellings in code?
+>  - [ ] Yes
+>  - [ ] No
