@@ -24,6 +24,7 @@ public class AudioStreamSender implements Runnable {
     private Microphone microphone;
     private boolean senderActive;
     private volatile boolean stopped;
+    private boolean currentlySetNewMicrophone;
 
     public AudioStreamSender(ModelBuilder builder, ServerChannel currentAudioChannel, InetAddress address, int port, DatagramSocket socket) {
         this.builder = builder;
@@ -37,6 +38,7 @@ public class AudioStreamSender implements Runnable {
         // Create the audio capture object to read information in.
         microphone = new Microphone(builder);
         microphone.init();
+        currentlySetNewMicrophone = false;
     }
 
     @Override
@@ -101,5 +103,11 @@ public class AudioStreamSender implements Runnable {
         while (!stopped) {
             Thread.onSpinWait();
         }
+    }
+
+    public void setNewMicrophone() {
+        microphone.stopRecording();
+        microphone = new Microphone(builder);
+        microphone.init();
     }
 }

@@ -260,6 +260,8 @@ public class ModelBuilder {
             settings.put("muteMicrophone", muteMicrophone);
             settings.put("muteHeadphones", muteHeadphones);
             settings.put("firstMuted", firstMuted);
+            settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
+            settings.put("speaker", getLinePoolService().getSelectedSpeakerName());
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -290,6 +292,8 @@ public class ModelBuilder {
             muteMicrophone = (boolean) parsedSettings.get("muteMicrophone");
             muteHeadphones = (boolean) parsedSettings.get("muteHeadphones");
             firstMuted = (boolean) parsedSettings.get("firstMuted");
+            getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
+            getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             reader.close();
 
         } catch (Exception e) {
@@ -401,14 +405,6 @@ public class ModelBuilder {
 
     public void setCurrentChatViewController(ChatViewController currentChatViewController) {
         this.currentChatViewController = currentChatViewController;
-    }
-
-
-    public void setSelectedMicrophone(TargetDataLine selectedMicrophone) {
-        this.selectedMicrophone = selectedMicrophone;
-    }
-    public TargetDataLine getSelectedMicrophone() {
-        return this.selectedMicrophone;
     }
 
 

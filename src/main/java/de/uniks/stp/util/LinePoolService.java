@@ -3,16 +3,28 @@ package de.uniks.stp.util;
 import javax.sound.sampled.*;
 import java.util.HashMap;
 
+import static de.uniks.stp.util.Constants.*;
+
 public class LinePoolService {
     private HashMap<String, TargetDataLine> microphones;
     private HashMap<String, SourceDataLine> speakers;
     private TargetDataLine selectedMicrophone;
     private SourceDataLine selectedSpeaker;
+    private AudioFormat format;
+    private DataLine.Info info;
+    private String selectedMicrophoneName;
+    private String selectedSpeakerName;
 
     public LinePoolService() {
     }
 
     public void init() {
+        // audio format
+        format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
+
+        // audio object (microphone information?)
+        info = new DataLine.Info(TargetDataLine.class, format);
+
         microphones = new HashMap<>();
         speakers = new HashMap<>();
 
@@ -46,26 +58,55 @@ public class LinePoolService {
         return this.microphones;
     }
 
+    public TargetDataLine getSelectedMicrophone() {
+        return this.selectedMicrophone;
+    }
+
+    public String getSelectedMicrophoneName() {
+        return this.selectedMicrophoneName;
+    }
+
     public HashMap<String, SourceDataLine> getSpeakers() {
         return this.speakers;
     }
 
-    public void setSelectedMicrophone(String selectedMicrophoneName) {
-        if (microphones.containsKey(selectedMicrophoneName)) {
-            selectedMicrophone = microphones.get(selectedMicrophoneName);
-            System.out.println("XXX: " + selectedMicrophoneName);
+    public SourceDataLine getSelectedSpeaker() {
+        return this.selectedSpeaker;
+    }
+
+    public String getSelectedSpeakerName() {
+        return this.selectedSpeakerName;
+    }
+
+    public void setSelectedMicrophone(String newMicrophoneName) {
+        if (microphones.containsKey(newMicrophoneName)) {
+            this.selectedMicrophone = microphones.get(newMicrophoneName);
+            this.selectedMicrophoneName = newMicrophoneName;
+            System.out.println("mic: " + newMicrophoneName);
         } else {
-            System.err.println("No microphone (" + selectedMicrophoneName + ") found!");
+            System.err.println("No microphone (" + newMicrophoneName + ") found! resetting microphone...");
+            // set first microphone in list to selected
+            for (var microphone : microphones.entrySet()) {
+                this.selectedMicrophoneName = microphone.getKey();
+                this.selectedMicrophone = microphone.getValue();
+                break;
+            }
         }
     }
 
-    public void setSelectedSpeaker(String selectedSpeakerName) {
-        if (speakers.containsKey(selectedSpeakerName)) {
-            selectedSpeaker = speakers.get(selectedSpeakerName);
-            System.out.println("YYY: " + selectedSpeakerName);
-
+    public void setSelectedSpeaker(String newSpeakerName) {
+        if (speakers.containsKey(newSpeakerName)) {
+            this.selectedSpeakerName = newSpeakerName;
+            this.selectedSpeaker = speakers.get(newSpeakerName);
+            System.out.println("speaker: " + newSpeakerName);
         } else {
-            System.err.println("No speaker (" + selectedSpeakerName + ") found!");
+            System.err.println("No speaker (" + newSpeakerName + ") found!");
+            // set first microphone in list to selected
+            for (var speaker : speakers.entrySet()) {
+                this.selectedSpeakerName = speaker.getKey();
+                this.selectedSpeaker = speaker.getValue();
+                break;
+            }
         }
     }
 }

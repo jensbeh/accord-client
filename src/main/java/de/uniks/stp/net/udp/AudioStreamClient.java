@@ -123,4 +123,15 @@ public class AudioStreamClient {
     public ArrayList<String> getMutedAudioMember() {
         return receiver.getMutedAudioMember();
     }
+
+    public void setNewMicrophone() {
+        sender.stop();
+        sender.setNewMicrophone();
+        senderThread = new Thread(sender);
+        senderThread.start();
+    }
+
+    public void setNewSpeaker() {
+        receiver.setNewSpeaker();
+    }
 }

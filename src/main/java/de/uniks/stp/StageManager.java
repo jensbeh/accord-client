@@ -66,6 +66,8 @@ public class StageManager extends Application {
         linePoolService.init();
         builder.setLinePoolService(linePoolService);
 
+        builder.loadSettings();
+
         // start application
         stage = primaryStage;
         showLoginScreen();

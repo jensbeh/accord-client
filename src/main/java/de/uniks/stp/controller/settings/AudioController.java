@@ -47,7 +47,7 @@ public class AudioController extends SubSetting {
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
-        this.inputDeviceComboBox.setPromptText("Select Input Device:"); // lang.getString("comboBox.inputDevice")
+        this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName()); // lang.getString("comboBox.inputDevice")
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
@@ -55,7 +55,7 @@ public class AudioController extends SubSetting {
             this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone name
         }
 
-        this.outputDeviceComboBox.setPromptText("Select Output Device:"); // lang.getString("comboBox.outputDevice")
+        this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName()); // lang.getString("comboBox.outputDevice")
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
 
@@ -84,6 +84,11 @@ public class AudioController extends SubSetting {
      */
     private void onInputDeviceClicked(ActionEvent actionEvent) {
         builder.getLinePoolService().setSelectedMicrophone(this.inputDeviceComboBox.getValue());
+        builder.saveSettings();
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().setNewMicrophone();
+        }
     }
 
     /**
@@ -91,5 +96,10 @@ public class AudioController extends SubSetting {
      */
     private void onOutputDeviceClicked(ActionEvent actionEvent) {
         builder.getLinePoolService().setSelectedSpeaker(this.outputDeviceComboBox.getValue());
+        builder.saveSettings();
+
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().setNewSpeaker();
+        }
     }
 }

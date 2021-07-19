@@ -2,9 +2,9 @@ package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
 
-import javax.sound.sampled.*;
-import java.util.HashMap;
-import java.util.Map;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -13,8 +13,6 @@ public class Microphone {
     private AudioFormat format;
     private TargetDataLine microphone;
     private byte[] data;
-    private DataLine.Info info;
-    private Mixer mixer;
 
     public Microphone(ModelBuilder builder) {
         this.builder = builder;
@@ -24,20 +22,7 @@ public class Microphone {
         // audio format
         format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
-        // audio object (microphone information?)
-        info = new DataLine.Info(TargetDataLine.class, format);
-
-        microphone = builder.getSelectedMicrophone();
-
-
-//
-//        try {
-//            // get microphoneLine
-//            microphone = (TargetDataLine) AudioSystem.getLine(info);
-//
-//        } catch (LineUnavailableException e) {
-//            e.printStackTrace();
-//        }
+        microphone = builder.getLinePoolService().getSelectedMicrophone();
 
         data = new byte[1024];
     }
