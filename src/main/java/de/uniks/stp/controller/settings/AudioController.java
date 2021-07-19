@@ -47,13 +47,21 @@ public class AudioController extends SubSetting {
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
-        this.inputDeviceComboBox.setPromptText("Select Input Device:"); // lang.getString("comboBox.inputDevice")
+        this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
-        this.outputDeviceComboBox.setPromptText("Select Output Device:"); // lang.getString("comboBox.outputDevice")
+        for (var microphone : builder.getLinePoolService().getMicrophones().entrySet()) {
+            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone names
+        }
+
+        this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName());
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
+
+        for (var speaker : builder.getLinePoolService().getSpeakers().entrySet()) {
+            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set speaker names
+        }
 
         // Slider Settings
         volumeInput.setMin(-80.0);
@@ -75,13 +83,23 @@ public class AudioController extends SubSetting {
      * Sets the selected InputDevice (Microphone) when clicked on it in comboBox
      */
     private void onInputDeviceClicked(ActionEvent actionEvent) {
+        builder.getLinePoolService().setSelectedMicrophone(this.inputDeviceComboBox.getValue());
+        builder.saveSettings();
 
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().setNewMicrophone();
+        }
     }
 
     /**
      * Sets the selected OutputDevice (Speaker) when clicked on it in comboBox
      */
     private void onOutputDeviceClicked(ActionEvent actionEvent) {
+        builder.getLinePoolService().setSelectedSpeaker(this.outputDeviceComboBox.getValue());
+        builder.saveSettings();
 
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().setNewSpeaker();
+        }
     }
 }

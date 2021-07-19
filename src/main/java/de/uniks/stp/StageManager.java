@@ -10,6 +10,7 @@ import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
+import de.uniks.stp.util.LinePoolService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -60,6 +61,12 @@ public class StageManager extends Application {
 
         loadAppDir();
         languageSetup();
+
+        LinePoolService linePoolService = new LinePoolService();
+        linePoolService.init();
+        builder.setLinePoolService(linePoolService);
+
+        builder.loadSettings();
 
         // start application
         stage = primaryStage;

@@ -22,6 +22,7 @@ public class AudioStreamReceiver implements Runnable {
     private HashMap<String, Speaker> receiverSpeakerMap;
     private volatile boolean stopped;
     private final ArrayList<String> mutedUser = new ArrayList<>();
+    private boolean currentlySetNewSpeaker;
 
     public AudioStreamReceiver(ModelBuilder builder, DatagramSocket socket) {
         this.builder = builder;
@@ -31,6 +32,7 @@ public class AudioStreamReceiver implements Runnable {
     public void init() {
         connectedUser = new ArrayList<>();
         receiverSpeakerMap = new HashMap<>();
+        currentlySetNewSpeaker = false;
 
         data = new byte[1279];
 
@@ -77,8 +79,10 @@ public class AudioStreamReceiver implements Runnable {
 
                     // set receivedData to speaker of the senderName
                     if (!builder.getMuteHeadphones() && !senderName.equals(builder.getPersonalUser().getName())) {
-                        if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
-                            receiverSpeakerMap.get(senderName).writeData(receivedData);
+                        if (!currentlySetNewSpeaker) {
+                            if (receiverSpeakerMap != null && !mutedUser.contains(senderName)) {
+                                receiverSpeakerMap.get(senderName).writeData(receivedData);
+                            }
                         }
                     }
                 }
@@ -95,7 +99,7 @@ public class AudioStreamReceiver implements Runnable {
     public void newConnectedUser(AudioMember newMember) {
         connectedUser.add(newMember);
 
-        receiverSpeakerMap.put(newMember.getName(), new Speaker());
+        receiverSpeakerMap.put(newMember.getName(), new Speaker(builder));
         receiverSpeakerMap.get(newMember.getName()).init();
         receiverSpeakerMap.get(newMember.getName()).startPlayback();
     }
@@ -141,5 +145,19 @@ public class AudioStreamReceiver implements Runnable {
         while (!stopped) {
             Thread.onSpinWait();
         }
+    }
+
+    /**
+     * Sets new Speaker for every user when already connected to a channel
+     */
+    public void setNewSpeaker() {
+        currentlySetNewSpeaker = true;
+        for (var receiverSpeaker : receiverSpeakerMap.entrySet()) {
+            receiverSpeaker.getValue().stopPlayback();
+            receiverSpeaker.setValue(new Speaker(builder));
+            receiverSpeaker.getValue().init();
+            receiverSpeaker.getValue().startPlayback();
+        }
+        currentlySetNewSpeaker = false;
     }
 }

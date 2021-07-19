@@ -35,7 +35,7 @@ public class AudioStreamSender implements Runnable {
 
     public void init() {
         // Create the audio capture object to read information in.
-        microphone = new Microphone();
+        microphone = new Microphone(builder);
         microphone.init();
     }
 
@@ -101,5 +101,14 @@ public class AudioStreamSender implements Runnable {
         while (!stopped) {
             Thread.onSpinWait();
         }
+    }
+
+    /**
+     * Sets new Microphone when already connected to a channel
+     */
+    public void setNewMicrophone() {
+        microphone.stopRecording();
+        microphone = new Microphone(builder);
+        microphone.init();
     }
 }
