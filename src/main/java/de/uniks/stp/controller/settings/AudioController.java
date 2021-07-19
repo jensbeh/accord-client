@@ -47,20 +47,20 @@ public class AudioController extends SubSetting {
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
-        this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName()); // lang.getString("comboBox.inputDevice")
+        this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
         for (var microphone : builder.getLinePoolService().getMicrophones().entrySet()) {
-            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone name
+            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone names
         }
 
-        this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName()); // lang.getString("comboBox.outputDevice")
+        this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName());
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
 
         for (var speaker : builder.getLinePoolService().getSpeakers().entrySet()) {
-            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set microphone name
+            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set speaker names
         }
 
         // Slider Settings
