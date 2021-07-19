@@ -884,7 +884,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // click on mic
-        moveBy(0,25);
+        moveBy(0, 25);
         clickOn();
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -892,7 +892,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         // click on speaker
-        moveBy(0,25);
+        moveBy(0, 25);
         clickOn();
         WaitForAsyncUtils.waitForFxEvents();
     }
