@@ -3,16 +3,12 @@ package de.uniks.stp.util;
 import javax.sound.sampled.*;
 import java.util.HashMap;
 
-import static de.uniks.stp.util.Constants.*;
-
 public class LinePoolService {
     private HashMap<String, TargetDataLine> microphones;
     private HashMap<String, SourceDataLine> speakers;
     private HashMap<String, Mixer> mixerMap;
     private TargetDataLine selectedMicrophone;
     private SourceDataLine selectedSpeaker;
-    private AudioFormat format;
-    private DataLine.Info info;
     private String selectedMicrophoneName;
     private String selectedSpeakerName;
 
@@ -20,12 +16,6 @@ public class LinePoolService {
     }
 
     public void init() {
-        // audio format
-        format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
-
-        // audio object (microphone information?)
-        info = new DataLine.Info(TargetDataLine.class, format);
-
         microphones = new HashMap<>();
         speakers = new HashMap<>();
 
