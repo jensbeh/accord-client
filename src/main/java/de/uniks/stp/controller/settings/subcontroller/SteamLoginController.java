@@ -9,9 +9,9 @@ import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
 public class SteamLoginController {
-    private ModelBuilder builder;
-    private WebView webView;
-    private Stage popUp;
+    private final ModelBuilder builder;
+    private final WebView webView;
+    private final Stage popUp;
 
     public SteamLoginController(ModelBuilder builder) {
         this.builder = builder;
@@ -55,6 +55,6 @@ public class SteamLoginController {
     private void stop() {
         webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
         webView.getEngine().load(null);
-        Platform.runLater(() -> popUp.close());
+        Platform.runLater(popUp::close);
     }
 }
