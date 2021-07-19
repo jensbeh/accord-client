@@ -8,6 +8,7 @@ import static de.uniks.stp.util.Constants.*;
 public class LinePoolService {
     private HashMap<String, TargetDataLine> microphones;
     private HashMap<String, SourceDataLine> speakers;
+    private HashMap<String, Mixer> mixerMap;
     private TargetDataLine selectedMicrophone;
     private SourceDataLine selectedSpeaker;
     private AudioFormat format;
@@ -28,9 +29,12 @@ public class LinePoolService {
         microphones = new HashMap<>();
         speakers = new HashMap<>();
 
+        mixerMap = new HashMap<>();
+
         Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
         for (Mixer.Info info : mixerInfo) {
             Mixer mixer = AudioSystem.getMixer(info);
+            mixerMap.put(info.getName(), mixer);
             Line.Info[] targetLineInfo = mixer.getTargetLineInfo();
             Line.Info[] sourceLineInfo = mixer.getSourceLineInfo();
             //Gets Microphones
@@ -71,7 +75,14 @@ public class LinePoolService {
     }
 
     public SourceDataLine getSelectedSpeaker() {
-        return this.selectedSpeaker;
+        Line.Info[] sourceLineInfo = mixerMap.get(selectedSpeakerName).getSourceLineInfo();
+        SourceDataLine speakerDataLine = null;
+        try {
+            speakerDataLine = (SourceDataLine) mixerMap.get(selectedSpeakerName).getLine(sourceLineInfo[0]);
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+        return speakerDataLine;
     }
 
     public String getSelectedSpeakerName() {
