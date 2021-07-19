@@ -69,6 +69,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
+        //TODO functionality for steam connect
         System.out.println("Steam");
         builder.setSteamToken("test");
         builder.saveSettings();
