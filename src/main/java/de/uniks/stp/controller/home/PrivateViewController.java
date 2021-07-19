@@ -23,12 +23,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
@@ -86,7 +91,9 @@ public class PrivateViewController {
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        UserListCell userListCell = new UserListCell();
+        userListCell.setRoot(root);
+        onlineUsersList.setCellFactory(userListCell);
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
@@ -350,8 +357,23 @@ public class PrivateViewController {
             if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
+            //showSpotifyPopup();
         }
     }
+
+    private void showSpotifyPopup() {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(root.getScene().getWindow());
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.getChildren().add(new Text("This is a Dialog"));
+        dialogVbox.setStyle("-fx-focus-color: transparent;");
+        dialog.initStyle(StageStyle.UNDECORATED);
+        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
+    }
+
 
     /**
      * Stop running Actions when Controller gets closed

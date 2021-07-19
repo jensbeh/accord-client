@@ -1,14 +1,34 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.model.User;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
     /**
@@ -17,20 +37,38 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
+    private HBox root;
+
+    public void setRoot(HBox root) {
+        this.root = root;
+    }
+
+    public HBox getRoot() {
+        return root;
+    }
 
     @Override
     public ListCell<User> call(ListView<User> param) {
-        return new UserCell();
+        UserCell userCell = new UserCell();
+        userCell.setRoot(root);
+        return userCell;
     }
 
     private static class UserCell extends ListCell<User> {
+        private HBox root;
+
+        public void setRoot(HBox root) {
+            this.root = root;
+        }
+
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             HBox cell = new HBox();
+            cell.setPadding(new Insets(5, 0, 5, 5));
             Circle circle = new Circle(15);
             Label name = new Label();
             super.updateItem(item, empty);
@@ -48,8 +86,53 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 cell.getChildren().addAll(circle, name);
+                cell.setOnMouseClicked(this::spotifyPopup);
             }
             this.setGraphic(cell);
+        }
+
+        private void spotifyPopup(MouseEvent mouseEvent) {
+            Parent root = null;
+            try {
+                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")));
+                VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
+                ImageView spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
+                Label bandAndSong = (Label) root.lookup("#bandAndSong");
+                Image artwork = new Image("https://i.scdn.co/image/ab67616d00004851d29c2f17f8d5756a0e85ecde");
+                spotifyArtwork.setImage(artwork);
+                HBox hBox = (HBox) mouseEvent.getSource();
+                hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
+                Bounds bounds = ((HBox) mouseEvent.getSource()).localToScreen(((HBox) mouseEvent.getSource()).getBoundsInLocal());
+                double x = bounds.getMinX() - 200;
+                double y = bounds.getMinY();
+
+                final Stage dialog = new Stage();
+                dialog.initOwner(hBox.getScene().getWindow());
+                dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                    if (!isNowFocused) {
+                        dialog.hide();
+                        hBox.setStyle("-fx-background-color: transparent;");
+                    }
+                });
+                Scene scene = new Scene(root);
+                scene.setFill(Color.TRANSPARENT);
+                dialog.initStyle(StageStyle.TRANSPARENT);
+                dialog.setX(x);
+                dialog.setY(y);
+                dialog.setScene(scene);
+                dialog.show();
+
+                Timer timer = new Timer();
+                Random random = new Random();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> bandAndSong.setText(String.valueOf(random.nextInt())));
+                    }
+                }, 0, 2000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

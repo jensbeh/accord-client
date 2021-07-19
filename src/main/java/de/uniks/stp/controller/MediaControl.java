@@ -65,8 +65,8 @@ public class MediaControl extends BorderPane {
     public VBox setMediaControls(MediaView mediaView) {
 
         VBox mediaBox = new VBox();
-
         MediaPlayer mp = mediaView.getMediaPlayer();
+
         mediaBar = new HBox();
         mediaBar.setAlignment(Pos.CENTER);
         mediaBar.setPadding(new Insets(5, 10, 5, 10));
