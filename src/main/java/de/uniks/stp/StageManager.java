@@ -209,9 +209,7 @@ public class StageManager extends Application {
 
             subStage = new Stage();
             setSubStageTitle("window_title_settings");
-            subStage.setMinWidth(800);
-            subStage.setMinHeight(230);
-            // subStage.setResizable(false);
+            subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
             subStage.initOwner(stage);
