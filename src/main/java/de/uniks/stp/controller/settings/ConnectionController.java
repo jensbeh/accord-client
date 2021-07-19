@@ -14,24 +14,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Stack;
-
 public class ConnectionController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
-    private ImageView steamView;
-    private ImageView spotifyView;
-    private StackPane spotifyToggleStackPane;
-    private Button spotifyToggleButton = new Button();
-    private Boolean spotifyToggle;
-    private StackPane steamToggleStackPane;
-    private Button steamToggleButton = new Button();
-    private Boolean steamToggle;
+    private final Button spotifyToggleButton = new Button();
+    private final Button steamToggleButton = new Button();
     private final Rectangle backgroundSpotifyButton = new Rectangle(30, 10, Color.RED);
     private final Rectangle backgroundSteamButton = new Rectangle(30, 10, Color.RED);
-    private VBox spotifyVbox;
-    private VBox steamVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -39,13 +29,13 @@ public class ConnectionController extends SubSetting {
     }
 
     public void init() {
-        spotifyView = (ImageView) view.lookup("#spotify");
-        steamView = (ImageView) view.lookup("#steam");
-        spotifyToggleStackPane = (StackPane) view.lookup("#spotifyToggleStackPane");
-        steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
+        ImageView spotifyView = (ImageView) view.lookup("#spotify");
+        ImageView steamView = (ImageView) view.lookup("#steam");
+        StackPane spotifyToggleStackPane = (StackPane) view.lookup("#spotifyToggleStackPane");
+        StackPane steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
 
-        spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        steamVbox = (VBox) view.lookup("#steamVbox");
+        VBox spotifyVbox = (VBox) view.lookup("#spotifyVbox");
+        VBox steamVbox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
         steamVbox.setVisible(false);
 
@@ -109,36 +99,33 @@ public class ConnectionController extends SubSetting {
             StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
         }
         final boolean[] toggleShowFinal = {toggleShow};
-        EventHandler<Event> click = new EventHandler<Event>() {
-            @Override
-            public void handle(Event e) {
-                toggleButton.getStyleClass().clear();
-                backgroundToggle.getStyleClass().clear();
-                if (toggleShowFinal[0]) {
-                    //Button off
-                    toggleButton.getStyleClass().add("buttonOff");
-                    backgroundToggle.getStyleClass().add("backgroundOff");
-                    StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
-                    toggleShowFinal[0] = false;
-                    if (stackPane.getId().contains("spotifyToggleStackPane")) {
-                        builder.setSpotifyShow(false);
-                    } else {
-                        builder.setSteamShow(false);
-                    }
+        EventHandler<Event> click = e -> {
+            toggleButton.getStyleClass().clear();
+            backgroundToggle.getStyleClass().clear();
+            if (toggleShowFinal[0]) {
+                //Button off
+                toggleButton.getStyleClass().add("buttonOff");
+                backgroundToggle.getStyleClass().add("backgroundOff");
+                StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
+                toggleShowFinal[0] = false;
+                if (stackPane.getId().contains("spotifyToggleStackPane")) {
+                    builder.setSpotifyShow(false);
                 } else {
-                    //Button on
-                    toggleButton.getStyleClass().add("buttonOn");
-                    backgroundToggle.getStyleClass().add("backgroundOn");
-                    StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
-                    toggleShowFinal[0] = true;
-                    if (stackPane.getId().contains("spotifyToggleStackPane")) {
-                        builder.setSpotifyShow(true);
-                    } else {
-                        builder.setSteamShow(true);
-                    }
+                    builder.setSteamShow(false);
                 }
-                builder.saveSettings();
+            } else {
+                //Button on
+                toggleButton.getStyleClass().add("buttonOn");
+                backgroundToggle.getStyleClass().add("backgroundOn");
+                StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
+                toggleShowFinal[0] = true;
+                if (stackPane.getId().contains("spotifyToggleStackPane")) {
+                    builder.setSpotifyShow(true);
+                } else {
+                    builder.setSteamShow(true);
+                }
             }
+            builder.saveSettings();
         };
         toggleButton.setFocusTraversable(false);
         stackPane.setOnMouseClicked(click);
