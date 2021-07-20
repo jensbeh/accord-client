@@ -1,175 +1,107 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title>Example of the Implicit Grant flow with Spotify</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <style type="text/css">
-        #login, #loggedin {
-            display: none;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Web API Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script> var redirect_uri = "http://localhost:8888/callback/"; // change this your value
+
+    const client_id = "f2557b7362074d3b93537b2803ef48b1";
+    const client_secret = "85a01971a347473b907d1ae06d8fad97"; // In a real app you should not expose your client_secret to the user
+
+    var responseUrl;
+
+    var access_token = null;
+    var refresh_token = null;
+
+    const AUTHORIZE = "https://accounts.spotify.com/authorize"
+    const TOKEN = "https://accounts.spotify.com/api/token";
+
+
+    function requestAuthorization() {
+
+        localStorage.setItem("client_id", client_id);
+        localStorage.setItem("client_secret", client_secret); // In a real app you should not expose your client_secret to the user
+
+        let url = AUTHORIZE;
+        url += "?client_id=" + client_id;
+        url += "&response_type=code";
+        url += "&redirect_uri=" + encodeURI(redirect_uri);
+        url += "&show_dialog=true";
+        url += "&scope=user-read-private user-read-email user-modify-playback-state user-read-playback-position user-library-read streaming user-read-playback-state user-read-recently-played playlist-read-private";
+        console.log(url);
+        window.location = url; // Show Spotify's authorization screen
+    }
+
+    function handleRedirect() {
+        if (window.location.href.indexOf("code=") > -1) {
+            console.log("enthält")
+            let code = getCode();
+            console.log(code)
+            fetchAccessToken(code);
         }
-        .text-overflow {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 500px;
+    }
+
+    function getCode() {
+        let code = null;
+        const queryString = window.location.search;
+        if (queryString.length > 0) {
+            const urlParams = new URLSearchParams(queryString);
+            code = urlParams.get('code')
         }
-    </style>
+        return code;
+    }
+
+    function fetchAccessToken(code) {
+        let body = "grant_type=authorization_code";
+        body += "&code=" + code;
+        body += "&redirect_uri=" + encodeURI(redirect_uri);
+        body += "&client_id=" + client_id;
+        body += "&client_secret=" + client_secret;
+        callAuthorizationApi(body);
+    }
+
+    function callAuthorizationApi(body) {
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState === this.DONE) {
+                var data = JSON.parse(this.responseText);
+                console.log("Data ", data);
+                responseUrl = this.responseText;
+                console.log("Response Url ", responseUrl);
+                window.location.href = responseUrl
+                console.log("Location ", window.location.href);
+            }
+        }
+        xhr.open("POST", TOKEN);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(client_id + ":" + client_secret));
+        xhr.send(body);
+        console.log("xhr send")
+
+    }
+
+    </script>
 </head>
 
-<body>
+<body onload="handleRedirect()">
 <div class="container">
-    <div id="login">
-        <h1>This is an example of the Implicit Grant flow</h1>
-        <button id="login-button" class="btn btn-primary">Log in with Spotify</button>
-    </div>
-    <div id="loggedin">
-        <div id="user-profile">
-        </div>
-        <div id="oauth">
+
+    <div id="tokenSection" class="row">
+        <div class="col">
+            <div style="text-align: center;">
+                <h1>Connect your Spotify Account</h1>
+                <input class="btn btn-primary btn-lg" type="button" onclick="requestAuthorization()"
+                       value="Login to Spotify"><br/>
+            </div>
         </div>
     </div>
 </div>
 
-<script id="user-profile-template" type="text/x-handlebars-template">
-    <h1>Logged in as {{display_name}}</h1>
-    <div class="media">
-        <div class="pull-left">
-            <img class="media-object" width="150" src="{{images.0.url}}" />
-        </div>
-        <div class="media-body">
-            <dl class="dl-horizontal">
-                <dt>Display name</dt><dd class="clearfix">{{display_name}}</dd>
-                <dt>Id</dt><dd>{{id}}</dd>
-                <dt>Email</dt><dd>{{email}}</dd>
-                <dt>Spotify URI</dt><dd><a href="{{external_urls.spotify}}">{{external_urls.spotify}}</a></dd>
-                <dt>Link</dt><dd><a href="{{href}}">{{href}}</a></dd>
-                <dt>Profile Image</dt><dd class="clearfix"><a href="{{images.0.url}}">{{images.0.url}}</a></dd>
-                <dt>Country</dt><dd>{{country}}</dd>
-            </dl>
-        </div>
-    </div>
-</script>
 
-<script id="oauth-template" type="text/x-handlebars-template">
-    <h2>oAuth info</h2>
-    <dl class="dl-horizontal">
-        <dt>Access token</dt><dd class="text-overflow">{{access_token}}</dd>
-    </dl>
-</script>
+</body>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script>
-    (function() {
-
-        var stateKey = 'spotify_auth_state';
-
-        /**
-         * Obtains parameters from the hash of the URL
-         * @return Object
-         */
-        function getHashParams() {
-            var hashParams = {};
-            var e, r = /([^&;=]+)=?([^&;]*)/g,
-                q = window.location.hash.substring(1);
-            while ( e = r.exec(q)) {
-                hashParams[e[1]] = decodeURIComponent(e[2]);
-            }
-            return hashParams;
-        }
-
-        /**
-         * Generates a random string containing numbers and letters
-         * @param  {number} length The length of the string
-         * @return {string} The generated string
-         */
-        function generateRandomString(length) {
-            var text = '';
-            var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-            for (var i = 0; i < length; i++) {
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            }
-            return text;
-        };
-
-        var userProfileSource = document.getElementById('user-profile-template').innerHTML,
-            userProfileTemplate = Handlebars.compile(userProfileSource),
-            userProfilePlaceholder = document.getElementById('user-profile');
-
-        oauthSource = document.getElementById('oauth-template').innerHTML,
-            oauthTemplate = Handlebars.compile(oauthSource),
-            oauthPlaceholder = document.getElementById('oauth');
-
-        var params = getHashParams();
-
-        var access_token = params.access_token,
-            refresh_token = params.refresh_token,
-            state = params.state,
-            storedState = localStorage.getItem(stateKey);
-
-        if (access_token && (state == null || state !== storedState)) {
-            alert('There was an error during the authentication');
-        } else {
-            localStorage.removeItem(stateKey);
-            if (access_token) {
-                $.ajax({
-                    url: 'https://api.spotify.com/v1/me',
-                    headers: {
-                        'Authorization': 'Bearer ' + access_token
-                    },
-                    success: function(response) {
-                        userProfilePlaceholder.innerHTML = userProfileTemplate(response);
-                        console.log(response)
-                        $('#login').hide();
-                        $('#loggedin').show();
-                    }
-                });
-            } else {
-                $('#login').show();
-                $('#loggedin').hide();
-            }
-
-            document.getElementById('login-button').addEventListener('click', function() {
-
-                var client_id = 'f2557b7362074d3b93537b2803ef48b1'; // Your client id
-                var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
-                var code_challenge_method = "S256";
-                var code_challenge = ""
-
-                var codeVerifier = generateRandomString(100);
-
-                // encode as UTF-8
-                const msgBuffer = new TextEncoder().encode(codeVerifier);
-
-                // hash the message
-                const hashBuffer = crypto.subtle.digest('SHA-256', msgBuffer);
-
-                // convert ArrayBuffer to Array
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-                // convert bytes to hex string
-                code_challenge = hashArray.toString();
-
-                code_challenge = btoa(code_challenge)
-
-                var state = generateRandomString(16);
-
-                localStorage.setItem(stateKey, state);
-                var scope = 'user-read-private';
-
-                var url = 'https://accounts.spotify.com/authorize';
-                url += '?response_type=code';
-                url += '&client_id=' + encodeURIComponent(client_id);
-                url += '&scope=' + encodeURIComponent(scope);
-                url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
-                url += '&state=' + encodeURIComponent(state);
-                url += '&code_challenge_method=' + encodeURIComponent(code_challenge_method);
-                url += '&code_challenge=' + encodeURIComponent(code_challenge);
-
-                window.location = url;
-            }, false);
-        }
-    })();
-</script>
 </html>

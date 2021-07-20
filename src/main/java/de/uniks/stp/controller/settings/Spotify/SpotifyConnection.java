@@ -4,24 +4,20 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import de.uniks.stp.builder.ModelBuilder;
-import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.SecureRandom;
-import java.util.Base64;
 
 public class SpotifyConnection {
 
@@ -45,16 +41,19 @@ public class SpotifyConnection {
     public void init() {
         createHttpServer();
         webView.getEngine().load("http://localhost:8888/");
-        webView.getEngine().locationProperty().addListener(this::getSpotifyToken);
+
+        webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyToken);
         popUp.setScene(new Scene(webView));
         popUp.setTitle("Spotify Login");
         popUp.show();
     }
 
     private void getSpotifyToken(Observable observable) {
-        if (webView.getEngine().getLocation().contains("#access_token")) {
-            String[] link = webView.getEngine().getLocation().split("#access_token=");
-            String[] link2 = link[1].split("&token");
+
+        if (webView.getEngine().getLocation().contains("access_token")) {
+            String[] link = webView.getEngine().getLocation().split("access_token%22:%22");
+            String[] link2 = link[1].split("%22,%22token_type");
+            String[] link3 = link[1].split("%22refresh_token%22:%22");
             setSpotifyToken(link2[0]);
             //Platform.runLater(this::stop);
         }
