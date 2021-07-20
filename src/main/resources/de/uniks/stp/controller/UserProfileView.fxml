@@ -10,7 +10,7 @@
 
 <VBox id="root" alignment="CENTER" minHeight="110.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox id="descriptionbox" prefHeight="60.0" prefWidth="186.0">
+      <VBox id="descriptionbox" alignment="TOP_CENTER" prefHeight="60.0" prefWidth="186.0">
          <children>
             <HBox alignment="CENTER" maxWidth="188.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
                <children>

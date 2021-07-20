@@ -32,17 +32,21 @@ public class UserProfileController {
         onlineStatus = (Circle) view.lookup("#onlineStatus");
         descriptionBox = (VBox) view.lookup("#descriptionbox");
 
-        builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION,this::onDescriptionChanged);
+        builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged);
     }
 
     private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
         Label currentGame = new Label();
         currentGame.setText(builder.getPersonalUser().getDescription());
+        currentGame.setStyle("-fx-text-fill: white;");
         currentGame.setId("currentGame");
-        if(descriptionBox.getChildren().size()==2){
-            descriptionBox.getChildren().remove(1);
+        Label oldLabel = (Label) view.lookup("#currentGame");
+        if (oldLabel!=null) {
+            Platform.runLater(()-> descriptionBox.getChildren().remove(oldLabel));
         }
-        descriptionBox.getChildren().add(currentGame);
+        if (!builder.getPersonalUser().getDescription().equals("")) {
+            Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+        }
     }
 
     public void setUserName(String name) {
@@ -56,7 +60,7 @@ public class UserProfileController {
         });
     }
 
-    public void stop(){
+    public void stop() {
         builder.getPersonalUser().removePropertyChangeListener(this::onDescriptionChanged);
     }
 }

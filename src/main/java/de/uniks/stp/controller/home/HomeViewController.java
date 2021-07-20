@@ -92,6 +92,10 @@ public class HomeViewController {
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
 
+        if(!builder.getSteamToken().equals("")){
+            builder.getGame();
+        }
+
         ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
 

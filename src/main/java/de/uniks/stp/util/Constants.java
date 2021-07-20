@@ -22,7 +22,7 @@ public class Constants {
     public static final String SERVER_INVITES = "/invites";
     public static final String SERVER_AUDIO_JOIN = "/join";
     public static final String SERVER_AUDIO_LEAVE = "/leave";
-    public static final String SERVER_USER_DESCRIPTION = "/Description";
+    public static final String SERVER_USER_DESCRIPTION = "/description";
 
     // Client
     public static final String REST_SERVER_URL = "https://ac.uniks.de";

@@ -6,6 +6,7 @@ import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
+import de.uniks.stp.net.updateSteamGameController;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -61,6 +62,7 @@ public class ModelBuilder {
     private String spotifyToken;
     private String steamToken;
     private LinePoolService linePoolService;
+    private Thread getSteamGame;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -468,14 +470,11 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        restClient.getCurrentGame(steamToken, response -> {
-            JsonNode body = response.getBody();
-            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players"));
-            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0));
-            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo"));
-            if(body.getObject().getJSONObject("response").getJSONArray("players").getJSONArray(0).getJSONObject(0).has("gameextrainfo")){
-                personalUser.setDescription(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).getString("gameextrainfo"));
-            }
-        });
+        if (getSteamGame == null) {
+            getSteamGame = new Thread(new updateSteamGameController(this));
+        }
+        if(!getSteamGame.isAlive()){
+            getSteamGame.start();
+        }
     }
 }
