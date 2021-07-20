@@ -10,6 +10,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 
 import javax.sound.sampled.AudioInputStream;
@@ -58,6 +59,7 @@ public class ModelBuilder {
     private boolean steamShow;
     private String spotifyToken;
     private String steamToken;
+    private LinePoolService linePoolService;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -269,6 +271,8 @@ public class ModelBuilder {
             settings.put("spotifyToken", spotifyToken);
             settings.put("steamShow", steamShow);
             settings.put("steamToken", steamToken);
+            settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
+            settings.put("speaker", getLinePoolService().getSelectedSpeakerName());
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -307,6 +311,8 @@ public class ModelBuilder {
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
             steamToken = (String) parsedSettings.get("steamToken");
+            getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
+            getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             reader.close();
 
         } catch (Exception e) {
@@ -450,5 +456,13 @@ public class ModelBuilder {
 
     public void setSteamToken(String steamToken) {
         this.steamToken = steamToken;
+    }
+
+    public void setLinePoolService(LinePoolService linePoolService) {
+        this.linePoolService = linePoolService;
+    }
+
+    public LinePoolService getLinePoolService() {
+        return this.linePoolService;
     }
 }

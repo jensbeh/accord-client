@@ -2,7 +2,7 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -134,11 +134,11 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn(comboBox_themeSelect);
         clickOn("Bright");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         clickOn(comboBox_themeSelect);
         clickOn("Dark");
-        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
     @Test
@@ -221,12 +221,12 @@ public class SettingsControllerTest extends ApplicationTest {
         //volume slider test
         Slider volume = lookup("#volume").query();
         volume.setValue(6.0);
-        moveBy(65,-55);
+        moveBy(65, -55);
         clickOn();
 
         clickOn("#settingsButton");
         clickOn("#button_Notifications");
-        Assert.assertEquals(6.0, volume.getValue(),0.001);
+        Assert.assertEquals(6.0, volume.getValue(), 0.001);
         volume.setValue(0.0);
     }
 
@@ -311,5 +311,31 @@ public class SettingsControllerTest extends ApplicationTest {
 
         Assert.assertTrue(startButton.isVisible());
         Assert.assertTrue(microphoneProgressBar.isVisible());
+    }
+
+    @Test
+    public void changeMicAndSpeakerTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        clickOn(inputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on mic
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(outputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on speaker
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }
