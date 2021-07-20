@@ -60,6 +60,7 @@ public class PrivateViewController {
     private Button microphoneButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
+    private UserProfileController userProfileController;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -145,7 +146,7 @@ public class PrivateViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            UserProfileController userProfileController = new UserProfileController(root);
+            userProfileController = new UserProfileController(root,builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -359,6 +360,9 @@ public class PrivateViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
+        if(userProfileController!=null) {
+            userProfileController.stop();
+        }
         try {
             if (privateSystemWebSocketClient != null) {
                 if (privateSystemWebSocketClient.getSession() != null) {

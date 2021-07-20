@@ -12,6 +12,7 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -464,5 +465,17 @@ public class ModelBuilder {
 
     public LinePoolService getLinePoolService() {
         return this.linePoolService;
+    }
+
+    public void getGame() {
+        restClient.getCurrentGame(steamToken, response -> {
+            JsonNode body = response.getBody();
+            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players"));
+            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0));
+            System.out.println(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo"));
+            if(body.getObject().getJSONObject("response").getJSONArray("players").getJSONArray(0).getJSONObject(0).has("gameextrainfo")){
+                personalUser.setDescription(body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).getString("gameextrainfo"));
+            }
+        });
     }
 }

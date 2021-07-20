@@ -68,6 +68,7 @@ public class ServerViewController {
     private Button disconnectAudioButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
+    private UserProfileController userProfileController;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -305,7 +306,7 @@ public class ServerViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            UserProfileController userProfileController = new UserProfileController(root);
+            userProfileController = new UserProfileController(root,builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -627,6 +628,9 @@ public class ServerViewController {
     }
 
     public void stop() {
+        if(userProfileController!=null) {
+            userProfileController.stop();
+        }
         try {
             if (this.serverSystemWebSocket != null) {
                 if (this.serverSystemWebSocket.getSession() != null) {

@@ -10,7 +10,7 @@ import kong.unirest.JsonNode;
 
 public class SteamLoginController {
     private final ModelBuilder builder;
-    private final WebView webView;
+    private WebView webView;
     private final Stage popUp;
 
     public SteamLoginController(ModelBuilder builder) {
@@ -37,24 +37,19 @@ public class SteamLoginController {
                     int status = body.getObject().getJSONObject("response").getInt("success");
                     if (status == 1) {
                         setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-                        stop();
                     }
                 });
             } else if (selector.equals("profiles")) { // https://steamcommunity.com/profiles/steam64ID/
                 setSteam64ID(link[link.length - 1]);
-                stop();
             }
         }
     }
 
     private void setSteam64ID(String steam64ID) {
+        webView = null;
+        Platform.runLater(popUp::close);
         builder.setSteamToken(steam64ID);
         builder.saveSettings();
-    }
-
-    private void stop() {
-        webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
-        webView.getEngine().load(null);
-        Platform.runLater(popUp::close);
+        Platform.runLater(builder::getGame);
     }
 }

@@ -201,10 +201,15 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
-    public void updateDescribtion(String serverId,String description, String userKey, Callback<JsonNode> callback) {
+    public void updateDescribtion(String serverId, String description, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("text", description);
         String body = JSONObject.valueToString(jsonObj);
         HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void getCurrentGame(String steamToken, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_PLAYER_SUMMARIES + STEAM_API_KEY + "&steamids=" + steamToken);
         sendRequest(request, callback);
     }
 }

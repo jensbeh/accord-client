@@ -1,5 +1,7 @@
 package de.uniks.stp.controller;
 
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -7,22 +9,40 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.beans.PropertyChangeEvent;
+
 public class UserProfileController {
 
+    private final ModelBuilder builder;
     public VBox root;
     public Label userName;
     private Circle onlineStatus;
     private final Parent view;
+    private VBox descriptionBox;
 
 
-    public UserProfileController(Parent view) {
+    public UserProfileController(Parent view, ModelBuilder builder) {
         this.view = view;
+        this.builder = builder;
     }
 
     public void init() {
         root = (VBox) view.lookup("#root");
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
+        descriptionBox = (VBox) view.lookup("#descriptionbox");
+
+        builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION,this::onDescriptionChanged);
+    }
+
+    private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
+        Label currentGame = new Label();
+        currentGame.setText(builder.getPersonalUser().getDescription());
+        currentGame.setId("currentGame");
+        if(descriptionBox.getChildren().size()==2){
+            descriptionBox.getChildren().remove(1);
+        }
+        descriptionBox.getChildren().add(currentGame);
     }
 
     public void setUserName(String name) {
@@ -34,5 +54,9 @@ public class UserProfileController {
             Color color = Color.web("#13d86b");
             onlineStatus.setFill(color);
         });
+    }
+
+    public void stop(){
+        builder.getPersonalUser().removePropertyChangeListener(this::onDescriptionChanged);
     }
 }
