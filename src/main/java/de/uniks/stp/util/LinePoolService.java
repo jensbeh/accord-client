@@ -11,6 +11,7 @@ public class LinePoolService {
     private SourceDataLine selectedSpeaker;
     private String selectedMicrophoneName;
     private String selectedSpeakerName;
+    private HashMap<String, Line> PortMixer;
 
     public LinePoolService() {
     }
@@ -21,35 +22,123 @@ public class LinePoolService {
     public void init() {
         microphones = new HashMap<>();
         speakers = new HashMap<>();
+        PortMixer = new HashMap<>();
 
         mixerMap = new HashMap<>();
 
-        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-        for (Mixer.Info info : mixerInfo) {
-            Mixer mixer = AudioSystem.getMixer(info);
-            mixerMap.put(info.getName(), mixer);
-            Line.Info[] targetLineInfo = mixer.getTargetLineInfo();
-            Line.Info[] sourceLineInfo = mixer.getSourceLineInfo();
-            //Gets Microphones
-            if (targetLineInfo.length >= 1 && targetLineInfo[0].getLineClass() == TargetDataLine.class) {
-                try {
-                    TargetDataLine targetDataLine = (TargetDataLine) mixer.getLine(targetLineInfo[0]);
-                    microphones.put(info.getName(), targetDataLine);
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
+
+        for (Mixer.Info thisMixerInfo : AudioSystem.getMixerInfo()) {
+            System.out.println("Mixer: " + thisMixerInfo.getDescription() +
+                    " [" + thisMixerInfo.getName() + "]");
+            Mixer thisMixer = AudioSystem.getMixer(thisMixerInfo);
+
+            if (thisMixerInfo.getDescription().equals("Port Mixer")) {
+                // sourceLineInfo
+                for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
+                    try {
+                        Line thisLine = thisMixer.getLine(thisLineInfo);
+                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+                    } catch (LineUnavailableException lineUnavailableException) {
+                        lineUnavailableException.printStackTrace();
+                    }
+                }
+
+                // targetLineInfo
+                for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
+                    try {
+                        Line thisLine = thisMixer.getLine(thisLineInfo);
+                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+                    } catch (LineUnavailableException lineUnavailableException) {
+                        lineUnavailableException.printStackTrace();
+                    }
+                }
+            } else if (thisMixerInfo.getDescription().contains("Direct Audio Device: DirectSound")) {
+                mixerMap.put(thisMixerInfo.getName(), thisMixer);
+                Line.Info[] targetLineInfo = thisMixer.getTargetLineInfo();
+                Line.Info[] sourceLineInfo = thisMixer.getSourceLineInfo();
+                //Gets Microphones
+                if (targetLineInfo.length >= 1 && targetLineInfo[0].getLineClass() == TargetDataLine.class) {
+                    try {
+                        TargetDataLine targetDataLine = (TargetDataLine) thisMixer.getLine(targetLineInfo[0]);
+                        microphones.put(thisMixerInfo.getName(), targetDataLine);
+                    } catch (LineUnavailableException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //Gets Speakers
+                if (sourceLineInfo.length >= 1 && sourceLineInfo[0].getLineClass() == SourceDataLine.class) {
+                    try {
+                        SourceDataLine speakerDataLine = (SourceDataLine) thisMixer.getLine(sourceLineInfo[0]);
+                        speakers.put(thisMixerInfo.getName(), speakerDataLine);
+                    } catch (LineUnavailableException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            //Gets Speakers
-            if (sourceLineInfo.length >= 1 && sourceLineInfo[0].getLineClass() == SourceDataLine.class) {
-                try {
-                    SourceDataLine speakerDataLine = (SourceDataLine) mixer.getLine(sourceLineInfo[0]);
-                    speakers.put(info.getName(), speakerDataLine);
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
-                }
-            }
+
+
         }
+        System.out.println("AAA");
+
+//                if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
+//                    Line thisLine = null;
+//                    try {
+//                        thisLine = thisMixer.getLine(thisLineInfo);
+//                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+//                    } catch (LineUnavailableException lineUnavailableException) {
+//                        lineUnavailableException.printStackTrace();
+//                    }
+
+//                    try {
+//                        thisLine.open();
+//                    } catch (LineUnavailableException lineUnavailableException) {
+//                        lineUnavailableException.printStackTrace();
+//                    }
+//                    System.out.println("  Source Port: "
+//                            + thisLineInfo.toString());
+//                    for (Control thisControl : thisLine.getControls()) {
+//                        System.out.println(thisControl.getType());
+//                    }
+//                    thisLine.close();
+//                }
+
+        // mic
+//            for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
+//                if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
+//                    Line thisLine = null;
+//                    try {
+//                        thisLine = thisMixer.getLine(thisLineInfo);
+//                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+//                    } catch (LineUnavailableException lineUnavailableException) {
+//                        lineUnavailableException.printStackTrace();
+//                    }
+//                    try {
+//                        thisLine.open();
+//                    } catch (LineUnavailableException lineUnavailableException) {
+//                        lineUnavailableException.printStackTrace();
+//                    }
+//                    System.out.println("  Target Port: "
+//                            + thisLineInfo.toString());
+//                    for (Control thisControl : thisLine.getControls()) {
+//                        if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
+//                            FloatControl a = (FloatControl) thisControl;
+//                            System.out.println("xxxx: " + a.getValue());
+//                        }
+//                        if (thisControl instanceof CompoundControl) {
+//                            CompoundControl a = (CompoundControl) thisControl;
+//                            for (Control control : a.getMemberControls()) {
+//                                System.out.println("yyyy: " + control.getType());
+//                            }
+//                        }
+//
+//
+//                        System.out.println(thisControl.getType());
+//                    }
+//                    thisLine.close();
+//                }
+//            }
     }
+
 
     /**
      * returns the Map with all microphones for comboBox in AudioController
