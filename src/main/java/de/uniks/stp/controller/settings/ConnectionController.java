@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -52,7 +53,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
-        System.out.println("Spotify");
+        SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
         builder.setSpotifyToken("test");
         builder.saveSettings();
         init();
