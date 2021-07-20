@@ -29,7 +29,7 @@ public class SteamLoginController {
 
     private void getSteam64ID(Observable observable) {
         String[] link = webView.getEngine().getLocation().split("/");
-        if (!link[link.length - 1].equals("goto")) {
+        if (link.length > 1 && !link[link.length - 1].equals("goto")) {
             String selector = link[link.length - 2];
             if (selector.equals("id")) {   // https://steamcommunity.com/id/VanityID/
                 builder.getRestClient().resolveVanityID(link[link.length - 1], response -> {

@@ -2,6 +2,7 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -14,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 public class ConnectionController extends SubSetting {
 
@@ -61,8 +61,11 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        SteamLoginController steamLoginController = new SteamLoginController(builder);
-        steamLoginController.init();
+        Platform.runLater(() -> {
+            SteamLoginController steamLoginController = new SteamLoginController(builder);
+            steamLoginController.init();
+            init();
+        });
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
