@@ -8,7 +8,6 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebView;
@@ -45,6 +44,8 @@ public class ConnectionControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response;
 
+    @Mock
+    private HttpResponse<JsonNode> response2;
 
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
@@ -60,6 +61,9 @@ public class ConnectionControllerTest extends ApplicationTest {
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
     @InjectMocks
     StageManager mockApp = new StageManager();
@@ -123,24 +127,59 @@ public class ConnectionControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void SteamTest() throws InterruptedException {
+    public void SteamProfilesLinkTest() throws InterruptedException {
         loginInit();
         mockApp.getBuilder().setSteamToken("");
         clickOn("#settingsButton");
         clickOn("#button_Connection");
         clickOn("#steam");
         WaitForAsyncUtils.waitForFxEvents();
-        for (Window window : this.listTargetWindows()){
+        for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if(s.getTitle().equals("Steam Login")){
+            if (s.getTitle().equals("Steam Login")) {
                 WebView webview = (WebView) s.getScene().getRoot();
                 System.out.println(webview.getEngine());
-                Platform.runLater(() -> {webview.getEngine().load("https://steamcommunity.com/profiles/1234");});
+                Platform.runLater(() -> {
+                    webview.getEngine().load("https://steamcommunity.com/profiles/1234");
+                });
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
-        Assert.assertEquals("1234",mockApp.getBuilder().getSteamToken());
+        Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
+    }
+
+    @Test
+    public void SteamVanityLinkTest() throws InterruptedException {
+        JSONObject jsonString = new JSONObject().put("response", new JSONObject().put("success", 1).put("steamid", "1234"));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response2.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor2.getValue();
+            callback.completed(response2);
+            return null;
+        }).when(restClient).resolveVanityID(anyString(), callbackCaptor2.capture());
+
+
+        loginInit();
+        mockApp.getBuilder().setSteamToken("");
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        clickOn("#steam");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (s.getTitle().equals("Steam Login")) {
+                WebView webview = (WebView) s.getScene().getRoot();
+                System.out.println(webview.getEngine());
+                Platform.runLater(() -> {
+                    webview.getEngine().load("https://steamcommunity.com/id/Hungriger_Hugo");
+                });
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
     }
 }
 
