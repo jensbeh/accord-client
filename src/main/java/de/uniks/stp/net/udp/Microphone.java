@@ -2,9 +2,7 @@ package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.*;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -36,6 +34,26 @@ public class Microphone {
             microphone.open(format);
         } catch (LineUnavailableException e) {
             e.printStackTrace();
+        }
+
+        // set mic volume
+        for (var portName : builder.getLinePoolService().getPortMixer().keySet()) {
+            if (portName.contains(builder.getLinePoolService().getSelectedMicrophoneName().substring(0, 24))) {
+                Line thisLine = builder.getLinePoolService().getPortMixer().get(portName);
+                try {
+                    thisLine.open();
+                } catch (LineUnavailableException e) {
+                    e.printStackTrace();
+                }
+                for (Control thisControl : thisLine.getControls()) {
+                    if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
+                        FloatControl a = (FloatControl) thisControl; // range 0.0 - 1.0     :   0.27058825
+                        a.setValue(0.2f);
+                        System.out.println(a.getValue() + " : " + a.getMinimum() + " : " + a.getMaximum());
+                    }
+                }
+                thisLine.close();
+            }
         }
 
         // start reading

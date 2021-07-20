@@ -11,7 +11,7 @@ public class LinePoolService {
     private SourceDataLine selectedSpeaker;
     private String selectedMicrophoneName;
     private String selectedSpeakerName;
-    private HashMap<String, Line> PortMixer;
+    private HashMap<String, Line> portMixer;
 
     public LinePoolService() {
     }
@@ -22,7 +22,7 @@ public class LinePoolService {
     public void init() {
         microphones = new HashMap<>();
         speakers = new HashMap<>();
-        PortMixer = new HashMap<>();
+        portMixer = new HashMap<>();
 
         mixerMap = new HashMap<>();
 
@@ -37,7 +37,7 @@ public class LinePoolService {
                 for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
                     try {
                         Line thisLine = thisMixer.getLine(thisLineInfo);
-                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+                        portMixer.put(thisMixerInfo.getName(), thisLine);
                     } catch (LineUnavailableException lineUnavailableException) {
                         lineUnavailableException.printStackTrace();
                     }
@@ -47,7 +47,7 @@ public class LinePoolService {
                 for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
                     try {
                         Line thisLine = thisMixer.getLine(thisLineInfo);
-                        PortMixer.put(thisMixerInfo.getName(), thisLine);
+                        portMixer.put(thisMixerInfo.getName(), thisLine);
                     } catch (LineUnavailableException lineUnavailableException) {
                         lineUnavailableException.printStackTrace();
                     }
@@ -75,10 +75,10 @@ public class LinePoolService {
                     }
                 }
             }
-
-
         }
-        System.out.println("AAA");
+        // remove defaults because there is no port mixer
+        microphones.remove(microphones.entrySet().iterator().next().getKey());
+        speakers.remove(speakers.entrySet().iterator().next().getKey());
 
 //                if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
 //                    Line thisLine = null;
@@ -139,6 +139,9 @@ public class LinePoolService {
 //            }
     }
 
+    public HashMap<String, Line> getPortMixer() {
+        return this.portMixer;
+    }
 
     /**
      * returns the Map with all microphones for comboBox in AudioController
