@@ -1,28 +1,27 @@
 package de.uniks.stp.net.udp;
 
-import javax.sound.sampled.*;
+import de.uniks.stp.builder.ModelBuilder;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 import static de.uniks.stp.util.Constants.*;
 
 public class Speaker {
+    private final ModelBuilder builder;
     private AudioFormat format;
     private SourceDataLine speaker;
 
-    public Speaker() {
+    public Speaker(ModelBuilder builder) {
+        this.builder = builder;
     }
 
     public void init() {
         // audio format
         format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
 
-        // audio object (speaker information?)
-        DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
-        try {
-            // get speakerLine
-            speaker = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
+        speaker = builder.getLinePoolService().getSelectedSpeaker();
     }
 
     /**
