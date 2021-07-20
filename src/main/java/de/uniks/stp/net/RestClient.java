@@ -195,4 +195,9 @@ public class RestClient {
                 + "/" + msgId).body(body).header("userKey", userKey);
         sendRequest(request, callback);
     }
+
+    public void resolveVanityID(String vanitiyURL, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_RESOLVE_VANITY + STEAM_API_KEY + "&vanityurl=" + vanitiyURL);
+        sendRequest(request, callback);
+    }
 }

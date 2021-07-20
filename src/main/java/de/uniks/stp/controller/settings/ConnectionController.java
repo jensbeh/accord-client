@@ -1,6 +1,8 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -59,11 +61,11 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        //TODO functionality for steam connect
-        System.out.println("Steam");
-        builder.setSteamToken("test");
-        builder.saveSettings();
-        init();
+        Platform.runLater(() -> {
+            SteamLoginController steamLoginController = new SteamLoginController(builder);
+            steamLoginController.init();
+            init();
+        });
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
