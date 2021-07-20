@@ -129,7 +129,7 @@ public class ConnectionControllerTest extends ApplicationTest {
     @Test
     public void SteamProfilesLinkTest() throws InterruptedException {
         loginInit();
-        mockApp.getBuilder().setSteamToken("");
+        String backupSteamToken = mockApp.getBuilder().getSteamToken();
         clickOn("#settingsButton");
         clickOn("#button_Connection");
         clickOn("#steam");
@@ -147,6 +147,8 @@ public class ConnectionControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
+        mockApp.getBuilder().setSteamToken(backupSteamToken);
+        mockApp.getBuilder().saveSettings();
     }
 
     @Test
@@ -162,7 +164,7 @@ public class ConnectionControllerTest extends ApplicationTest {
 
 
         loginInit();
-        mockApp.getBuilder().setSteamToken("");
+        String backupSteamToken = mockApp.getBuilder().getSteamToken();
         clickOn("#settingsButton");
         clickOn("#button_Connection");
         clickOn("#steam");
@@ -180,6 +182,8 @@ public class ConnectionControllerTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
+        mockApp.getBuilder().setSteamToken(backupSteamToken);
+        mockApp.getBuilder().saveSettings();
     }
 }
 
