@@ -10,7 +10,7 @@ import kong.unirest.JsonNode;
 
 public class SteamLoginController {
     private final ModelBuilder builder;
-    private WebView webView;
+    private final WebView webView;
     private final Stage popUp;
 
     public SteamLoginController(ModelBuilder builder) {
