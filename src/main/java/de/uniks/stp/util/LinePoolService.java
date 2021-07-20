@@ -12,6 +12,8 @@ public class LinePoolService {
     private String selectedMicrophoneName;
     private String selectedSpeakerName;
     private HashMap<String, Line> portMixer;
+    private float microphoneVolume;
+    private float speakerVolume;
 
     public LinePoolService() {
     }
@@ -25,7 +27,6 @@ public class LinePoolService {
         portMixer = new HashMap<>();
 
         mixerMap = new HashMap<>();
-
 
         for (Mixer.Info thisMixerInfo : AudioSystem.getMixerInfo()) {
             System.out.println("Mixer: " + thisMixerInfo.getDescription() +
@@ -228,5 +229,21 @@ public class LinePoolService {
                 break;
             }
         }
+    }
+
+    public float getMicrophoneVolume() {
+        return this.microphoneVolume;
+    }
+
+    public void setMicrophoneVolume(float microphoneVolume) {
+        this.microphoneVolume = microphoneVolume;
+    }
+
+    public float getSpeakerVolume() {
+        return this.speakerVolume;
+    }
+
+    public void setSpeakerVolume(float speakerVolume) {
+        this.speakerVolume = speakerVolume;
     }
 }
