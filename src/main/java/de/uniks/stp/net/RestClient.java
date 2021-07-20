@@ -200,4 +200,11 @@ public class RestClient {
         HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_RESOLVE_VANITY + STEAM_API_KEY + "&vanityurl=" + vanitiyURL);
         sendRequest(request, callback);
     }
+
+    public void updateDescribtion(String serverId,String description, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("text", description);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + SERVER_PATH + "/" + serverId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
 }

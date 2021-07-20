@@ -63,7 +63,6 @@ public class ConnectionController extends SubSetting {
     private void onSteamChange(MouseEvent mouseEvent) {
         SteamLoginController steamLoginController = new SteamLoginController(builder);
         steamLoginController.init();
-        init();
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {

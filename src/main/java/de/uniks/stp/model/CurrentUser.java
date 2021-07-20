@@ -1,5 +1,6 @@
 package de.uniks.stp.model;
 
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class CurrentUser {
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
     public static final String PROPERTY_CHANNEL = "channel";
+   public static final String PROPERTY_DESCRIPTION = "description";
     private String name;
     private String userKey;
     protected PropertyChangeSupport listeners;
@@ -26,6 +28,7 @@ public class CurrentUser {
     private List<Server> server;
     private List<PrivateChat> privateChat;
     private List<ServerChannel> channel;
+   private String description;
 
     public String getName()
    {
@@ -363,6 +366,24 @@ public class CurrentUser {
       return this;
    }
 
+   public String getDescription()
+   {
+      return this.description;
+   }
+
+   public CurrentUser setDescription(String value)
+   {
+      if (Objects.equals(value, this.description))
+      {
+         return this;
+      }
+
+      final String oldValue = this.description;
+      this.description = value;
+      this.firePropertyChange(PROPERTY_DESCRIPTION, oldValue, value);
+      return this;
+   }
+
     public boolean firePropertyChange(String propertyName, Object oldValue, Object newValue)
    {
       if (this.listeners != null)
@@ -390,6 +411,7 @@ public class CurrentUser {
       result.append(' ').append(this.getUserKey());
       result.append(' ').append(this.getPassword());
       result.append(' ').append(this.getId());
+      result.append(' ').append(this.getDescription());
       return result.substring(1);
    }
 
@@ -399,5 +421,22 @@ public class CurrentUser {
       this.withoutServer(new ArrayList<>(this.getServer()));
       this.withoutPrivateChat(new ArrayList<>(this.getPrivateChat()));
       this.withoutChannel(new ArrayList<>(this.getChannel()));
+   }
+
+   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners == null) {
+         this.listeners = new PropertyChangeSupport(this);
+      }
+      this.listeners.addPropertyChangeListener(propertyName, listener);
+      return true;
+   }
+
+   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+      // No fulib
+      if (this.listeners != null) {
+         this.listeners.removePropertyChangeListener(listener);
+      }
+      return true;
    }
 }

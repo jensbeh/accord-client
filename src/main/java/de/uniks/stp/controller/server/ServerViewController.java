@@ -26,6 +26,7 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -79,6 +80,16 @@ public class ServerViewController {
         this.homeViewController = homeViewController;
         this.serverSystemWebSocket = builder.getServerSystemWebSocket();
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+    }
+
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        builder.getRestClient().updateDescribtion(this.server.getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if(!body.getObject().getString("status").equals("success")){
+                System.err.println("Error in updateDescription");
+            }
+        });
     }
 
     public ChatViewController getChatViewController() {
