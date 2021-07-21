@@ -1,7 +1,9 @@
 package de.uniks.stp.util;
 
 import javax.sound.sampled.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class LinePoolService {
     private HashMap<String, TargetDataLine> microphones;
@@ -77,9 +79,53 @@ public class LinePoolService {
                 }
             }
         }
-        // remove defaults because there is no port mixer
-        microphones.remove(microphones.entrySet().iterator().next().getKey());
-        speakers.remove(speakers.entrySet().iterator().next().getKey());
+
+        removeDefaultMicAndSpeaker();
+    }
+
+    /**
+     * remove default mic and speaker because there is no port mixer to set controls
+     */
+    private void removeDefaultMicAndSpeaker() {
+        // remove default mics because there is no port mixer
+        List<String> toRemove = new ArrayList<>();
+        for (String micName : microphones.keySet()) {
+            boolean found = false;
+            for (String portName : portMixer.keySet()) {
+                if (portName.contains(micName.substring(0, 20))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toRemove.add(micName);
+            }
+        }
+        if (toRemove.size() > 0) {
+            for (String nameToRemove : toRemove) {
+                microphones.remove(nameToRemove);
+            }
+            toRemove.clear();
+        }
+        // remove default speaker because there is no port mixer
+        for (String micName : speakers.keySet()) {
+            boolean found = false;
+            for (String portName : portMixer.keySet()) {
+                if (portName.contains(micName.substring(0, 20))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                toRemove.add(micName);
+            }
+        }
+        if (toRemove.size() > 0) {
+            for (String nameToRemove : toRemove) {
+                speakers.remove(nameToRemove);
+            }
+            toRemove.clear();
+        }
     }
 
     /**
