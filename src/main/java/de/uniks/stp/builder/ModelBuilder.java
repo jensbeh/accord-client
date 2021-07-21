@@ -20,6 +20,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -276,6 +277,8 @@ public class ModelBuilder {
             settings.put("steamToken", steamToken);
             settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
             settings.put("speaker", getLinePoolService().getSelectedSpeakerName());
+            settings.put("microphoneVolume", getLinePoolService().getMicrophoneVolume());
+            settings.put("speakerVolume", getLinePoolService().getSpeakerVolume());
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -299,6 +302,8 @@ public class ModelBuilder {
                 spotifyToken = "";
                 steamShow = false;
                 steamToken = "";
+                getLinePoolService().setMicrophoneVolume(0.2f);
+                getLinePoolService().setSpeakerVolume(0.2f);
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -314,6 +319,8 @@ public class ModelBuilder {
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
             steamToken = (String) parsedSettings.get("steamToken");
+            getLinePoolService().setMicrophoneVolume(((BigDecimal) parsedSettings.get("microphoneVolume")).floatValue());
+            getLinePoolService().setSpeakerVolume(((BigDecimal) parsedSettings.get("speakerVolume")).floatValue());
             getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
             getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             reader.close();
