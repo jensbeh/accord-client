@@ -338,4 +338,19 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn();
         WaitForAsyncUtils.waitForFxEvents();
     }
+
+    @Test
+    public void changeMicAndSpeakerVolumeTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        //volume slider test
+        Slider volumeInput = lookup("#slider_volumeInput").query();
+        Slider volumeOutput = lookup("#slider_volumeOutput").query();
+        volumeInput.setValue(0.4f);
+        WaitForAsyncUtils.waitForFxEvents();
+        volumeOutput.setValue(0.4f);
+        WaitForAsyncUtils.waitForFxEvents();
+    }
 }
