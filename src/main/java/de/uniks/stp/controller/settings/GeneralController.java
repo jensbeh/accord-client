@@ -1,23 +1,31 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.Constants;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.*;
 
-public class LanguageController extends SubSetting {
+public class GeneralController extends SubSetting {
 
     private final Parent view;
     private ComboBox<String> languageSelector;
     private Label selectLanguageLabel;
+    private Label selectThemeLabel;
     private final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
     private Locale currentLocale;
+    private final ModelBuilder builder;
+    private VBox darkModeBox;
+    private VBox brightModeBox;
     Map<String, String> languages = new HashMap<>();
     Map<String, Locale> locales = new HashMap<>();
 
@@ -36,8 +44,9 @@ public class LanguageController extends SubSetting {
         }
     }
 
-    public LanguageController(Parent view) {
+    public GeneralController(Parent view,  ModelBuilder builder) {
         this.view = view;
+        this.builder = builder;
     }
 
 
@@ -55,6 +64,7 @@ public class LanguageController extends SubSetting {
         // init view
         this.languageSelector = (ComboBox<String>) view.lookup("#comboBox_langSelect");
         selectLanguageLabel = (Label) view.lookup("#label_langSelect");
+        selectThemeLabel = (Label) view.lookup("#label_themeSelect");
 
         this.languageSelector.setPromptText(languages.get(currentLocale.toString()));
         for (Map.Entry<String, String> language : languages.entrySet()) {
@@ -62,6 +72,42 @@ public class LanguageController extends SubSetting {
         }
 
         this.languageSelector.setOnAction(this::onLanguageChanged);
+
+        this.brightModeBox = (VBox) view.lookup("#brightMode");
+        this.brightModeBox.setOnMouseClicked(this::setBright);
+        this.darkModeBox = (VBox) view.lookup("#darkMode");
+        this.darkModeBox.setOnMouseClicked(this::setDark);
+
+
+    }
+    /**
+     * when the user changes the language from the comboBox then switch application language and save into user local settings
+     *
+     * @param mouseEvent the mouse click event
+     */
+    private void setBright(MouseEvent mouseEvent) {
+        // get selected language and change
+        if(mouseEvent.getClickCount() == 1) {
+            String selectedTheme = "Bright";
+            builder.setTheme(selectedTheme);
+            builder.saveSettings();
+            StageManager.setTheme();
+        }
+    }
+
+    /**
+     * when the user changes the language from the comboBox then switch application language and save into user local settings
+     *
+     * @param mouseEvent the mouse click event
+     */
+    private void setDark(MouseEvent mouseEvent) {
+        // get selected language and change
+        if(mouseEvent.getClickCount() == 1) {
+            String selectedTheme = "Dark";
+            builder.setTheme(selectedTheme);
+            builder.saveSettings();
+            StageManager.setTheme();
+        }
     }
 
     /**
@@ -69,6 +115,8 @@ public class LanguageController extends SubSetting {
      */
     public void stop() {
         languageSelector.setOnAction(null);
+        darkModeBox.setOnMouseClicked(null);
+        brightModeBox.setOnMouseClicked(null);
     }
 
     /**
@@ -112,5 +160,6 @@ public class LanguageController extends SubSetting {
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         selectLanguageLabel.setText(lang.getString("label.select_language"));
+        selectThemeLabel.setText(lang.getString("label.select_theme"));
     }
 }
