@@ -36,26 +36,6 @@ public class Microphone {
             e.printStackTrace();
         }
 
-        // set mic volume
-        for (var portName : builder.getLinePoolService().getPortMixer().keySet()) {
-            if (portName.contains(builder.getLinePoolService().getSelectedMicrophoneName().substring(0, 24))) {
-                Line thisLine = builder.getLinePoolService().getPortMixer().get(portName);
-                try {
-                    thisLine.open();
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
-                }
-                for (Control thisControl : thisLine.getControls()) {
-                    if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
-                        FloatControl a = (FloatControl) thisControl; // range 0.0 - 1.0     :   0.27058825
-                        a.setValue(0.2f);
-                        System.out.println(a.getValue() + " : " + a.getMinimum() + " : " + a.getMaximum());
-                    }
-                }
-                thisLine.close();
-            }
-        }
-
         // start reading
         microphone.start();
     }

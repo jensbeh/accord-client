@@ -78,12 +78,11 @@ public class AudioController extends SubSetting {
         Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
         Text valueTextInputSlider = new Text();
         valueTextInputSlider.textProperty().bind(volumeInput.valueProperty().asString("%.2f"));
-        valueTextInputSlider.setFill(Color.BLACK);
+        valueTextInputSlider.setFill(Color.WHITE);
         thumbInputSlider.getChildren().add(valueTextInputSlider);
 
         // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeInput: " + newValue.floatValue());
             builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
             builder.saveSettings();
         });
@@ -99,7 +98,7 @@ public class AudioController extends SubSetting {
         Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
         Text valueTextOutputSlider = new Text();
         valueTextOutputSlider.textProperty().bind(volumeOutput.valueProperty().asString("%.2f"));
-        valueTextOutputSlider.setFill(Color.BLACK);
+        valueTextOutputSlider.setFill(Color.WHITE);
         thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
         // get new Value

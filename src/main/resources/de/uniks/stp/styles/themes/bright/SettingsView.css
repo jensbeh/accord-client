@@ -121,3 +121,13 @@
 #button_audioStart:pressed {
     -fx-background-color: #6599e0;
 }
+
+#slider_volumeInput .thumb, #slider_volumeOutput .thumb {
+    -fx-background-color: #7da6df;
+}
+#slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
+    -fx-background-color: #9db9e0;
+}
+#slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
+    -fx-background-color: #6599e0;
+}

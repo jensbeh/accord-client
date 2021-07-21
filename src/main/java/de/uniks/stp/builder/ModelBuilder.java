@@ -316,10 +316,10 @@ public class ModelBuilder {
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
             steamToken = (String) parsedSettings.get("steamToken");
-            getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
-            getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             getLinePoolService().setMicrophoneVolume(((BigDecimal) parsedSettings.get("microphoneVolume")).floatValue());
             getLinePoolService().setSpeakerVolume(((BigDecimal) parsedSettings.get("speakerVolume")).floatValue());
+            getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
+            getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             reader.close();
 
         } catch (Exception e) {

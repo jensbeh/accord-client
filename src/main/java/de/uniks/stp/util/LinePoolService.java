@@ -102,46 +102,6 @@ public class LinePoolService {
 //                    }
 //                    thisLine.close();
 //                }
-
-        // mic
-//            for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
-//                if (thisLineInfo.getLineClass().getName().equals("javax.sound.sampled.Port")) {
-//                    Line thisLine = null;
-//                    try {
-//                        thisLine = thisMixer.getLine(thisLineInfo);
-//                        PortMixer.put(thisMixerInfo.getName(), thisLine);
-//                    } catch (LineUnavailableException lineUnavailableException) {
-//                        lineUnavailableException.printStackTrace();
-//                    }
-//                    try {
-//                        thisLine.open();
-//                    } catch (LineUnavailableException lineUnavailableException) {
-//                        lineUnavailableException.printStackTrace();
-//                    }
-//                    System.out.println("  Target Port: "
-//                            + thisLineInfo.toString());
-//                    for (Control thisControl : thisLine.getControls()) {
-//                        if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
-//                            FloatControl a = (FloatControl) thisControl;
-//                            System.out.println("xxxx: " + a.getValue());
-//                        }
-//                        if (thisControl instanceof CompoundControl) {
-//                            CompoundControl a = (CompoundControl) thisControl;
-//                            for (Control control : a.getMemberControls()) {
-//                                System.out.println("yyyy: " + control.getType());
-//                            }
-//                        }
-//
-//
-//                        System.out.println(thisControl.getType());
-//                    }
-//                    thisLine.close();
-//                }
-//            }
-    }
-
-    public HashMap<String, Line> getPortMixer() {
-        return this.portMixer;
     }
 
     /**
@@ -210,6 +170,8 @@ public class LinePoolService {
                 break;
             }
         }
+
+        setMicVolumeToPort();
     }
 
     /**
@@ -237,6 +199,32 @@ public class LinePoolService {
 
     public void setMicrophoneVolume(float microphoneVolume) {
         this.microphoneVolume = microphoneVolume;
+        if (selectedMicrophone != null) {
+            setMicVolumeToPort();
+        }
+    }
+
+    private void setMicVolumeToPort() {
+        // set mic volume
+        for (var portName : portMixer.keySet()) {
+            if (portName.contains(selectedMicrophoneName.substring(0, 24))) {
+                Line thisMicrophoneLine = portMixer.get(portName);
+                try {
+                    thisMicrophoneLine.open();
+                } catch (LineUnavailableException e) {
+                    e.printStackTrace();
+                }
+                for (Control thisControl : thisMicrophoneLine.getControls()) {
+                    if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
+                        FloatControl volumeControl = (FloatControl) thisControl; // range 0.0 - 1.0     :   0.27058825
+                        volumeControl.setValue(microphoneVolume);
+                        System.out.println(volumeControl.getValue() + " : " + volumeControl.getMinimum() + " : " + volumeControl.getMaximum());
+                        break;
+                    }
+                }
+                thisMicrophoneLine.close();
+            }
+        }
     }
 
     public float getSpeakerVolume() {
