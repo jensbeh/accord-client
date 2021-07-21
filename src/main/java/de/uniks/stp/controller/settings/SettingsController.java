@@ -2,11 +2,9 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -48,7 +46,7 @@ public class SettingsController {
         // add categories
         generalButton = addItem("General");
         generalButton.setText("General");
-        addAction(generalButton,"General");
+        addAction(generalButton, "General");
 
         if (builder.getPersonalUser() != null) {
             Button notificationsButton = addItem("Notifications");

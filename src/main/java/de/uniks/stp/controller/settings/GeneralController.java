@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
@@ -44,7 +43,7 @@ public class GeneralController extends SubSetting {
         }
     }
 
-    public GeneralController(Parent view,  ModelBuilder builder) {
+    public GeneralController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
     }
@@ -80,6 +79,7 @@ public class GeneralController extends SubSetting {
 
 
     }
+
     /**
      * when the user changes the language from the comboBox then switch application language and save into user local settings
      *
@@ -87,7 +87,7 @@ public class GeneralController extends SubSetting {
      */
     private void setBright(MouseEvent mouseEvent) {
         // get selected language and change
-        if(mouseEvent.getClickCount() == 1) {
+        if (mouseEvent.getClickCount() == 1) {
             String selectedTheme = "Bright";
             builder.setTheme(selectedTheme);
             builder.saveSettings();
@@ -102,7 +102,7 @@ public class GeneralController extends SubSetting {
      */
     private void setDark(MouseEvent mouseEvent) {
         // get selected language and change
-        if(mouseEvent.getClickCount() == 1) {
+        if (mouseEvent.getClickCount() == 1) {
             String selectedTheme = "Dark";
             builder.setTheme(selectedTheme);
             builder.saveSettings();
