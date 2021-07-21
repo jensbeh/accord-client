@@ -25,8 +25,6 @@ public class SettingsController {
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
-    private Button languageButton;
-    private Button themeButton;
     private Button audioButton;
     private Button generalButton;
 
@@ -48,7 +46,9 @@ public class SettingsController {
         this.itemList = new ArrayList<>();
 
         // add categories
-
+        generalButton = addItem("General");
+        generalButton.setText("General");
+        addAction(generalButton,"General");
 
         if (builder.getPersonalUser() != null) {
             Button notificationsButton = addItem("Notifications");
@@ -61,9 +61,6 @@ public class SettingsController {
             connectionButton.setText("Connection");
             addAction(connectionButton, "Connection");
         }
-        generalButton = addItem("General");
-        generalButton.setText("General");
-        addAction(generalButton,"General");
 
         audioButton = addItem("Audio");
         audioButton.setText("Audio Settings");
