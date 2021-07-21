@@ -1,3 +1,5 @@
+@import url("accord_scrollbar.css");
+
 #settingsContainer {
     -fx-background-color: #e3e5e8;
 }
@@ -120,4 +122,25 @@
 
 #button_audioStart:pressed, #button_unblock:pressed {
     -fx-background-color: #6599e0;
+}
+
+.list-view .list-cell {
+    -fx-padding: 0;
+}
+
+#blockedUsersLV .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+.blockedUserElement {
+    -fx-background-color: #f2f3f5;
+    -fx-text-fill: BLACK;
+    -fx-alignment: center;
+    -fx-border-radius: 2;
+    -fx-border-color: #e3e5e8 ;
+    -fx-font-size: 18;
+    -fx-padding: 0 0 0 0;
 }

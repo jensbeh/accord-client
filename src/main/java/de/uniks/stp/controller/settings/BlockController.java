@@ -39,14 +39,14 @@ public class BlockController extends SubSetting {
 
         this.blockedUsersLV.setCellFactory(new BlockedUsersListCell());
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        /*this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));*/
+        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
+        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
     }
 
     public void stop() {
