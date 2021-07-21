@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static de.uniks.stp.util.Constants.*;
+
 public class LinePoolService {
     private HashMap<String, TargetDataLine> microphones;
     private HashMap<String, SourceDataLine> speakers;
@@ -137,9 +139,23 @@ public class LinePoolService {
 
     /**
      * returns the selected microphone
+     * IMPORTANT: Travis.ci has no real microphone with port mixer. In thís case the mic is always null and i return the default system mic. Happens only when Travis is running.
      */
     public TargetDataLine getSelectedMicrophone() {
-        return this.selectedMicrophone;
+        if (selectedMicrophone != null) {
+            return this.selectedMicrophone;
+        } else {
+            AudioFormat format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
+
+            DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
+            TargetDataLine microphone = null;
+            try {
+                microphone = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+            return microphone;
+        }
     }
 
     /**
@@ -158,16 +174,30 @@ public class LinePoolService {
 
     /**
      * returns the selected speaker - make every time a new one because of horrible audio when more then 1 user in a channel
+     * IMPORTANT: Travis.ci has no real speaker with port mixer. In thís case there is no mixer for the speaker and i return the default system speaker. Happens only when Travis is running.
      */
     public SourceDataLine getSelectedSpeaker() {
-        Line.Info[] sourceLineInfo = mixerMap.get(selectedSpeakerName).getSourceLineInfo();
-        SourceDataLine speakerDataLine = null;
-        try {
-            speakerDataLine = (SourceDataLine) mixerMap.get(selectedSpeakerName).getLine(sourceLineInfo[0]);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
+        if (mixerMap.size() > 0) {
+            Line.Info[] sourceLineInfo = mixerMap.get(selectedSpeakerName).getSourceLineInfo();
+            SourceDataLine speakerDataLine = null;
+            try {
+                speakerDataLine = (SourceDataLine) mixerMap.get(selectedSpeakerName).getLine(sourceLineInfo[0]);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+            return speakerDataLine;
+        } else {
+            AudioFormat format = new AudioFormat(AUDIO_BITRATE, AUDIO_SAMPLE_SIZE, AUDIO_CHANNELS, AUDIO_SIGNING, AUDIO_BYTE_ORDER);
+
+            DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, format);
+            SourceDataLine speaker = null;
+            try {
+                speaker = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+            return speaker;
         }
-        return speakerDataLine;
     }
 
     /**
