@@ -144,3 +144,13 @@
 #button_audioStart:pressed {
     -fx-background-color: #ff8585;
 }
+
+#slider_volumeInput .thumb, #slider_volumeOutput .thumb {
+    -fx-background-color: #ff9999;
+}
+#slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
+    -fx-background-color: #ffbdbd;
+}
+#slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
+    -fx-background-color: #ff8585;
+}

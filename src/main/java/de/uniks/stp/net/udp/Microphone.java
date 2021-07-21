@@ -2,9 +2,7 @@ package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.*;
 
 import static de.uniks.stp.util.Constants.*;
 
