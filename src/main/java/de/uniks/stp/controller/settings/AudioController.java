@@ -4,6 +4,9 @@ import de.uniks.stp.builder.ModelBuilder;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class AudioController extends SubSetting {
 
@@ -64,18 +67,46 @@ public class AudioController extends SubSetting {
         }
 
         // Slider Settings
-        volumeInput.setMin(-80.0);
-        volumeInput.setMax(6.0206);
-//        volumeInput.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        // set values
+        volumeInput.setMin(0.0);
+        volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
+        volumeInput.setMax(1.0);
+
+        // set thumb text
+        volumeInput.applyCss();
+        volumeInput.layout();
+        Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
+        Text valueTextInputSlider = new Text();
+        valueTextInputSlider.textProperty().bind(volumeInput.valueProperty().asString("%.2f"));
+        valueTextInputSlider.setFill(Color.BLACK);
+        thumbInputSlider.getChildren().add(valueTextInputSlider);
+
+        // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeInput: " + newValue);
+            System.out.println("volumeInput: " + newValue.floatValue());
+            builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
+            builder.saveSettings();
         });
 
-        volumeOutput.setMin(-80.0);
-        volumeOutput.setMax(6.0206);
-//        volumeOutput.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        // set values
+        volumeOutput.setMin(0.0);
+        volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
+        volumeOutput.setMax(1.0);
+
+        // set thumb text
+        volumeOutput.applyCss();
+        volumeOutput.layout();
+        Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
+        Text valueTextOutputSlider = new Text();
+        valueTextOutputSlider.textProperty().bind(volumeOutput.valueProperty().asString("%.2f"));
+        valueTextOutputSlider.setFill(Color.BLACK);
+        thumbOutputSlider.getChildren().add(valueTextOutputSlider);
+
+        // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeOutput: " + newValue);
+            System.out.println("volumeOutput: " + newValue.floatValue());
+            builder.getLinePoolService().setSpeakerVolume(newValue.floatValue());
+            builder.saveSettings();
         });
     }
 

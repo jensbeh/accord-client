@@ -25,7 +25,6 @@ public class SettingsController {
     private List<Button> itemList;
     private Button languageButton;
     private Button themeButton;
-    private Button audioButton;
 
     private SubSetting subController;
 
@@ -65,7 +64,7 @@ public class SettingsController {
             addAction(connectionButton, "Connection");
         }
 
-        audioButton = addItem("Audio");
+        Button audioButton = addItem("Audio");
         audioButton.setText("Audio Settings");
         addAction(audioButton, "Audio");
 
@@ -135,26 +134,30 @@ public class SettingsController {
                 case "Language":
                     subController = new LanguageController(settingsField);
                     subController.setup();
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
                 case "Notifications":
                     subController = new NotificationsController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
                 case "Theme":
                     subController = new ThemeController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
                 case "Connection":
                     subController = new ConnectionController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
                 case "Audio":
                     subController = new AudioController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
             }
-            this.settingsContainer.getChildren().add(settingsField);
         } catch (Exception e) {
             System.err.println("Error on showing Settings Field Screen");
             e.printStackTrace();
