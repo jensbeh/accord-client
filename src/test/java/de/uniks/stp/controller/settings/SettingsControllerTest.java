@@ -270,8 +270,8 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn(steamToggleStackPane);
         clickOn(spotifyToggleStackPane);
         clickOn(steamToggleStackPane);
-        Assert.assertNotEquals("", app.getBuilder().getSpotifyToken());
-        Assert.assertNotEquals("", app.getBuilder().getSteamToken());
+        Assert.assertNotEquals(null, app.getBuilder().getSpotifyToken());
+        Assert.assertNotEquals(null, app.getBuilder().getSteamToken());
         Assert.assertFalse(app.getBuilder().isSpotifyShow());
         Assert.assertTrue(app.getBuilder().isSteamShow());
     }

@@ -42,7 +42,7 @@ public class ConnectionController extends SubSetting {
 
         spotifyView.setOnMouseClicked(this::onSpotifyChange);
         steamView.setOnMouseClicked(this::onSteamChange);
-        if (!builder.getSpotifyToken().equals("")) {
+        if (builder.getSpotifyToken() != null) {
             toggleInit(spotifyToggleStackPane, backgroundSpotifyButton, spotifyToggleButton, builder.isSpotifyShow());
             spotifyVbox.setVisible(true);
         }
@@ -53,8 +53,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
-        builder.getSpotifyConnection().init();
-        init();
+        builder.getSpotifyConnection().init(this);
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {

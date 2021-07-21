@@ -9,6 +9,7 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.ConnectionController;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.scene.Scene;
@@ -38,6 +39,7 @@ public class SpotifyConnection {
     AuthorizationCodeRequest authorizationCodeRequest;
     AuthorizationCodeCredentials authorizationCodeCredentials;
     AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
+    ConnectionController connectionController;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -51,7 +53,8 @@ public class SpotifyConnection {
         builder.setSpotifyConnection(this);
     }
 
-    public void init() {
+    public void init(ConnectionController connectionController) {
+        this.connectionController = connectionController;
         webView = new WebView();
         popUp = new Stage();
         createHttpServer();
@@ -82,6 +85,7 @@ public class SpotifyConnection {
             code = link[1];
             spotifyAuthentication();
             Platform.runLater(this::stop);
+            connectionController.init();
         }
     }
 
@@ -106,7 +110,7 @@ public class SpotifyConnection {
 
     static class MyHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange t)  {
+        public void handle(HttpExchange t) {
             try {
                 URL uri = getClass().getResource("/de/uniks/stp/spotify/spotifyLogin.html");
                 File file = new File(uri.toURI());
@@ -122,14 +126,16 @@ public class SpotifyConnection {
     }
 
     public void refreshSpotifyToken() {
-        try {
-            authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
-            authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
-            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            builder.setSpotifyToken(spotifyApi.getAccessToken());
-            builder.saveSettings();
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
-            e.printStackTrace();
+        if (builder.getSpotifyRefresh() != null) {
+            try {
+                authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
+                authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
+                spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+                builder.setSpotifyToken(spotifyApi.getAccessToken());
+                builder.saveSettings();
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -297,8 +297,8 @@ public class ModelBuilder {
                 muteHeadphones = false;
                 firstMuted = false;
                 spotifyShow = false;
-                spotifyToken = "";
-                spotifyRefresh = "";
+                spotifyToken = null;
+                spotifyRefresh = null;
                 steamShow = false;
                 steamToken = "";
                 saveSettings();
