@@ -120,3 +120,24 @@
 #button_audioStart:pressed, #button_unblock:pressed {
     -fx-background-color: #ff8585;
 }
+
+.list-view .list-cell {
+    -fx-padding: 0;
+}
+
+#blockedUsersLV .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+.blockedUserElement {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: WHITE;
+    -fx-alignment: center;
+    -fx-border-radius: 2;
+    -fx-border-color: #000000 ;
+    -fx-font-size: 18;
+    -fx-padding: 0 0 0 0;
+}

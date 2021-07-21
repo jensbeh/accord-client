@@ -159,6 +159,9 @@ public class SettingsController {
                     subController = new AudioController(settingsField, builder);
                     subController.init();
                     break;
+                case "Blocked":
+                    subController = new BlockController(settingsField, builder);
+                    subController.init();
             }
             this.settingsContainer.getChildren().add(settingsField);
         } catch (Exception e) {
