@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -37,7 +38,6 @@ public class ModelBuilder {
     private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
 
-
     private RestClient restClient;
     private boolean playSound;
     private boolean doNotDisturb;
@@ -58,8 +58,11 @@ public class ModelBuilder {
     private boolean spotifyShow;
     private boolean steamShow;
     private String spotifyToken;
+    private String spotifyRefresh;
     private String steamToken;
     private LinePoolService linePoolService;
+    private SpotifyConnection spotifyConnection;
+
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -269,6 +272,7 @@ public class ModelBuilder {
             settings.put("firstMuted", firstMuted);
             settings.put("spotifyShow", spotifyShow);
             settings.put("spotifyToken", spotifyToken);
+            settings.put("spotifyRefresh", spotifyRefresh);
             settings.put("steamShow", steamShow);
             settings.put("steamToken", steamToken);
             settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
@@ -294,6 +298,7 @@ public class ModelBuilder {
                 firstMuted = false;
                 spotifyShow = false;
                 spotifyToken = "";
+                spotifyRefresh = "";
                 steamShow = false;
                 steamToken = "";
                 saveSettings();
@@ -310,6 +315,7 @@ public class ModelBuilder {
             spotifyShow = (boolean) parsedSettings.get("spotifyShow");
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
+            spotifyRefresh = (String) parsedSettings.get("spotifyRefresh");
             steamToken = (String) parsedSettings.get("steamToken");
             getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
             getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
@@ -448,6 +454,22 @@ public class ModelBuilder {
 
     public void setSpotifyToken(String spotifyToken) {
         this.spotifyToken = spotifyToken;
+    }
+
+    public String getSpotifyRefresh() {
+        return spotifyRefresh;
+    }
+
+    public void setSpotifyRefresh(String spotifyRefresh) {
+        this.spotifyRefresh = spotifyRefresh;
+    }
+
+    public SpotifyConnection getSpotifyConnection() {
+        return spotifyConnection;
+    }
+
+    public void setSpotifyConnection(SpotifyConnection spotifyConnection) {
+        this.spotifyConnection = spotifyConnection;
     }
 
     public String getSteamToken() {

@@ -3,70 +3,90 @@ package de.uniks.stp.controller.settings.Spotify;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
+import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import de.uniks.stp.builder.ModelBuilder;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.apache.hc.core5.http.ParseException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class SpotifyConnection {
-
-    private String codeVerfier;
-    private String codeChallenge;
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
-    private String responseType = "code";
+    private String appID = "85a01971a347473b907d1ae06d8fad97";
+    private String code = "";
     private final ModelBuilder builder;
-    private final WebView webView;
-    private final Stage popUp;
+    private WebView webView;
+    private Stage popUp;
     private HttpServer server;
-
+    SpotifyApi spotifyApi;
+    AuthorizationCodeRequest authorizationCodeRequest;
+    AuthorizationCodeCredentials authorizationCodeCredentials;
+    AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
-        webView = new WebView();
-        popUp = new Stage();
-        init();
+        spotifyApi = new SpotifyApi.Builder()
+                .setClientId(clientID)
+                .setClientSecret(appID)
+                .setRedirectUri(URI.create("http://localhost:8888/callback/"))
+                .setAccessToken(builder.getSpotifyToken())
+                .setRefreshToken(builder.getSpotifyRefresh())
+                .build();
+        builder.setSpotifyConnection(this);
     }
 
     public void init() {
+        webView = new WebView();
+        popUp = new Stage();
         createHttpServer();
         webView.getEngine().load("http://localhost:8888/");
-
-        webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyToken);
+        webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
         popUp.setScene(new Scene(webView));
         popUp.setTitle("Spotify Login");
         popUp.show();
     }
 
-    private void getSpotifyToken(Observable observable) {
-
-        if (webView.getEngine().getLocation().contains("access_token")) {
-            String[] link = webView.getEngine().getLocation().split("access_token%22:%22");
-            String[] link2 = link[1].split("%22,%22token_type");
-            String[] link3 = link[1].split("%22refresh_token%22:%22");
-            setSpotifyToken(link2[0]);
-            //Platform.runLater(this::stop);
+    private void spotifyAuthentication() {
+        try {
+            authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
+            authorizationCodeCredentials = authorizationCodeRequest.execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+            builder.setSpotifyToken(spotifyApi.getAccessToken());
+            builder.setSpotifyRefresh(spotifyApi.getRefreshToken());
+            builder.saveSettings();
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            e.printStackTrace();
         }
     }
 
-    private void setSpotifyToken(String spotifyToken) {
-        builder.setSpotifyToken(spotifyToken);
-        builder.setSpotifyShow(true);
-        builder.saveSettings();
+    private void getSpotifyCode(Observable observable) {
+        if (webView.getEngine().getLocation().contains("code=")) {
+            String[] link = webView.getEngine().getLocation().split("code=");
+            code = link[1];
+            spotifyAuthentication();
+            Platform.runLater(this::stop);
+        }
     }
 
     private void stop() {
-        webView.getEngine().locationProperty().removeListener(this::getSpotifyToken);
+        webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
         webView.getEngine().load(null);
         server.stop(0);
         server = null;
@@ -88,7 +108,7 @@ public class SpotifyConnection {
         @Override
         public void handle(HttpExchange t)  {
             try {
-                URL uri = getClass().getResource("/de/uniks/stp/spotifyLogin.html");
+                URL uri = getClass().getResource("/de/uniks/stp/spotify/spotifyLogin.html");
                 File file = new File(uri.toURI());
                 String response = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 t.sendResponseHeaders(200, response.length());
@@ -101,8 +121,27 @@ public class SpotifyConnection {
         }
     }
 
+    public void refreshSpotifyToken() {
+        try {
+            authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
+            authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+            builder.setSpotifyToken(spotifyApi.getAccessToken());
+            builder.saveSettings();
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public SpotifyApi getSpotifyApi() {
+        return spotifyApi;
+    }
 
+    public AuthorizationCodeRequest getAuthorizationCodeRequest() {
+        return authorizationCodeRequest;
+    }
 
-
+    public AuthorizationCodeCredentials getAuthorizationCodeCredentials() {
+        return authorizationCodeCredentials;
+    }
 }

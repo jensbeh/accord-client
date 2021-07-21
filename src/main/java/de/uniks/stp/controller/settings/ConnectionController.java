@@ -53,9 +53,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
-        SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
-        builder.setSpotifyToken("test");
-        builder.saveSettings();
+        builder.getSpotifyConnection().init();
         init();
     }
 
