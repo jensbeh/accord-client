@@ -105,7 +105,7 @@
     -fx-fill: #ced5da;
 }
 
-#button_audioStart {
+#button_audioStart, #button_unblock {
     -fx-background-color: #ff9999;
     -fx-background-radius: 10;
     -fx-text-fill: white;
@@ -113,10 +113,10 @@
     -fx-font-size: 12px;
 }
 
-#button_audioStart:hover {
+#button_audioStart:hover, #button_unblock:hover {
     -fx-background-color: #ffbdbd;
 }
 
-#button_audioStart:pressed {
+#button_audioStart:pressed, #button_unblock:pressed {
     -fx-background-color: #ff8585;
 }

@@ -69,6 +69,12 @@ public class SettingsController {
         audioButton.setText("Audio Settings");
         addAction(audioButton, "Audio");
 
+        if (builder.getPersonalUser() != null) {
+            Button blockedButton = addItem("Blocked");
+            blockedButton.setText("Blocked");
+            addAction(blockedButton, "Blocked");
+        }
+
         onLanguageChanged(); // needs to be called because new buttons added
     }
 
