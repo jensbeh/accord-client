@@ -211,7 +211,7 @@ public class ResourceManagerTest extends ApplicationTest {
     }
 
     @Test
-    public void saveNotificationsTest() throws InterruptedException{
+    public void saveNotificationsTest() throws InterruptedException {
         loginInit();
         File file = new File("de/uniks/stp/sounds/notification/default.wav");
         ResourceManager.saveNotifications(file);

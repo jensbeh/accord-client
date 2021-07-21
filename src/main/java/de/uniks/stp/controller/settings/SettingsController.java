@@ -23,8 +23,8 @@ public class SettingsController {
     private VBox settingsItems;
     private VBox settingsContainer;
     private List<Button> itemList;
-    private Button languageButton;
-    private Button themeButton;
+    private Button audioButton;
+    private Button generalButton;
 
     private SubSetting subController;
 
@@ -44,19 +44,15 @@ public class SettingsController {
         this.itemList = new ArrayList<>();
 
         // add categories
-        languageButton = addItem("Language");
-        addAction(languageButton, "Language");
-
+        generalButton = addItem("General");
+        generalButton.setText("General");
+        addAction(generalButton, "General");
 
         if (builder.getPersonalUser() != null) {
             Button notificationsButton = addItem("Notifications");
             notificationsButton.setText("Notification");
             addAction(notificationsButton, "Notifications");
         }
-
-        themeButton = addItem("Theme");
-        themeButton.setText("Dark/Bright - Mode");
-        addAction(themeButton, "Theme");
 
         if (builder.getPersonalUser() != null) {
             Button connectionButton = addItem("Connection");
@@ -131,19 +127,14 @@ public class SettingsController {
             Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
 
             switch (fxmlName) {
-                case "Language":
-                    subController = new LanguageController(settingsField);
+                case "General":
+                    subController = new GeneralController(settingsField, builder);
                     subController.setup();
                     this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
                 case "Notifications":
                     subController = new NotificationsController(settingsField, builder);
-                    this.settingsContainer.getChildren().add(settingsField);
-                    subController.init();
-                    break;
-                case "Theme":
-                    subController = new ThemeController(settingsField, builder);
                     this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
@@ -169,8 +160,7 @@ public class SettingsController {
      */
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        languageButton.setText(lang.getString("button.Language"));
-        themeButton.setText(lang.getString("button.DB_mode"));
+        generalButton.setText(lang.getString("button.settings_general"));
         for (Button button : itemList) {
             button.getId();
             switch (button.getId()) {
