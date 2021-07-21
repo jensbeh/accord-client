@@ -345,11 +345,14 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn("#settingsButton");
         clickOn("#button_Audio");
 
-        //volume slider test
         Slider volumeInput = lookup("#slider_volumeInput").query();
         Slider volumeOutput = lookup("#slider_volumeOutput").query();
+
+        // set input volume
         volumeInput.setValue(0.4f);
         WaitForAsyncUtils.waitForFxEvents();
+
+        // set output volume
         volumeOutput.setValue(0.4f);
         WaitForAsyncUtils.waitForFxEvents();
     }

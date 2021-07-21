@@ -54,16 +54,18 @@ public class AudioController extends SubSetting {
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
+        // set microphone names
         for (var microphone : builder.getLinePoolService().getMicrophones().entrySet()) {
-            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone names
+            this.inputDeviceComboBox.getItems().add(microphone.getKey());
         }
 
         this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName());
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
 
+        // set speaker names
         for (var speaker : builder.getLinePoolService().getSpeakers().entrySet()) {
-            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set speaker names
+            this.outputDeviceComboBox.getItems().add(speaker.getKey());
         }
 
         // Slider Settings
@@ -72,7 +74,7 @@ public class AudioController extends SubSetting {
         volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
         volumeInput.setMax(1.0);
 
-        // set thumb text
+        // set thumb text & style
         volumeInput.applyCss();
         volumeInput.layout();
         Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
@@ -92,7 +94,7 @@ public class AudioController extends SubSetting {
         volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
         volumeOutput.setMax(1.0);
 
-        // set thumb text
+        // set thumb text & style
         volumeOutput.applyCss();
         volumeOutput.layout();
         Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
