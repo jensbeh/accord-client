@@ -2,13 +2,15 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.BlockedUsersListCell;
-import de.uniks.stp.cellfactories.ServerChannelListCell;
 import de.uniks.stp.model.User;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockController extends SubSetting {
 
@@ -18,6 +20,8 @@ public class BlockController extends SubSetting {
     private ScrollPane blockedUsersSP;
     private ListView<User> blockedUsersLV;
     private Button unblockButton;
+    private List<Button> buttonContainer;
+    private Button selectedButton;
 
     public BlockController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -37,20 +41,43 @@ public class BlockController extends SubSetting {
 
         this.unblockButton.setDisable(true);
 
-        this.blockedUsersLV.setCellFactory(new BlockedUsersListCell());
+        this.blockedUsersLV.setCellFactory(new BlockedUsersListCell(this));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
+
+        buttonContainer = new ArrayList<>();
     }
 
     public void stop() {
+        for (Button button : buttonContainer) {
+            button.setOnAction(null);
+        }
+    }
 
+    public void addButtonToContainer(Button button) {
+        if (!buttonContainer.contains(button)) {
+            buttonContainer.add(button);
+            button.setOnAction(event -> { onBlockedUserClicked(button); });
+        }
+    }
+
+    public void onBlockedUserClicked(Button button) {
+        this.unblockButton.setDisable(false);
+
+        if (selectedButton != null) {
+            selectedButton.setStyle("");
+            selectedButton.getStyleClass().clear();
+            selectedButton.getStyleClass().add("blockedUserElement");
+        }
+
+        selectedButton = button;
+
+        //selectedButton.setStyle("-fx-background-color: #AAAAAA;");
+        selectedButton.getStyleClass().add("blockedUserElementSelected");
     }
 
     public void setTheme() {

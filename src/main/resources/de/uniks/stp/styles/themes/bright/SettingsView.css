@@ -144,3 +144,11 @@
     -fx-font-size: 18;
     -fx-padding: 0 0 0 0;
 }
+
+.blockedUserElement:hover {
+    -fx-background-color: #CCCCCC;
+}
+
+.blockedUserElementSelected, .blockedUserElementSelected:hover {
+    -fx-background-color: #AAAAAA;
+}

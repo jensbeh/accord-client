@@ -1,10 +1,16 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.controller.settings.BlockController;
 import de.uniks.stp.model.User;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 public class BlockedUsersListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
+    BlockController blockController;
+
+    public BlockedUsersListCell(BlockController blockController) {
+        this.blockController = blockController;
+    }
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -36,6 +42,7 @@ public class BlockedUsersListCell implements javafx.util.Callback<ListView<User>
             button.setMaxHeight(40);
             button.getStyleClass().clear();
             button.getStyleClass().add("blockedUserElement");
+            blockController.addButtonToContainer(button);
 
             super.updateItem(item, empty);
             if (!empty) {
