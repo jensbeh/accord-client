@@ -261,17 +261,16 @@ public class ThemeControllerTest extends ApplicationTest {
         VBox root = lookup("#root").query();
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        VBox themeSelect = lookup("#brightMode").query();
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
@@ -281,17 +280,15 @@ public class ThemeControllerTest extends ApplicationTest {
         HBox root = lookup("#root").query();
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        VBox themeSelect = lookup("#brightMode").query();
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
-
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
@@ -319,17 +316,16 @@ public class ThemeControllerTest extends ApplicationTest {
         HBox root = lookup("#root").query();
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        VBox themeSelect = lookup("#brightMode").query();
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
@@ -352,17 +348,16 @@ public class ThemeControllerTest extends ApplicationTest {
         HBox root = lookup("#root").query();
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        VBox themeSelect = lookup("#brightMode").query();
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("ffffff", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         Assert.assertEquals("36393f", root.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
@@ -379,12 +374,11 @@ public class ThemeControllerTest extends ApplicationTest {
 
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
+        VBox themeSelect = lookup("#brightMode").query();
 
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -457,11 +451,9 @@ public class ThemeControllerTest extends ApplicationTest {
 
         settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        themeButton = lookup("#button_Theme").query();
         clickOn(themeButton);
-        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -524,11 +516,10 @@ public class ThemeControllerTest extends ApplicationTest {
 
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        VBox themeSelect = lookup("#brightMode").query();
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -554,11 +545,9 @@ public class ThemeControllerTest extends ApplicationTest {
         }
         settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        themeButton = lookup("#button_Theme").query();
         clickOn(themeButton);
-        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -580,11 +569,10 @@ public class ThemeControllerTest extends ApplicationTest {
         loginInit();
         Button settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        Button themeButton = lookup("#button_Theme").query();
+        Button themeButton = lookup("#button_General").query();
         clickOn(themeButton);
-        ComboBox<String> comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-        clickOn(comboBox_themeSelect);
-        clickOn("Bright");
+        VBox themeSelect = lookup("#brightMode").query();
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
@@ -612,11 +600,9 @@ public class ThemeControllerTest extends ApplicationTest {
 
         settingsButton = lookup("#settingsButton").query();
         clickOn(settingsButton);
-        themeButton = lookup("#button_Theme").query();
         clickOn(themeButton);
-        comboBox_themeSelect = lookup("#comboBox_themeSelect").query();
-        clickOn(comboBox_themeSelect);
-        clickOn("Dark");
+        themeSelect = lookup("#darkMode").query();
+        clickOn(themeSelect);
         WaitForAsyncUtils.waitForFxEvents();
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
