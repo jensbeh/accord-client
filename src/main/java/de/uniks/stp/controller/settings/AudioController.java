@@ -1,6 +1,8 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.net.udp.Microphone;
+import de.uniks.stp.net.udp.Speaker;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -8,10 +10,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class AudioController extends SubSetting {
+public class AudioController extends SubSetting{
 
     private final Parent view;
     private final ModelBuilder builder;
+    private boolean senderActive;
+    private boolean stopped;
+    private Runnable myRunnable;
+    private Thread soundThread;
 
     private Label inputLabel;
     private Label outputLabel;
@@ -25,6 +31,8 @@ public class AudioController extends SubSetting {
     private Slider volumeOutput;
     private Button startButton;
     private ProgressBar microphoneProgressBar;
+    private Microphone microphone;
+    private Speaker speaker;
 
 
     public AudioController(Parent view, ModelBuilder builder) {
@@ -47,6 +55,10 @@ public class AudioController extends SubSetting {
         volumeOutput = (Slider) view.lookup("#slider_volumeOutput");
 
         startButton = (Button) view.lookup("#button_audioStart");
+        startButton.setOnAction(this::onMicrophoneTestStart);
+        senderActive = false;
+        myRunnable = this::runMicrophoneTest;
+
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
@@ -132,6 +144,71 @@ public class AudioController extends SubSetting {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().setNewSpeaker();
+        }
+    }
+
+    private void onMicrophoneTestStart(ActionEvent actionEvent) {
+        microphone = new Microphone(this.builder);
+        microphone.init();
+        speaker = new Speaker(this.builder);
+        speaker.init();
+        senderActive = true;
+        soundThread = new Thread(myRunnable);
+        soundThread.start();
+
+        microphoneTestChangeAction(false);
+    }
+
+    private void onMicrophoneTestStop(ActionEvent actionEvent) {
+        senderActive = false;
+        stopRecord();
+
+        microphoneTestChangeAction(true);
+    }
+
+    private void microphoneTestChangeAction(Boolean stopTest){
+        if (stopTest) {
+            startButton.setText("Start");
+            startButton.setOnAction(this::onMicrophoneTestStart);
+        } else {
+            startButton.setText("Stop");
+            startButton.setOnAction(this::onMicrophoneTestStop);
+        }
+    }
+
+    public void stopRecord() {
+        senderActive = false;
+        while (!stopped) {
+            Thread.onSpinWait();
+        }
+    }
+    public void stop() {
+        stopRecord();
+        startButton.setOnAction(null);
+        soundThread = null;
+        myRunnable = null;
+    }
+
+    public void runMicrophoneTest() {
+        // start sending
+        if (senderActive) {
+            microphone.startRecording();
+            speaker.startPlayback();
+
+
+            while (senderActive) {
+
+                stopped = false;
+                // start recording audio
+                byte[] data = microphone.readData();
+                System.out.println(data);
+                speaker.writeData(data);
+
+            }
+            // stop if senderActive is set to false in stop method in this class
+            microphone.stopRecording();
+            speaker.stopPlayback();
+            stopped = true;
         }
     }
 }

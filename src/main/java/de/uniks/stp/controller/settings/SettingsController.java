@@ -125,7 +125,9 @@ public class SettingsController {
         try {
             this.settingsContainer.getChildren().clear();
             Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
-
+            if (subController != null) {
+                subController.stop();
+            }
             switch (fxmlName) {
                 case "General":
                     subController = new GeneralController(settingsField, builder);
