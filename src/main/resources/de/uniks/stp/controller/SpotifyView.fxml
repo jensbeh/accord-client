@@ -8,12 +8,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox id="spotifyRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #1db954; -fx-background-radius: 10 0 10 10;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label text="Listening to Spotify" textFill="WHITE">
          <font>
-            <Font size="17.0" />
+            <Font name="System Bold" size="17.0" />
          </font>
       </Label>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">

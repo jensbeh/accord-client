@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -113,6 +114,8 @@ public class HomeViewController {
                 }
             }
         });
+        SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
+        builder.getSpotifyConnection().refreshSpotifyToken();
     }
 
 

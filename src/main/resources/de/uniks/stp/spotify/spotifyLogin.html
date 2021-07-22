@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Web API Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script> var redirect_uri = "http://localhost:8888/callback/"; // change this your value
+
+    const client_id = "f2557b7362074d3b93537b2803ef48b1";
+
+    const AUTHORIZE = "https://accounts.spotify.com/authorize"
+
+    function requestAuthorization() {
+        let url = AUTHORIZE;
+        url += "?client_id=" + client_id;
+        url += "&response_type=code";
+        url += "&redirect_uri=" + encodeURI(redirect_uri);
+        url += "&show_dialog=true";
+        url += "&scope=user-read-currently-playing";
+        window.location = url; // Show Spotify's authorization screen
+    }
+    </script>
+</head>
+
+<body onload="requestAuthorization()">
+</body>
+
+</html>

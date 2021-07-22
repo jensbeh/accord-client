@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -12,12 +13,15 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +40,6 @@ public class ModelBuilder {
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
-
 
     private RestClient restClient;
     private boolean playSound;
@@ -58,8 +61,11 @@ public class ModelBuilder {
     private boolean spotifyShow;
     private boolean steamShow;
     private String spotifyToken;
+    private String spotifyRefresh;
     private String steamToken;
     private LinePoolService linePoolService;
+    private SpotifyConnection spotifyConnection;
+
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -269,10 +275,13 @@ public class ModelBuilder {
             settings.put("firstMuted", firstMuted);
             settings.put("spotifyShow", spotifyShow);
             settings.put("spotifyToken", spotifyToken);
+            settings.put("spotifyRefresh", spotifyRefresh);
             settings.put("steamShow", steamShow);
             settings.put("steamToken", steamToken);
             settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
             settings.put("speaker", getLinePoolService().getSelectedSpeakerName());
+            settings.put("microphoneVolume", getLinePoolService().getMicrophoneVolume());
+            settings.put("speakerVolume", getLinePoolService().getSpeakerVolume());
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
@@ -293,9 +302,12 @@ public class ModelBuilder {
                 muteHeadphones = false;
                 firstMuted = false;
                 spotifyShow = false;
-                spotifyToken = "";
+                spotifyToken = null;
+                spotifyRefresh = null;
                 steamShow = false;
                 steamToken = "";
+                getLinePoolService().setMicrophoneVolume(0.2f);
+                getLinePoolService().setSpeakerVolume(0.2f);
                 saveSettings();
             }
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
@@ -310,13 +322,19 @@ public class ModelBuilder {
             spotifyShow = (boolean) parsedSettings.get("spotifyShow");
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
+            spotifyRefresh = (String) parsedSettings.get("spotifyRefresh");
             steamToken = (String) parsedSettings.get("steamToken");
+            getLinePoolService().setMicrophoneVolume(((BigDecimal) parsedSettings.get("microphoneVolume")).floatValue());
+            getLinePoolService().setSpeakerVolume(((BigDecimal) parsedSettings.get("speakerVolume")).floatValue());
             getLinePoolService().setSelectedMicrophone((String) parsedSettings.get("microphone"));
             getLinePoolService().setSelectedSpeaker((String) parsedSettings.get("speaker"));
             reader.close();
 
         } catch (Exception e) {
             System.out.println("Error in loadSettings");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please delete your Accord folder in appdata/local");
+            alert.showAndWait();
+            Platform.exit();
             e.printStackTrace();
         }
     }
@@ -448,6 +466,22 @@ public class ModelBuilder {
 
     public void setSpotifyToken(String spotifyToken) {
         this.spotifyToken = spotifyToken;
+    }
+
+    public String getSpotifyRefresh() {
+        return spotifyRefresh;
+    }
+
+    public void setSpotifyRefresh(String spotifyRefresh) {
+        this.spotifyRefresh = spotifyRefresh;
+    }
+
+    public SpotifyConnection getSpotifyConnection() {
+        return spotifyConnection;
+    }
+
+    public void setSpotifyConnection(SpotifyConnection spotifyConnection) {
+        this.spotifyConnection = spotifyConnection;
     }
 
     public String getSteamToken() {

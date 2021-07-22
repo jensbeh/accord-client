@@ -1,6 +1,9 @@
 package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -41,7 +44,7 @@ public class ConnectionController extends SubSetting {
 
         spotifyView.setOnMouseClicked(this::onSpotifyChange);
         steamView.setOnMouseClicked(this::onSteamChange);
-        if (!builder.getSpotifyToken().equals("")) {
+        if (builder.getSpotifyToken() != null) {
             toggleInit(spotifyToggleStackPane, backgroundSpotifyButton, spotifyToggleButton, builder.isSpotifyShow());
             spotifyVbox.setVisible(true);
         }
@@ -52,18 +55,15 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
-        System.out.println("Spotify");
-        builder.setSpotifyToken("test");
-        builder.saveSettings();
-        init();
+        builder.getSpotifyConnection().init(this);
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        //TODO functionality for steam connect
-        System.out.println("Steam");
-        builder.setSteamToken("test");
-        builder.saveSettings();
-        init();
+        Platform.runLater(() -> {
+            SteamLoginController steamLoginController = new SteamLoginController(builder);
+            steamLoginController.init();
+            init();
+        });
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
