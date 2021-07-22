@@ -7,6 +7,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
+import de.uniks.stp.model.User;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -202,6 +203,59 @@ public class ResourceManager {
             }
         }
         return messageList;
+    }
+
+    /**
+     * save blockedUsers to file
+     */
+    public static void saveBlockedUsers(String currentUserName, User user) {
+        try {
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH));
+            }
+
+            JsonArray parser = new JsonArray();
+            File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH + "/user_" + currentUserName + ".json");
+            if (f.exists()) {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH + "/user_" + currentUserName + ".json"));
+                parser = (JsonArray) Jsoner.deserialize(reader);
+            }
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH + "/user_" + currentUserName + ".json"));
+
+
+            JsonObject obj = new JsonObject();
+            obj.put("id", user.getId());
+            obj.put("name", user.getName());
+            parser.add(obj);
+
+            System.out.println("saveBlockedUser: " + user.getName());
+            Jsoner.serialize(parser, writer);
+            writer.close();
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * load blockedUsers from file
+     */
+    public static List<User> loadBlockedUsers(String currentUserName) throws IOException, JsonException {
+        JsonArray parser;
+        List<User> userList = new ArrayList<>();
+
+        File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH + "/user_" + currentUserName + ".json");
+        if (f.exists()) {
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH + "/user_" + currentUserName + ".json"));
+            parser = (JsonArray) Jsoner.deserialize(reader);
+            for (Object jsonObject : parser) {
+                User user = new User();
+                JsonObject jsonObject1 = (JsonObject) jsonObject;
+                user.setId((String) jsonObject1.get("id"));
+                user.setName((String) jsonObject1.get("name"));
+                userList.add(user);
+            }
+        }
+        return userList;
     }
 
     public static void extractEmojis() {

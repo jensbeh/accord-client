@@ -21,6 +21,8 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,6 +62,8 @@ public class ModelBuilder {
     private String spotifyToken;
     private String steamToken;
     private LinePoolService linePoolService;
+
+    private List<User> blockedUsers;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -464,5 +468,26 @@ public class ModelBuilder {
 
     public LinePoolService getLinePoolService() {
         return this.linePoolService;
+    }
+
+    public List<User> getBlockedUsers() {
+        return this.blockedUsers;
+    }
+
+    public void setBlockedUsers(List<User> userList) {
+        this.blockedUsers = userList;
+    }
+
+    public void addBlockedUser(User user) {
+        if (this.blockedUsers == null) {
+            this.blockedUsers = new ArrayList<>();
+        }
+        this.blockedUsers.add(user);
+    }
+
+    public void removeBlockedUser(User user) {
+        if (this.blockedUsers != null) {
+            this.blockedUsers.remove(user);
+        }
     }
 }

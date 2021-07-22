@@ -42,12 +42,13 @@ public class BlockController extends SubSetting {
         this.unblockButton.setDisable(true);
 
         this.blockedUsersLV.setCellFactory(new BlockedUsersListCell(this));
+        this.blockedUsersLV.getItems().addAll(builder.getBlockedUsers());
+        /*this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
         this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
+        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));*/
 
         buttonContainer = new ArrayList<>();
     }
@@ -58,6 +59,10 @@ public class BlockController extends SubSetting {
         }
     }
 
+    /**
+     * pushes a blocked user as button into a List
+     * @param button the button to be added in the container
+     */
     public void addButtonToContainer(Button button) {
         if (!buttonContainer.contains(button)) {
             buttonContainer.add(button);
@@ -65,6 +70,10 @@ public class BlockController extends SubSetting {
         }
     }
 
+    /**
+     * selects a blocked user from the List
+     * @param button the blocked user who got clicked
+     */
     public void onBlockedUserClicked(Button button) {
         this.unblockButton.setDisable(false);
 

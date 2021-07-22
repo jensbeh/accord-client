@@ -128,6 +128,11 @@
     -fx-padding: 0;
 }
 
+#blockedUsersLV {
+    -fx-background-color: #e3e5e8;
+    -fx-border-color: white;
+}
+
 #blockedUsersLV .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
