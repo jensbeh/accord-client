@@ -11,7 +11,7 @@ import javafx.scene.shape.Circle;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
 
     public UserListCell(ModelBuilder builder) {
         this.builder = builder;
@@ -106,10 +106,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         });
 
         // keep refreshing in case user has been unblocked from settings
-        // User userElement = new User().setId(item.getId()).setName(item.getName());
-        name.setOnContextMenuRequested(event -> {
-            updateContextMenuItems(item, block, unblock);
-        });
+        name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
     }
 
     private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {

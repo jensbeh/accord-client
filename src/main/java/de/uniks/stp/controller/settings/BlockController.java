@@ -7,7 +7,6 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 
@@ -18,8 +17,6 @@ public class BlockController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
-    private Label blockedUsersLabel;
-    private ScrollPane blockedUsersSP;
     private ListView<User> blockedUsersLV;
     private Button unblockButton;
     private List<Button> buttonContainer;
@@ -35,10 +32,9 @@ public class BlockController extends SubSetting {
     }
 
     public void init() {
-        this.blockedUsersLabel = (Label) view.lookup("#blockedUsersLabel");
         this.unblockButton = (Button) view.lookup("#button_unblock");
 
-        this.blockedUsersSP = (ScrollPane) view.lookup("#blockedUsersSP");
+        ScrollPane blockedUsersSP = (ScrollPane) view.lookup("#blockedUsersSP");
         this.blockedUsersLV = (ListView<User>) blockedUsersSP.getContent().lookup("#blockedUsersLV");
 
         this.unblockButton.setDisable(true);
@@ -64,7 +60,7 @@ public class BlockController extends SubSetting {
     public void addButtonToContainer(Button button) {
         if (!buttonContainer.contains(button)) {
             buttonContainer.add(button);
-            button.setOnAction(event -> { onBlockedUserClicked(button); });
+            button.setOnAction(event -> onBlockedUserClicked(button));
         }
     }
 
