@@ -3,7 +3,6 @@ package de.uniks.stp.cellfactories;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
