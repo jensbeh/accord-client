@@ -19,7 +19,7 @@
         url += "&response_type=code";
         url += "&redirect_uri=" + encodeURI(redirect_uri);
         url += "&show_dialog=true";
-        url += "&scope=user-read-currently-playing";
+        url += "&scope=user-read-currently-playing user-read-playback-position user-read-playback-state";
         window.location = url; // Show Spotify's authorization screen
     }
     </script>

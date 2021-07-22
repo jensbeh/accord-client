@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -15,12 +16,15 @@
             <Font name="System Bold" size="17.0" />
          </font>
       </Label>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
          <children>
-            <ImageView id="spotifyArtwork" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" />
-            <Label id="bandAndSong" text="XYZ by XYZ" textFill="WHITE">
+            <ImageView id="spotifyArtwork" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/Spotify_Icon_RGB_Green.png" />
+               </image></ImageView>
+            <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0" prefWidth="90.0" text="No Song is playing" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                <font>
-                  <Font size="13.0" />
+                  <Font name="System Bold" size="12.0" />
                </font>
             </Label>
          </children>

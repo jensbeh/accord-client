@@ -6,13 +6,20 @@ import com.sun.net.httpserver.HttpServer;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
+import com.wrapper.spotify.model_objects.specification.Album;
+import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
+import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
+import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.ConnectionController;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -26,6 +33,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class SpotifyConnection {
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
@@ -35,11 +46,15 @@ public class SpotifyConnection {
     private WebView webView;
     private Stage popUp;
     private HttpServer server;
-    SpotifyApi spotifyApi;
-    AuthorizationCodeRequest authorizationCodeRequest;
-    AuthorizationCodeCredentials authorizationCodeCredentials;
-    AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
-    ConnectionController connectionController;
+    private SpotifyApi spotifyApi;
+    private AuthorizationCodeRequest authorizationCodeRequest;
+    private AuthorizationCodeCredentials authorizationCodeCredentials;
+    private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
+    private ConnectionController connectionController;
+    private CurrentlyPlayingContext currentSong;
+
+    private Label bandAndSong;
+    private ImageView spotifyArtwork;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -137,5 +152,75 @@ public class SpotifyConnection {
                 e.printStackTrace();
             }
         }
+    }
+
+    public CurrentlyPlayingContext getCurrentlyPlayingSong() {
+        try {
+            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
+            return getInformationAboutUsersCurrentPlaybackRequest.execute();
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public String getCurrentlyPlayingSongAlbumID() {
+        try {
+            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest  = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
+            CurrentlyPlayingContext currentlyPlayingContext  = getInformationAboutUsersCurrentPlaybackRequest.execute();
+            String albumLink = currentlyPlayingContext.getContext().getHref();
+            String[] id = albumLink.split("albums/");
+            return id[1];
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            e.printStackTrace();
+        }
+        return "No song playing";
+    }
+
+    public Image getCurrentlyPlayingSongArtwork(String albumID) {
+        try {
+            GetAlbumRequest getAlbumRequest  = spotifyApi.getAlbum(albumID).build();
+            Album album = getAlbumRequest.execute();
+            Image[] images = album.getImages();
+            return images[2];
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork) {
+        this.bandAndSong = bandAndSong;
+        this.spotifyArtwork = spotifyArtwork;
+        CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
+        int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
+        if (currentlyPlayingContext.getIs_playing()) {
+            final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+            final ScheduledFuture<?> handle =
+                    scheduler.scheduleAtFixedRate(updateUserDescription, 0, 1, TimeUnit.SECONDS);
+            scheduler.schedule(new Runnable() {
+                public void run() {
+                    handle.cancel(true);
+                }
+            }, timeToPlayLeft, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    final Runnable updateUserDescription = new Runnable() {
+        public void run() {
+            currentSong = getCurrentlyPlayingSong();
+            builder.getPersonalUser().setDescription(currentSong.getItem().getName());
+            Platform.runLater(() -> updatePersonalUser());
+        }
+    };
+
+    private void updatePersonalUser() {
+        bandAndSong.setText(builder.getPersonalUser().getDescription());
+        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+        com.wrapper.spotify.model_objects.specification.Image image = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+        javafx.scene.image.Image artwork = new javafx.scene.image.Image(image.getUrl());
+        spotifyArtwork.setImage(artwork);
     }
 }
