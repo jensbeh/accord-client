@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -60,13 +61,17 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
     private static class UserCell extends ListCell<User> {
         private HBox root;
+        private User user;
 
         public void setRoot(HBox root) {
             this.root = root;
         }
 
+
+
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
+            this.user = item;
             HBox cell = new HBox();
             cell.setPadding(new Insets(5, 0, 5, 5));
             Circle circle = new Circle(15);
@@ -98,8 +103,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
                 ImageView spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
                 Label bandAndSong = (Label) root.lookup("#bandAndSong");
-                Image artwork = new Image("https://i.scdn.co/image/ab67616d00004851d29c2f17f8d5756a0e85ecde");
-                spotifyArtwork.setImage(artwork);
+
                 HBox hBox = (HBox) mouseEvent.getSource();
                 hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
                 Bounds bounds = ((HBox) mouseEvent.getSource()).localToScreen(((HBox) mouseEvent.getSource()).getBoundsInLocal());
@@ -110,7 +114,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 dialog.initOwner(hBox.getScene().getWindow());
                 dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                     if (!isNowFocused) {
-                        dialog.hide();
+                        dialog.close();
                         hBox.setStyle("-fx-background-color: transparent;");
                     }
                 });
@@ -121,15 +125,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 dialog.setY(y);
                 dialog.setScene(scene);
                 dialog.show();
-
-                Timer timer = new Timer();
-                Random random = new Random();
-                timer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Platform.runLater(() -> bandAndSong.setText(String.valueOf(random.nextInt())));
-                    }
-                }, 0, 2000);
             } catch (IOException e) {
                 e.printStackTrace();
             }

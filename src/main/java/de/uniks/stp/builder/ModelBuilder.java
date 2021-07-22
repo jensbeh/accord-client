@@ -15,6 +15,7 @@ import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import org.apache.commons.io.FileUtils;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -332,9 +333,12 @@ public class ModelBuilder {
 
         } catch (Exception e) {
             System.out.println("Error in loadSettings");
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Please delete your Accord folder in appdata/local");
-            alert.showAndWait();
-            Platform.exit();
+            try {
+                Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
+                loadSettings();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
