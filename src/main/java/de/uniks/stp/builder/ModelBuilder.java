@@ -484,9 +484,14 @@ public class ModelBuilder {
         this.blockedUsers.add(user);
     }
 
-    public void removeBlockedUser(User user) {
+    public void removeBlockedUser(User blockedUser) {
         if (this.blockedUsers != null) {
-            this.blockedUsers.remove(user);
+            for(User user : this.getBlockedUsers()) {
+                if(blockedUser.getId().equals(user.getId())) {
+                    this.blockedUsers.remove(user);
+                    return;
+                }
+            }
         }
     }
 }

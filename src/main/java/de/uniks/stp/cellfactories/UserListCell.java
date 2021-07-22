@@ -3,6 +3,7 @@ package de.uniks.stp.cellfactories;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
+import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -90,20 +91,8 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
         updateContextMenuItems(item, block, unblock);
 
-        block.setOnAction((act) -> {
-            System.out.println("blocked");
-            builder.addBlockedUser(item);
-            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
-            block.setVisible(false);
-            unblock.setVisible(true);
-        });
-        unblock.setOnAction((act) -> {
-            System.out.println("unblocked");
-            builder.removeBlockedUser(item);
-            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
-            block.setVisible(true);
-            unblock.setVisible(false);
-        });
+        block.setOnAction(event -> blockUser(item, block, unblock));
+        unblock.setOnAction(event -> unblockUser(item, block, unblock));
 
         // keep refreshing in case user has been unblocked from settings
         name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
@@ -125,5 +114,19 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             block.setVisible(true);
             unblock.setVisible(false);
         }
+    }
+
+    private void blockUser(User item, MenuItem block, MenuItem unblock) {
+        builder.addBlockedUser(item);
+        ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
+        block.setVisible(false);
+        unblock.setVisible(true);
+    }
+
+    private void unblockUser(User item, MenuItem block, MenuItem unblock) {
+        builder.removeBlockedUser(item);
+        ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
+        block.setVisible(true);
+        unblock.setVisible(false);
     }
 }
