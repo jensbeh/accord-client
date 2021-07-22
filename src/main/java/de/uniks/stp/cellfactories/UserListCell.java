@@ -7,6 +7,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -30,9 +31,11 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private static class UserCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
-            HBox cell = new HBox();
+            VBox cell = new VBox();
+            HBox hBox = new HBox();
             Circle circle = new Circle(15);
             Label name = new Label();
+            Label game = new Label();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
@@ -42,12 +45,24 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                 }
+                if(item.getDescription() != null &&!item.getDescription().equals("")){
+                    if(Character.toString(item.getDescription().charAt(0)).equals("#")){
+                        game.setText(item.getDescription().substring(1));
+                        game.setStyle("-fx-font-size: 16");
+                        game.setPrefWidth(135);
+                    }
+                }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
-                cell.getChildren().addAll(circle, name);
+                hBox.getChildren().addAll(circle, name);
+                if(game.getText().equals("")){
+                    cell.getChildren().addAll(hBox);
+                } else{
+                    cell.getChildren().addAll(hBox, name);
+                }
             }
             this.setGraphic(cell);
         }
