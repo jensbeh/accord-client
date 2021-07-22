@@ -194,21 +194,39 @@ public class AudioController extends SubSetting{
         if (senderActive) {
             microphone.startRecording();
             speaker.startPlayback();
-
-
             while (senderActive) {
 
                 stopped = false;
                 // start recording audio
                 byte[] data = microphone.readData();
-                System.out.println(data);
+                int volumeInPer = calculateRMSLevel(data);
+                microphoneProgressBar.setProgress(volumeInPer * 0.01);
                 speaker.writeData(data);
 
             }
+            microphoneProgressBar.setProgress(0);
             // stop if senderActive is set to false in stop method in this class
             microphone.stopRecording();
             speaker.stopPlayback();
             stopped = true;
         }
     }
+
+    public int calculateRMSLevel(byte[] audioData)
+    {
+        long lSum = 0;
+        for(int i=0; i < audioData.length; i++)
+            lSum = lSum + audioData[i];
+
+        double dAvg = lSum / audioData.length;
+        double sumMeanSquare = 0d;
+
+        for(int j=0; j < audioData.length; j++)
+            sumMeanSquare += Math.pow(audioData[j] - dAvg, 2d);
+
+        double averageMeanSquare = sumMeanSquare / audioData.length;
+
+        return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
+    }
+
 }
