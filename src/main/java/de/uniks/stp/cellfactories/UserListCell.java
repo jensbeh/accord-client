@@ -88,6 +88,31 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
         name.setContextMenu(menu);
 
+        updateContextMenuItems(item, block, unblock);
+
+        block.setOnAction((act) -> {
+            System.out.println("blocked");
+            builder.addBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
+            block.setVisible(false);
+            unblock.setVisible(true);
+        });
+        unblock.setOnAction((act) -> {
+            System.out.println("unblocked");
+            builder.removeBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
+            block.setVisible(true);
+            unblock.setVisible(false);
+        });
+
+        // keep refreshing in case user has been unblocked from settings
+        // User userElement = new User().setId(item.getId()).setName(item.getName());
+        name.setOnContextMenuRequested(event -> {
+            updateContextMenuItems(item, block, unblock);
+        });
+    }
+
+    private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
         boolean isBlocked = false;
         for (User user : builder.getBlockedUsers()) {
             if(user.getId().equals(item.getId())) {
@@ -103,19 +128,5 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             block.setVisible(true);
             unblock.setVisible(false);
         }
-
-        block.setOnAction((act) -> {
-            System.out.println("blocked");
-            builder.addBlockedUser(item);
-            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item);
-            block.setVisible(false);
-            unblock.setVisible(true);
-        });
-        unblock.setOnAction((act) -> {
-            System.out.println("unblocked");
-            builder.removeBlockedUser(item);
-            block.setVisible(true);
-            unblock.setVisible(false);
-        });
     }
 }

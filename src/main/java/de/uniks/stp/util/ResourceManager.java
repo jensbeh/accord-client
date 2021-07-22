@@ -208,7 +208,7 @@ public class ResourceManager {
     /**
      * save blockedUsers to file
      */
-    public static void saveBlockedUsers(String currentUserName, User user) {
+    public static void saveBlockedUsers(String currentUserName, User user, boolean blocking) {
         try {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + BLOCKEDUSERS_PATH));
@@ -226,7 +226,10 @@ public class ResourceManager {
             JsonObject obj = new JsonObject();
             obj.put("id", user.getId());
             obj.put("name", user.getName());
-            parser.add(obj);
+            if(blocking)
+                parser.add(obj);
+            else
+                parser.remove(obj);
 
             System.out.println("saveBlockedUser: " + user.getName());
             Jsoner.serialize(parser, writer);

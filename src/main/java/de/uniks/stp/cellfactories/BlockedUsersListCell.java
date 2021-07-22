@@ -46,7 +46,8 @@ public class BlockedUsersListCell implements javafx.util.Callback<ListView<User>
 
             super.updateItem(item, empty);
             if (!empty) {
-                cell.setId("blocked_" + item.getId());
+                cell.setId("cell_blocked_" + item.getId());
+                button.setId("user_blocked_" + item.getId());
                 button.setText(item.getName());
                 cell.getChildren().addAll(button);
             }

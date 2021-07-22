@@ -3,6 +3,8 @@ package de.uniks.stp.controller.settings;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.BlockedUsersListCell;
 import de.uniks.stp.model.User;
+import de.uniks.stp.util.ResourceManager;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -40,20 +42,16 @@ public class BlockController extends SubSetting {
         this.blockedUsersLV = (ListView<User>) blockedUsersSP.getContent().lookup("#blockedUsersLV");
 
         this.unblockButton.setDisable(true);
+        this.unblockButton.setOnAction(this::onUnblockButtonClicked);
 
         this.blockedUsersLV.setCellFactory(new BlockedUsersListCell(this));
         this.blockedUsersLV.getItems().addAll(builder.getBlockedUsers());
-        /*this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));
-        this.blockedUsersLV.getItems().add(new User().setName("TestUser").setId("abcdefgID"));*/
 
         buttonContainer = new ArrayList<>();
     }
 
     public void stop() {
+        this.unblockButton.setOnAction(null);
         for (Button button : buttonContainer) {
             button.setOnAction(null);
         }
@@ -85,19 +83,21 @@ public class BlockController extends SubSetting {
 
         selectedButton = button;
 
-        //selectedButton.setStyle("-fx-background-color: #AAAAAA;");
         selectedButton.getStyleClass().add("blockedUserElementSelected");
     }
 
-    public void setTheme() {
-
-    }
-
-    private void setWhiteMode() {
-
-    }
-
-    private void setDarkMode() {
-
+    /**
+     * removes the user from block list
+     * @param actionEvent the mouse click event
+     */
+    private void onUnblockButtonClicked(ActionEvent actionEvent) {
+        for (User user : builder.getBlockedUsers()) {
+            if (selectedButton.getId().equals("user_blocked_" + user.getId())) {
+                builder.removeBlockedUser(user);
+                this.blockedUsersLV.getItems().remove(user);
+                ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), user, false);
+                break;
+            }
+        }
     }
 }
