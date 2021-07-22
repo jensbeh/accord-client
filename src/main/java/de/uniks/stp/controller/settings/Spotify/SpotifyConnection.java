@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -55,6 +56,14 @@ public class SpotifyConnection {
 
     private Label bandAndSong;
     private ImageView spotifyArtwork;
+    private Label timePlayed;
+    private ProgressBar progressBar;
+
+    private String artist;
+
+    private ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> handle;
+    private Label timeTotal;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -112,6 +121,12 @@ public class SpotifyConnection {
         popUp.close();
     }
 
+    public void stopScheduler() {
+        handle.cancel(true);
+        scheduler.shutdown();
+        updateUserDescription = null;
+    }
+
     private void createHttpServer() {
         try {
             server = HttpServer.create(new InetSocketAddress(8888), 0);
@@ -167,10 +182,15 @@ public class SpotifyConnection {
 
     public String getCurrentlyPlayingSongAlbumID() {
         try {
-            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest  = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
-            CurrentlyPlayingContext currentlyPlayingContext  = getInformationAboutUsersCurrentPlaybackRequest.execute();
+            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
+            CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
             String albumLink = currentlyPlayingContext.getContext().getHref();
-            String[] id = albumLink.split("albums/");
+            String[] id = new String[0];
+            if (albumLink.contains("albums/")) {
+                id = albumLink.split("albums/");
+            } else {
+                id = albumLink.split("playlists/");
+            }
             return id[1];
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             e.printStackTrace();
@@ -180,8 +200,10 @@ public class SpotifyConnection {
 
     public Image getCurrentlyPlayingSongArtwork(String albumID) {
         try {
-            GetAlbumRequest getAlbumRequest  = spotifyApi.getAlbum(albumID).build();
+            GetAlbumRequest getAlbumRequest = spotifyApi.getAlbum(albumID).build();
             Album album = getAlbumRequest.execute();
+            album.getArtists();
+            artist = album.getArtists()[0].getName();
             Image[] images = album.getImages();
             return images[2];
         } catch (IOException | SpotifyWebApiException | ParseException e) {
@@ -191,36 +213,68 @@ public class SpotifyConnection {
     }
 
 
-    public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork) {
+    public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
         this.bandAndSong = bandAndSong;
         this.spotifyArtwork = spotifyArtwork;
+        this.timeTotal = timeTotal;
+        this.timePlayed = timePlayed;
+        this.progressBar = progessBar;
         CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
         int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
         if (currentlyPlayingContext.getIs_playing()) {
-            final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-            final ScheduledFuture<?> handle =
-                    scheduler.scheduleAtFixedRate(updateUserDescription, 0, 1, TimeUnit.SECONDS);
+            scheduler = Executors.newScheduledThreadPool(1);
+            handle = scheduler.scheduleAtFixedRate(updateUserDescription, 0, 1, TimeUnit.SECONDS);
+
             scheduler.schedule(new Runnable() {
                 public void run() {
                     handle.cancel(true);
+                    scheduler.shutdown();
+                    spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
                 }
             }, timeToPlayLeft, TimeUnit.MILLISECONDS);
         }
     }
 
-    final Runnable updateUserDescription = new Runnable() {
+    Runnable updateUserDescription = new Runnable() {
         public void run() {
             currentSong = getCurrentlyPlayingSong();
-            builder.getPersonalUser().setDescription(currentSong.getItem().getName());
-            Platform.runLater(() -> updatePersonalUser());
+            currentSong.getItem().getId();
+            builder.getPersonalUser().setDescription(artist + " - " + currentSong.getItem().getName());
+            Platform.runLater(() -> updatePersonalUser(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
         }
     };
 
-    private void updatePersonalUser() {
+    private void updatePersonalUser(double elapsed, double duration) {
         bandAndSong.setText(builder.getPersonalUser().getDescription());
         String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
         com.wrapper.spotify.model_objects.specification.Image image = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
         javafx.scene.image.Image artwork = new javafx.scene.image.Image(image.getUrl());
         spotifyArtwork.setImage(artwork);
+        formatTime((int) elapsed, (int) duration);
+        double progressbarValue = (elapsed / duration);
+        progressBar.setProgress(progressbarValue + 0.03);
+    }
+
+    private void formatTime(int elapsed, int duration) {
+        int intElapsed = (int) Math.floor(elapsed / 1000);
+        int elapsedHours = intElapsed / (60 * 60);
+        if (elapsedHours > 0) {
+            intElapsed -= elapsedHours * 60 * 60;
+        }
+        int elapsedMinutes = intElapsed / 60;
+        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+
+        if (duration > 0) {
+            int intDuration = (int) Math.floor(duration / 1000);
+            int durationHours = intDuration / (60 * 60);
+            if (durationHours > 0) {
+                intDuration -= durationHours * 60 * 60;
+            }
+            int durationMinutes = intDuration / 60;
+            int durationSeconds = intDuration - durationHours * 60 * 60 -
+                    durationMinutes * 60;
+            timePlayed.setText(String.format("%02d:%02d", elapsedMinutes, elapsedSeconds));
+            timeTotal.setText(String.format("%02d:%02d", durationMinutes, durationSeconds));
+        }
     }
 }

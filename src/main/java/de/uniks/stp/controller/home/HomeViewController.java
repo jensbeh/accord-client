@@ -61,6 +61,7 @@ public class HomeViewController {
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
+    private SpotifyConnection spotifyConnection;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -114,7 +115,7 @@ public class HomeViewController {
                 }
             }
         });
-        SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
+        spotifyConnection = new SpotifyConnection(builder);
         builder.getSpotifyConnection().refreshSpotifyToken();
     }
 
@@ -392,6 +393,9 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().stopScheduler();
         }
         cleanup();
     }

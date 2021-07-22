@@ -8,6 +8,8 @@ import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -29,6 +31,9 @@ public class UserProfileController {
     private final Parent view;
     private HBox userBox;
     private Label bandAndSong;
+    private Label timePlayed;
+    private Label timeTotal;
+    private ProgressBar progressBar;
     private ImageView spotifyArtwork;
 
     public UserProfileController(Parent view, ModelBuilder builder) {
@@ -55,6 +60,10 @@ public class UserProfileController {
         });
     }
 
+    public void stop() {
+        userBox.setOnMouseClicked(null);
+    }
+
     private void spotifyPopup(MouseEvent mouseEvent) {
         if (builder.getSpotifyToken() != null) {
             Parent root = null;
@@ -63,8 +72,10 @@ public class UserProfileController {
                 VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
                 spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
                 bandAndSong = (Label) root.lookup("#bandAndSong");
-
-                builder.getSpotifyConnection().spotifyListener(bandAndSong, spotifyArtwork);
+                timePlayed = (Label) root.lookup("#timePlayed");
+                timeTotal = (Label) root.lookup("#timeTotal");
+                progressBar = (ProgressBar) root.lookup("#progressBar");
+                builder.getSpotifyConnection().spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
 
                 HBox hBox = (HBox) mouseEvent.getSource();
                 hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
@@ -88,6 +99,7 @@ public class UserProfileController {
                 dialog.setY(y);
                 dialog.setScene(scene);
                 dialog.show();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

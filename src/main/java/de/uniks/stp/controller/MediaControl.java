@@ -198,7 +198,6 @@ public class MediaControl extends BorderPane {
     }
 
     protected void updateValues(MediaPlayer mp) {
-
         if (playTime != null && timeSlider != null && volumeSlider != null) {
             Platform.runLater(new Runnable() {
                 public void run() {

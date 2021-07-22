@@ -2,7 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -18,32 +19,39 @@
       </Label>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
          <children>
-            <ImageView id="spotifyArtwork" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="spotifyArtwork" fitHeight="76.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../icons/Spotify_Icon_RGB_Green.png" />
-               </image></ImageView>
+               </image>
+               <effect>
+                  <DropShadow />
+               </effect></ImageView>
             <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0" prefWidth="90.0" text="No Song is playing" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="13.0" />
                </font>
             </Label>
          </children>
       </HBox>
-      <VBox>
+      <VBox spacing="8.0">
+         <VBox.margin>
+            <Insets left="15.0" />
+         </VBox.margin>
          <children>
-            <Slider>
-               <VBox.margin>
-                  <Insets left="15.0" right="15.0" />
-               </VBox.margin>
-            </Slider>
-            <HBox spacing="105.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label text="00:00" textFill="WHITE" />
-                  <Label text="00:00" textFill="WHITE" />
+                  <ProgressBar id="progressBar" prefHeight="13.0" prefWidth="169.0" progress="1.0" stylesheets="@../spotify/slider.css">
+                     <effect>
+                        <DropShadow height="6.17" radius="2.585" width="6.17" />
+                     </effect>
+                  </ProgressBar>
                </children>
-               <VBox.margin>
-                  <Insets left="15.0" />
-               </VBox.margin>
+            </HBox>
+            <HBox spacing="110.0">
+               <children>
+                  <Label id="timePlayed" text="00:00" textFill="WHITE" />
+                  <Label id="timeTotal" text="00:00" textFill="WHITE" />
+               </children>
             </HBox>
          </children>
       </VBox>
