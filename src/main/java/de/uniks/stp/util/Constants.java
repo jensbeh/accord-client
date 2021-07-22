@@ -51,4 +51,10 @@ public class Constants {
     public static boolean AUDIO_SIGNING = true;
     public static boolean AUDIO_BYTE_ORDER = false;
     public static int AUDIO_DATAGRAM_PAKET_SIZE = 1279;
+
+    // Steam
+    public static String STEAM_API_BASE_URL = "http://api.steampowered.com";
+    public static String STEAM_API_STEAM_USER = "/ISteamUser";
+    public static String STEAM_API_RESOLVE_VANITY = "/ResolveVanityURL/v0001";
+    public static String STEAM_API_KEY = "/?key=EF900FD8AD0781BF2B21710D5F173577";
 }

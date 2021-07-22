@@ -65,7 +65,6 @@ public class StageManager extends Application {
         LinePoolService linePoolService = new LinePoolService();
         linePoolService.init();
         builder.setLinePoolService(linePoolService);
-
         builder.loadSettings();
 
         // start application
