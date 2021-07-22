@@ -138,16 +138,4 @@ public class SpotifyConnection {
             }
         }
     }
-
-    public SpotifyApi getSpotifyApi() {
-        return spotifyApi;
-    }
-
-    public AuthorizationCodeRequest getAuthorizationCodeRequest() {
-        return authorizationCodeRequest;
-    }
-
-    public AuthorizationCodeCredentials getAuthorizationCodeCredentials() {
-        return authorizationCodeCredentials;
-    }
 }
