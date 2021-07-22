@@ -13,6 +13,8 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -330,6 +332,9 @@ public class ModelBuilder {
 
         } catch (Exception e) {
             System.out.println("Error in loadSettings");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please delete your Accord folder in appdata/local");
+            alert.showAndWait();
+            Platform.exit();
             e.printStackTrace();
         }
     }
