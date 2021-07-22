@@ -7,7 +7,7 @@ branches:
 before_install:
   - sudo apt-get install ffmpeg
   - sudo apt install pulseaudio
-  - sleep 10 && pactl set-default-sink '0'
+  - sleep 10 && pactl set-default-sink '0' && pactl set-default-source '0'
   - pulseaudio -k
   - chmod +x ./gradlew
 script:

@@ -48,7 +48,6 @@ public class AudioStreamSender implements Runnable {
         JSONObject obj1 = new JSONObject().put("channel", currentAudioChannel.getId())
                 .put("name", builder.getPersonalUser().getName());
 
-
         // set 255 with jsonObject - sendData is automatically init with zeros
         byte[] jsonData = new byte[255];
         byte[] objData = new byte[0];
@@ -63,7 +62,6 @@ public class AudioStreamSender implements Runnable {
         microphone.startRecording();
 
         // start sending
-
         while (senderActive) {
             byte[] data = microphone.readData();
 
