@@ -20,7 +20,31 @@
     -fx-background-radius: 10;
     -fx-text-fill: RED;
     -fx-border-color: transparent;
-    -fx-font-size: 12px;
+    -fx-font-size: 12;
+}
+
+#darkMode:hover {
+    -fx-border-width: 3;
+    -fx-border-color: #ff9999;
+    -fx-border-radius: 5;
+}
+
+#darkMode {
+    -fx-border-width: 3;
+    -fx-border-color: transparent;
+    -fx-border-radius: 5;
+}
+
+#brightMode:hover {
+    -fx-border-width: 3px;
+    -fx-border-color: #ff9999;
+    -fx-border-radius: 5px;
+}
+
+#brightMode {
+    -fx-border-width: 3px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 5px;
 }
 
 .check-box {
@@ -120,6 +144,16 @@
 }
 
 #button_audioStart:pressed, #button_unblock:pressed {
+    -fx-background-color: #ff8585;
+}
+
+#slider_volumeInput .thumb, #slider_volumeOutput .thumb {
+    -fx-background-color: #ff9999;
+}
+#slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
+    -fx-background-color: #ffbdbd;
+}
+#slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
     -fx-background-color: #ff8585;
 }
 

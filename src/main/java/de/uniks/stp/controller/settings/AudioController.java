@@ -4,6 +4,9 @@ import de.uniks.stp.builder.ModelBuilder;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class AudioController extends SubSetting {
 
@@ -51,31 +54,60 @@ public class AudioController extends SubSetting {
         this.inputDeviceComboBox.getItems().clear();
         this.inputDeviceComboBox.setOnAction(this::onInputDeviceClicked);
 
+        // set microphone names
         for (var microphone : builder.getLinePoolService().getMicrophones().entrySet()) {
-            this.inputDeviceComboBox.getItems().add(microphone.getKey()); // set microphone names
+            this.inputDeviceComboBox.getItems().add(microphone.getKey());
         }
 
         this.outputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedSpeakerName());
         this.outputDeviceComboBox.getItems().clear();
         this.outputDeviceComboBox.setOnAction(this::onOutputDeviceClicked);
 
+        // set speaker names
         for (var speaker : builder.getLinePoolService().getSpeakers().entrySet()) {
-            this.outputDeviceComboBox.getItems().add(speaker.getKey()); // set speaker names
+            this.outputDeviceComboBox.getItems().add(speaker.getKey());
         }
 
         // Slider Settings
-        volumeInput.setMin(-80.0);
-        volumeInput.setMax(6.0206);
-//        volumeInput.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        // set values
+        volumeInput.setMin(0.0);
+        volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
+        volumeInput.setMax(1.0);
+
+        // set thumb text & style
+        volumeInput.applyCss();
+        volumeInput.layout();
+        Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
+        Text valueTextInputSlider = new Text();
+        valueTextInputSlider.textProperty().bind(volumeInput.valueProperty().asString("%.2f"));
+        valueTextInputSlider.setFill(Color.WHITE);
+        thumbInputSlider.getChildren().add(valueTextInputSlider);
+
+        // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeInput: " + newValue);
+            builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
+            builder.saveSettings();
         });
 
-        volumeOutput.setMin(-80.0);
-        volumeOutput.setMax(6.0206);
-//        volumeOutput.setValue(ResourceManager.getVolume(builder.getPersonalUser().getName()));
+        // set values
+        volumeOutput.setMin(0.0);
+        volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
+        volumeOutput.setMax(1.0);
+
+        // set thumb text & style
+        volumeOutput.applyCss();
+        volumeOutput.layout();
+        Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
+        Text valueTextOutputSlider = new Text();
+        valueTextOutputSlider.textProperty().bind(volumeOutput.valueProperty().asString("%.2f"));
+        valueTextOutputSlider.setFill(Color.WHITE);
+        thumbOutputSlider.getChildren().add(valueTextOutputSlider);
+
+        // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeOutput: " + newValue);
+            System.out.println("volumeOutput: " + newValue.floatValue());
+            builder.getLinePoolService().setSpeakerVolume(newValue.floatValue());
+            builder.saveSettings();
         });
     }
 
