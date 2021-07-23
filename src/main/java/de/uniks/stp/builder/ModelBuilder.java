@@ -12,6 +12,8 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -62,7 +64,7 @@ public class ModelBuilder {
     private String steamToken;
     private LinePoolService linePoolService;
 
-    private List<User> blockedUsers;
+    private ObservableList<User> blockedUsers;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -469,17 +471,17 @@ public class ModelBuilder {
         return this.linePoolService;
     }
 
-    public List<User> getBlockedUsers() {
+    public ObservableList<User> getBlockedUsers() {
         return this.blockedUsers;
     }
 
     public void setBlockedUsers(List<User> userList) {
-        this.blockedUsers = userList;
+        this.blockedUsers = FXCollections.observableList(userList);
     }
 
     public void addBlockedUser(User user) {
         if (this.blockedUsers == null) {
-            this.blockedUsers = new ArrayList<>();
+            this.blockedUsers = FXCollections.observableList(new ArrayList<>());
         }
         this.blockedUsers.add(user);
     }
