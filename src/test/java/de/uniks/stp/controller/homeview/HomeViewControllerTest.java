@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
@@ -414,5 +415,35 @@ public class HomeViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
         Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+    }
+
+    @Test
+    public void blockTest() throws InterruptedException {
+        loginInit();
+
+        WaitForAsyncUtils.waitForFxEvents();
+        ListView<User> userList = lookup("#onlineUsers").query();
+        User testUser = userList.getItems().get(0);
+        Label name = lookup("#" + testUser.getId()).query();
+        doubleClickOn(name);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        rightClickOn();
+        ContextMenu contextMenu  = name.getContextMenu();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+        interact(() -> contextMenu.getItems().get(1).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#settingsButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("Blocked");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#user_blocked_" + testUser.getId());
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#button_unblock");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }
