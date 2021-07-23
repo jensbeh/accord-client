@@ -10,12 +10,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class AudioController extends SubSetting{
+public class AudioController extends SubSetting {
 
     private final Parent view;
     private final ModelBuilder builder;
     private boolean senderActive;
-    private boolean stopped;
+    private volatile boolean stopped;
     private boolean isMuted;
     private Runnable myRunnable;
     private Thread soundThread;
@@ -181,7 +181,7 @@ public class AudioController extends SubSetting{
         microphoneTestChangeAction(true);
     }
 
-    private void microphoneTestChangeAction(Boolean stopTest){
+    private void microphoneTestChangeAction(Boolean stopTest) {
         if (stopTest) {
             startButton.setText("Start");
             startButton.setOnAction(this::onMicrophoneTestStart);
@@ -197,6 +197,7 @@ public class AudioController extends SubSetting{
             Thread.onSpinWait();
         }
     }
+
     public void stop() {
         stopRecord();
         startButton.setOnAction(null);
@@ -227,21 +228,21 @@ public class AudioController extends SubSetting{
         }
     }
 
-    public int calculateRMSLevel(byte[] audioData)
-    {
-        long lSum = 0;
-        for(int i=0; i < audioData.length; i++)
-            lSum = lSum + audioData[i];
-
+    public int calculateRMSLevel(byte[] audioData) {
+        double lSum = 0;
+        for (byte audioDatum : audioData) {
+            lSum = lSum + audioDatum;
+        }
         double dAvg = lSum / audioData.length;
         double sumMeanSquare = 0d;
 
-        for(int j=0; j < audioData.length; j++)
-            sumMeanSquare += Math.pow(audioData[j] - dAvg, 2d);
+        for (byte audioDatum : audioData) {
+            sumMeanSquare += Math.pow(audioDatum - dAvg, 2d);
+        }
 
         double averageMeanSquare = sumMeanSquare / audioData.length;
 
-        return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
+        return (int) (Math.pow(averageMeanSquare, 0.5d) + 0.5);
     }
 
 }
