@@ -16,6 +16,7 @@ public class AudioController extends SubSetting{
     private final ModelBuilder builder;
     private boolean senderActive;
     private boolean stopped;
+    private boolean isMuted;
     private Runnable myRunnable;
     private Thread soundThread;
 
@@ -148,6 +149,14 @@ public class AudioController extends SubSetting{
     }
 
     private void onMicrophoneTestStart(ActionEvent actionEvent) {
+        if (this.builder.getCurrentServer() != null) {
+            if (this.builder.getMuteHeadphones()) {
+                isMuted = true;
+            } else {
+                isMuted = false;
+                this.builder.muteHeadphones(true);
+            }
+        }
         microphone = new Microphone(this.builder);
         microphone.init();
         speaker = new Speaker(this.builder);
@@ -161,6 +170,12 @@ public class AudioController extends SubSetting{
 
     private void onMicrophoneTestStop(ActionEvent actionEvent) {
         senderActive = false;
+        if (this.builder.getCurrentServer() != null) {
+            if (!isMuted) {
+                this.builder.muteHeadphones(false);
+            }
+        }
+
         stopRecord();
 
         microphoneTestChangeAction(true);
