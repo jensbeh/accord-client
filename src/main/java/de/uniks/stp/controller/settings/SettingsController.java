@@ -156,6 +156,7 @@ public class SettingsController {
                     break;
                 case "Blocked":
                     subController = new BlockController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
             }
         } catch (Exception e) {
