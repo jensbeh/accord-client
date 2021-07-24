@@ -1,3 +1,5 @@
+@import url("accord_scrollbar.css");
+
 #settingsContainer {
     -fx-background-color: #e3e5e8;
 }
@@ -130,7 +132,7 @@
     -fx-fill: #ced5da;
 }
 
-#button_audioStart {
+#button_audioStart, #button_unblock {
     -fx-background-color: #7da6df;
     -fx-background-radius: 10;
     -fx-text-fill: white;
@@ -138,11 +140,11 @@
     -fx-font-size: 12px;
 }
 
-#button_audioStart:hover {
+#button_audioStart:hover, #button_unblock:hover {
     -fx-background-color: #9db9e0;
 }
 
-#button_audioStart:pressed {
+#button_audioStart:pressed, #button_unblock:pressed {
     -fx-background-color: #6599e0;
 }
 
@@ -154,4 +156,38 @@
 }
 #slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
     -fx-background-color: #6599e0;
+}
+
+.list-view .list-cell {
+    -fx-padding: 0;
+}
+
+#blockedUsersLV {
+    -fx-background-color: #e3e5e8;
+    -fx-border-color: white;
+}
+
+#blockedUsersLV .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+    -fx-padding: -10;
+    -fx-opacity: 0;
+    -fx-border-color: #2f3136;
+}
+
+.blockedUserElement {
+    -fx-background-color: #f2f3f5;
+    -fx-text-fill: BLACK;
+    -fx-alignment: center;
+    -fx-border-radius: 2;
+    -fx-border-color: #e3e5e8 ;
+    -fx-font-size: 18;
+    -fx-padding: 0 0 0 0;
+}
+
+.blockedUserElement:hover {
+    -fx-background-color: #CCCCCC;
+}
+
+.blockedUserElementSelected, .blockedUserElementSelected:hover {
+    -fx-background-color: #AAAAAA;
 }

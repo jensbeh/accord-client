@@ -31,22 +31,29 @@ public class UserProfileController {
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
         descriptionBox = (VBox) view.lookup("#descriptionbox");
+        if (builder.getPersonalUser().getDescription() != null && (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0"))) {
+            addGame();
+        }
 
         builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged);
     }
 
     private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
+        Label oldLabel = (Label) view.lookup("#currentGame");
+        if (oldLabel != null) {
+            Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
+        }
+        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0")) {
+            addGame();
+        }
+    }
+
+    private void addGame() {
         Label currentGame = new Label();
         currentGame.setText(builder.getPersonalUser().getDescription());
         currentGame.setStyle("-fx-text-fill: white;");
         currentGame.setId("currentGame");
-        Label oldLabel = (Label) view.lookup("#currentGame");
-        if (oldLabel!=null) {
-            Platform.runLater(()-> descriptionBox.getChildren().remove(oldLabel));
-        }
-        if (!builder.getPersonalUser().getDescription().equals("")) {
-            Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
-        }
+        Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
     }
 
     public void setUserName(String name) {

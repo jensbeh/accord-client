@@ -2,6 +2,7 @@ package de.uniks.stp.controller.server;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.ServerUserListCell;
 import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
@@ -87,7 +88,7 @@ public class ServerViewController {
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
         builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
-            if(!body.getObject().getString("status").equals("success")){
+            if (!body.getObject().getString("status").equals("success")) {
                 System.err.println("Error in updateDescription");
             }
         });
@@ -131,6 +132,10 @@ public class ServerViewController {
 
     public ServerChannel getCurrentAudioChannel() {
         return builder.getCurrentAudioChannel();
+    }
+
+    public ListView<User> getOnlineUsersList(){
+        return onlineUsersList;
     }
 
     /**
@@ -183,9 +188,9 @@ public class ServerViewController {
         currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        onlineUsersList.setCellFactory(new ServerUserListCell(builder));
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
-        offlineUsersList.setCellFactory(new UserListCell());
+        offlineUsersList.setCellFactory(new UserListCell(builder));
         dividerLineUser = (Line) scrollPaneUserBox.getContent().lookup("#dividerline_online_offline_user");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
@@ -306,7 +311,7 @@ public class ServerViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            userProfileController = new UserProfileController(root,builder);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -628,7 +633,7 @@ public class ServerViewController {
     }
 
     public void stop() {
-        if(userProfileController!=null) {
+        if (userProfileController != null) {
             userProfileController.stop();
         }
         try {

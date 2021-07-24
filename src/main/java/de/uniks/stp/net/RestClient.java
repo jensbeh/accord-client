@@ -202,7 +202,7 @@ public class RestClient {
     }
 
     public void updateDescribtion(String serverId, String description, String userKey, Callback<JsonNode> callback) {
-        JSONObject jsonObj = new JSONObject().accumulate("text", description);
+        JSONObject jsonObj = new JSONObject().accumulate("text", "#"+description);
         String body = JSONObject.valueToString(jsonObj);
         HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + USERS_PATH + "/" + serverId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey);
         sendRequest(request, callback);

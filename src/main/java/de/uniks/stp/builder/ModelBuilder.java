@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
@@ -13,6 +14,8 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
@@ -24,6 +27,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +43,7 @@ public class ModelBuilder {
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
+    private HomeViewController homeViewController;
 
 
     private RestClient restClient;
@@ -64,6 +69,7 @@ public class ModelBuilder {
     private String steamToken;
     private LinePoolService linePoolService;
     private Thread getSteamGame;
+    private ObservableList<User> blockedUsers;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -476,6 +482,32 @@ public class ModelBuilder {
         return this.linePoolService;
     }
 
+    public ObservableList<User> getBlockedUsers() {
+        return this.blockedUsers;
+    }
+
+    public void setBlockedUsers(List<User> userList) {
+        this.blockedUsers = FXCollections.observableList(userList);
+    }
+
+    public void addBlockedUser(User user) {
+        if (this.blockedUsers == null) {
+            this.blockedUsers = FXCollections.observableList(new ArrayList<>());
+        }
+        this.blockedUsers.add(user);
+    }
+
+    public void removeBlockedUser(User blockedUser) {
+        if (this.blockedUsers != null) {
+            for(User user : this.getBlockedUsers()) {
+                if(blockedUser.getId().equals(user.getId())) {
+                    this.blockedUsers.remove(user);
+                    return;
+                }
+            }
+        }
+    }
+
     public void getGame() {
         if (getSteamGame == null) {
             getSteamGame = new Thread(new updateSteamGameController(this));
@@ -483,5 +515,13 @@ public class ModelBuilder {
         if(!getSteamGame.isAlive()){
             getSteamGame.start();
         }
+    }
+
+    public void setHomeViewController(HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
     }
 }

@@ -150,6 +150,7 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HomeView.fxml")), getLangBundle());
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
+            builder.setHomeViewController(homeViewController);
             homeViewController.init();
             homeViewController.setTheme();
             setStageTitle("window_title_home");

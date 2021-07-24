@@ -87,7 +87,7 @@ public class PrivateViewController {
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        onlineUsersList.setCellFactory(new UserListCell(builder));
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();

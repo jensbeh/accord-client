@@ -2,7 +2,10 @@ package de.uniks.stp.net.websocket.privatesocket;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.home.PrivateViewController;
+import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
 import de.uniks.stp.util.JsonUtil;
@@ -109,27 +112,42 @@ public class PrivateSystemWebSocketClient extends Endpoint {
     }
 
     public void handleMessage(JsonObject msg) {
+        System.out.println("privateSystemWebSocket");
         System.out.println("msg: " + msg);
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
-        String userName = jsonData.getString("name");
-        String userId = jsonData.getString("id");
+        if (userAction.equals("userDescriptionChanged")) {
+            for (Server s : builder.getServers()) {
+                for (User u : s.getUser()) {
+                    if (u.getId().equals(jsonData.getString("id"))) {
+                        System.out.println(jsonData.getString("description"));
+                        u.setDescription(jsonData.getString("description"));
+                        builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
+                    }
+                }
+            }
+        } else {
+            String userName = jsonData.getString("name");
+            String userId = jsonData.getString("id");
 
-        if (userAction.equals("userJoined")) {
-            builder.buildUser(userName, userId);
-        }
-        if (userAction.equals("userLeft")) {
-            if (userName.equals(builder.getPersonalUser().getName())) {
-                Platform.runLater(StageManager::showLoginScreen);
+            if (userAction.equals("userJoined")) {
+                builder.buildUser(userName, userId);
             }
-            List<User> userList = builder.getPersonalUser().getUser();
-            User removeUser = builder.buildUser(userName, userId);
-            if (userList.contains(removeUser)) {
-                builder.getPersonalUser().withoutUser(removeUser);
+            if (userAction.equals("userLeft")) {
+                if (userName.equals(builder.getPersonalUser().getName())) {
+                    Platform.runLater(StageManager::showLoginScreen);
+                }
+                List<User> userList = builder.getPersonalUser().getUser();
+                User removeUser = builder.buildUser(userName, userId);
+                if (userList.contains(removeUser)) {
+                    builder.getPersonalUser().withoutUser(removeUser);
+                }
             }
+
+
+            Platform.runLater(() -> privateViewController.getOnlineUsersList().setItems(FXCollections.observableList(builder.
+                    getPersonalUser().getUser()).sorted(new SortUser())));
         }
-        Platform.runLater(() -> privateViewController.getOnlineUsersList().setItems(FXCollections.observableList(builder.
-                getPersonalUser().getUser()).sorted(new SortUser())));
     }
 }
