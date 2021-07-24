@@ -418,7 +418,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
     }
 
-    //@Test
+    @Test
     public void blockTest() throws InterruptedException {
         loginInit(false);
 
