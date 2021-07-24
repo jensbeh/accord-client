@@ -142,6 +142,15 @@ public class PrivateChatWebSocket extends Endpoint {
         this.chatViewController = chatViewController;
     }
 
+    private boolean isBlocked(String name) {
+        for (User user : builder.getBlockedUsers()) {
+            if (user.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void handleMessage(JsonStructure msg) {
         JsonObject jsonObject = JsonUtil.parse(msg.toString());
         System.out.println("privateChatWebSocketClient");
@@ -160,6 +169,12 @@ public class PrivateChatWebSocket extends Endpoint {
                 privateViewController.getChatViewController().clearMessageField();
             } else { // currentUser received
                 channelName = jsonObject.getString("from");
+
+                // if user is blocked, block the message
+                if (isBlocked(channelName)) {
+                    return;
+                }
+
                 message = new Message().setMessage(jsonObject.getString("message")).
                         setFrom(jsonObject.getString("from")).
                         setTimestamp(timestamp);
