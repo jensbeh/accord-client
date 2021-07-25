@@ -90,6 +90,7 @@ public class UserProfileController {
                     if (!isNowFocused) {
                         dialog.close();
                         hBox.setStyle("-fx-background-color: transparent;");
+                        builder.getSpotifyConnection().stopScheduler();
                     }
                 });
                 Scene scene = new Scene(root);

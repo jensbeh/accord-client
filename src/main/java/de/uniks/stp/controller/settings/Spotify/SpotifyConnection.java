@@ -1,7 +1,5 @@
 package de.uniks.stp.controller.settings.Spotify;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
@@ -9,8 +7,8 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Image;
-import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
-import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
+import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERefreshRequest;
+import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
 import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
 import de.uniks.stp.builder.ModelBuilder;
@@ -23,17 +21,15 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.hc.core5.http.ParseException;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -42,15 +38,17 @@ import java.util.concurrent.TimeUnit;
 public class SpotifyConnection {
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
     private String appID = "85a01971a347473b907d1ae06d8fad97";
+    private String codeVerifier = "";
+    private String codeChallenge = "";
     private String code = "";
     private final ModelBuilder builder;
     private WebView webView;
     private Stage popUp;
     private HttpServer server;
     private SpotifyApi spotifyApi;
-    private AuthorizationCodeRequest authorizationCodeRequest;
+    private AuthorizationCodePKCERequest authorizationCodePKCERequest;
     private AuthorizationCodeCredentials authorizationCodeCredentials;
-    private AuthorizationCodeRefreshRequest authorizationCodeRefreshRequest;
+    private AuthorizationCodePKCERefreshRequest authorizationCodePKCERefreshRequest;
     private ConnectionController connectionController;
     private CurrentlyPlayingContext currentSong;
 
@@ -82,17 +80,41 @@ public class SpotifyConnection {
         webView = new WebView();
         popUp = new Stage();
         createHttpServer();
-        webView.getEngine().load("http://localhost:8888/");
+        createCodeVerifier();
+        createCodeChallenge();
+        webView.getEngine().load(createSpotifyAuthenticationURLPKCE());
         webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
         popUp.setScene(new Scene(webView));
         popUp.setTitle("Spotify Login");
         popUp.show();
     }
 
+    private void createCodeChallenge() {
+        byte[] codeChallengeHash = DigestUtils.sha256(codeVerifier);
+        Base64.Encoder encoder = Base64.getUrlEncoder();
+        String codeChallengeBase64 = encoder.encodeToString(codeChallengeHash);
+        codeChallenge = codeChallengeBase64.substring(0, codeChallengeBase64.length() - 1);
+    }
+
+    private void createCodeVerifier() {
+        codeVerifier = RandomStringUtils.random(80, 0, 0, true, true, null, new SecureRandom());
+    }
+
+    private String createSpotifyAuthenticationURLPKCE() {
+        String url = "https://accounts.spotify.com/authorize";
+        url += "?client_id=" + clientID;
+        url += "&response_type=code";
+        url += "&redirect_uri=http://localhost:8888/callback/";
+        url += "&code_challenge_method=S256";
+        url += "&code_challenge=" + codeChallenge;
+        url += "&scope=user-read-currently-playing user-read-playback-position user-read-playback-state";
+        return url;
+    }
+
     private void spotifyAuthentication() {
         try {
-            authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
-            authorizationCodeCredentials = authorizationCodeRequest.execute();
+            authorizationCodePKCERequest = spotifyApi.authorizationCodePKCE(code, codeVerifier).build();
+            authorizationCodeCredentials = authorizationCodePKCERequest.execute();
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
             builder.setSpotifyToken(spotifyApi.getAccessToken());
@@ -122,15 +144,16 @@ public class SpotifyConnection {
     }
 
     public void stopScheduler() {
-        handle.cancel(true);
-        scheduler.shutdown();
-        updateUserDescription = null;
+        if (handle != null) {
+            handle.cancel(true);
+            scheduler.shutdownNow();
+        }
     }
 
     private void createHttpServer() {
         try {
             server = HttpServer.create(new InetSocketAddress(8888), 0);
-            server.createContext("/", new MyHandler());
+            server.createContext("/");
             server.setExecutor(null); // creates a default executor
             server.start();
         } catch (IOException e) {
@@ -138,30 +161,15 @@ public class SpotifyConnection {
         }
     }
 
-    static class MyHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange t) {
-            try {
-                URL uri = getClass().getResource("/de/uniks/stp/spotify/spotifyLogin.html");
-                File file = new File(uri.toURI());
-                String response = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                t.sendResponseHeaders(200, response.length());
-                OutputStream os = t.getResponseBody();
-                os.write(response.getBytes());
-                os.close();
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void refreshSpotifyToken() {
         if (builder.getSpotifyRefresh() != null) {
             try {
-                authorizationCodeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
-                authorizationCodeCredentials = authorizationCodeRefreshRequest.execute();
+                authorizationCodePKCERefreshRequest = spotifyApi.authorizationCodePKCERefresh().build();
+                authorizationCodeCredentials = authorizationCodePKCERefreshRequest.execute();
                 spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+                spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
                 builder.setSpotifyToken(spotifyApi.getAccessToken());
+                builder.setSpotifyRefresh(spotifyApi.getRefreshToken());
                 builder.saveSettings();
             } catch (IOException | SpotifyWebApiException | ParseException e) {
                 e.printStackTrace();
@@ -212,7 +220,6 @@ public class SpotifyConnection {
         return null;
     }
 
-
     public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
         this.bandAndSong = bandAndSong;
         this.spotifyArtwork = spotifyArtwork;
@@ -224,7 +231,6 @@ public class SpotifyConnection {
         if (currentlyPlayingContext.getIs_playing()) {
             scheduler = Executors.newScheduledThreadPool(1);
             handle = scheduler.scheduleAtFixedRate(updateUserDescription, 0, 1, TimeUnit.SECONDS);
-
             scheduler.schedule(new Runnable() {
                 public void run() {
                     handle.cancel(true);
@@ -238,7 +244,6 @@ public class SpotifyConnection {
     Runnable updateUserDescription = new Runnable() {
         public void run() {
             currentSong = getCurrentlyPlayingSong();
-            currentSong.getItem().getId();
             builder.getPersonalUser().setDescription(artist + " - " + currentSong.getItem().getName());
             Platform.runLater(() -> updatePersonalUser(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
         }
