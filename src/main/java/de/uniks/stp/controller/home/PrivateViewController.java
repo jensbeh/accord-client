@@ -91,7 +91,7 @@ public class PrivateViewController {
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
-        UserListCell userListCell = new UserListCell();
+        UserListCell userListCell = new UserListCell(builder);
         userListCell.setRoot(root);
         onlineUsersList.setCellFactory(userListCell);
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);

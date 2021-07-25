@@ -1,23 +1,18 @@
 package de.uniks.stp.cellfactories;
 
 import de.uniks.stp.StageManager;
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
-import javafx.application.Platform;
+import de.uniks.stp.util.ResourceManager;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -27,11 +22,15 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
+
+    private final ModelBuilder builder;
+
+    public UserListCell(ModelBuilder builder) {
+        this.builder = builder;
+    }
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -59,7 +58,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         return userCell;
     }
 
-    private static class UserCell extends ListCell<User> {
+    private class UserCell extends ListCell<User> {
         private HBox root;
         private User user;
 
@@ -68,12 +67,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
 
-
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
-            this.user = item;
             HBox cell = new HBox();
-            cell.setPadding(new Insets(5, 0, 5, 5));
             Circle circle = new Circle(15);
             Label name = new Label();
             super.updateItem(item, empty);
@@ -92,6 +88,8 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 name.setPrefWidth(135);
                 cell.getChildren().addAll(circle, name);
                 cell.setOnMouseClicked(this::spotifyPopup);
+
+                addContextMenu(item, name);
             }
             this.setGraphic(cell);
         }
@@ -129,5 +127,76 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 e.printStackTrace();
             }
         }
+
+
+        /**
+         * adds a ContextMenu to the User Cell, where block/unblock can be clicked
+         *
+         * @param item the user
+         * @param name the user name as Label
+         */
+        private void addContextMenu(User item, Label name) {
+            ContextMenu menu = new ContextMenu();
+            MenuItem block = new MenuItem("block");
+            MenuItem unblock = new MenuItem("unblock");
+            menu.setId("UserBlockControl");
+            block.setId("blockUser");
+            unblock.setId("unblockUser");
+            menu.getItems().addAll(block, unblock);
+            block.setVisible(false);
+            unblock.setVisible(false);
+            if (builder.getTheme().equals("Dark")) {
+                menu.setStyle("-fx-background-color: #23272a");
+                block.setStyle("-fx-text-fill: #FFFFFF");
+                unblock.setStyle("-fx-text-fill: #FFFFFF");
+            } else {
+                menu.setStyle("-fx-background-color: White");
+                block.setStyle("-fx-text-fill: #000000");
+                unblock.setStyle("-fx-text-fill: #000000");
+            }
+
+            name.setContextMenu(menu);
+
+            updateContextMenuItems(item, block, unblock);
+
+            block.setOnAction(event -> blockUser(item, block, unblock));
+            unblock.setOnAction(event -> unblockUser(item, block, unblock));
+
+            // keep refreshing in case user has been unblocked from settings
+            name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
+        }
+
+        private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
+            boolean isBlocked = false;
+            for (User user : builder.getBlockedUsers()) {
+                if (user.getId().equals(item.getId())) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+
+            if (isBlocked) {
+                block.setVisible(false);
+                unblock.setVisible(true);
+            } else {
+                block.setVisible(true);
+                unblock.setVisible(false);
+            }
+        }
+
+        private void blockUser(User item, MenuItem block, MenuItem unblock) {
+            builder.addBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
+            block.setVisible(false);
+            unblock.setVisible(true);
+        }
+
+        private void unblockUser(User item, MenuItem block, MenuItem unblock) {
+            builder.removeBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
+            block.setVisible(true);
+            unblock.setVisible(false);
+        }
     }
 }
+

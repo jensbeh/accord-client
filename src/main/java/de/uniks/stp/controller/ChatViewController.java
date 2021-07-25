@@ -8,8 +8,10 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -64,6 +66,7 @@ public class ChatViewController {
     private EmojiTextFlowParameters emojiTextFlowParameters;
     private Button editButton;
     private Button abortButton;
+    private Button emojiButton;
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
@@ -74,6 +77,7 @@ public class ChatViewController {
     private HashMap<Message, StackPane> stackPaneHashMap;
     private ArrayList<MediaPlayer> mediaPlayers;
     private ArrayList<WebEngine> webEngines;
+    private ListChangeListener<User> blockedUserListener;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -128,9 +132,14 @@ public class ChatViewController {
         mediaPlayers = new ArrayList<>();
         webEngines = new ArrayList<>();
         pngNames = new ArrayList<>();
-        Button emojiButton = (Button) view.lookup("#emojiButton");
+        emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
         builder.setCurrentChatViewController(this);
+
+        // only add blocked listener if it is a private chat
+        if (currentChannel == null) {
+            blockedUserListener();
+        }
     }
 
     public ContextMenu getContextMenu() {
@@ -608,6 +617,9 @@ public class ChatViewController {
     public void stop() {
         sendButton.setOnAction(null);
         stopMediaPlayers();
+        if(builder.getBlockedUsers() != null && blockedUserListener != null) {
+            builder.getBlockedUsers().removeListener(blockedUserListener);
+        }
     }
 
     public void stopMediaPlayers() {
@@ -621,6 +633,52 @@ public class ChatViewController {
         for (WebEngine webEngine : webEngines) {
             webEngine.load(null);
         }
+    }
+
+    /**
+     * listen to the blocked list and make a check if list changed
+     */
+    public void blockedUserListener() {
+        checkBlocked();
+        blockedUserListener = c -> checkBlocked();
+        if (builder.getBlockedUsers() != null) {
+            builder.getBlockedUsers().addListener(blockedUserListener);
+        }
+    }
+
+    /**
+     * call disableView if user is blocked, else call enableView
+     */
+    public void checkBlocked() {
+        for (User user : builder.getBlockedUsers()) {
+            if (user.getId().equals(builder.getCurrentPrivateChat().getId())) {
+                disableView(user);
+                return;
+            }
+        }
+        enableView();
+    }
+
+    /**
+     * enables the view elements to allow communicate with the user
+     */
+    public void enableView() {
+        messageTextField.setDisable(false);
+        emojiButton.setDisable(false);
+        sendButton.setDisable(false);
+        messageTextField.setText("");
+    }
+
+    /**
+     * disables the view elements to disallow communicating with the user
+     * additionally inform own user that he needs to unblock him to keep chatting with the user
+     * @param user the user who is blocked
+     */
+    public void disableView(User user) {
+        messageTextField.setDisable(true);
+        emojiButton.setDisable(true);
+        sendButton.setDisable(true);
+        messageTextField.setText("Unblock to keep chatting with " + user.getName());
     }
 
     public void setTheme() {

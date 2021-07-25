@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.home;
 
+import com.github.cliftonlabs.json_simple.JsonException;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
@@ -96,6 +97,11 @@ public class HomeViewController {
 
         ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
+        try {
+            builder.setBlockedUsers(ResourceManager.loadBlockedUsers(builder.getPersonalUser().getName()));
+        } catch (JsonException e) {
+            e.printStackTrace();
+        }
 
 
         showPrivateView();

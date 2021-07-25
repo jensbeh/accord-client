@@ -171,9 +171,9 @@ public class ServerViewController {
         currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        onlineUsersList.setCellFactory(new UserListCell(builder));
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
-        offlineUsersList.setCellFactory(new UserListCell());
+        offlineUsersList.setCellFactory(new UserListCell(builder));
         dividerLineUser = (Line) scrollPaneUserBox.getContent().lookup("#dividerline_online_offline_user");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");

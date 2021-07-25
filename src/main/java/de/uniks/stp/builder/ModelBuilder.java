@@ -16,6 +16,8 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import org.apache.commons.io.FileUtils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -26,6 +28,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,6 +70,8 @@ public class ModelBuilder {
     private LinePoolService linePoolService;
     private SpotifyConnection spotifyConnection;
 
+
+    private ObservableList<User> blockedUsers;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -502,5 +507,31 @@ public class ModelBuilder {
 
     public LinePoolService getLinePoolService() {
         return this.linePoolService;
+    }
+
+    public ObservableList<User> getBlockedUsers() {
+        return this.blockedUsers;
+    }
+
+    public void setBlockedUsers(List<User> userList) {
+        this.blockedUsers = FXCollections.observableList(userList);
+    }
+
+    public void addBlockedUser(User user) {
+        if (this.blockedUsers == null) {
+            this.blockedUsers = FXCollections.observableList(new ArrayList<>());
+        }
+        this.blockedUsers.add(user);
+    }
+
+    public void removeBlockedUser(User blockedUser) {
+        if (this.blockedUsers != null) {
+            for(User user : this.getBlockedUsers()) {
+                if(blockedUser.getId().equals(user.getId())) {
+                    this.blockedUsers.remove(user);
+                    return;
+                }
+            }
+        }
     }
 }
