@@ -63,7 +63,7 @@ public class ServerUserListCell implements javafx.util.Callback<ListView<User>, 
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 addContextMenu(item, name);
-                if (!game.getText().equals("#") || !game.getText().equals("")) {
+                if (!game.getText().equals("   #") || !game.getText().equals("   ")) {
                     cell.getChildren().addAll(circle, name);
                     object.getChildren().addAll(cell, game);
                     this.setGraphic(object);
@@ -71,6 +71,8 @@ public class ServerUserListCell implements javafx.util.Callback<ListView<User>, 
                     cell.getChildren().addAll(circle, name);
                     this.setGraphic(cell);
                 }
+            } else{
+                this.setGraphic(null);
             }
         }
     }
