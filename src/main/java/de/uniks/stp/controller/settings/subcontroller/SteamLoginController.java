@@ -11,15 +11,16 @@ import kong.unirest.JsonNode;
 public class SteamLoginController {
     private final ModelBuilder builder;
     private WebView webView;
-    private final Stage popUp;
+    private Stage popUp;
+    private Runnable refreshConnectionView;
 
     public SteamLoginController(ModelBuilder builder) {
         this.builder = builder;
-        webView = new WebView();
-        popUp = new Stage();
     }
 
     public void init() {
+        webView = new WebView();
+        popUp = new Stage();
         webView.getEngine().load("https://steamcommunity.com/login/home/?goto=");
         webView.getEngine().locationProperty().addListener(this::getSteam64ID);
         popUp.setScene(new Scene(webView));
@@ -46,10 +47,18 @@ public class SteamLoginController {
     }
 
     private void setSteam64ID(String steam64ID) {
-        webView = null;
         Platform.runLater(popUp::close);
         builder.setSteamToken(steam64ID);
         builder.saveSettings();
+        webView.getEngine().getLoadWorker().cancel();
+        webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
+        webView = null;
+        popUp = null;
+        refreshConnectionView.run();
         Platform.runLater(builder::getGame);
+    }
+
+    public void refresh(Runnable refresh){
+        refreshConnectionView = refresh;
     }
 }

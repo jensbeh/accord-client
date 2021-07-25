@@ -24,6 +24,8 @@ public class ConnectionController extends SubSetting {
     private final Button steamToggleButton = new Button();
     private final Rectangle backgroundSpotifyButton = new Rectangle(30, 10, Color.RED);
     private final Rectangle backgroundSteamButton = new Rectangle(30, 10, Color.RED);
+    private SteamLoginController steamLoginController;
+    private VBox steamVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -37,7 +39,7 @@ public class ConnectionController extends SubSetting {
         StackPane steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
 
         VBox spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        VBox steamVbox = (VBox) view.lookup("#steamVbox");
+        steamVbox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
         steamVbox.setVisible(false);
 
@@ -62,11 +64,20 @@ public class ConnectionController extends SubSetting {
 
     private void onSteamChange(MouseEvent mouseEvent) {
         Platform.runLater(() -> {
-            SteamLoginController steamLoginController = new SteamLoginController(builder);
+            steamLoginController = new SteamLoginController(builder);
+            steamLoginController.refresh(this::refreshSteam);
             steamLoginController.init();
             init();
         });
     }
+
+    private void refreshSteam() {
+        if (!steamVbox.isVisible()) {
+            steamVbox.setVisible(true);
+        }
+        steamLoginController = null;
+    }
+
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
         toggleStackPane.getChildren().clear();
