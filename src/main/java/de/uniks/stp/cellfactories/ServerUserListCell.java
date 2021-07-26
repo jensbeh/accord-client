@@ -48,9 +48,9 @@ public class ServerUserListCell implements javafx.util.Callback<ListView<User>, 
                 cell.setAlignment(Pos.CENTER_LEFT);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
-                    if (item.getDescription() != null && (!item.getDescription().equals("") || !item.getDescription().equals("#"))) {
+                    if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("#"))) {
                         game.setText(item.getDescription());
-                        game.setText("   " + item.getDescription().substring(1));
+                        game.setText("   plays " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
                     }
