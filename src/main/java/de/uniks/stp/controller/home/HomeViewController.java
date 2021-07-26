@@ -122,6 +122,9 @@ public class HomeViewController {
         });
         spotifyConnection = new SpotifyConnection(builder);
         builder.getSpotifyConnection().refreshSpotifyToken();
+        if (builder.getSpotifyToken() != null) {
+            builder.getSpotifyConnection().updateUserDescriptionScheduler();
+        }
     }
 
 
@@ -399,10 +402,6 @@ public class HomeViewController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        if (builder.getSpotifyConnection() != null) {
-            builder.getSpotifyConnection().stopPersonalScheduler();
-            builder.getSpotifyConnection().stopDescriptionScheduler();
         }
         cleanup();
     }

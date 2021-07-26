@@ -188,6 +188,10 @@ public class StageManager extends Application {
             homeViewController.stop();
             homeViewController = null;
         }
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().stopPersonalScheduler();
+            builder.getSpotifyConnection().stopDescriptionScheduler();
+        }
     }
 
     private static void stopAll() {

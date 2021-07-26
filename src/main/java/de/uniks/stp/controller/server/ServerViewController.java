@@ -89,7 +89,7 @@ public class ServerViewController {
     }
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
-        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+        builder.getRestClient().updateDescription(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             if (!body.getObject().getString("status").equals("success")) {
                 System.err.println("Error in updateDescription");

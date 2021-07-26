@@ -67,6 +67,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 cell.setAlignment(Pos.CENTER_LEFT);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
+                    cell.setOnMouseClicked(this::spotifyPopup);
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                 }
@@ -76,8 +77,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 cell.getChildren().addAll(circle, name);
-                cell.setOnMouseClicked(this::spotifyPopup);
-
                 addContextMenu(item, name);
             }
             cell.setPadding(new Insets(5, 5, 5, 5));

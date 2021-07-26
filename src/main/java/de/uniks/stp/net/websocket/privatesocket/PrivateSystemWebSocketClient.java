@@ -124,6 +124,8 @@ public class PrivateSystemWebSocketClient extends Endpoint {
                         System.out.println(jsonData.getString("description"));
                         u.setDescription(jsonData.getString("description"));
                         builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
+                        builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
+                        Platform.runLater(() -> builder.getSpotifyConnection().updateValues(u.getDescription()));
                     }
                 }
             }

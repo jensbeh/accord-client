@@ -61,11 +61,13 @@ public class UserProfileController {
     }
 
     private void addGame() {
-        Label currentGame = new Label();
-        currentGame.setText("plays "+builder.getPersonalUser().getDescription());
-        currentGame.setStyle("-fx-text-fill: white;");
-        currentGame.setId("currentGame");
-        Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+        if (!builder.getPersonalUser().getDescription().contains("i.scdn.co")) {
+            Label currentGame = new Label();
+            currentGame.setText("plays "+builder.getPersonalUser().getDescription());
+            currentGame.setStyle("-fx-text-fill: white;");
+            currentGame.setId("currentGame");
+            Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+        }
 
     }
 

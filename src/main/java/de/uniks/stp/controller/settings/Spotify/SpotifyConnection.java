@@ -70,6 +70,7 @@ public class SpotifyConnection {
 
     private String artist;
     private Boolean isPersonalUser;
+    private Boolean popUpIsShown;
 
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> handle;
@@ -85,7 +86,6 @@ public class SpotifyConnection {
                 .setRefreshToken(builder.getSpotifyRefresh())
                 .build();
         builder.setSpotifyConnection(this);
-        updateUserDescriptionScheduler();
     }
 
     public void init(ConnectionController connectionController) {
@@ -218,6 +218,18 @@ public class SpotifyConnection {
         return null;
     }
 
+    public void updateValues(String userDescription) {
+        //if contains spotify url
+        if (userDescription.contains("i.scdn.co")) {
+            String[] userDescriptionSplit = userDescription.split("#");
+            bandAndSong.setText(userDescriptionSplit[1]);
+            spotifyArtwork.setImage(new javafx.scene.image.Image(userDescriptionSplit[2]));
+            timeTotal.setVisible(false);
+            timePlayed.setVisible(false);
+            progressBar.setVisible(false);
+        }
+    }
+
     public void showSpotifyPopupView(MouseEvent mouseEvent, Boolean isPersonalUser, String userDescription) {
         this.isPersonalUser = isPersonalUser;
         Parent root = null;
@@ -233,12 +245,7 @@ public class SpotifyConnection {
             if (isPersonalUser) {
                 builder.getSpotifyConnection().spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
             } else if (userDescription != null) {
-                String[] userDescriptionSplit = userDescription.split("#");
-                bandAndSong.setText(userDescriptionSplit[1]);
-                spotifyArtwork.setImage(new javafx.scene.image.Image(userDescriptionSplit[2]));
-                timeTotal.setVisible(false);
-                timeTotal.setVisible(false);
-                progressBar.setVisible(false);
+                updateValues(userDescription);
             }
 
             HBox hBox;
@@ -266,12 +273,12 @@ public class SpotifyConnection {
             scene.setFill(Color.TRANSPARENT);
             dialog.initStyle(StageStyle.TRANSPARENT);
             dialog.setX(x);
-            if (mouseEvent.getSource() instanceof VBox) {
-                dialog.setY(y + 6);
-            } else {
-                dialog.setY(y);
-            }
-
+//            if (mouseEvent.getSource() instanceof VBox) {
+//                dialog.setY(y + 6);
+//            } else {
+//                dialog.setY(y);
+//            }
+            dialog.setY(y);
             dialog.setScene(scene);
             dialog.show();
 
@@ -280,20 +287,21 @@ public class SpotifyConnection {
         }
     }
 
-    private void updateUserDescriptionScheduler() {
+    public void updateUserDescriptionScheduler() {
         currentSong = getCurrentlyPlayingSong();
         String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
         artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
         builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
         schedulerDescription = Executors.newScheduledThreadPool(1);
-        schedulerDescription.schedule(new Runnable() {
+        schedulerDescription.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 currentSong = getCurrentlyPlayingSong();
                 String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
                 artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
                 builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
             }
-        }, 15, TimeUnit.SECONDS);
+        },0, 15, TimeUnit.SECONDS);
+
     }
 
     public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
