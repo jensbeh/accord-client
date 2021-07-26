@@ -1,27 +1,15 @@
 package de.uniks.stp.cellfactories;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
@@ -66,9 +54,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             this.root = root;
         }
 
-
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
+            this.user = item;
             HBox cell = new HBox();
             Circle circle = new Circle(15);
             Label name = new Label();
@@ -91,43 +79,15 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
                 addContextMenu(item, name);
             }
+            cell.setPadding(new Insets(5, 5, 5, 5));
             this.setGraphic(cell);
         }
 
         private void spotifyPopup(MouseEvent mouseEvent) {
-            Parent root = null;
-            try {
-                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")));
-                VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
-                ImageView spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
-                Label bandAndSong = (Label) root.lookup("#bandAndSong");
-
-                HBox hBox = (HBox) mouseEvent.getSource();
-                hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
-                Bounds bounds = ((HBox) mouseEvent.getSource()).localToScreen(((HBox) mouseEvent.getSource()).getBoundsInLocal());
-                double x = bounds.getMinX() - 200;
-                double y = bounds.getMinY();
-
-                final Stage dialog = new Stage();
-                dialog.initOwner(hBox.getScene().getWindow());
-                dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                    if (!isNowFocused) {
-                        dialog.close();
-                        hBox.setStyle("-fx-background-color: transparent;");
-                    }
-                });
-                Scene scene = new Scene(root);
-                scene.setFill(Color.TRANSPARENT);
-                dialog.initStyle(StageStyle.TRANSPARENT);
-                dialog.setX(x);
-                dialog.setY(y);
-                dialog.setScene(scene);
-                dialog.show();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (builder.getSpotifyToken() != null) {
+                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
             }
         }
-
 
         /**
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked

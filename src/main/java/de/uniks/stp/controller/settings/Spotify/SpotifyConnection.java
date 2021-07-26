@@ -11,16 +11,25 @@ import com.wrapper.spotify.requests.authorization.authorization_code.pkce.Author
 import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
 import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.ConnectionController;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.hc.core5.http.ParseException;
@@ -30,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -37,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 
 public class SpotifyConnection {
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
-    private String appID = "85a01971a347473b907d1ae06d8fad97";
     private String codeVerifier = "";
     private String codeChallenge = "";
     private String code = "";
@@ -51,28 +60,32 @@ public class SpotifyConnection {
     private AuthorizationCodePKCERefreshRequest authorizationCodePKCERefreshRequest;
     private ConnectionController connectionController;
     private CurrentlyPlayingContext currentSong;
+    private com.wrapper.spotify.model_objects.specification.Image artwork;
 
     private Label bandAndSong;
     private ImageView spotifyArtwork;
     private Label timePlayed;
+    private Label timeTotal;
     private ProgressBar progressBar;
 
     private String artist;
+    private Boolean isPersonalUser;
 
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> handle;
-    private Label timeTotal;
+
+    private ScheduledExecutorService schedulerDescription;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
         spotifyApi = new SpotifyApi.Builder()
                 .setClientId(clientID)
-                .setClientSecret(appID)
                 .setRedirectUri(URI.create("http://localhost:8888/callback/"))
                 .setAccessToken(builder.getSpotifyToken())
                 .setRefreshToken(builder.getSpotifyRefresh())
                 .build();
         builder.setSpotifyConnection(this);
+        updateUserDescriptionScheduler();
     }
 
     public void init(ConnectionController connectionController) {
@@ -132,21 +145,6 @@ public class SpotifyConnection {
             spotifyAuthentication();
             Platform.runLater(this::stop);
             connectionController.init();
-        }
-    }
-
-    private void stop() {
-        webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
-        webView.getEngine().load(null);
-        server.stop(0);
-        server = null;
-        popUp.close();
-    }
-
-    public void stopScheduler() {
-        if (handle != null) {
-            handle.cancel(true);
-            scheduler.shutdownNow();
         }
     }
 
@@ -220,6 +218,73 @@ public class SpotifyConnection {
         return null;
     }
 
+    public void showSpotifyPopupView(MouseEvent mouseEvent, Boolean isPersonalUser, String userDescription) {
+        this.isPersonalUser = isPersonalUser;
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")));
+            VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
+            spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
+            bandAndSong = (Label) root.lookup("#bandAndSong");
+            timePlayed = (Label) root.lookup("#timePlayed");
+            timeTotal = (Label) root.lookup("#timeTotal");
+            progressBar = (ProgressBar) root.lookup("#progressBar");
+
+            if (isPersonalUser) {
+                builder.getSpotifyConnection().spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
+            } else if (userDescription != null) {
+                String[] userDescriptionSplit = userDescription.split("#");
+                bandAndSong.setText(userDescriptionSplit[1]);
+                spotifyArtwork.setImage(new javafx.scene.image.Image(userDescriptionSplit[2]));
+                timeTotal.setVisible(false);
+                timeTotal.setVisible(false);
+                progressBar.setVisible(false);
+            }
+
+            HBox hBox = (HBox) mouseEvent.getSource();
+            hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
+            Bounds bounds = ((HBox) mouseEvent.getSource()).localToScreen(((HBox) mouseEvent.getSource()).getBoundsInLocal());
+            double x = bounds.getMinX() - 200;
+            double y = bounds.getMinY();
+
+            final Stage dialog = new Stage();
+            dialog.initOwner(hBox.getScene().getWindow());
+            dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    dialog.close();
+                    hBox.setStyle("-fx-background-color: transparent;");
+                    builder.getSpotifyConnection().stopPersonalScheduler();
+                }
+            });
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            dialog.initStyle(StageStyle.TRANSPARENT);
+            dialog.setX(x);
+            dialog.setY(y);
+            dialog.setScene(scene);
+            dialog.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateUserDescriptionScheduler() {
+        currentSong = getCurrentlyPlayingSong();
+        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+        artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+        builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+        schedulerDescription = Executors.newScheduledThreadPool(1);
+        schedulerDescription.schedule(new Runnable() {
+            public void run() {
+                currentSong = getCurrentlyPlayingSong();
+                String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+                artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+                builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            }
+        }, 15, TimeUnit.SECONDS);
+    }
+
     public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
         this.bandAndSong = bandAndSong;
         this.spotifyArtwork = spotifyArtwork;
@@ -228,9 +293,9 @@ public class SpotifyConnection {
         this.progressBar = progessBar;
         CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
         int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
-        if (currentlyPlayingContext.getIs_playing()) {
+        if (currentlyPlayingContext.getIs_playing() && isPersonalUser) {
             scheduler = Executors.newScheduledThreadPool(1);
-            handle = scheduler.scheduleAtFixedRate(updateUserDescription, 0, 1, TimeUnit.SECONDS);
+            handle = scheduler.scheduleAtFixedRate(updatePersonalUserViewRunnable, 0, 1, TimeUnit.SECONDS);
             scheduler.schedule(new Runnable() {
                 public void run() {
                     handle.cancel(true);
@@ -241,20 +306,20 @@ public class SpotifyConnection {
         }
     }
 
-    Runnable updateUserDescription = new Runnable() {
+    Runnable updatePersonalUserViewRunnable = new Runnable() {
         public void run() {
             currentSong = getCurrentlyPlayingSong();
-            builder.getPersonalUser().setDescription(artist + " - " + currentSong.getItem().getName());
-            Platform.runLater(() -> updatePersonalUser(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
+            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
         }
     };
 
-    private void updatePersonalUser(double elapsed, double duration) {
-        bandAndSong.setText(builder.getPersonalUser().getDescription());
-        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-        com.wrapper.spotify.model_objects.specification.Image image = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-        javafx.scene.image.Image artwork = new javafx.scene.image.Image(image.getUrl());
-        spotifyArtwork.setImage(artwork);
+    private void updatePersonalUserView(double elapsed, double duration) {
+        bandAndSong.setText(builder.getPersonalUser().getDescription().split("#")[1]);
+        javafx.scene.image.Image image = new javafx.scene.image.Image(artwork.getUrl());
+        spotifyArtwork.setImage(image);
         formatTime((int) elapsed, (int) duration);
         double progressbarValue = (elapsed / duration);
         progressBar.setProgress(progressbarValue + 0.03);
@@ -280,6 +345,27 @@ public class SpotifyConnection {
                     durationMinutes * 60;
             timePlayed.setText(String.format("%02d:%02d", elapsedMinutes, elapsedSeconds));
             timeTotal.setText(String.format("%02d:%02d", durationMinutes, durationSeconds));
+        }
+    }
+
+    private void stop() {
+        webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
+        webView.getEngine().load(null);
+        server.stop(0);
+        server = null;
+        popUp.close();
+    }
+
+    public void stopPersonalScheduler() {
+        if (handle != null) {
+            handle.cancel(true);
+            scheduler.shutdownNow();
+        }
+    }
+
+    public void stopDescriptionScheduler() {
+        if (schedulerDescription != null) {
+            schedulerDescription.shutdownNow();
         }
     }
 }

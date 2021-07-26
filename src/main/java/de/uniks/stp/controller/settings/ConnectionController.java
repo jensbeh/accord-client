@@ -66,23 +66,6 @@ public class ConnectionController extends SubSetting {
         });
     }
 
-    private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
-        toggleStackPane.getChildren().clear();
-        toggleStackPane.getChildren().addAll(backgroundToggleButton, toggleButton);
-        toggleStackPane.setMinSize(30, 15);
-        backgroundToggleButton.maxWidth(30);
-        backgroundToggleButton.minWidth(30);
-        backgroundToggleButton.maxHeight(10);
-        backgroundToggleButton.minHeight(10);
-        backgroundToggleButton.setArcHeight(backgroundToggleButton.getHeight());
-        backgroundToggleButton.setArcWidth(backgroundToggleButton.getHeight());
-        backgroundToggleButton.setFill(Color.valueOf("#ced5da"));
-        toggleButton.setShape(new Circle(5));
-        StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
-        toggleButton.setMaxSize(15, 15);
-        toggleButton.setMinSize(15, 15);
-    }
-
     private void toggleInit(StackPane stackPane, Rectangle backgroundToggle, Button toggleButton, Boolean toggleShow) {
         setBackgroundToggleButton(stackPane, backgroundToggle, toggleButton);
         if (toggleShow) {
@@ -130,5 +113,22 @@ public class ConnectionController extends SubSetting {
         toggleButton.setFocusTraversable(false);
         stackPane.setOnMouseClicked(click);
         toggleButton.setOnMouseClicked(click);
+    }
+
+    private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {
+        toggleStackPane.getChildren().clear();
+        toggleStackPane.getChildren().addAll(backgroundToggleButton, toggleButton);
+        toggleStackPane.setMinSize(30, 15);
+        backgroundToggleButton.maxWidth(30);
+        backgroundToggleButton.minWidth(30);
+        backgroundToggleButton.maxHeight(10);
+        backgroundToggleButton.minHeight(10);
+        backgroundToggleButton.setArcHeight(backgroundToggleButton.getHeight());
+        backgroundToggleButton.setArcWidth(backgroundToggleButton.getHeight());
+        backgroundToggleButton.setFill(Color.valueOf("#ced5da"));
+        toggleButton.setShape(new Circle(5));
+        StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
+        toggleButton.setMaxSize(15, 15);
+        toggleButton.setMinSize(15, 15);
     }
 }
