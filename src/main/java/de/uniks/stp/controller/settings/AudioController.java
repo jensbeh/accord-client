@@ -211,6 +211,12 @@ public class AudioController extends SubSetting {
             microphone.startRecording();
             speaker.startPlayback();
             while (senderActive) {
+//                Progress Bar
+//                https://stackoverflow.com/questions/13357077/javafx-progressbar-how-to-change-bar-color/13372086#13372086
+//                Gradient
+//                http://www.java2s.com/Tutorials/Java/JavaFX/0110__JavaFX_Gradient_Color.htm
+//                Stop[] stops = new Stop[] { new Stop(0, Color.BLACK), new Stop(1, Color.RED)};
+//                LinearGradient lg1 = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
 
                 stopped = false;
                 // start recording audio

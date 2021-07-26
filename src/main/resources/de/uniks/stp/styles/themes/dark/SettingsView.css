@@ -45,6 +45,11 @@
     -fx-border-radius: 5px;
 }
 
+#progressBar_microphone {
+    -fx-border-color: #ff9999;
+    -fx-background-color: #ff9999;
+}
+
 .check-box {
     -fx-text-fill: WHITE;
     -fx-border-radius: 3;
