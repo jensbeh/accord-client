@@ -386,6 +386,7 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
+        builder.stopGame();
         if (stage != null) {
             this.stage.close();
             stage = null;

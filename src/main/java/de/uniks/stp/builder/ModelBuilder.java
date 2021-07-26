@@ -517,6 +517,12 @@ public class ModelBuilder {
         }
     }
 
+    public void stopGame(){
+        if (getSteamGame != null && getSteamGame.isAlive()) {
+            getSteamGame.stop();
+        }
+    }
+
     public void setHomeViewController(HomeViewController homeViewController) {
         this.homeViewController = homeViewController;
     }

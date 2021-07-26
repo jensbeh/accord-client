@@ -50,7 +50,7 @@ public class UserProfileController {
 
     private void addGame() {
         Label currentGame = new Label();
-        currentGame.setText(builder.getPersonalUser().getDescription());
+        currentGame.setText("plays "+builder.getPersonalUser().getDescription());
         currentGame.setStyle("-fx-text-fill: white;");
         currentGame.setId("currentGame");
         Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));

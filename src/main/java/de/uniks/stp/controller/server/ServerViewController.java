@@ -83,6 +83,9 @@ public class ServerViewController {
         this.serverSystemWebSocket = builder.getServerSystemWebSocket();
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
         this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+        if(!builder.getSteamToken().equals("")){
+            updateDescription(null);
+        }
     }
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
