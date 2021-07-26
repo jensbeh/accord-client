@@ -58,6 +58,7 @@ public class AudioController extends SubSetting {
         startButton = (Button) view.lookup("#button_audioStart");
         startButton.setOnAction(this::onMicrophoneTestStart);
         senderActive = false;
+        stopped = true;
         myRunnable = this::runMicrophoneTest;
 
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
@@ -149,7 +150,7 @@ public class AudioController extends SubSetting {
     }
 
     private void onMicrophoneTestStart(ActionEvent actionEvent) {
-        if (this.builder.getCurrentServer() != null) {
+        if (this.builder.getPersonalUser() != null) {
             if (this.builder.getMuteHeadphones()) {
                 isMuted = true;
             } else {
@@ -170,7 +171,7 @@ public class AudioController extends SubSetting {
 
     private void onMicrophoneTestStop(ActionEvent actionEvent) {
         senderActive = false;
-        if (this.builder.getCurrentServer() != null) {
+        if (this.builder.getPersonalUser() != null) {
             if (!isMuted) {
                 this.builder.muteHeadphones(false);
             }
