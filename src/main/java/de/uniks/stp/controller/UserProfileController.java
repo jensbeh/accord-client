@@ -1,6 +1,8 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -11,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import java.beans.PropertyChangeEvent;
 
 public class UserProfileController {
 
@@ -25,6 +29,8 @@ public class UserProfileController {
     private Label timeTotal;
     private ProgressBar progressBar;
     private ImageView spotifyArtwork;
+    private VBox descriptionBox;
+
 
     public UserProfileController(Parent view, ModelBuilder builder) {
         this.builder = builder;
@@ -33,10 +39,34 @@ public class UserProfileController {
 
     public void init() {
         root = (VBox) view.lookup("#root");
-        userBox = (HBox) view.lookup("#userBox");
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
-        userBox.setOnMouseClicked(this::spotifyPopup);
+        descriptionBox = (VBox) view.lookup("#descriptionbox");
+        descriptionBox.setOnMouseClicked(this::spotifyPopup);
+        if (builder.getPersonalUser().getDescription() != null && (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0"))) {
+            addGame();
+        }
+
+        builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged);
+    }
+
+    private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
+        Label oldLabel = (Label) view.lookup("#currentGame");
+        if (oldLabel != null) {
+            Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
+        }
+        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0")) {
+            addGame();
+        }
+    }
+
+    private void addGame() {
+        Label currentGame = new Label();
+        currentGame.setText("plays "+builder.getPersonalUser().getDescription());
+        currentGame.setStyle("-fx-text-fill: white;");
+        currentGame.setId("currentGame");
+        Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+
     }
 
     public void setUserName(String name) {
@@ -51,7 +81,8 @@ public class UserProfileController {
     }
 
     public void stop() {
-        userBox.setOnMouseClicked(null);
+        descriptionBox.setOnMouseClicked(null);
+        builder.getPersonalUser().removePropertyChangeListener(this::onDescriptionChanged);
     }
 
     private void spotifyPopup(MouseEvent mouseEvent) {

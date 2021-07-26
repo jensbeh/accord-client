@@ -241,9 +241,15 @@ public class SpotifyConnection {
                 progressBar.setVisible(false);
             }
 
-            HBox hBox = (HBox) mouseEvent.getSource();
+            HBox hBox;
+            if (mouseEvent.getSource() instanceof VBox) {
+                hBox = (HBox) ((VBox)mouseEvent.getSource()).getChildren().get(0);
+            } else {
+                hBox = (HBox) mouseEvent.getSource();
+            }
+
             hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
-            Bounds bounds = ((HBox) mouseEvent.getSource()).localToScreen(((HBox) mouseEvent.getSource()).getBoundsInLocal());
+            Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
             double y = bounds.getMinY();
 
@@ -260,7 +266,12 @@ public class SpotifyConnection {
             scene.setFill(Color.TRANSPARENT);
             dialog.initStyle(StageStyle.TRANSPARENT);
             dialog.setX(x);
-            dialog.setY(y);
+            if (mouseEvent.getSource() instanceof VBox) {
+                dialog.setY(y + 6);
+            } else {
+                dialog.setY(y);
+            }
+
             dialog.setScene(scene);
             dialog.show();
 

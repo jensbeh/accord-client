@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -126,23 +127,23 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
         }
 
-        private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
-            boolean isBlocked = false;
-            for (User user : builder.getBlockedUsers()) {
-                if (user.getId().equals(item.getId())) {
-                    isBlocked = true;
-                    break;
-                }
-            }
-
-            if (isBlocked) {
-                block.setVisible(false);
-                unblock.setVisible(true);
-            } else {
-                block.setVisible(true);
-                unblock.setVisible(false);
+    private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
+        boolean isBlocked = false;
+        for (User user : builder.getBlockedUsers()) {
+            if(user.getId().equals(item.getId())) {
+                isBlocked = true;
+                break;
             }
         }
+
+        if(isBlocked) {
+            block.setVisible(false);
+            unblock.setVisible(true);
+        } else {
+            block.setVisible(true);
+            unblock.setVisible(false);
+        }
+    }
 
         private void blockUser(User item, MenuItem block, MenuItem unblock) {
             builder.addBlockedUser(item);

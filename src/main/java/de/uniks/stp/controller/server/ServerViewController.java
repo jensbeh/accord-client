@@ -2,6 +2,7 @@ package de.uniks.stp.controller.server;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.cellfactories.ServerUserListCell;
 import de.uniks.stp.cellfactories.UserListCell;
 import de.uniks.stp.controller.AudioConnectedBoxController;
 import de.uniks.stp.controller.ChatViewController;
@@ -26,6 +27,7 @@ import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -67,6 +69,7 @@ public class ServerViewController {
     private Button disconnectAudioButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
+    private UserProfileController userProfileController;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -79,6 +82,19 @@ public class ServerViewController {
         this.homeViewController = homeViewController;
         this.serverSystemWebSocket = builder.getServerSystemWebSocket();
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+        if(!builder.getSteamToken().equals("")&&builder.isSteamShow()){
+            updateDescription(null);
+        }
+    }
+
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if (!body.getObject().getString("status").equals("success")) {
+                System.err.println("Error in updateDescription");
+            }
+        });
     }
 
     public ChatViewController getChatViewController() {
@@ -119,6 +135,10 @@ public class ServerViewController {
 
     public ServerChannel getCurrentAudioChannel() {
         return builder.getCurrentAudioChannel();
+    }
+
+    public ListView<User> getOnlineUsersList(){
+        return onlineUsersList;
     }
 
     /**
@@ -171,7 +191,7 @@ public class ServerViewController {
         currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell(builder));
+        onlineUsersList.setCellFactory(new ServerUserListCell(builder));
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
         offlineUsersList.setCellFactory(new UserListCell(builder));
         dividerLineUser = (Line) scrollPaneUserBox.getContent().lookup("#dividerline_online_offline_user");
@@ -295,6 +315,7 @@ public class ServerViewController {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
             UserProfileController userProfileController = new UserProfileController(root, builder);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -616,6 +637,9 @@ public class ServerViewController {
     }
 
     public void stop() {
+        if (userProfileController != null) {
+            userProfileController.stop();
+        }
         try {
             if (this.serverSystemWebSocket != null) {
                 if (this.serverSystemWebSocket.getSession() != null) {

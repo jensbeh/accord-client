@@ -90,6 +90,10 @@ public class HomeViewController {
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
 
+        if(!builder.getSteamToken().equals("")&&builder.isSteamShow()){
+            builder.getGame();
+        }
+
         ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
         try {
@@ -381,6 +385,7 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
+        builder.stopGame();
         if (stage != null) {
             this.stage.close();
             stage = null;
@@ -543,5 +548,9 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
+    }
+
+    public Map<Server,ServerViewController> getServerCtrls(){
+        return serverController;
     }
 }

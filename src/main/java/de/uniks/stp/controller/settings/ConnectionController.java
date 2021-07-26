@@ -4,6 +4,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -25,6 +26,8 @@ public class ConnectionController extends SubSetting {
     private final Button steamToggleButton = new Button();
     private final Rectangle backgroundSpotifyButton = new Rectangle(30, 10, Color.RED);
     private final Rectangle backgroundSteamButton = new Rectangle(30, 10, Color.RED);
+    private SteamLoginController steamLoginController;
+    private VBox steamVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -38,7 +41,7 @@ public class ConnectionController extends SubSetting {
         StackPane steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
 
         VBox spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        VBox steamVbox = (VBox) view.lookup("#steamVbox");
+        steamVbox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
         steamVbox.setVisible(false);
 
@@ -52,6 +55,13 @@ public class ConnectionController extends SubSetting {
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, builder.isSteamShow());
             steamVbox.setVisible(true);
         }
+        steamToggleButton.setOnAction(this::startGame);
+    }
+
+    private void startGame(ActionEvent actionEvent) {
+        if(builder.isSteamShow()){
+            builder.getGame();
+        }
     }
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
@@ -59,12 +69,20 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        Platform.runLater(() -> {
-            SteamLoginController steamLoginController = new SteamLoginController(builder);
-            steamLoginController.init();
-            init();
-        });
+        steamLoginController = new SteamLoginController(builder);
+        steamLoginController.refresh(this::refreshSteam);
+        steamLoginController.init();
+        init();
     }
+
+    private void refreshSteam() {
+        if (!steamVbox.isVisible()) {
+            steamVbox.setVisible(true);
+        }
+        steamLoginController = null;
+        init();
+    }
+
 
     private void toggleInit(StackPane stackPane, Rectangle backgroundToggle, Button toggleButton, Boolean toggleShow) {
         setBackgroundToggleButton(stackPane, backgroundToggle, toggleButton);
@@ -95,6 +113,7 @@ public class ConnectionController extends SubSetting {
                     builder.setSpotifyShow(false);
                 } else {
                     builder.setSteamShow(false);
+                    builder.getPersonalUser().setDescription("\0");
                 }
             } else {
                 //Button on
