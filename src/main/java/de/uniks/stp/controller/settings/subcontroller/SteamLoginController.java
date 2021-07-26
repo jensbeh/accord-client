@@ -34,19 +34,23 @@ public class SteamLoginController {
         if (link.length > 1 && !link[link.length - 1].equals("goto")) {
             String selector = link[link.length - 2];
             if (selector.equals("id")) {   // https://steamcommunity.com/id/VanityID/
-                builder.getRestClient().resolveVanityID(link[link.length - 1], response -> {
-                    JsonNode body = response.getBody();
-                    int status = body.getObject().getJSONObject("response").getInt("success");
-                    if (status == 1) {
-                        setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-                    } else{
-                        System.err.println("Error in Converting VanityID to Steam64ID");
-                    }
-                });
+                resolveVanityUrl(link);
             } else if (selector.equals("profiles")) { // https://steamcommunity.com/profiles/steam64ID/
                 setSteam64ID(link[link.length - 1]);
             }
         }
+    }
+
+    private void resolveVanityUrl(String[] link) {
+        builder.getRestClient().resolveVanityID(link[link.length - 1], response -> {
+            JsonNode body = response.getBody();
+            int status = body.getObject().getJSONObject("response").getInt("success");
+            if (status == 1) {
+                setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
+            } else{
+                System.err.println("Error in Converting VanityID to Steam64ID");
+            }
+        });
     }
 
     private void setSteam64ID(String steam64ID) {
