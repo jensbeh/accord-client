@@ -63,12 +63,10 @@ public class ConnectionController extends SubSetting {
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
-        Platform.runLater(() -> {
-            steamLoginController = new SteamLoginController(builder);
-            steamLoginController.refresh(this::refreshSteam);
-            steamLoginController.init();
-            init();
-        });
+        steamLoginController = new SteamLoginController(builder);
+        steamLoginController.refresh(this::refreshSteam);
+        steamLoginController.init();
+        init();
     }
 
     private void refreshSteam() {
@@ -76,6 +74,7 @@ public class ConnectionController extends SubSetting {
             steamVbox.setVisible(true);
         }
         steamLoginController = null;
+        init();
     }
 
 

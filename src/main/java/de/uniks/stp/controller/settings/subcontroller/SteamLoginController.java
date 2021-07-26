@@ -16,11 +16,12 @@ public class SteamLoginController {
 
     public SteamLoginController(ModelBuilder builder) {
         this.builder = builder;
+        webView = new WebView();
+        popUp = new Stage();
     }
 
     public void init() {
-        webView = new WebView();
-        popUp = new Stage();
+        java.net.CookieHandler.setDefault(new java.net.CookieManager());
         webView.getEngine().load("https://steamcommunity.com/login/home/?goto=");
         webView.getEngine().locationProperty().addListener(this::getSteam64ID);
         popUp.setScene(new Scene(webView));
@@ -38,6 +39,8 @@ public class SteamLoginController {
                     int status = body.getObject().getJSONObject("response").getInt("success");
                     if (status == 1) {
                         setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
+                    } else{
+                        System.err.println("Error in Converting VanityID to Steam64ID");
                     }
                 });
             } else if (selector.equals("profiles")) { // https://steamcommunity.com/profiles/steam64ID/

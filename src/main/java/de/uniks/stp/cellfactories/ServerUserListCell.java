@@ -50,7 +50,7 @@ public class ServerUserListCell implements javafx.util.Callback<ListView<User>, 
                     circle.setFill(Paint.valueOf("#13d86b"));
                     if (item.getDescription() != null && (!item.getDescription().equals("") || !item.getDescription().equals("#"))) {
                         game.setText(item.getDescription());
-                        game.setText("   " + item.getDescription());
+                        game.setText("   " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
                     }
