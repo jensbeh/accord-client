@@ -3,6 +3,7 @@ package de.uniks.stp.controller.settings;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -52,6 +53,13 @@ public class ConnectionController extends SubSetting {
         if (!builder.getSteamToken().equals("")) {
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, builder.isSteamShow());
             steamVbox.setVisible(true);
+        }
+        steamToggleButton.setOnAction(this::startGame);
+    }
+
+    private void startGame(ActionEvent actionEvent) {
+        if(builder.isSteamShow()){
+            builder.getGame();
         }
     }
 
