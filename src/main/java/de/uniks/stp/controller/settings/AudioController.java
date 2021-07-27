@@ -80,7 +80,6 @@ public class AudioController extends SubSetting {
         Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
         Text valueTextInputSlider = new Text();
         valueTextInputSlider.setText(String.valueOf((int)(volumeInput.getValue() * 100) + 50));
-        valueTextInputSlider.setFill(Color.WHITE);
         thumbInputSlider.getChildren().add(valueTextInputSlider);
 
         // get new Value
@@ -101,7 +100,6 @@ public class AudioController extends SubSetting {
         Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
         Text valueTextOutputSlider = new Text();
         valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100)));
-        valueTextOutputSlider.setFill(Color.WHITE);
         thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
         // get new Value

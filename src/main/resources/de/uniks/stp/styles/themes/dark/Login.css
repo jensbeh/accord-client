@@ -1,6 +1,7 @@
 #loginButton, #signinButton, #settingsButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
+    -fx-text-fill: BLACK;
 }
 
 #loginButton:hover, #signinButton:hover, #settingsButton:hover {
