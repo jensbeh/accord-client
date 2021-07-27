@@ -129,32 +129,30 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             for (User u : builder.getPersonalUser().getUser()) {
                 if (u.getId().equals(jsonData.getString("id"))) {
                     u.setDescription(jsonData.getString("description"));
-                    builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
+                    privateViewController.getOnlineUsersList().refresh();
                 }
             }
-
         } else {
             String userName = jsonData.getString("name");
             String userId = jsonData.getString("id");
-            String description = jsonData.getString("description");
 
             if (userAction.equals("userJoined")) {
-                builder.buildUser(userName, userId, description);
+                builder.buildUser(userName, userId, "");
             }
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(StageManager::showLoginScreen);
                 }
                 List<User> userList = builder.getPersonalUser().getUser();
-                User removeUser = builder.buildUser(userName, userId, description);
+                User removeUser = builder.buildUser(userName, userId, "");
                 if (userList.contains(removeUser)) {
                     builder.getPersonalUser().withoutUser(removeUser);
                 }
             }
 
-
             Platform.runLater(() -> privateViewController.getOnlineUsersList().setItems(FXCollections.observableList(builder.
                     getPersonalUser().getUser()).sorted(new SortUser())));
+            Platform.runLater(() -> privateViewController.getOnlineUsersList().refresh());
         }
     }
 }
