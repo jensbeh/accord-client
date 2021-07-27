@@ -3,11 +3,10 @@ package de.uniks.stp.controller.homeview;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
-import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -105,7 +104,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         this.stage = stage;
         app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
 
         builder.setLoadUserData(false);
 
@@ -136,6 +135,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", "60adc8aec77d3f78988b57a0");
         jsonObject.put("name", "Otto");
+        jsonObject.put("description", "");
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -408,14 +408,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals(testUserOne.getName(), app.getBuilder().getCurrentPrivateChat().getName());
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
     @Test
@@ -430,7 +430,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         rightClickOn();
-        ContextMenu contextMenu  = name.getContextMenu();
+        ContextMenu contextMenu = name.getContextMenu();
         interact(() -> contextMenu.getItems().get(0).fire());
         WaitForAsyncUtils.waitForFxEvents();
         interact(() -> contextMenu.getItems().get(1).fire());
