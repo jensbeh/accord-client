@@ -220,7 +220,7 @@ public class SpotifyConnection {
         return null;
     }
 
-    public void updateValues(String userDescription) {
+    public void updateValuesUser(String userDescription) {
         //if contains spotify url
         if (userDescription.contains("i.scdn.co") && !isPersonalUser) {
             String[] userDescriptionSplit = userDescription.split("#");
@@ -245,9 +245,9 @@ public class SpotifyConnection {
             progressBar = (ProgressBar) root.lookup("#progressBar");
 
             if (isPersonalUser) {
-                builder.getSpotifyConnection().spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
+                builder.getSpotifyConnection().personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
             } else if (userDescription != null) {
-                updateValues(userDescription);
+                updateValuesUser(userDescription);
             }
 
             HBox hBox;
@@ -302,7 +302,7 @@ public class SpotifyConnection {
         }
     }
 
-    public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
+    public void personalUserListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
         CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
         if (currentlyPlayingContext != null) {
             this.bandAndSong = bandAndSong;
@@ -318,7 +318,7 @@ public class SpotifyConnection {
                     public void run() {
                         handle.cancel(true);
                         scheduler.shutdown();
-                        spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
+                        personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
                     }
                 }, timeToPlayLeft, TimeUnit.MILLISECONDS);
             }
