@@ -100,15 +100,14 @@ public class AudioController extends SubSetting {
         volumeOutput.layout();
         Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
         Text valueTextOutputSlider = new Text();
-        valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100) + 50));
+        valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100)));
         valueTextOutputSlider.setFill(Color.WHITE);
         thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
         // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("volumeOutput: " + newValue.floatValue());
             builder.getLinePoolService().setSpeakerVolume(newValue.floatValue());
-            valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100) + 50));
+            valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100)));
             builder.saveSettings();
         });
     }
