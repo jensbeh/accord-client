@@ -510,8 +510,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false);
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true);
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false,"");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true,"");
 
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");
@@ -539,8 +539,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false);
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true);
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false,"");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true,"");
 
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");

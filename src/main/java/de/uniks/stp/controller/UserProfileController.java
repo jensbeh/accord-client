@@ -31,7 +31,7 @@ public class UserProfileController {
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
         descriptionBox = (VBox) view.lookup("#descriptionbox");
-        if (builder.getPersonalUser().getDescription() != null && (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0"))) {
+        if (builder.getPersonalUser().getDescription() != null && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
 
@@ -43,14 +43,14 @@ public class UserProfileController {
         if (oldLabel != null) {
             Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
         }
-        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("\0")) {
+        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
     }
 
     private void addGame() {
         Label currentGame = new Label();
-        currentGame.setText("plays "+builder.getPersonalUser().getDescription());
+        currentGame.setText("plays " + builder.getPersonalUser().getDescription().substring(1));
         currentGame.setStyle("-fx-text-fill: white;");
         currentGame.setId("currentGame");
         Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));

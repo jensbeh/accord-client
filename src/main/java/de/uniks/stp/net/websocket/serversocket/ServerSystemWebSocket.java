@@ -128,9 +128,11 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
+        String description = "";
         if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated") && !userAction.equals("messageDeleted")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
+            description = jsonData.getString("description");
         }
         if (userAction.equals("categoryCreated")) {
             createCategory(jsonData);
@@ -160,13 +162,13 @@ public class ServerSystemWebSocket extends Endpoint {
         }
 
         if (userAction.equals("userJoined")) {
-            buildServerUser(userName, userId, true);
+            buildServerUser(userName, userId, true, description);
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
                 Platform.runLater(StageManager::showLoginScreen);
             }
-            buildServerUser(userName, userId, false);
+            buildServerUser(userName, userId, false, description);
         }
 
         if (userAction.equals("serverDeleted")) {
@@ -346,8 +348,8 @@ public class ServerSystemWebSocket extends Endpoint {
     /**
      * Build a serverUser with this instance of server.
      */
-    private User buildServerUser(String userName, String userId, boolean online) {
-        return builder.buildServerUser(serverViewController.getServer(), userName, userId, online);
+    private User buildServerUser(String userName, String userId, boolean online, String description) {
+        return builder.buildServerUser(serverViewController.getServer(), userName, userId, online, description);
     }
 
     /**
@@ -585,9 +587,10 @@ public class ServerSystemWebSocket extends Endpoint {
     private void userArrived(JsonObject jsonData) {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
+        String description = jsonData.getString("description");
         boolean status = jsonData.getBoolean("online");
 
-        serverViewController.getServer().withUser(buildServerUser(name, id, status));
+        serverViewController.getServer().withUser(buildServerUser(name, id, status,description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
@@ -599,7 +602,8 @@ public class ServerSystemWebSocket extends Endpoint {
     private void userExited(JsonObject jsonData) {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
-        serverViewController.getServer().withoutUser(buildServerUser(name, id, true));
+        String description = jsonData.getString("description");
+        serverViewController.getServer().withoutUser(buildServerUser(name, id, true,description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }

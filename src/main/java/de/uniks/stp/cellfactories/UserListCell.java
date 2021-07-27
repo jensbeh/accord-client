@@ -37,15 +37,23 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private class UserCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
+            VBox object = new VBox();
             HBox cell = new HBox();
             Circle circle = new Circle(15);
             Label name = new Label();
+            Label game = new Label();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
+                    if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?") )) {
+                        game.setText(item.getDescription());
+                        game.setText("   plays " + item.getDescription().substring(1));
+                        game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                        game.setPrefWidth(135);
+                    }
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                 }
@@ -54,11 +62,18 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
-                cell.getChildren().addAll(circle, name);
-
                 addContextMenu(item, name);
+                if (!game.getText().equals("   #") || !game.getText().equals("   ")) {
+                    cell.getChildren().addAll(circle, name);
+                    object.getChildren().addAll(cell, game);
+                    this.setGraphic(object);
+                } else {
+                    cell.getChildren().addAll(circle, name);
+                    this.setGraphic(cell);
+                }
+            } else{
+                this.setGraphic(null);
             }
-            this.setGraphic(cell);
         }
     }
 

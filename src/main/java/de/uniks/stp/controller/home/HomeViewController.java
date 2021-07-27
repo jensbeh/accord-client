@@ -6,6 +6,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -24,9 +25,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -93,7 +96,7 @@ public class HomeViewController {
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
 
-        if(!builder.getSteamToken().equals("")&&builder.isSteamShow()){
+        if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
             builder.getGame();
         }
 
@@ -123,8 +126,20 @@ public class HomeViewController {
                 }
             }
         });
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+        if (builder.isSteamShow() || builder.isSpotifyShow()) {
+            updateDescription(null);
+        }
     }
 
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if (!body.getObject().getString("status").equals("success")) {
+                System.err.println("Error in updateDescription");
+            }
+        });
+    }
 
     /**
      * Returns the current HomeViewController.
@@ -547,7 +562,7 @@ public class HomeViewController {
         }
     }
 
-    public Map<Server,ServerViewController> getServerCtrls(){
+    public Map<Server, ServerViewController> getServerCtrls() {
         return serverController;
     }
 }

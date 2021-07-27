@@ -130,16 +130,17 @@ public class PrivateSystemWebSocketClient extends Endpoint {
         } else {
             String userName = jsonData.getString("name");
             String userId = jsonData.getString("id");
+            String description = jsonData.getString("description");
 
             if (userAction.equals("userJoined")) {
-                builder.buildUser(userName, userId);
+                builder.buildUser(userName, userId,description);
             }
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(StageManager::showLoginScreen);
                 }
                 List<User> userList = builder.getPersonalUser().getUser();
-                User removeUser = builder.buildUser(userName, userId);
+                User removeUser = builder.buildUser(userName, userId,description);
                 if (userList.contains(removeUser)) {
                     builder.getPersonalUser().withoutUser(removeUser);
                 }
