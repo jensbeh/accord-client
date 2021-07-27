@@ -16,7 +16,6 @@ import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -514,7 +513,8 @@ public class ModelBuilder {
     }
 
     public void stopGame(){
-        if (getSteamGame != null && getSteamGame.isAlive()) {
+        if (getSteamGame != null) {
+            steamShow=false;
             getSteamGame.stop();
         }
     }

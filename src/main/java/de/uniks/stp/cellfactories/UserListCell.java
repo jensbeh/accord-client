@@ -46,32 +46,32 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
-                if (item.isStatus()) {
-                    circle.setFill(Paint.valueOf("#13d86b"));
-                    if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?") )) {
-                        game.setText(item.getDescription());
-                        game.setText("   plays " + item.getDescription().substring(1));
-                        game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                        game.setPrefWidth(135);
-                    }
-                } else {
-                    circle.setFill(Paint.valueOf("#eb4034"));
-                }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 addContextMenu(item, name);
-                if (!game.getText().equals("   #") || !game.getText().equals("   ")) {
-                    cell.getChildren().addAll(circle, name);
-                    object.getChildren().addAll(cell, game);
-                    this.setGraphic(object);
+                if (item.isStatus()) {
+                    circle.setFill(Paint.valueOf("#13d86b"));
+                    if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
+                        game.setText(item.getDescription());
+                        game.setText("   plays " + item.getDescription().substring(1));
+                        game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                        game.setPrefWidth(135);
+                        cell.getChildren().addAll(circle, name);
+                        object.getChildren().addAll(cell, game);
+                        this.setGraphic(object);
+                    } else{
+                        cell.getChildren().addAll(circle, name);
+                        this.setGraphic(cell);
+                    }
                 } else {
+                    circle.setFill(Paint.valueOf("#eb4034"));
                     cell.getChildren().addAll(circle, name);
                     this.setGraphic(cell);
                 }
-            } else{
+            } else {
                 this.setGraphic(null);
             }
         }
