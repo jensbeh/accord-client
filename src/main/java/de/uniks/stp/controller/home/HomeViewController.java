@@ -12,7 +12,6 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -28,13 +27,8 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -99,6 +93,16 @@ public class HomeViewController {
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+        this.homeButton.setOnMouseEntered(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#bababa"));
+            }
+        });
+        this.homeButton.setOnMouseExited(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+            }
+        });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
 
@@ -386,8 +390,16 @@ public class HomeViewController {
      */
     public void stop() {
         this.addServer.setOnMouseClicked(null);
+        this.addServerBg.setOnMouseEntered(null);
+        this.addServerBg.setOnMouseExited(null);
+        this.addServerBg.setOnMousePressed(null);
+        this.addServerBg.setOnMouseReleased(null);
+
         this.homeButton.setOnMouseClicked(null);
+        this.homeButton.setOnMouseEntered(null);
+        this.homeButton.setOnMouseExited(null);
         this.homeCircle.setOnMouseClicked(null);
+
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
