@@ -10,9 +10,13 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
 
 public class OverviewOwnerController {
     private final Parent view;
@@ -62,6 +66,7 @@ public class OverviewOwnerController {
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
         alert.setHeaderText(lang.getString("warning.deleteServer"));
+        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
 
         if (builder.getTheme().equals("Bright")) {
             dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());

@@ -259,6 +259,10 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
+        if (!messageBox.getChildren().contains(sendButton)) {
+            abortButton.fire();
+        }
+
         StackPane selected = null;
         if (mouseEvent.getPickResult().getIntersectedNode() instanceof StackPane) {
             selected = (StackPane) mouseEvent.getPickResult().getIntersectedNode();
@@ -617,7 +621,7 @@ public class ChatViewController {
     public void stop() {
         sendButton.setOnAction(null);
         stopMediaPlayers();
-        if(builder.getBlockedUsers() != null && blockedUserListener != null) {
+        if (builder.getBlockedUsers() != null && blockedUserListener != null) {
             builder.getBlockedUsers().removeListener(blockedUserListener);
         }
     }
@@ -672,6 +676,7 @@ public class ChatViewController {
     /**
      * disables the view elements to disallow communicating with the user
      * additionally inform own user that he needs to unblock him to keep chatting with the user
+     *
      * @param user the user who is blocked
      */
     public void disableView(User user) {

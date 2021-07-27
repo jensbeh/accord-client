@@ -100,6 +100,12 @@ public class MediaControl extends BorderPane {
         volumeLabel.setId("volumeLabel");
         mediaBar.getChildren().add(volumeLabel);
 
+        Label volumeSymbol = new Label();
+        volumeSymbol.setId("volumeSymbol");
+        volumeSymbol.setText("\uD83D\uDD0A");
+        volumeSymbol.setStyle("-fx-text-fill: GREY;");
+        mediaBar.getChildren().add(volumeSymbol);
+
         volumeSlider = new Slider();
         volumeSlider.setId("volumeSlider");
         volumeSlider.setPrefWidth(70);

@@ -23,17 +23,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -232,6 +228,8 @@ public class HomeViewController {
             createJoinServerController.setTheme();
             createJoinServerController.showCreateServerView(this::onServerCreated);
             createJoinServerController.joinNewServer(this::joinNewServer);
+            stage.initOwner(homeView.getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(scene);
             stage.show();
             updateServerListColor();
