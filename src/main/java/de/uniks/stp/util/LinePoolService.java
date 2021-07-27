@@ -245,6 +245,8 @@ public class LinePoolService {
                 break;
             }
         }
+
+        setSpeakerVolumeToPort();
     }
 
     /**
@@ -271,21 +273,8 @@ public class LinePoolService {
         // set mic volume
         for (var portName : portMixer.keySet()) {
             if (portName.contains(selectedMicrophoneName.substring(0, 24))) {
-                Line thisMicrophoneLine = portMixer.get(portName);
-                try {
-                    // need to open the Line to get Control - important to close after
-                    thisMicrophoneLine.open();
-                } catch (LineUnavailableException e) {
-                    e.printStackTrace();
-                }
-                for (Control thisControl : thisMicrophoneLine.getControls()) {
-                    if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
-                        FloatControl volumeControl = (FloatControl) thisControl; // range 0.0 - 1.0     :   0.27058825
-                        volumeControl.setValue(microphoneVolume);
-                        break;
-                    }
-                }
-                thisMicrophoneLine.close();
+                setVolumeToPort(portName, microphoneVolume);
+                break;
             }
         }
     }
@@ -302,5 +291,42 @@ public class LinePoolService {
      */
     public void setSpeakerVolume(float speakerVolume) {
         this.speakerVolume = speakerVolume;
+        if (selectedSpeaker != null) {
+            setSpeakerVolumeToPort();
+        }
+    }
+
+    /**
+     * sets new speaker volume to the speaker port mixer
+     */
+    private void setSpeakerVolumeToPort() {
+        // set speaker volume
+        for (var portName : portMixer.keySet()) {
+            if (portName.contains(selectedSpeakerName.substring(0, 20))) {
+                setVolumeToPort(portName, speakerVolume);
+                break;
+            }
+        }
+    }
+
+    /**
+     * set volume to the port mixer
+     */
+    private void setVolumeToPort(String selectedDeviceName, float volume) {
+        Line thisLine = portMixer.get(selectedDeviceName);
+        try {
+            // need to open the Line to get Control - important to close after
+            thisLine.open();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+        for (Control thisControl : thisLine.getControls()) {
+            if (thisControl.getType().equals(FloatControl.Type.VOLUME)) {
+                FloatControl volumeControl = (FloatControl) thisControl; // range 0.0 - 1.0     :   0.27058825
+                volumeControl.setValue(volume);
+                break;
+            }
+        }
+        thisLine.close();
     }
 }

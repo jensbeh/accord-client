@@ -12,8 +12,7 @@ public class updateSteamGameController implements Runnable {
 
     @Override
     public void run() {
-        while (!builder.getSteamToken().equals("") && !builder.getSteamToken().equals("?")) {
-            if (builder.isSteamShow()) {
+        while (builder.isSteamShow()) {
                 builder.getRestClient().getCurrentGame(builder.getSteamToken(), response -> {
                     JsonNode body = response.getBody();
                     if (body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo")) {
@@ -22,7 +21,6 @@ public class updateSteamGameController implements Runnable {
                         builder.getPersonalUser().setDescription("?");
                     }
                 });
-            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

@@ -3,7 +3,6 @@ package de.uniks.stp.cellfactories;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -67,6 +66,12 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
+                name.setId(item.getId());
+                name.setText("   " + item.getName());
+                name.setStyle("-fx-font-size: 18");
+                name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                name.setPrefWidth(135);
+                addContextMenu(item, name);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
                     cell.setOnMouseClicked(this::spotifyPopup);
@@ -75,21 +80,15 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                         game.setText("   plays " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
+                        cell.getChildren().addAll(circle, name);
+                        object.getChildren().addAll(cell, game);
+                        this.setGraphic(object);
+                    } else {
+                        cell.getChildren().addAll(circle, name);
+                        this.setGraphic(cell);
                     }
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
-                }
-                name.setId(item.getId());
-                name.setText("   " + item.getName());
-                name.setStyle("-fx-font-size: 18");
-                name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                name.setPrefWidth(135);
-                addContextMenu(item, name);
-                if (!game.getText().equals("   #") || !game.getText().equals("   ")) {
-                    cell.getChildren().addAll(circle, name);
-                    object.getChildren().addAll(cell, game);
-                    this.setGraphic(object);
-                } else {
                     cell.getChildren().addAll(circle, name);
                     this.setGraphic(cell);
                 }

@@ -275,11 +275,6 @@ public class SpotifyConnection {
             scene.setFill(Color.TRANSPARENT);
             dialog.initStyle(StageStyle.TRANSPARENT);
             dialog.setX(x);
-//            if (mouseEvent.getSource() instanceof VBox) {
-//                dialog.setY(y + 6);
-//            } else {
-//                dialog.setY(y);
-//            }
             dialog.setY(y);
             dialog.setScene(scene);
             dialog.show();
