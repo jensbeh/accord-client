@@ -2,9 +2,7 @@ package de.uniks.stp.net.websocket.privatesocket;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.home.PrivateViewController;
-import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
