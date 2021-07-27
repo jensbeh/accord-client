@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import org.json.JSONObject;
 
 public class ConnectionController extends SubSetting {
 
@@ -113,7 +114,8 @@ public class ConnectionController extends SubSetting {
                     builder.setSpotifyShow(false);
                 } else {
                     builder.setSteamShow(false);
-                    builder.getPersonalUser().setDescription("\0");
+                    builder.stopGame();
+                    builder.getPersonalUser().setDescription("?");
                 }
             } else {
                 //Button on
@@ -125,6 +127,7 @@ public class ConnectionController extends SubSetting {
                     builder.setSpotifyShow(true);
                 } else {
                     builder.setSteamShow(true);
+                    builder.getGame();
                 }
             }
             builder.saveSettings();

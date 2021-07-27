@@ -190,14 +190,16 @@ public class SpotifyConnection {
         try {
             GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
             CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
-            String albumLink = currentlyPlayingContext.getContext().getHref();
-            String[] id = new String[0];
-            if (albumLink.contains("albums/")) {
-                id = albumLink.split("albums/");
-            } else {
-                id = albumLink.split("playlists/");
+            if (currentlyPlayingContext != null) {
+                String albumLink = currentlyPlayingContext.getContext().getHref();
+                String[] id = new String[0];
+                if (albumLink.contains("albums/")) {
+                    id = albumLink.split("albums/");
+                } else {
+                    id = albumLink.split("playlists/");
+                }
+                return id[1];
             }
-            return id[1];
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             e.printStackTrace();
         }
@@ -220,7 +222,7 @@ public class SpotifyConnection {
 
     public void updateValues(String userDescription) {
         //if contains spotify url
-        if (userDescription.contains("i.scdn.co")) {
+        if (userDescription.contains("i.scdn.co") && !isPersonalUser) {
             String[] userDescriptionSplit = userDescription.split("#");
             bandAndSong.setText(userDescriptionSplit[1]);
             spotifyArtwork.setImage(new javafx.scene.image.Image(userDescriptionSplit[2]));
@@ -250,7 +252,7 @@ public class SpotifyConnection {
 
             HBox hBox;
             if (mouseEvent.getSource() instanceof VBox) {
-                hBox = (HBox) ((VBox)mouseEvent.getSource()).getChildren().get(0);
+                hBox = (HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0);
             } else {
                 hBox = (HBox) mouseEvent.getSource();
             }
@@ -289,39 +291,42 @@ public class SpotifyConnection {
 
     public void updateUserDescriptionScheduler() {
         currentSong = getCurrentlyPlayingSong();
-        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-        artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-        builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-        schedulerDescription = Executors.newScheduledThreadPool(1);
-        schedulerDescription.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                currentSong = getCurrentlyPlayingSong();
-                String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-                artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-                builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-            }
-        },0, 15, TimeUnit.SECONDS);
-
+        if (currentSong != null) {
+            String albumID = getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            schedulerDescription = Executors.newScheduledThreadPool(1);
+            schedulerDescription.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    currentSong = getCurrentlyPlayingSong();
+                    String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+                    artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+                    builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                }
+            }, 0, 15, TimeUnit.SECONDS);
+        }
     }
 
     public void spotifyListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
-        this.bandAndSong = bandAndSong;
-        this.spotifyArtwork = spotifyArtwork;
-        this.timeTotal = timeTotal;
-        this.timePlayed = timePlayed;
-        this.progressBar = progessBar;
         CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
-        int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
-        if (currentlyPlayingContext.getIs_playing() && isPersonalUser) {
-            scheduler = Executors.newScheduledThreadPool(1);
-            handle = scheduler.scheduleAtFixedRate(updatePersonalUserViewRunnable, 0, 1, TimeUnit.SECONDS);
-            scheduler.schedule(new Runnable() {
-                public void run() {
-                    handle.cancel(true);
-                    scheduler.shutdown();
-                    spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
-                }
-            }, timeToPlayLeft, TimeUnit.MILLISECONDS);
+        if (currentlyPlayingContext != null) {
+            this.bandAndSong = bandAndSong;
+            this.spotifyArtwork = spotifyArtwork;
+            this.timeTotal = timeTotal;
+            this.timePlayed = timePlayed;
+            this.progressBar = progessBar;
+            int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
+            if (currentlyPlayingContext.getIs_playing() && isPersonalUser) {
+                scheduler = Executors.newScheduledThreadPool(1);
+                handle = scheduler.scheduleAtFixedRate(updatePersonalUserViewRunnable, 0, 1, TimeUnit.SECONDS);
+                scheduler.schedule(new Runnable() {
+                    public void run() {
+                        handle.cancel(true);
+                        scheduler.shutdown();
+                        spotifyListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
+                    }
+                }, timeToPlayLeft, TimeUnit.MILLISECONDS);
+            }
         }
     }
 

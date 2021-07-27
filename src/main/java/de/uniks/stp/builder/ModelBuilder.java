@@ -85,31 +85,31 @@ public class ModelBuilder {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
     }
 
-    public User buildUser(String name, String id) {
+    public User buildUser(String name, String id,String description) {
         for (User user : personalUser.getUser()) {
             if (user.getId().equals(id)) {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(true);
+        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description);
         personalUser.withUser(newUser);
         return newUser;
     }
 
-    public User buildServerUser(Server server, String name, String id, Boolean status) {
+    public User buildServerUser(Server server, String name, String id, Boolean status,String description) {
         for (User user : server.getUser()) {
             if (user.getId().equals(id)) {
                 if (user.isStatus() == status) {
                     return user;
                 } else {
                     server.withoutUser(user);
-                    User updatedUser = new User().setName(name).setId(id).setStatus(status);
+                    User updatedUser = new User().setName(name).setId(id).setStatus(status).setDescription(description);
                     server.withUser(updatedUser);
                     return updatedUser;
                 }
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(status);
+        User newUser = new User().setName(name).setId(id).setStatus(status).setDescription(description);
         server.withUser(newUser);
         return newUser;
     }
@@ -541,12 +541,8 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        if (getSteamGame == null) {
-            getSteamGame = new Thread(new updateSteamGameController(this));
-        }
-        if(!getSteamGame.isAlive()){
-            getSteamGame.start();
-        }
+        getSteamGame = new Thread(new updateSteamGameController(this));
+        getSteamGame.start();
     }
 
     public void stopGame(){

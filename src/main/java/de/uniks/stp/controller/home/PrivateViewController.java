@@ -135,8 +135,9 @@ public class PrivateViewController {
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
+                String description = jsonResponse.getJSONObject(i).get("description").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName, userId);
+                    builder.buildUser(userName, userId,description);
                 } else {
                     builder.getPersonalUser().setId(userId);
                 }
