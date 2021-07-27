@@ -1,19 +1,19 @@
-#loginButton {
+#loginButton, #signinButton, #settingsButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
 }
 
-#signinButton {
-    -fx-background-color: #ff9999;
+#loginButton:hover, #signinButton:hover, #settingsButton:hover {
+    -fx-background-color: #ffbdbd;
+    -fx-background-radius: 80;
+}
+
+#loginButton:pressed, #signinButton:pressed, #settingsButton:pressed {
+    -fx-background-color: #ff7d7d;
     -fx-background-radius: 80;
 }
 
 #logoutButton {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-}
-
-#settingsButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
 }
