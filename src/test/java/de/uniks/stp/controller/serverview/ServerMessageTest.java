@@ -468,6 +468,8 @@ public class ServerMessageTest extends ApplicationTest {
 
         rightClickOn("#messageCell");
         interact(() -> contextMenu.getItems().get(1).fire());
+        rightClickOn("#messageCell");
+        interact(() -> contextMenu.getItems().get(1).fire());
         Button edit = lookup("#editButton").query();
         Assert.assertEquals(edit.getText(), "Edit");
         Button abort = lookup("#abortButton").query();
