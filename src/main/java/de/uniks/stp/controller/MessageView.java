@@ -113,9 +113,7 @@ public class MessageView {
         }
 
         if (loadImage) {
-//                vbox.setPrefSize(webView.getMaxWidth(), webView.getMaxHeight());
             vbox.getChildren().addAll(userName, message, webView);
-//                cell.setPrefSize(chatViewController.getContainer().getMaxWidth(), chatViewController.getContainer().getMaxHeight());
             cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
         } else if (loadVideo) {
             MediaControl mediaControl = new MediaControl();
@@ -130,7 +128,6 @@ public class MessageView {
 
         cell.setAlignment(Pos.CENTER_RIGHT);
         cell.getChildren().addAll(vbox);
-//            cell.setMinSize(420, 60);
         cell.setOnMouseClicked(chatViewController::chatClicked);
         chatViewController.getContainer().getChildren().add(cell);
         chatViewController.getMessagesHashMap().put(cell, item);
