@@ -285,21 +285,26 @@ public class SpotifyConnection {
     }
 
     public void updateUserDescriptionScheduler() {
-        currentSong = getCurrentlyPlayingSong();
-        if (currentSong != null) {
-            String albumID = getCurrentlyPlayingSongAlbumID();
-            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-            schedulerDescription = Executors.newScheduledThreadPool(1);
-            schedulerDescription.scheduleAtFixedRate(new Runnable() {
-                public void run() {
-                    currentSong = getCurrentlyPlayingSong();
-                    String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-                    artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-                    builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-                }
-            }, 0, 15, TimeUnit.SECONDS);
-        }
+
+            currentSong = getCurrentlyPlayingSong();
+            if (currentSong != null) {
+                String albumID = getCurrentlyPlayingSongAlbumID();
+                artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+                builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                schedulerDescription = Executors.newScheduledThreadPool(1);
+                schedulerDescription.scheduleAtFixedRate(new Runnable() {
+                    public void run() {
+                        currentSong = getCurrentlyPlayingSong();
+                        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+                        artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+                        if (builder.isSpotifyShow()) {
+                            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                        } else {
+                            builder.getPersonalUser().setDescription("");
+                        }
+                    }
+                }, 0, 15, TimeUnit.SECONDS);
+            }
     }
 
     public void personalUserListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
