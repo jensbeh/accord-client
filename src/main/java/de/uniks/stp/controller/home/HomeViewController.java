@@ -12,6 +12,7 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -47,6 +48,7 @@ public class HomeViewController {
     private final Parent view;
     private ListView<Server> serverList;
     private Circle addServer;
+    private Circle addServerBg;
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
@@ -81,8 +83,15 @@ public class HomeViewController {
         settingsButton = (Button) view.lookup("#settingsButton");
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
+
         addServer = (Circle) view.lookup("#addServer");
+        addServerBg = (Circle) view.lookup("#addServerBg");
         addServer.setOnMouseClicked(this::onShowCreateServer);
+        addServer.setOnMouseEntered(event -> addServerBg.setFill(Paint.valueOf("#bababa")));
+        addServer.setOnMouseExited(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+        addServer.setOnMousePressed(event -> addServerBg.setFill(Paint.valueOf("#828282")));
+        addServer.setOnMouseReleased(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverListCellFactory = new ServerListCell();
         serverList.setCellFactory(serverListCellFactory);
