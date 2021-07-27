@@ -10,13 +10,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
 
 public class OverviewOwnerController {
     private final Parent view;
@@ -48,9 +44,8 @@ public class OverviewOwnerController {
     private void onChangeNameClicked(ActionEvent actionEvent) {
         this.serverName.setText(nameText.getText());
         builder.getCurrentServer().setName(nameText.getText());
-        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
-            builder.getCurrentServer().setName(nameText.getText());
-        });
+        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
+                response -> builder.getCurrentServer().setName(nameText.getText()));
     }
 
     /**
