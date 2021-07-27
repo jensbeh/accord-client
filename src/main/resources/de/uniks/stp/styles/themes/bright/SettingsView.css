@@ -150,6 +150,10 @@
 
 #slider_volumeInput .thumb, #slider_volumeOutput .thumb {
     -fx-background-color: #7da6df;
+    -fx-pref-height: 30px;
+    -fx-pref-width: 30px;
+    -fx-background-radius: 100;
+    -fx-font-size: 14px;
 }
 #slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
     -fx-background-color: #9db9e0;
