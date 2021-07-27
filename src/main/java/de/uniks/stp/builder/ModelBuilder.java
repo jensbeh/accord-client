@@ -102,7 +102,7 @@ public class ModelBuilder {
                 }
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(status);
+        User newUser = new User().setName(name).setId(id).setStatus(status).setDescription(description);
         server.withUser(newUser);
         return newUser;
     }
@@ -509,12 +509,8 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        if (getSteamGame == null) {
-            getSteamGame = new Thread(new updateSteamGameController(this));
-        }
-        if(!getSteamGame.isAlive()){
-            getSteamGame.start();
-        }
+        getSteamGame = new Thread(new updateSteamGameController(this));
+        getSteamGame.start();
     }
 
     public void stopGame(){

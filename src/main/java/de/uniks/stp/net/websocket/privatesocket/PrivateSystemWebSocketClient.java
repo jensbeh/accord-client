@@ -121,26 +121,32 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             for (Server s : builder.getServers()) {
                 for (User u : s.getUser()) {
                     if (u.getId().equals(jsonData.getString("id"))) {
-                        System.out.println(jsonData.getString("description"));
                         u.setDescription(jsonData.getString("description"));
                         builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
                     }
                 }
             }
+            for (User u : builder.getPersonalUser().getUser()) {
+                if (u.getId().equals(jsonData.getString("id"))) {
+                    u.setDescription(jsonData.getString("description"));
+                    builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
+                }
+            }
+
         } else {
             String userName = jsonData.getString("name");
             String userId = jsonData.getString("id");
             String description = jsonData.getString("description");
 
             if (userAction.equals("userJoined")) {
-                builder.buildUser(userName, userId,description);
+                builder.buildUser(userName, userId, description);
             }
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
                     Platform.runLater(StageManager::showLoginScreen);
                 }
                 List<User> userList = builder.getPersonalUser().getUser();
-                User removeUser = builder.buildUser(userName, userId,description);
+                User removeUser = builder.buildUser(userName, userId, description);
                 if (userList.contains(removeUser)) {
                     builder.getPersonalUser().withoutUser(removeUser);
                 }
