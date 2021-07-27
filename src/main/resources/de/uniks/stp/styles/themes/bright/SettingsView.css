@@ -45,6 +45,7 @@
     -fx-background-radius: 10;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
 }
 
 #delete {
@@ -53,6 +54,30 @@
     -fx-text-fill: RED;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#add:hover, #delete:hover {
+    -fx-background-color: #a0bade;
+}
+
+#add:pressed, #delete:pressed {
+    -fx-background-color: #6899de;
+}
+
+#volume .thumb {
+    -fx-background-color: #7da6df;
+    -fx-pref-height: 20px;
+    -fx-pref-width: 20px;
+    -fx-background-radius: 100;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#volume .thumb:hover {
+    -fx-background-color: #a0bade;
+}
+#volume .thumb:pressed {
+    -fx-background-color: #6899de;
 }
 
 /* Connection */
