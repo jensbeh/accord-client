@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 
@@ -58,6 +59,10 @@ public class OverviewOwnerController {
         ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
         alert.setTitle(lang.getString("window_title_serverSettings"));
+
+        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
+        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
@@ -68,14 +73,14 @@ public class OverviewOwnerController {
             buttonBar.setStyle("-fx-font-size: 14px;" +
                     "-fx-text-fill: BLACK;"
                     + "-fx-background-color: WHITE;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
-            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7987ff;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7da6df;" + "-fx-text-fill: white;");
         } else {
             dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
             buttonBar.setStyle("-fx-font-size: 14px;" +
                     "-fx-text-fill: white;"
                     + "-fx-background-color: #2f3136;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
             buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
         }
         dialogPane.getStyleClass().add("AlertStyle");

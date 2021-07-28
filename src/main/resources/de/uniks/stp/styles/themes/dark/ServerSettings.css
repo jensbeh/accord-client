@@ -1,3 +1,20 @@
+/* generals */
+#serverSettingsContainer {
+    -fx-background-color: #202225;
+}
+
+#select {
+    -fx-background-color: #36393f;
+}
+
+#settingsBox {
+    -fx-background-color: #202225;
+}
+
+#settingsItems {
+    -fx-background-color: #2f3136;
+}
+
 #root {
     -fx-background-color: #202225;
 }
@@ -18,23 +35,55 @@
     -fx-background-color: #202225;
 }
 
-#deleteServer {
-    -fx-background-color: RED;
-}
-
-#leaveServer {
-    -fx-background-color: RED;
-}
-
-
-#createCategoryLabel {
+/* Settings items left */
+#overviewBtn, #channelBtn, #categoryBtn, #privilegeBtn {
+    -fx-background-color: #2f3136;
     -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-background-radius: 0;
 }
 
-#editCategoryLabel {
+#overviewBtn:hover, #channelBtn:hover, #categoryBtn:hover, #privilegeBtn:hover {
+    -fx-background-color: #ffbdbd;
+    -fx-text-fill: BLACK;
+}
+
+#overviewBtn:focused, #channelBtn:focused, #categoryBtn:focused, #privilegeBtn:focused {
+    -fx-background-color: #ff9999;
+    -fx-text-fill: BLACK;
+}
+
+/* Overview */
+#deleteServer, #leaveServer {
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
     -fx-text-fill: WHITE;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+#deleteServer:hover, #leaveServer:hover {
+    -fx-background-color: #ff4a4a;
+}
+#deleteServer:pressed, #leaveServer:pressed {
+    -fx-background-color: #ff1f1f;
 }
 
+#serverChangeButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: BLACK;
+}
+#serverChangeButton:hover {
+    -fx-background-color: #ffbdbd;
+}
+#serverChangeButton:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+/* Channel */
 #editChannelsLabel {
     -fx-text-fill: WHITE;
 }
@@ -43,32 +92,88 @@
     -fx-text-fill: WHITE;
 }
 
-#serverSettingsContainer {
-    -fx-background-color: #202225;
-}
-
-#select {
-    -fx-background-color: #36393f;
-}
-
-#settingsBox {
-    -fx-background-color: #202225;
-}
-
-#Privilege_On {
-    -fx-background-color: #202225;
-}
-
-#settingsItems {
-    -fx-background-color: #2f3136;
-}
-
-#User_from_Privilege {
+#channelChangeButton, #channelCreateButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
-    -fx-text-fill: RED;
+    -fx-text-fill: BLACK;
+}
+#channelChangeButton:hover, #channelCreateButton:hover {
+    -fx-background-color: #ffbdbd;
+}
+#channelChangeButton:pressed, #channelCreateButton:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+#channelDeleteButton {
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+#channelDeleteButton:hover {
+    -fx-background-color: #ff4a4a;
+}
+#channelDeleteButton:pressed {
+    -fx-background-color: #ff1f1f;
+}
+
+/* Category */
+#createCategoryLabel {
+    -fx-text-fill: WHITE;
+}
+
+#editCategoryLabel {
+     -fx-text-fill: WHITE;
+}
+
+#changeCategoryNameButton, #createCategoryButton {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: BLACK;
+}
+#changeCategoryNameButton:hover, #createCategoryButton:hover {
+    -fx-background-color: #ffbdbd;
+}
+#changeCategoryNameButton:pressed, #createCategoryButton:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+#deleteCategoryButton {
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+#deleteCategoryButton:hover {
+    -fx-background-color: #ff4a4a;
+}
+#deleteCategoryButton:pressed {
+    -fx-background-color: #ff1f1f;
+}
+
+/* Privilege */
+#Privilege_On {
+    -fx-background-color: #202225;
+}
+
+#User_from_Privilege {
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+#User_from_Privilege:hover {
+    -fx-background-color: #ff4a4a;
+}
+#User_from_Privilege:pressed {
+    -fx-background-color: #ff1f1f;
 }
 
 #User_to_Privilege {
@@ -76,24 +181,13 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
-
-
-#channelChangeButton {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
-    -fx-text-fill: WHITE;
+#User_to_Privilege:hover {
+    -fx-background-color: #ffbdbd;
 }
-
-#serverChangeButton {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
-    -fx-text-fill: WHITE;
+#User_to_Privilege:pressed {
+    -fx-background-color: #ff7d7d;
 }
 
 #Change_Privilege {
@@ -101,50 +195,94 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
+    -fx-text-fill: BLACK;
+}
+#Change_Privilege:hover {
+    -fx-background-color: #ffbdbd;
+}
+#Change_Privilege:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+/* Invite User */
+#rootInvite {
+    -fx-background-color: #202225;
+}
+
+#rootUserTemp {
+    -fx-background-color: #202225;
+}
+
+#rootUserLimit {
+    -fx-background-color: #202225;
+}
+
+#userLimitLabel {
     -fx-text-fill: WHITE;
 }
 
-#changeCategoryNameButton {
-    -fx-background-color: #ff9999;
+#tempLabel {
+    -fx-text-fill: WHITE;
+}
+
+#inviteLinksLabel {
+    -fx-text-fill: WHITE;
+}
+
+#userLimit {
+    -fx-text-fill: WHITE;
+}
+
+#deleteLink {
+    -fx-background-color: #7da6df;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 12px;
     -fx-text-fill: WHITE;
 }
-
-#channelDeleteButton {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-text-fill: RED;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
+#deleteLink:hover {
+    -fx-background-color: #ff4a4a;
+}
+#deleteLink:pressed {
+    -fx-background-color: #ff1f1f;
 }
 
-#deleteCategoryButton {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-text-fill: RED;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
-}
-
-
-#channelCreateButton {
+#createLink {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
     -fx-text-fill: WHITE;
 }
+#createLink:hover {
+    -fx-background-color: #ffbdbd;
+}
+#createLink:pressed {
+    -fx-background-color: #ff7d7d;
+}
 
-#createCategoryButton {
+#linkLabel {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #2f3136;
+}
+
+#button_copyLink {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
-    -fx-padding: 0 0 0 0;
+    -fx-font-size: 20px;
     -fx-text-fill: WHITE;
 }
+#button_copyLink:hover {
+    -fx-background-color: #ffbdbd;
+}
+#button_copyLink:pressed {
+    -fx-background-color: #ff7d7d;
+}
 
+/* javafx stuff */
 .check-box {
     -fx-text-fill: WHITE;
     -fx-border-radius: 3;
@@ -162,98 +300,6 @@
 .list-view .list-cell:odd {
     -fx-background-color: #2f3136;
     -fx-text-fill: WHITE;
-}
-
-#overviewBtn {
-    -fx-background-color: #2f3136;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #2f3136;
-}
-
-#overviewBtn:hover {
-    -fx-background-color: #AAAAAA;
-    -fx-border-color: #AAAAAA;
-}
-
-#overviewBtn:focused {
-    -fx-background-color: #AAAAAA;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #AAAAAA;
-}
-
-#channelBtn {
-    -fx-background-color: #2f3136;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #2f3136;
-}
-
-#channelBtn:hover {
-    -fx-background-color: #AAAAAA;
-    -fx-border-color: #AAAAAA;
-}
-
-#channelBtn:focused {
-    -fx-background-color: #AAAAAA;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #AAAAAA;
-}
-
-#categoryBtn {
-    -fx-background-color: #2f3136;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #2f3136;
-}
-
-#categoryBtn:hover {
-    -fx-background-color: #AAAAAA;
-    -fx-border-color: #AAAAAA;
-}
-
-#categoryBtn:focused {
-    -fx-background-color: #AAAAAA;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #AAAAAA;
-}
-
-#privilegeBtn {
-    -fx-background-color: #2f3136;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #2f3136;
-}
-
-#privilegeBtn:hover {
-    -fx-background-color: #AAAAAA;
-    -fx-border-color: #AAAAAA;
-}
-
-#privilegeBtn:focused {
-    -fx-background-color: #AAAAAA;
-    -fx-text-fill: WHITE;
-    -fx-font-size: 14px;
-    -fx-alignment: center-left;
-    -fx-background-radius: 0;
-    -fx-border-color: #AAAAAA;
 }
 
 .combo-box-popup {
@@ -299,65 +345,4 @@
     -fx-background-radius: 0;
     -fx-border-color: #222222;
     -fx-background-color: #2f3136;
-}
-
-/*INVITE*/
-
-#rootInvite {
-    -fx-background-color: #202225;
-}
-
-#rootUserTemp {
-    -fx-background-color: #202225;
-}
-
-#rootUserLimit {
-    -fx-background-color: #202225;
-}
-
-#userLimitLabel {
-    -fx-text-fill: WHITE;
-}
-
-#tempLabel {
-    -fx-text-fill: WHITE;
-}
-
-#inviteLinksLabel {
-    -fx-text-fill: WHITE;
-}
-
-#userLimit {
-    -fx-text-fill: WHITE;
-}
-
-#deleteLink {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-text-fill: RED;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
-}
-
-#createLink {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-padding: 0 0 0 0;
-    -fx-text-fill: WHITE;
-}
-
-#linkLabel {
-    -fx-text-fill: #FFFFFF;
-    -fx-background-radius: 0;
-    -fx-border-color: #222222;
-    -fx-background-color: #2f3136;
-}
-
-#button_copyLink {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-text-fill: WHITE;
-    -fx-border-color: transparent;
-    -fx-font-size: 20px;
 }
