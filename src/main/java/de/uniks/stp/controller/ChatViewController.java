@@ -606,7 +606,7 @@ public class ChatViewController {
             emojiTextFlow.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
             emojiTextFlow.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
         }
-        String str = handleSpacing(msg.getMessage());
+        String str = formattedText(msg.getMessage());
         ((Text) (emojiTextFlow.getChildren().get(0))).setText(str);
 
         HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
@@ -623,35 +623,6 @@ public class ChatViewController {
         } else {
             finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
         }
-    }
-
-    private String handleSpacing(String str) {
-        //new Line after 50 Characters
-        int point = 0;
-        int counter = 25;
-        boolean found = false;
-        int endPoint;
-        int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
-            while (counter != 0 && !found) {
-                counter--;
-                if (str.charAt(endPoint - (25 - counter)) == ' ') {
-                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
-                    length += 2;
-                    found = true;
-                    point = endPoint - (25 - counter) + 2;
-                }
-            }
-            if (counter == 0) {
-                str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                length += 2;
-                point = endPoint + 2;
-            }
-            found = false;
-            counter = 25;
-        }
-        return str;
     }
 
     public void checkScrollToBottom() {
