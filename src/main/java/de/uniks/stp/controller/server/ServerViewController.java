@@ -321,6 +321,38 @@ public class ServerViewController {
                     headphoneLabel.setVisible(false);
                 }
             });
+            microphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    microphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            microphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    microphoneButton.setStyle("");
+                    setWhiteMode();
+                }
+            });
+            headphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            headphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    headphoneButton.setStyle("");
+                    setWhiteMode();
+                }
+            });
             //unMute headphone
             headphoneLabel.setOnMouseClicked(event -> {
                 headphoneLabel.setVisible(false);
