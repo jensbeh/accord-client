@@ -161,7 +161,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     StageManager mockApp = new StageManager();
 
     @BeforeAll
-    static void setup() throws IOException {
+    static void setup() {
         MockitoAnnotations.openMocks(ServerViewControllerTest.class);
     }
 
@@ -417,7 +417,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         }).when(restClient).logout(anyString(), callbackCaptor9.capture());
     }
 
-    public void loginInit2(String name2, String pw) throws InterruptedException {
+    public void loginInit2(String name2, String pw) {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
@@ -486,7 +486,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar")).toString();
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description","")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
@@ -604,8 +604,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         builder.setShowNotifications(true);
         builder.setDoNotDisturb(false);
         clickOn("#serverName_5e2fbd8770dd077d03df505");
-        ListView<Channel> channels = lookup("#channelList").queryListView();
-        builder.getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text")).getId();
+        builder.getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text"));
         String channelId = builder.getCurrentServer().getCategories().get(0).getChannel().get(0).getId();
         String categoryId = builder.getCurrentServer().getCategories().get(0).getId();
 
@@ -682,9 +681,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         try {
-            doAnswer((Answer<Void>) invocation -> {
-                return null;
-            }).when(mockAudioSocket).send(any());
+            doAnswer((Answer<Void>) invocation -> null).when(mockAudioSocket).send(any());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -826,9 +823,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         try {
-            doAnswer((Answer<Void>) invocation -> {
-                return null;
-            }).when(mockAudioSocket).send(any());
+            doAnswer((Answer<Void>) invocation -> null).when(mockAudioSocket).send(any());
         } catch (IOException e) {
             e.printStackTrace();
         }
