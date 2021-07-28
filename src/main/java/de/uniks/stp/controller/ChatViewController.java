@@ -584,8 +584,74 @@ public class ChatViewController {
     }
 
     public void updateMessage(Message msg) {
-        ((Text) (((EmojiTextFlow) ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)).getChildren().get(0))).setText(msg.getMessage());
+        ((Text) ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0))).getChildren().get(0)))).getChildren().get(0)).setText(msg.getMessage());
+        recalculateSizeMessage(msg);
         checkScrollToBottom();
+    }
+
+    private void recalculateSizeMessage(Message msg) {
+        Text textToCalculateWidth = new Text(msg.getMessage());
+
+        EmojiTextFlow emojiTextFlow = ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0))).getChildren().get(0))));
+
+        textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        emojiTextFlow.setId("messageLabel");
+        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+            emojiTextFlow.setMaxWidth(320);
+            emojiTextFlow.setPrefWidth(320);
+            emojiTextFlow.setMinWidth(320);
+        } else {
+            emojiTextFlow.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            emojiTextFlow.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            emojiTextFlow.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+        }
+        String str = handleSpacing(msg.getMessage());
+        emojiTextFlow.parseAndAppend(str);
+
+        HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
+        messageBox.getChildren().clear();
+        messageBox.getChildren().add(emojiTextFlow);
+        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+            messageBox.setMaxWidth(320);
+        } else {
+            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+        }
+
+        HBox finalMessageBox = ((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)));
+        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+            finalMessageBox.setMaxWidth(320 + 10);
+        } else {
+            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+        }
+    }
+
+    private String handleSpacing(String str) {
+        //new Line after 50 Characters
+        int point = 0;
+        int counter = 25;
+        boolean found = false;
+        int endPoint;
+        int length = str.length();
+        while ((point + 50) < length) {
+            endPoint = point + 50;
+            while (counter != 0 && !found) {
+                counter--;
+                if (str.charAt(endPoint - (25 - counter)) == ' ') {
+                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
+                    length += 2;
+                    found = true;
+                    point = endPoint - (25 - counter) + 2;
+                }
+            }
+            if (counter == 0) {
+                str = new StringBuilder(str).insert(endPoint, "\n").toString();
+                length += 2;
+                point = endPoint + 2;
+            }
+            found = false;
+            counter = 25;
+        }
+        return str;
     }
 
     public void checkScrollToBottom() {

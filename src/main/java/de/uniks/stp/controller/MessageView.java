@@ -104,20 +104,32 @@ public class MessageView {
         if (!textMessage.equals("")) {
             textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
             message.setId("messageLabel");
-            message.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
-            message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
-            message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
+            if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+                message.setMaxWidth(320);
+                message.setPrefWidth(320);
+                message.setMinWidth(320);
+            } else {
+                message.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+                message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+                message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            }
             String str = handleSpacing(textMessage);
             message.parseAndAppend(str);
-
-            System.out.println(message.getMinWidth() + " : " + message.getPrefWidth() + " : " + message.getMaxWidth());
         }
 
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
-        messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
+        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+            messageBox.setMaxWidth(320);
+        } else {
+            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+        }
         HBox finalMessageBox = new HBox();
-        finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320 + 10);
+        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+            finalMessageBox.setMaxWidth(320 + 10);
+        } else {
+            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+        }
 
         //Message background
         Polygon polygon = new Polygon();
