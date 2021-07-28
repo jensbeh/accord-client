@@ -231,7 +231,7 @@ public class SpotifyConnection {
         }
     }
 
-    public void showSpotifyPopupView(Object mouseEvent, Boolean isPersonalUser, String userDescription) {
+    public void showSpotifyPopupView(MouseEvent mouseEvent, Boolean isPersonalUser, String userDescription) {
         this.isPersonalUser = isPersonalUser;
         Parent root = null;
         try {
@@ -250,8 +250,11 @@ public class SpotifyConnection {
             }
 
             HBox hBox;
-
-            hBox = (HBox) mouseEvent;
+            if (mouseEvent.getSource() instanceof VBox) {
+                hBox = (HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0);
+            } else {
+                hBox = (HBox) mouseEvent.getSource();
+            }
 
             hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
             Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));

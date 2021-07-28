@@ -42,24 +42,17 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     @Override
     public ListCell<User> call(ListView<User> param) {
         UserCell userCell = new UserCell();
-        root = userCell.getRoot();
         return userCell;
     }
 
-    public class UserCell extends ListCell<User> {
-        private HBox root;
+    private class UserCell extends ListCell<User> {
         private User user;
-
-        public HBox getRoot() {
-            return root;
-        }
 
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             this.user = item;
             VBox object = new VBox();
             HBox cell = new HBox();
-            this.root = cell;
             Circle circle = new Circle(15);
             Label name = new Label();
             Label game = new Label();
@@ -75,6 +68,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 addContextMenu(item, name);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
+                    cell.setOnMouseClicked(this::spotifyPopup);
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
                         game.setText("   plays " + item.getDescription().substring(1));
@@ -97,7 +91,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             }
         }
 
-
+        private void spotifyPopup(MouseEvent mouseEvent) {
+            builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
+        }
         /**
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked
          *

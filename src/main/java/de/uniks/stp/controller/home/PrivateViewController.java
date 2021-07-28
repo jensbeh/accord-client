@@ -361,12 +361,6 @@ public class PrivateViewController {
             if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
-        } else if (mouseEvent.getClickCount() == 1 && this.onlineUsersList.getItems().size() != 0) {
-            if (builder.getSpotifyToken() != null) {
-                int selectedIndex = onlineUsersList.getSelectionModel().getSelectedIndex();
-                Object[] cells = onlineUsersList.lookupAll(".cell").toArray();
-                builder.getSpotifyConnection().showSpotifyPopupView(((UserListCell.UserCell) cells[selectedIndex]).getRoot(), false, this.onlineUsersList.getSelectionModel().getSelectedItem().getDescription());
-            }
         }
     }
 
