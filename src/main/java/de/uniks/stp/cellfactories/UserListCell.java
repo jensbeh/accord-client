@@ -92,7 +92,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void spotifyPopup(MouseEvent mouseEvent) {
-            builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
+            if (builder.isSpotifyShow()) {
+                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
+            }
         }
         /**
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked

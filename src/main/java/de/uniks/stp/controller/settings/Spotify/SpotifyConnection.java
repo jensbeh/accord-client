@@ -157,6 +157,7 @@ public class SpotifyConnection {
             getAuthenticationToken();
             Platform.runLater(this::stop);
             connectionController.init();
+            updateUserDescriptionScheduler();
         }
     }
 
@@ -299,7 +300,7 @@ public class SpotifyConnection {
                         builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
                         System.out.println(builder.getPersonalUser().getDescription());
                     } else {
-                        builder.getPersonalUser().setDescription("");
+                        builder.getPersonalUser().setDescription("#");
                     }
                 }
             }, 0, 15, TimeUnit.SECONDS);

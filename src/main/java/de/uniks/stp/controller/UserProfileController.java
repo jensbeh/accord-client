@@ -1,15 +1,11 @@
 package de.uniks.stp.controller;
 
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -23,12 +19,6 @@ public class UserProfileController {
     public Label userName;
     private Circle onlineStatus;
     private final Parent view;
-    private HBox userBox;
-    private Label bandAndSong;
-    private Label timePlayed;
-    private Label timeTotal;
-    private ProgressBar progressBar;
-    private ImageView spotifyArtwork;
     private VBox descriptionBox;
 
 
@@ -88,7 +78,7 @@ public class UserProfileController {
     }
 
     private void spotifyPopup(MouseEvent mouseEvent) {
-        if (builder.getSpotifyToken() != null) {
+        if (builder.getSpotifyToken() != null && builder.isSpotifyShow()) {
             builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, true, null);
             userName.setStyle("-fx-background-color: transparent");
         }

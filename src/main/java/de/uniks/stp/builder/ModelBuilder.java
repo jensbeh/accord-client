@@ -96,7 +96,7 @@ public class ModelBuilder {
     /////////////////////////////////////////
 
     public void buildPersonalUser(String name, String password, String userKey) {
-        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password).setDescription("");
+        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password).setDescription("#");
         personalUser.addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
     }
 
