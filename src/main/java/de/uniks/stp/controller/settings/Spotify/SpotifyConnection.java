@@ -7,10 +7,12 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import com.wrapper.spotify.model_objects.specification.Album;
 import com.wrapper.spotify.model_objects.specification.Image;
+import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
 import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
 import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
+import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.ConnectionController;
@@ -190,32 +192,30 @@ public class SpotifyConnection {
         try {
             GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
             CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
-            if (currentlyPlayingContext != null) {
-                String albumLink = currentlyPlayingContext.getContext().getHref();
-                String[] id = new String[0];
-                if (albumLink.contains("albums/")) {
-                    id = albumLink.split("albums/");
-                } else {
-                    id = albumLink.split("playlists/");
-                }
-                return id[1];
+            String idS = currentlyPlayingContext.getItem().getId();
+            GetTrackRequest getTrackRequest = spotifyApi.getTrack(idS).build();
+            Track track = getTrackRequest.execute();
+            if (track != null) {
+                return track.getAlbum().getId();
             }
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             e.printStackTrace();
         }
-        return "No song playing";
+        return null;
     }
 
     public Image getCurrentlyPlayingSongArtwork(String albumID) {
-        try {
-            GetAlbumRequest getAlbumRequest = spotifyApi.getAlbum(albumID).build();
-            Album album = getAlbumRequest.execute();
-            album.getArtists();
-            artist = album.getArtists()[0].getName();
-            Image[] images = album.getImages();
-            return images[2];
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
-            e.printStackTrace();
+        if (albumID != null) {
+            try {
+                GetAlbumRequest getAlbumRequest = spotifyApi.getAlbum(albumID).build();
+                Album album = getAlbumRequest.execute();
+                album.getArtists();
+                artist = album.getArtists()[0].getName();
+                Image[] images = album.getImages();
+                return images[2];
+            } catch (IOException | SpotifyWebApiException | ParseException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
