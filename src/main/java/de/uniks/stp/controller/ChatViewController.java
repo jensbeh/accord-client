@@ -348,7 +348,7 @@ public class ChatViewController {
     }
 
     /**
-     * formatted a text so the teyt is not too long in a row
+     * formatted a text so the text is not too long in a row
      */
     private String formattedText(String text) {
         String str = text;
@@ -584,18 +584,19 @@ public class ChatViewController {
     }
 
     public void updateMessage(Message msg) {
-        ((Text) ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0))).getChildren().get(0)))).getChildren().get(0)).setText(msg.getMessage());
-        recalculateSizeMessage(msg);
+        recalculateSizeAndUpdateMessage(msg);
         checkScrollToBottom();
     }
 
-    private void recalculateSizeMessage(Message msg) {
+    /**
+     * method to resize the message width and boxes around the message
+     */
+    private void recalculateSizeAndUpdateMessage(Message msg) {
         Text textToCalculateWidth = new Text(msg.getMessage());
+        textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
         EmojiTextFlow emojiTextFlow = ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0))).getChildren().get(0))));
 
-        textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-        emojiTextFlow.setId("messageLabel");
         if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
             emojiTextFlow.setMaxWidth(320);
             emojiTextFlow.setPrefWidth(320);
@@ -606,11 +607,10 @@ public class ChatViewController {
             emojiTextFlow.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
         }
         String str = handleSpacing(msg.getMessage());
-        emojiTextFlow.parseAndAppend(str);
+        ((Text) (emojiTextFlow.getChildren().get(0))).setText(str);
 
         HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
-        messageBox.getChildren().clear();
-        messageBox.getChildren().add(emojiTextFlow);
+
         if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
             messageBox.setMaxWidth(320);
         } else {
@@ -726,7 +726,7 @@ public class ChatViewController {
     }
 
     /**
-     * enables the view elements to allow communicate with the user
+     * enables the view elements to allow communicating with the user
      */
     public void enableView() {
         messageTextField.setDisable(false);
