@@ -89,7 +89,7 @@ public class UserProfileController {
 
     private void spotifyPopup(MouseEvent mouseEvent) {
         if (builder.getSpotifyToken() != null) {
-           // builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, true, null);
+            builder.getSpotifyConnection().showSpotifyPopupView(((VBox)(mouseEvent.getSource())).getChildren().get(0), true, null);
             userName.setStyle("-fx-background-color: transparent");
         }
     }

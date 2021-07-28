@@ -75,7 +75,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 addContextMenu(item, name);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
-                    cell.setOnMouseClicked(this::spotifyPopup);
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
                         game.setText("   plays " + item.getDescription().substring(1));
@@ -98,11 +97,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             }
         }
 
-        private void spotifyPopup(MouseEvent mouseEvent) {
-            if (builder.getSpotifyToken() != null) {
-                //builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
-            }
-        }
 
         /**
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked

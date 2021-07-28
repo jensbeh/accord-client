@@ -131,13 +131,14 @@ public class HomeViewController {
         if (builder.isSteamShow() ) {
             builder.getGame();
         }
-        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+
         if (builder.isSteamShow()) {
             builder.getGame();
         }
     }
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        System.out.println("PropertyChange");
         builder.getRestClient().updateDescription(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             if (!body.getObject().getString("status").equals("success")) {

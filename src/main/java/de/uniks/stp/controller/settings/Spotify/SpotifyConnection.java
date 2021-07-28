@@ -253,7 +253,6 @@ public class SpotifyConnection {
 
             hBox = (HBox) mouseEvent;
 
-
             hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
             Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
@@ -282,7 +281,6 @@ public class SpotifyConnection {
     }
 
     public void updateUserDescriptionScheduler() {
-
         currentSong = getCurrentlyPlayingSong();
         if (currentSong != null) {
             String albumID = getCurrentlyPlayingSongAlbumID();
@@ -301,7 +299,7 @@ public class SpotifyConnection {
                         builder.getPersonalUser().setDescription("");
                     }
                 }
-            }, 0, 15, TimeUnit.SECONDS);
+            }, 0, 4, TimeUnit.SECONDS);
         }
     }
 
