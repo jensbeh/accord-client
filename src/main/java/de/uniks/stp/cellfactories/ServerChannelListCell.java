@@ -7,10 +7,12 @@ import de.uniks.stp.model.User;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.lang.reflect.Field;
@@ -77,6 +79,34 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             super.updateItem(item, empty);
             if (!empty) {
 
+                cell.setOnMouseEntered(event -> {
+                    if (item != serverViewController.getCurrentChannel() && item != serverViewController.getCurrentAudioChannel()) {
+                        if (isScrollBarVisible) {
+                            this.setId("channelScrollbarTrueUnselectedHover");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("channelScrollbarFalseUnselectedHover");
+                        }
+                    }
+                });
+                cell.setOnMouseExited(event -> {
+                    if (item != serverViewController.getCurrentChannel() && item.getType().equals("text")) {
+                        if (isScrollBarVisible) {
+                            this.setId("textChannelScrollbarTrueUnselected");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("textChannelScrollbarFalseUnselected");
+                        }
+                    }
+                    if (item != serverViewController.getCurrentAudioChannel() && item.getType().equals("audio")) {
+                        if (isScrollBarVisible) {
+                            this.setId("audioChannelScrollbarTrueUnselected");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("audioChannelScrollbarFalseUnselected");
+                        }
+                    }
+                });
                 if (item == serverViewController.getCurrentChannel()) {
                     if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
                         this.setId("textChannelScrollbarTrueSelected");

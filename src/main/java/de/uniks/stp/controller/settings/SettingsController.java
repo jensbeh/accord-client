@@ -71,6 +71,8 @@ public class SettingsController {
         }
 
         onLanguageChanged(); // needs to be called because new buttons added
+
+        openSettings("General");
     }
 
     /**
