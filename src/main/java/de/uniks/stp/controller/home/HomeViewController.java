@@ -137,17 +137,6 @@ public class HomeViewController {
         }
     }
 
-    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
-        System.out.println("PropertyChange");
-        builder.getRestClient().updateDescription(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            if (!body.getObject().getString("status").equals("success")) {
-                System.err.println("Error in updateDescription");
-                System.err.println(body);
-            }
-        });
-    }
-
     /**
      * Returns the current HomeViewController.
      */
