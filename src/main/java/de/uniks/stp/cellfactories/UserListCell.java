@@ -6,6 +6,8 @@ import de.uniks.stp.util.ResourceManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -37,12 +39,20 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             HBox cell = new HBox();
+
+            Region hoverBg = new Region();
+            hoverBg.setPrefSize(175, 30);
+            hoverBg.setOpacity(0.3);
+            setOnMouseEffects(hoverBg);
+
             Circle circle = new Circle(15);
             Label name = new Label();
+            StackPane stackPane = new StackPane();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
+                cell.setStyle("-fx-padding: 5 5 5 5;");
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
                 } else {
@@ -56,13 +66,47 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 cell.getChildren().addAll(circle, name);
 
                 addContextMenu(item, name);
+                stackPane.getChildren().addAll(hoverBg, cell);
             }
-            this.setGraphic(cell);
+            this.setGraphic(stackPane);
+        }
+
+        /**
+         * this method adds onMouse Effects for hovering or clicking with mouse
+         */
+        private void setOnMouseEffects(Region hoverBg) {
+            this.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
+                } else {
+                    hoverBg.setStyle("-fx-background-color: #bababa; -fx-background-radius: 10 10 10 10");
+                }
+            });
+            this.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                } else {
+                    if (!hoverBg.getStyle().equals("-fx-background-color: #ffffff; -fx-background-radius: 10 10 10 10")) {
+                        hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                    }
+                }
+            });
+            this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
+            this.setOnMouseReleased(event -> {
+                if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
+                    hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                } else if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
+                } else {
+                    hoverBg.setStyle("-fx-background-color: #cccccc; -fx-background-radius: 10 10 10 10");
+                }
+            });
         }
     }
 
     /**
      * adds a ContextMenu to the User Cell, where block/unblock can be clicked
+     *
      * @param item the user
      * @param name the user name as Label
      */
@@ -100,13 +144,13 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
         boolean isBlocked = false;
         for (User user : builder.getBlockedUsers()) {
-            if(user.getId().equals(item.getId())) {
+            if (user.getId().equals(item.getId())) {
                 isBlocked = true;
                 break;
             }
         }
 
-        if(isBlocked) {
+        if (isBlocked) {
             block.setVisible(false);
             unblock.setVisible(true);
         } else {
