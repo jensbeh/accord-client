@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -243,6 +244,8 @@ public class HomeViewController {
             createJoinServerController.setTheme();
             createJoinServerController.showCreateServerView(this::onServerCreated);
             createJoinServerController.joinNewServer(this::joinNewServer);
+            stage.initOwner(homeView.getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(scene);
             stage.show();
             updateServerListColor();

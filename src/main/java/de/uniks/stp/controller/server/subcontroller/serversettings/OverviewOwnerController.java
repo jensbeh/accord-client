@@ -44,9 +44,8 @@ public class OverviewOwnerController {
     private void onChangeNameClicked(ActionEvent actionEvent) {
         this.serverName.setText(nameText.getText());
         builder.getCurrentServer().setName(nameText.getText());
-        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(), response -> {
-            builder.getCurrentServer().setName(nameText.getText());
-        });
+        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
+                response -> builder.getCurrentServer().setName(nameText.getText()));
     }
 
     /**
@@ -62,6 +61,7 @@ public class OverviewOwnerController {
         dialogPane.getStyleClass().remove("alert");
         ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
         alert.setHeaderText(lang.getString("warning.deleteServer"));
+        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
 
         if (builder.getTheme().equals("Bright")) {
             dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
