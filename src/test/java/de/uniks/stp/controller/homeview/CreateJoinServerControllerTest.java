@@ -65,6 +65,9 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response9;
 
+    @Mock
+    private HttpResponse<JsonNode> response10;
+
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
@@ -92,6 +95,9 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
 
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
+
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
 
@@ -107,7 +113,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -185,7 +191,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
         String testUserName = "Hendry Bracken";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description",""));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", ""));
         String testServerId = "5e2fbd8770dd077d03df505";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -277,7 +283,20 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         }).when(restClient).joinServer(anyString(), anyString(), anyString(), anyString(), anyString(), callbackCaptor9.capture());
     }
 
+    public void getNoGame() {
+        JSONObject jsonString = new JSONObject();
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor10.getValue();
+            callback.completed(response10);
+            return null;
+        }).when(restClient).getCurrentGame(anyString(), callbackCaptor10.capture());
+    }
+
+
     public void loginInit(boolean emptyServers) throws InterruptedException {
+        getNoGame();
         mockPostServer();
         if (!emptyServers)
             mockGetServers();
@@ -301,6 +320,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
 
     @Test
     public void createServerTest() throws InterruptedException {
+        getNoGame();
         loginInit(false);
 
         Circle addServer = lookup("#addServer").query();
@@ -316,6 +336,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
 
     @Test
     public void emptyTextField() throws InterruptedException {
+        getNoGame();
         loginInit(false);
         //mockPostServer();
         Circle addServer = lookup("#addServer").query();
