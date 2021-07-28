@@ -237,11 +237,11 @@
 }
 
 #deleteLink {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #ff3030;
     -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
     -fx-text-fill: WHITE;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
 #deleteLink:hover {
     -fx-background-color: #ff4a4a;
@@ -255,13 +255,13 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: BLACK;
+    -fx-text-fill: WHITE;
 }
 #createLink:hover {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #a0bade;
 }
 #createLink:pressed {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #6899de;
 }
 
 #linkLabel {
@@ -276,13 +276,13 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 20px;
-    -fx-text-fill: BLACK;
+    -fx-text-fill: WHITE;
 }
 #button_copyLink:hover {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #a0bade;
 }
 #button_copyLink:pressed {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #6899de;
 }
 
 /* javafx stuff */

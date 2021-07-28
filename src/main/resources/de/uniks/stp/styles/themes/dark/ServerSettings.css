@@ -234,11 +234,11 @@
 }
 
 #deleteLink {
-    -fx-background-color: #7da6df;
+    -fx-background-color: #ff3030;
     -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-font-size: 12px;
     -fx-text-fill: WHITE;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
 #deleteLink:hover {
     -fx-background-color: #ff4a4a;
@@ -252,7 +252,7 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 #createLink:hover {
     -fx-background-color: #ffbdbd;
@@ -273,7 +273,7 @@
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-font-size: 20px;
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
 #button_copyLink:hover {
     -fx-background-color: #ffbdbd;
