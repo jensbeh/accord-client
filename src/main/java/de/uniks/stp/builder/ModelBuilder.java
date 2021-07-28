@@ -67,7 +67,7 @@ public class ModelBuilder {
     private String spotifyToken;
     private String steamToken;
     private LinePoolService linePoolService;
-    private Thread getSteamGame;
+    private updateSteamGameController getSteamGame;
     private ObservableList<User> blockedUsers;
     /////////////////////////////////////////
     //  Setter
@@ -77,7 +77,7 @@ public class ModelBuilder {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
     }
 
-    public User buildUser(String name, String id,String description) {
+    public User buildUser(String name, String id, String description) {
         for (User user : personalUser.getUser()) {
             if (user.getId().equals(id)) {
                 return user;
@@ -88,7 +88,7 @@ public class ModelBuilder {
         return newUser;
     }
 
-    public User buildServerUser(Server server, String name, String id, Boolean status,String description) {
+    public User buildServerUser(Server server, String name, String id, Boolean status, String description) {
         for (User user : server.getUser()) {
             if (user.getId().equals(id)) {
                 if (user.isStatus() == status) {
@@ -498,8 +498,8 @@ public class ModelBuilder {
 
     public void removeBlockedUser(User blockedUser) {
         if (this.blockedUsers != null) {
-            for(User user : this.getBlockedUsers()) {
-                if(blockedUser.getId().equals(user.getId())) {
+            for (User user : this.getBlockedUsers()) {
+                if (blockedUser.getId().equals(user.getId())) {
                     this.blockedUsers.remove(user);
                     return;
                 }
@@ -508,13 +508,17 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        getSteamGame = new Thread(new updateSteamGameController(this));
-        getSteamGame.start();
+        if (getSteamGame == null) {
+            getSteamGame = new updateSteamGameController(this);
+            getSteamGame.run();
+        }
     }
 
-    public void stopGame(){
+    public void stopGame() {
         if (getSteamGame != null) {
-            steamShow=false;
+            getSteamGame.stop();
+            while (!getSteamGame.getStopFlag()) ;
+            getSteamGame = null;
         }
     }
 
