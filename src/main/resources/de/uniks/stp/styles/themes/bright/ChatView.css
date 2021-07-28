@@ -81,19 +81,28 @@
 }
 
 
-.messageLabelTo {
+#messageBoxCurrentUser {
     -fx-background-color: #7da6df;
-    -fx-background-radius: 4;
+    -fx-background-radius: 4 0 4 4;
+    -fx-padding: 5 5 5 5;
+}
+
+#messageBoxOtherUser {
+    -fx-background-color: #d4d4d4;
+    -fx-background-radius: 0 4 4 4;
+    -fx-padding: 5 5 5 5;
+}
+
+.messagePolygonCurrentUser {
+    -fx-fill: #7da6df;
+}
+.messagePolygonOther {
+    -fx-fill: #d4d4d4;
 }
 
 #userNameLabel {
     -fx-text-fill: BLACK;
     -fx-background-color: WHITE;
-}
-
-.messageLabelFrom {
-    -fx-background-color: #d4d4d4;
-    -fx-background-radius: 4;
 }
 
 #messageBox {

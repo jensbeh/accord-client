@@ -400,6 +400,9 @@ public class PrivateViewController {
         } else {
             setDarkMode();
         }
+        if (builder.getCurrentPrivateChat() != null) {
+            MessageViews();
+        }
     }
 
     private void setWhiteMode() {

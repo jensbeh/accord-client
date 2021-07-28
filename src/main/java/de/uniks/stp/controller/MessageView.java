@@ -8,14 +8,17 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -91,38 +94,61 @@ public class MessageView {
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
             message = handleEmojis(true);
-            //Message background own user
-            message.getStyleClass().clear();
-            message.getStyleClass().add("messageLabelTo");
-
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
             message = handleEmojis(false);
-            //Message background
-            message.getStyleClass().clear();
-            message.getStyleClass().add("messageLabelFrom");
         }
+        Text textToCalculateWidth = new Text(textMessage);
         if (!textMessage.equals("")) {
+            textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
             message.setId("messageLabel");
-            message.setMaxWidth(320);
-            message.setPrefWidth(textMessage.length());
+            message.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
+            message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
+            message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
             String str = handleSpacing(textMessage);
-            message.parseAndAppend(" " + str + " ");
+            message.parseAndAppend(str);
+
+            System.out.println(message.getMinWidth() + " : " + message.getPrefWidth() + " : " + message.getMaxWidth());
         }
 
+        HBox messageBox = new HBox();
+        messageBox.getChildren().add(message);
+        messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320);
+        HBox finalMessageBox = new HBox();
+        finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() % 320 + 10);
+
+        //Message background
+        Polygon polygon = new Polygon();
+        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+            polygon.getStyleClass().add("messagePolygonCurrentUser");
+            messageBox.setId("messageBoxCurrentUser");
+            polygon.getPoints().addAll(0.0, 0.0,
+                    10.0, 0.0,
+                    0.0, 10.0);
+            finalMessageBox.getChildren().addAll(messageBox, polygon);
+        } else {
+            polygon.getStyleClass().add("messagePolygonOther");
+            messageBox.setId("messageBoxOtherUser");
+            polygon.getPoints().addAll(0.0, 0.0,
+                    10.0, 0.0,
+                    10.0, 10.0);
+            finalMessageBox.getChildren().addAll(polygon, messageBox);
+        }
+
+
         if (loadImage) {
-            vbox.getChildren().addAll(userName, message, webView);
+            vbox.getChildren().addAll(userName, webView);
             cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
         } else if (loadVideo) {
             MediaControl mediaControl = new MediaControl();
             VBox mediaBox = mediaControl.setMediaControls(mediaView);
             setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-            vbox.getChildren().addAll(userName, message, mediaBox);
+            vbox.getChildren().addAll(userName, mediaBox);
 
         } else {
-            vbox.getChildren().addAll(userName, message);
+            vbox.getChildren().addAll(userName, finalMessageBox);
             vbox.setMouseTransparent(true);
         }
 
@@ -145,7 +171,11 @@ public class MessageView {
                 emojiTextFlowParameters.setEmojiScaleFactor(1D);
                 emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
                 emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                emojiTextFlowParameters.setTextColor(Color.WHITE);
+                if (builder.getTheme().equals("Dark")) {
+                    emojiTextFlowParameters.setTextColor(Color.BLACK);
+                } else {
+                    emojiTextFlowParameters.setTextColor(Color.WHITE);
+                }
             }
             return new EmojiTextFlow(emojiTextFlowParameters);
         } else {

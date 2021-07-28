@@ -745,6 +745,9 @@ public class ServerViewController {
         } else {
             setDarkMode();
         }
+        if (currentChannel != null) {
+            showMessageView();
+        }
         refreshAllChannelLists();
     }
 
