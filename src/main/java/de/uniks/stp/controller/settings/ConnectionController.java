@@ -114,7 +114,6 @@ public class ConnectionController extends SubSetting {
                     builder.setSpotifyShow(false);
                 } else {
                     builder.setSteamShow(false);
-                    builder.stopGame();
                     builder.getPersonalUser().setDescription("?");
                 }
             } else {

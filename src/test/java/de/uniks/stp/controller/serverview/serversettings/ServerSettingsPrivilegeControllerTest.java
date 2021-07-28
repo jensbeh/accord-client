@@ -146,7 +146,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter")
-                .put("online", true);
+                .put("online", true).put("description","");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")

@@ -128,11 +128,9 @@ public class ServerSystemWebSocket extends Endpoint {
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         String userName = "";
         String userId = "";
-        String description = "";
         if (!userAction.equals("audioJoined") && !userAction.equals("audioLeft") && !userAction.equals("messageUpdated") && !userAction.equals("messageDeleted")) {
             userName = jsonData.getString("name");
             userId = jsonData.getString("id");
-            description = jsonData.getString("description");
         }
         if (userAction.equals("categoryCreated")) {
             createCategory(jsonData);
@@ -162,13 +160,13 @@ public class ServerSystemWebSocket extends Endpoint {
         }
 
         if (userAction.equals("userJoined")) {
-            buildServerUser(userName, userId, true, description);
+            buildServerUser(userName, userId, true, "");
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
                 Platform.runLater(StageManager::showLoginScreen);
             }
-            buildServerUser(userName, userId, false, description);
+            buildServerUser(userName, userId, false,"");
         }
 
         if (userAction.equals("serverDeleted")) {

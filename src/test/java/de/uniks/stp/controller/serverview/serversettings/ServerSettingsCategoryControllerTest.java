@@ -4,7 +4,7 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -162,7 +162,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter")
-                .put("online", true);
+                .put("online", true).put("description", "");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -414,7 +414,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         clickOn(deleteCategoryButton);
 
-        message = "{\"action\":\"categoryDeleted\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\""+newCategory.getName()+"\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
+        message = "{\"action\":\"categoryDeleted\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\"" + newCategory.getName() + "\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
