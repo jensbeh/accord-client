@@ -90,14 +90,20 @@
 }
 
 #privateChatList .selectedChat {
-    -fx-background-color: #999999;
+    -fx-background-color: #5a5c5e;
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
 
 #privateChatList .unselectedChat {
-    -fx-background-color: #404040;
+    -fx-background-color: #a4a4a4;
+    -fx-background-radius: 13px;
+    -fx-pref-height: 65;
+    -fx-max-width: 183
+}
+#privateChatList .unselectedChatHover {
+    -fx-background-color: #bababa;
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
@@ -159,4 +165,8 @@
 
 #headset {
     -fx-background-color: #2f3136;
+}
+
+.numberTextStyle {
+    -fx-text-fill: BLACK;
 }

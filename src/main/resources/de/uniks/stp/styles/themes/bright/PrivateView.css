@@ -89,20 +89,23 @@
 }
 
 #privateChatList .selectedChat {
-    -fx-background-color: #bfbfbf;
-    -fx-border-color: #7c7c7c;
-    -fx-border-width: 2px;
-    -fx-border-radius: 13px;
+    -fx-background-color: #5a5c5e;
+
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
 
 #privateChatList .unselectedChat {
-    -fx-background-color: #e2e2e2;
-    -fx-border-color: #c1c1c1;
-    -fx-border-width: 1.5px;
-    -fx-border-radius: 13px;
+    -fx-background-color: #a4a4a4;
+
+    -fx-background-radius: 13px;
+    -fx-pref-height: 65;
+    -fx-max-width: 183
+}
+#privateChatList .unselectedChatHover {
+    -fx-background-color: #bababa;
+
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
@@ -161,4 +164,8 @@
 #mute_microphone {
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
+}
+
+.numberTextStyle {
+    -fx-text-fill: WHITE;
 }
