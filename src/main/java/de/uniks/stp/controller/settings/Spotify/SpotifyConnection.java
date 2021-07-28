@@ -299,7 +299,7 @@ public class SpotifyConnection {
                         builder.getPersonalUser().setDescription("");
                     }
                 }
-            }, 0, 4, TimeUnit.SECONDS);
+            }, 0, 15, TimeUnit.SECONDS);
         }
     }
 
