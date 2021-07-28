@@ -515,7 +515,6 @@ public class ModelBuilder {
     public void stopGame(){
         if (getSteamGame != null) {
             steamShow=false;
-            //getSteamGame.stop();
         }
     }
 

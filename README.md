@@ -5,6 +5,10 @@
 
 # Please read the manual carefully
 
+## Before start
+
+Remove the old Aaccord folder in appdata, if there is an old accord folder.
+
 ## Using the Accord client
 
 To start the Accord client, you can either compile and run the source code yourself or you use the provided jar file

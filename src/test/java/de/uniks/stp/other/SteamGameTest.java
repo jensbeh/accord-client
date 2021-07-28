@@ -3,7 +3,6 @@ package de.uniks.stp.other;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
-import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
@@ -11,8 +10,9 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.collections.ObservableList;
-import javafx.scene.control.*;
-import javafx.scene.shape.Circle;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -72,9 +72,6 @@ public class SteamGameTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response3;
 
-    @Mock
-    private HttpResponse<JsonNode> response5;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
@@ -85,7 +82,7 @@ public class SteamGameTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -218,9 +215,9 @@ public class SteamGameTest extends ApplicationTest {
                 break;
             }
         }
-        Assert.assertEquals("Gustav",userName);
+        Assert.assertEquals("Gustav", userName);
 
-        JSONObject js = new JSONObject().put("action","userDescriptionChanged").put("data",new JSONObject().put("id","60c8b3fb44453702009c07b3").put("description","?The Binding of Isaac: Rebirth"));
+        JSONObject js = new JSONObject().put("action", "userDescriptionChanged").put("data", new JSONObject().put("id", "60c8b3fb44453702009c07b3").put("description", "?The Binding of Isaac: Rebirth"));
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(js.toString());
         privateSystemWebSocketClient.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
@@ -231,7 +228,7 @@ public class SteamGameTest extends ApplicationTest {
                 break;
             }
         }
-        Assert.assertEquals("?The Binding of Isaac: Rebirth",desc);
+        Assert.assertEquals("?The Binding of Isaac: Rebirth", desc);
 
     }
 }
