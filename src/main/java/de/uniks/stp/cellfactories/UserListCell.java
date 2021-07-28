@@ -42,16 +42,16 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     @Override
     public ListCell<User> call(ListView<User> param) {
         UserCell userCell = new UserCell();
-        userCell.setRoot(root);
+        root = userCell.getRoot();
         return userCell;
     }
 
-    private class UserCell extends ListCell<User> {
+    public class UserCell extends ListCell<User> {
         private HBox root;
         private User user;
 
-        public void setRoot(HBox root) {
-            this.root = root;
+        public HBox getRoot() {
+            return root;
         }
 
         protected void updateItem(User item, boolean empty) {
@@ -59,6 +59,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             this.user = item;
             VBox object = new VBox();
             HBox cell = new HBox();
+            this.root = cell;
             Circle circle = new Circle(15);
             Label name = new Label();
             Label game = new Label();
@@ -99,7 +100,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
         private void spotifyPopup(MouseEvent mouseEvent) {
             if (builder.getSpotifyToken() != null) {
-                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
+                //builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
             }
         }
 

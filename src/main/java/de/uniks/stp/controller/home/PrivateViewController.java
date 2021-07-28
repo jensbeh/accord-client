@@ -66,6 +66,8 @@ public class PrivateViewController {
     private Label headphoneLabel;
     private Label microphoneLabel;
     private UserProfileController userProfileController;
+    private int lastTime;
+    boolean isdblClicked;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -137,7 +139,7 @@ public class PrivateViewController {
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 String description = jsonResponse.getJSONObject(i).get("description").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName, userId,description);
+                    builder.buildUser(userName, userId, description);
                 } else {
                     builder.getPersonalUser().setId(userId);
                 }
@@ -154,7 +156,7 @@ public class PrivateViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            userProfileController = new UserProfileController(root,builder);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -359,23 +361,14 @@ public class PrivateViewController {
             if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
-            //showSpotifyPopup();
+        } else if (mouseEvent.getClickCount() == 1 && this.onlineUsersList.getItems().size() != 0) {
+            if (builder.getSpotifyToken() != null) {
+                int selectedIndex = onlineUsersList.getSelectionModel().getSelectedIndex();
+                Object[] cells = onlineUsersList.lookupAll(".cell").toArray();
+                builder.getSpotifyConnection().showSpotifyPopupView(((UserListCell.UserCell) cells[selectedIndex]).getRoot(), false, this.onlineUsersList.getSelectionModel().getSelectedItem().getDescription());
+            }
         }
     }
-
-    private void showSpotifyPopup() {
-        final Stage dialog = new Stage();
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.initOwner(root.getScene().getWindow());
-        VBox dialogVbox = new VBox(20);
-        dialogVbox.getChildren().add(new Text("This is a Dialog"));
-        dialogVbox.setStyle("-fx-focus-color: transparent;");
-        dialog.initStyle(StageStyle.UNDECORATED);
-        Scene dialogScene = new Scene(dialogVbox, 300, 200);
-        dialog.setScene(dialogScene);
-        dialog.show();
-    }
-
 
     /**
      * Stop running Actions when Controller gets closed
@@ -383,7 +376,7 @@ public class PrivateViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
-        if(userProfileController!=null) {
+        if (userProfileController != null) {
             userProfileController.stop();
         }
         try {

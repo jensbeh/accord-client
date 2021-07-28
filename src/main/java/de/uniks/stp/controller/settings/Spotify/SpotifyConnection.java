@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Cell;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
@@ -72,11 +73,9 @@ public class SpotifyConnection {
 
     private String artist;
     private Boolean isPersonalUser;
-    private Boolean popUpIsShown;
 
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> handle;
-
     private ScheduledExecutorService schedulerDescription;
 
     public SpotifyConnection(ModelBuilder builder) {
@@ -104,15 +103,26 @@ public class SpotifyConnection {
         popUp.show();
     }
 
+    private void createHttpServer() {
+        try {
+            server = HttpServer.create(new InetSocketAddress(8888), 0);
+            server.createContext("/");
+            server.setExecutor(null); // creates a default executor
+            server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createCodeVerifier() {
+        codeVerifier = RandomStringUtils.random(80, 0, 0, true, true, null, new SecureRandom());
+    }
+
     private void createCodeChallenge() {
         byte[] codeChallengeHash = DigestUtils.sha256(codeVerifier);
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String codeChallengeBase64 = encoder.encodeToString(codeChallengeHash);
         codeChallenge = codeChallengeBase64.substring(0, codeChallengeBase64.length() - 1);
-    }
-
-    private void createCodeVerifier() {
-        codeVerifier = RandomStringUtils.random(80, 0, 0, true, true, null, new SecureRandom());
     }
 
     private String createSpotifyAuthenticationURLPKCE() {
@@ -126,7 +136,7 @@ public class SpotifyConnection {
         return url;
     }
 
-    private void spotifyAuthentication() {
+    private void getAuthenticationToken() {
         try {
             authorizationCodePKCERequest = spotifyApi.authorizationCodePKCE(code, codeVerifier).build();
             authorizationCodeCredentials = authorizationCodePKCERequest.execute();
@@ -144,24 +154,13 @@ public class SpotifyConnection {
         if (webView.getEngine().getLocation().contains("code=")) {
             String[] link = webView.getEngine().getLocation().split("code=");
             code = link[1];
-            spotifyAuthentication();
+            getAuthenticationToken();
             Platform.runLater(this::stop);
             connectionController.init();
         }
     }
 
-    private void createHttpServer() {
-        try {
-            server = HttpServer.create(new InetSocketAddress(8888), 0);
-            server.createContext("/");
-            server.setExecutor(null); // creates a default executor
-            server.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void refreshSpotifyToken() {
+    public void refreshToken() {
         if (builder.getSpotifyRefresh() != null) {
             try {
                 authorizationCodePKCERefreshRequest = spotifyApi.authorizationCodePKCERefresh().build();
@@ -232,7 +231,7 @@ public class SpotifyConnection {
         }
     }
 
-    public void showSpotifyPopupView(MouseEvent mouseEvent, Boolean isPersonalUser, String userDescription) {
+    public void showSpotifyPopupView(Object mouseEvent, Boolean isPersonalUser, String userDescription) {
         this.isPersonalUser = isPersonalUser;
         Parent root = null;
         try {
@@ -251,11 +250,9 @@ public class SpotifyConnection {
             }
 
             HBox hBox;
-            if (mouseEvent.getSource() instanceof VBox) {
-                hBox = (HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0);
-            } else {
-                hBox = (HBox) mouseEvent.getSource();
-            }
+
+            hBox = (HBox) mouseEvent;
+
 
             hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
             Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));
@@ -286,25 +283,26 @@ public class SpotifyConnection {
 
     public void updateUserDescriptionScheduler() {
 
-            currentSong = getCurrentlyPlayingSong();
-            if (currentSong != null) {
-                String albumID = getCurrentlyPlayingSongAlbumID();
-                artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-                builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-                schedulerDescription = Executors.newScheduledThreadPool(1);
-                schedulerDescription.scheduleAtFixedRate(new Runnable() {
-                    public void run() {
-                        currentSong = getCurrentlyPlayingSong();
-                        String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-                        artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-                        if (builder.isSpotifyShow()) {
-                            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-                        } else {
-                            builder.getPersonalUser().setDescription("");
-                        }
+        currentSong = getCurrentlyPlayingSong();
+        if (currentSong != null) {
+            String albumID = getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            schedulerDescription = Executors.newScheduledThreadPool(1);
+            schedulerDescription.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    currentSong = getCurrentlyPlayingSong();
+                    String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+                    artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+                    if (builder.isSpotifyShow()) {
+                        builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                        System.out.println(builder.getPersonalUser().getDescription());
+                    } else {
+                        builder.getPersonalUser().setDescription("");
                     }
-                }, 0, 15, TimeUnit.SECONDS);
-            }
+                }
+            }, 0, 15, TimeUnit.SECONDS);
+        }
     }
 
     public void personalUserListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {

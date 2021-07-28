@@ -7,10 +7,8 @@ import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
-import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
@@ -33,8 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -128,7 +124,7 @@ public class HomeViewController {
             }
         });
         spotifyConnection = new SpotifyConnection(builder);
-        builder.getSpotifyConnection().refreshSpotifyToken();
+        builder.getSpotifyConnection().refreshToken();
         if (builder.getSpotifyToken() != null) {
             builder.getSpotifyConnection().updateUserDescriptionScheduler();
         }
