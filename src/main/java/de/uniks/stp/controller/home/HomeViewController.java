@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -240,6 +241,8 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
             createJoinServerController.setTheme();

@@ -617,7 +617,7 @@ public class ChatViewController {
     public void stop() {
         sendButton.setOnAction(null);
         stopMediaPlayers();
-        if(builder.getBlockedUsers() != null && blockedUserListener != null) {
+        if (builder.getBlockedUsers() != null && blockedUserListener != null) {
             builder.getBlockedUsers().removeListener(blockedUserListener);
         }
     }
@@ -672,6 +672,7 @@ public class ChatViewController {
     /**
      * disables the view elements to disallow communicating with the user
      * additionally inform own user that he needs to unblock him to keep chatting with the user
+     *
      * @param user the user who is blocked
      */
     public void disableView(User user) {
