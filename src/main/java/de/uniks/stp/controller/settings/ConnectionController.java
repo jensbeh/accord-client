@@ -112,6 +112,7 @@ public class ConnectionController extends SubSetting {
                 toggleShowFinal[0] = false;
                 if (stackPane.getId().contains("spotifyToggleStackPane")) {
                     builder.setSpotifyShow(false);
+                    builder.getPersonalUser().setDescription("");
                 } else {
                     builder.setSteamShow(false);
                     builder.getPersonalUser().setDescription("?");
