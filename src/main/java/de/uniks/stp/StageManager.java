@@ -15,6 +15,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kong.unirest.Unirest;
@@ -50,7 +51,6 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
         if (builder == null) {
             builder = new ModelBuilder();
         }
@@ -69,6 +69,8 @@ public class StageManager extends Application {
 
         // start application
         stage = primaryStage;
+        stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
         showLoginScreen();
         primaryStage.show();
     }
@@ -215,6 +217,8 @@ public class StageManager extends Application {
             settingsController.setTheme();
 
             subStage = new Stage();
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             setSubStageTitle("window_title_settings");
             subStage.setResizable(false);
             subStage.setScene(scene);
@@ -247,6 +251,8 @@ public class StageManager extends Application {
 
             //setting stage settings
             subStage = new Stage();
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             setSubStageTitle("window_title_serverSettings");
             subStage.setResizable(false);
             subStage.setScene(scene);
@@ -279,6 +285,8 @@ public class StageManager extends Application {
             inviteUsersController.setTheme();
 
             subStage = new Stage();
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             setSubStageTitle("window_title_inviteUsers");
             subStage.setResizable(false);
             subStage.setScene(scene);
@@ -310,6 +318,8 @@ public class StageManager extends Application {
 
             //start snake stage
             subStage = new Stage();
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             subStage.setTitle("Snake");
             subStage.setResizable(false);
             subStage.setScene(scene);
@@ -348,6 +358,8 @@ public class StageManager extends Application {
 
             //start snake game stage
             subStage = new Stage();
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             subStage.setTitle("Snake");
             subStage.setResizable(false);
             subStage.setScene(scene);

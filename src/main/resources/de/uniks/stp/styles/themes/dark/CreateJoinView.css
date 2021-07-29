@@ -24,6 +24,10 @@
     -fx-focus-color: transparent;
 }
 
+.tab-pane .tab:hover {
+    -fx-background-color: #666870;
+}
+
 .tab-pane .tab:selected {
     -fx-focus-color: transparent;
     -fx-background-color: #44464e;
@@ -56,18 +60,16 @@
     -fx-background-color: #2f3136;
 }
 
-#createServer {
+#createServer, #joinServer {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
-    -fx-text-fill: WHITE;
+    -fx-text-fill: BLACK;
 }
-
-#joinServer {
-    -fx-background-color: #ff9999;
-    -fx-background-radius: 80;
-    -fx-border-color: transparent;
-    -fx-padding: 0 0 0 0;
-    -fx-text-fill: WHITE;
+#createServer:hover, #joinServer:hover {
+    -fx-background-color: #ffbdbd;
+}
+#createServer:pressed, #joinServer:pressed {
+    -fx-background-color: #ff7d7d;
 }

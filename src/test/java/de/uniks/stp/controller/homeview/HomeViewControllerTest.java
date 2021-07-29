@@ -408,14 +408,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals(testUserOne.getName(), app.getBuilder().getCurrentPrivateChat().getName());
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+        Assert.assertEquals("5a5c5e", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+        Assert.assertEquals("5a5c5e", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
     }
 
     @Test
