@@ -6,7 +6,9 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.model.Message;
 import de.uniks.stp.model.Server;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
@@ -30,10 +32,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -108,6 +107,9 @@ public class HomeViewController {
                     serverController.get(server).startController(status -> {
                         // TODO start here homeView -> from loginView this!
                         System.out.println("loaded Server " + server.getName());
+                        for(Server servers : builder.getServers()) {
+                            checkUserArrivedExited(servers, true);
+                        }
                     });
                     serverController.get(server).setTheme();
                 } catch (IOException e) {
@@ -117,6 +119,62 @@ public class HomeViewController {
         });
     }
 
+    /**
+     * check if a user has arrived or left from the server
+     */
+    private void checkUserArrivedExited(Server server, boolean compare) {
+        if (compare) {
+            compareMemberLists(server);
+        }
+        ResourceManager.saveMemberList(builder.getPersonalUser().getName(), server.getId(), server.getUser(), true);
+    }
+
+    /**
+     * compare the saved memberList with the current user list of server
+     * @param server the server users list
+     */
+    private void compareMemberLists(Server server) {
+        String serverId = server.getId();
+        List<User> serverUsers = server.getUser();
+        try {
+            List<User> memberList = ResourceManager.getMemberList(builder.getPersonalUser().getName(), serverId);
+
+            // no comparison when lonely in server
+            if (server.getUser().size() <= 1) {
+                return;
+            }
+
+            for (User user : memberList) {
+                boolean found = false;
+                for (User serverUser : serverUsers) {
+                    if (user.getId().equals(serverUser.getId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // user exited
+                    server.getCategories().get(0).getChannel().get(0).withMessage(new Message().setId("-1").setMessage(user.getName() + " i have exited.").setFrom("server"));
+                }
+            }
+
+            for (User serverUser : serverUsers) {
+                boolean found = false;
+                for (User user : memberList) {
+                    if (user.getId().equals(serverUser.getId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // user arrived
+                    server.getCategories().get(0).getChannel().get(0).withMessage(new Message().setId("-1").setMessage(serverUser.getName() + "i have arrived.").setFrom("server"));
+                }
+            }
+        } catch (java.io.IOException | com.github.cliftonlabs.json_simple.JsonException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Returns the current HomeViewController.
@@ -253,6 +311,7 @@ public class HomeViewController {
                             serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                             serverController.get(server).startController(status -> Platform.runLater(() -> {
                                 updateServerListColor();
+                                checkUserArrivedExited(server, false);
                                 showServerView();
                             }));
 
@@ -291,6 +350,7 @@ public class HomeViewController {
                             serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                             serverController.get(server).startController(status -> Platform.runLater(() -> {
                                 updateServerListColor();
+                                checkUserArrivedExited(server, false);
                                 showServerView();
                             }));
 
