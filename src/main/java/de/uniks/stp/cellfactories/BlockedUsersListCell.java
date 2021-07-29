@@ -2,7 +2,9 @@ package de.uniks.stp.cellfactories;
 
 import de.uniks.stp.controller.settings.BlockController;
 import de.uniks.stp.model.User;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
 public class BlockedUsersListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
@@ -11,6 +13,7 @@ public class BlockedUsersListCell implements javafx.util.Callback<ListView<User>
     public BlockedUsersListCell(BlockController blockController) {
         this.blockController = blockController;
     }
+
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R

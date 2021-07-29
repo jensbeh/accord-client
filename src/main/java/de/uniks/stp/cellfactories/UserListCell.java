@@ -5,7 +5,6 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -53,7 +52,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             this.user = item;
-            VBox object = new VBox();
+            VBox vBox = new VBox();
             HBox cell = new HBox();
 
             Region hoverBg = new Region();
@@ -70,30 +69,22 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
                 cell.setStyle("-fx-padding: 5 5 5 5;");
-                if (item.isStatus()) {
-                    circle.setFill(Paint.valueOf("#13d86b"));
-                } else {
-                    circle.setFill(Paint.valueOf("#eb4034"));
-                }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 addContextMenu(item, name);
-
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
-//                    cell.setOnMouseClicked(this::spotifyPopup);
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
                         game.setText("   plays " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
-                        cell.getChildren().addAll(circle, name);
-                        object.getChildren().addAll(cell, game);
+                        vBox.getChildren().addAll(name, game);
+                        cell.getChildren().addAll(circle, vBox);
                         stackPane.getChildren().addAll(hoverBg, cell);
-                        this.setGraphic(object);
                     } else {
                         cell.getChildren().addAll(circle, name);
                         stackPane.getChildren().addAll(hoverBg, cell);
@@ -103,24 +94,18 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     circle.setFill(Paint.valueOf("#eb4034"));
                     cell.getChildren().addAll(circle, name);
                     stackPane.getChildren().addAll(hoverBg, cell);
-                    this.setGraphic(stackPane);
                 }
+                this.setGraphic(stackPane);
             } else {
                 this.setGraphic(null);
             }
         }
 
-        private void spotifyPopup(MouseEvent mouseEvent) {
-//            if (builder.isSpotifyShow()) {
-//                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
-//            }
-        }
-
+        /**
+         * this method adds onMouse Effects for hovering or clicking with mouse
+         */
         private void setOnMouseEffects(Region hoverBg, HBox cell) {
             this.setOnMouseEntered(event -> {
-//                if (builder.isSpotifyShow()) {
-//                    builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
-//                }
                 if (builder.getTheme().equals("Dark")) {
                     hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
                 } else {

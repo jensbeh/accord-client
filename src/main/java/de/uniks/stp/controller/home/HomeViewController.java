@@ -112,7 +112,6 @@ public class HomeViewController {
         });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
-
         if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
             builder.getGame();
         }

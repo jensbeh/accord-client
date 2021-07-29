@@ -91,6 +91,7 @@ public class ModelBuilder {
         });
     }
 
+    private boolean isSteamRun;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -100,7 +101,7 @@ public class ModelBuilder {
         personalUser.addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
     }
 
-    public User buildUser(String name, String id,String description) {
+    public User buildUser(String name, String id, String description) {
         for (User user : personalUser.getUser()) {
             if (user.getId().equals(id)) {
                 return user;
@@ -111,7 +112,7 @@ public class ModelBuilder {
         return newUser;
     }
 
-    public User buildServerUser(Server server, String name, String id, Boolean status,String description) {
+    public User buildServerUser(Server server, String name, String id, Boolean status, String description) {
         for (User user : server.getUser()) {
             if (user.getId().equals(id)) {
                 if (user.isStatus() == status) {
@@ -358,12 +359,6 @@ public class ModelBuilder {
 
         } catch (Exception e) {
             System.out.println("Error in loadSettings");
-            try {
-                Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
-                loadSettings();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
             e.printStackTrace();
         }
     }
@@ -546,8 +541,8 @@ public class ModelBuilder {
 
     public void removeBlockedUser(User blockedUser) {
         if (this.blockedUsers != null) {
-            for(User user : this.getBlockedUsers()) {
-                if(blockedUser.getId().equals(user.getId())) {
+            for (User user : this.getBlockedUsers()) {
+                if (blockedUser.getId().equals(user.getId())) {
                     this.blockedUsers.remove(user);
                     return;
                 }
@@ -556,13 +551,17 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        getSteamGame = new Thread(new updateSteamGameController(this));
-        getSteamGame.start();
+        if (getSteamGame == null) {
+            isSteamRun = true;
+            getSteamGame = new Thread(new updateSteamGameController(this));
+            getSteamGame.start();
+        }
     }
 
-    public void stopGame(){
+    public void stopGame() {
         if (getSteamGame != null) {
-            steamShow=false;
+            isSteamRun = false;
+            getSteamGame = null;
         }
     }
 
@@ -572,5 +571,9 @@ public class ModelBuilder {
 
     public HomeViewController getHomeViewController() {
         return homeViewController;
+    }
+
+    public boolean isSteamRun() {
+        return isSteamRun;
     }
 }

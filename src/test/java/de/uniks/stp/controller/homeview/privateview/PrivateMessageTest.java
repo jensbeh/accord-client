@@ -88,7 +88,7 @@ public class PrivateMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -117,7 +117,7 @@ public class PrivateMessageTest extends ApplicationTest {
     StageManager mockApp = new StageManager();
 
     @BeforeAll
-    static void setup() throws IOException {
+    static void setup() {
         MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 

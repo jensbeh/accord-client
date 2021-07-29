@@ -84,13 +84,13 @@ public class AudioController extends SubSetting {
         } else {
             valueTextInputSlider.setFill(Color.WHITE);
         }
-        valueTextInputSlider.setText(String.valueOf((int)(volumeInput.getValue() * 100) + 50));
+        valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
         thumbInputSlider.getChildren().add(valueTextInputSlider);
 
         // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
             builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
-            valueTextInputSlider.setText(String.valueOf((int)(volumeInput.getValue() * 100) + 50));
+            valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
             builder.saveSettings();
         });
 
@@ -109,13 +109,13 @@ public class AudioController extends SubSetting {
         } else {
             valueTextOutputSlider.setFill(Color.WHITE);
         }
-        valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100)));
+        valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
         thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
         // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
             builder.getLinePoolService().setSpeakerVolume(newValue.floatValue());
-            valueTextOutputSlider.setText(String.valueOf((int)(volumeOutput.getValue() * 100)));
+            valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
             builder.saveSettings();
         });
     }

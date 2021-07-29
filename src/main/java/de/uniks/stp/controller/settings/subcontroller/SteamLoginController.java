@@ -31,6 +31,7 @@ public class SteamLoginController {
 
     private void getSteam64ID(Observable observable) {
         String[] link = webView.getEngine().getLocation().split("/");
+        System.out.println(webView.getEngine().getLocation());
         if (link.length > 1 && !link[link.length - 1].equals("goto")) {
             String selector = link[link.length - 2];
             if (selector.equals("id")) {   // https://steamcommunity.com/id/VanityID/
@@ -47,7 +48,7 @@ public class SteamLoginController {
             int status = body.getObject().getJSONObject("response").getInt("success");
             if (status == 1) {
                 setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-            } else{
+            } else {
                 System.err.println("Error in Converting VanityID to Steam64ID");
             }
         });
@@ -65,7 +66,7 @@ public class SteamLoginController {
         Platform.runLater(builder::getGame);
     }
 
-    public void refresh(Runnable refresh){
+    public void refresh(Runnable refresh) {
         refreshConnectionView = refresh;
     }
 }
