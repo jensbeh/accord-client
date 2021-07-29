@@ -276,6 +276,9 @@ public class SettingsControllerTest extends ApplicationTest {
         //Assert.assertNotEquals("", app.getBuilder().getSteamToken());
         //Assert.assertFalse(app.getBuilder().isSpotifyShow());
         //Assert.assertTrue(app.getBuilder().isSteamShow());
+        app.getBuilder().setSteamShow(false);
+        app.getBuilder().saveSettings();
+
     }
 
     @Test

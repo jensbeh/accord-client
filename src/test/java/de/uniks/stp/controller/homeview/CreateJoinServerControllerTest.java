@@ -287,6 +287,8 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     }
 
     public void getNoGame() {
+        mockApp.getBuilder().setSteamShow(false);
+        mockApp.getBuilder().saveSettings();
         JSONObject jsonString = new JSONObject();
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
