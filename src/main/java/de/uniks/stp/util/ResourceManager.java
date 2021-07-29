@@ -261,67 +261,6 @@ public class ResourceManager {
         return userList;
     }
 
-    /**
-     * save memberList of server
-     */
-    public static void saveMemberList(String currentUserName, String serverId, List<User> users, boolean reset) {
-        try {
-            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH))) {
-                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH));
-            }
-
-            JsonArray parser = new JsonArray();
-            File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH + "/" + currentUserName + "_" + serverId + ".json");
-            if (f.exists()) {
-                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH + "/" + currentUserName + "_"  + serverId + ".json"));
-                parser = (JsonArray) Jsoner.deserialize(reader);
-            }
-            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH + "/" + currentUserName + "_"  + serverId + ".json"));
-
-            // clear member list
-            if (reset) {
-                while (!parser.isEmpty()) {
-                    parser.remove(0);
-                }
-            }
-
-            // add users to member list
-            for (User user : users) {
-                JsonObject obj = new JsonObject();
-                obj.put("id", user.getId());
-                obj.put("name", user.getName());
-                parser.add(obj);
-            }
-
-            Jsoner.serialize(parser, writer);
-            writer.close();
-        } catch (IOException | JsonException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * get memberList of server
-     */
-    public static List<User> getMemberList(String currentUserName, String serverId) throws IOException, JsonException {
-        JsonArray parser;
-        List<User> userList = new ArrayList<>();
-
-        File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH + "/" + currentUserName + "_"  + serverId + ".json");
-        if (f.exists()) {
-            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + SERVER_PATH + "/" + currentUserName + "_"  + serverId + ".json"));
-            parser = (JsonArray) Jsoner.deserialize(reader);
-            for (Object jsonObject : parser) {
-                User user = new User();
-                JsonObject jsonObject1 = (JsonObject) jsonObject;
-                user.setId((String) jsonObject1.get("id"));
-                user.setName((String) jsonObject1.get("name"));
-                userList.add(user);
-            }
-        }
-        return userList;
-    }
-
     public static void extractEmojis() {
         try {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH))) {
