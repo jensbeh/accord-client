@@ -59,7 +59,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             Region hoverBg = new Region();
             hoverBg.setPrefSize(175, 30);
             hoverBg.setOpacity(0.3);
-            setOnMouseEffects(hoverBg);
+            setOnMouseEffects(hoverBg, cell);
 
             Circle circle = new Circle(15);
             Label name = new Label();
@@ -84,7 +84,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
-                    cell.setOnMouseClicked(this::spotifyPopup);
+//                    cell.setOnMouseClicked(this::spotifyPopup);
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
                         game.setText("   plays " + item.getDescription().substring(1));
@@ -97,12 +97,13 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     } else {
                         cell.getChildren().addAll(circle, name);
                         stackPane.getChildren().addAll(hoverBg, cell);
-                        this.setGraphic(cell);
+                        this.setGraphic(stackPane);
                     }
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                     cell.getChildren().addAll(circle, name);
-                    this.setGraphic(cell);
+                    stackPane.getChildren().addAll(hoverBg, cell);
+                    this.setGraphic(stackPane);
                 }
             } else {
                 this.setGraphic(null);
@@ -110,13 +111,16 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void spotifyPopup(MouseEvent mouseEvent) {
-            if (builder.isSpotifyShow()) {
-                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
-            }
+//            if (builder.isSpotifyShow()) {
+//                builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
+//            }
         }
 
-        private void setOnMouseEffects(Region hoverBg) {
+        private void setOnMouseEffects(Region hoverBg, HBox cell) {
             this.setOnMouseEntered(event -> {
+//                if (builder.isSpotifyShow()) {
+//                    builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
+//                }
                 if (builder.getTheme().equals("Dark")) {
                     hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
                 } else {
@@ -134,6 +138,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             });
             this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
             this.setOnMouseReleased(event -> {
+                if (builder.isSpotifyShow()) {
+                    builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
+                }
                 if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
                     hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
                 } else if (builder.getTheme().equals("Dark")) {

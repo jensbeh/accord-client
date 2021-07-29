@@ -128,14 +128,14 @@ public class ConnectionController extends SubSetting {
                 StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
                 toggleShowFinal[0] = true;
                 if (stackPane.getId().contains("spotifyToggleStackPane")) {
-                    steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
+                    StackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
                     backgroundSteamButton.getStyleClass().clear();
                     backgroundSteamButton.getStyleClass().add("backgroundOff");
                     builder.getPersonalUser().setDescription("#");
                     builder.setSpotifyShow(true);
                     builder.setSteamShow(false);
                 } else {
-                    spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
+                    StackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
                     backgroundSpotifyButton.getStyleClass().clear();
                     backgroundSpotifyButton.getStyleClass().add("backgroundOff");
                     builder.getPersonalUser().setDescription("?");

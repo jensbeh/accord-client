@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -79,7 +80,7 @@ public class UserProfileController {
 
     private void spotifyPopup(MouseEvent mouseEvent) {
         if (builder.getSpotifyToken() != null && builder.isSpotifyShow()) {
-            builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, true, null);
+            builder.getSpotifyConnection().showSpotifyPopupView((HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0), true, null);
             userName.setStyle("-fx-background-color: transparent");
         }
     }
