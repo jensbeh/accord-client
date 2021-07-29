@@ -31,6 +31,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -257,7 +258,7 @@ public class SpotifyConnection {
 //                hBox = (HBox) mouseEvent.getSource();
 //            }
 
-            hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 5 5 0;");
+            hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 10 10 0; -fx-padding: 5 5 5 5;");
             Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
             double y = bounds.getMinY();
@@ -267,7 +268,7 @@ public class SpotifyConnection {
             dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                 if (!isNowFocused) {
                     dialog.close();
-                    hBox.setStyle("-fx-background-color: transparent;");
+                    hBox.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10; -fx-padding: 5 5 5 5;");
                     builder.getSpotifyConnection().stopPersonalScheduler();
                 }
             });
@@ -299,8 +300,6 @@ public class SpotifyConnection {
                     if (builder.isSpotifyShow()) {
                         builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
                         System.out.println(builder.getPersonalUser().getDescription());
-                    } else {
-                        builder.getPersonalUser().setDescription("#");
                     }
                 }
             }, 0, 15, TimeUnit.SECONDS);
