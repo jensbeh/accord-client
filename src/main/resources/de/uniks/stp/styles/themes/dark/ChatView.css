@@ -89,6 +89,10 @@
     -fx-background-radius: 4;
 }
 
+.messageLabelSystem {
+    -fx-background-color: #ffdddd;
+    -fx-background-radius: 4;
+}
 
 #messageBox {
     -fx-background-color: #36393f;

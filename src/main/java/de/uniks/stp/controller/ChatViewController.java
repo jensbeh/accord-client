@@ -519,7 +519,7 @@ public class ChatViewController {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
         if (textMessage.length() <= 700) {
-            if (!textMessage.isEmpty()) {
+            if (!textMessage.isEmpty() && !textMessage.endsWith("#arrival") && !textMessage.endsWith("#exit")) {
                 if (!builder.getInServerState()) {
                     try {
                         if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {

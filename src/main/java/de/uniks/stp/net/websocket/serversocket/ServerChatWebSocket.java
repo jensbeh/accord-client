@@ -6,6 +6,7 @@ import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
 import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
@@ -100,12 +101,19 @@ public class ServerChatWebSocket extends Endpoint {
         System.out.println(msg);
 
         if (jsonObject.containsKey("channel")) {
+            boolean messageIsInfo = false;
             Message message = null;
             String channelId = jsonObject.getString("channel");
             String from = jsonObject.getString("from");
             String text = jsonObject.getString("text");
             String id = jsonObject.getString("id");
             long timestamp = new Date().getTime();
+
+            // check if message is arrived/exited message
+            if (text.equals(getUserIdByName(from) + "#arrival") || text.equals(getUserIdByName(from) + "#exit")) {
+                messageIsInfo = true;
+            }
+
             // currentUser send
             if (from.equals(builder.getPersonalUser().getName())) {
                 message = new Message().setMessage(text).
@@ -118,7 +126,7 @@ public class ServerChatWebSocket extends Endpoint {
                 }
             }
             // currentUser received
-            else if (!from.equals(builder.getPersonalUser().getName())) {
+            if (!from.equals(builder.getPersonalUser().getName()) || messageIsInfo) {
                 message = new Message().setMessage(text).
                         setFrom(from).
                         setTimestamp(timestamp).
@@ -202,5 +210,14 @@ public class ServerChatWebSocket extends Endpoint {
 
     public void setChatViewController(ChatViewController chatViewController) {
         this.chatViewController = chatViewController;
+    }
+
+    public String getUserIdByName(String from) {
+        for (User user : this.serverViewController.getServer().getUser()) {
+            if (user.getName().equals(from)) {
+                return user.getId();
+            }
+        }
+        return null;
     }
 }

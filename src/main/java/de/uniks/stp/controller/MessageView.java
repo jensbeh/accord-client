@@ -47,11 +47,16 @@ public class MessageView {
     }
 
     public void updateItem(Message item) {
+        boolean messageIsInfo = false;
         boolean loadImage;
         boolean loadVideo;
         StackPane cell = new StackPane();
         cell.setId("messageCell");
         //Background for the messages
+
+        if (item.getMessage().endsWith("#arrival") || item.getMessage().endsWith("#exit")) {
+            messageIsInfo = true;
+        }
 
         VBox vbox = new VBox();
         Label userName = new Label();
@@ -86,29 +91,47 @@ public class MessageView {
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
         }
 
-        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+        if(messageIsInfo) {
+            vbox.setAlignment(Pos.CENTER_LEFT);
+            userName.setText((formatterTime.format(date)));
+
+            message = handleEmojis("system");
+            //Message background
+            message.getStyleClass().clear();
+            message.getStyleClass().add("messageLabelSystem");
+        }
+        else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis(true);
+            message = handleEmojis("self");
             //Message background own user
             message.getStyleClass().clear();
             message.getStyleClass().add("messageLabelTo");
-
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis(false);
+            message = handleEmojis("other");
             //Message background
             message.getStyleClass().clear();
             message.getStyleClass().add("messageLabelFrom");
         }
+
         if (!textMessage.equals("")) {
             message.setId("messageLabel");
             message.setMaxWidth(320);
             message.setPrefWidth(textMessage.length());
-            String str = handleSpacing(textMessage);
+            String str = null;
+            if (messageIsInfo) {
+                if (item.getMessage().endsWith("#arrival")) {
+                    str = ":white_check_mark: " + item.getFrom() + " arrived to the Server";
+                } else if(item.getMessage().endsWith("#exit")) {
+                    str = ":no_entry: " + item.getFrom() + " left the Server";
+                }
+            } else {
+                str = handleSpacing(textMessage);
+            }
             message.parseAndAppend(" " + str + " ");
         }
 
@@ -140,28 +163,24 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlow handleEmojis(boolean isUser) {
-        if (isUser) {
-            EmojiTextFlowParameters emojiTextFlowParameters;
-            {
-                emojiTextFlowParameters = new EmojiTextFlowParameters();
-                emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                emojiTextFlowParameters.setTextColor(Color.WHITE);
-            }
-            return new EmojiTextFlow(emojiTextFlowParameters);
-        } else {
-            EmojiTextFlowParameters emojiTextFlowParameters;
-            {
-                emojiTextFlowParameters = new EmojiTextFlowParameters();
-                emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                emojiTextFlowParameters.setTextColor(Color.BLACK);
-            }
-            return new EmojiTextFlow(emojiTextFlowParameters);
+    private EmojiTextFlow handleEmojis(String type) {
+        EmojiTextFlowParameters emojiTextFlowParameters;
+        {
+            emojiTextFlowParameters = new EmojiTextFlowParameters();
+            emojiTextFlowParameters.setEmojiScaleFactor(1D);
+            emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+            emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
         }
+        if (type.equals("system")) {
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
+        }
+        else if (type.equals("self")) {
+            emojiTextFlowParameters.setTextColor(Color.WHITE);
+        } else {
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
+        }
+        return new EmojiTextFlow(emojiTextFlowParameters);
     }
 
     private String handleSpacing(String str) {
