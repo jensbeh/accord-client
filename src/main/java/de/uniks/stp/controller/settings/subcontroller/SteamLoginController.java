@@ -47,7 +47,7 @@ public class SteamLoginController {
             int status = body.getObject().getJSONObject("response").getInt("success");
             if (status == 1) {
                 setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-            } else{
+            } else {
                 System.err.println("Error in Converting VanityID to Steam64ID");
             }
         });
@@ -65,7 +65,7 @@ public class SteamLoginController {
         Platform.runLater(builder::getGame);
     }
 
-    public void refresh(Runnable refresh){
+    public void refresh(Runnable refresh) {
         refreshConnectionView = refresh;
     }
 }

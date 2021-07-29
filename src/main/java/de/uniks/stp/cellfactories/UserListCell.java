@@ -72,7 +72,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                         vBox.getChildren().addAll(name, game);
                         cell.getChildren().addAll(circle, vBox);
                         stackPane.getChildren().addAll(hoverBg, cell);
-                    } else{
+                    } else {
                         cell.getChildren().addAll(circle, name);
                         stackPane.getChildren().addAll(hoverBg, cell);
                         this.setGraphic(stackPane);

@@ -130,7 +130,7 @@ public class PrivateViewController {
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
                 String description = jsonResponse.getJSONObject(i).get("description").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName, userId,description);
+                    builder.buildUser(userName, userId, description);
                 } else {
                     builder.getPersonalUser().setId(userId);
                 }
@@ -147,7 +147,7 @@ public class PrivateViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            userProfileController = new UserProfileController(root,builder);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -393,7 +393,7 @@ public class PrivateViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
-        if(userProfileController!=null) {
+        if (userProfileController != null) {
             userProfileController.stop();
         }
         try {

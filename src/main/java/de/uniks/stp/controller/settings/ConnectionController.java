@@ -2,7 +2,6 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -16,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import org.json.JSONObject;
 
 public class ConnectionController extends SubSetting {
 
@@ -59,7 +57,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void startGame(ActionEvent actionEvent) {
-        if(builder.isSteamShow()){
+        if (builder.isSteamShow()) {
             builder.getGame();
         }
     }

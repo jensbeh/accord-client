@@ -467,7 +467,7 @@ public class ServerViewController {
                     String description = member.getString("description");
                     String name = member.getString("name");
                     boolean online = member.getBoolean("online");
-                    builder.buildServerUser(this.server, name, id, online,description);
+                    builder.buildServerUser(this.server, name, id, online, description);
                 }
                 serverInfoCallback.onSuccess(status);
             } else if (status.equals("failure")) {
