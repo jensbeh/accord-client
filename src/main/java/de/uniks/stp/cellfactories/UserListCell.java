@@ -7,6 +7,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -53,19 +55,33 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             this.user = item;
             VBox object = new VBox();
             HBox cell = new HBox();
+
+            Region hoverBg = new Region();
+            hoverBg.setPrefSize(175, 30);
+            hoverBg.setOpacity(0.3);
+            setOnMouseEffects(hoverBg);
+
             Circle circle = new Circle(15);
             Label name = new Label();
             Label game = new Label();
+            StackPane stackPane = new StackPane();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
+                cell.setStyle("-fx-padding: 5 5 5 5;");
+                if (item.isStatus()) {
+                    circle.setFill(Paint.valueOf("#13d86b"));
+                } else {
+                    circle.setFill(Paint.valueOf("#eb4034"));
+                }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
                 addContextMenu(item, name);
+
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
                     cell.setOnMouseClicked(this::spotifyPopup);
@@ -76,9 +92,11 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                         game.setPrefWidth(135);
                         cell.getChildren().addAll(circle, name);
                         object.getChildren().addAll(cell, game);
+                        stackPane.getChildren().addAll(hoverBg, cell);
                         this.setGraphic(object);
                     } else {
                         cell.getChildren().addAll(circle, name);
+                        stackPane.getChildren().addAll(hoverBg, cell);
                         this.setGraphic(cell);
                     }
                 } else {
@@ -96,6 +114,36 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 builder.getSpotifyConnection().showSpotifyPopupView(mouseEvent, false, user.getDescription());
             }
         }
+
+        private void setOnMouseEffects(Region hoverBg) {
+            this.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
+                } else {
+                    hoverBg.setStyle("-fx-background-color: #bababa; -fx-background-radius: 10 10 10 10");
+                }
+            });
+            this.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                } else {
+                    if (!hoverBg.getStyle().equals("-fx-background-color: #ffffff; -fx-background-radius: 10 10 10 10")) {
+                        hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                    }
+                }
+            });
+            this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
+            this.setOnMouseReleased(event -> {
+                if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
+                    hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
+                } else if (builder.getTheme().equals("Dark")) {
+                    hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
+                } else {
+                    hoverBg.setStyle("-fx-background-color: #cccccc; -fx-background-radius: 10 10 10 10");
+                }
+            });
+        }
+
         /**
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked
          *
