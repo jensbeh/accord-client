@@ -48,7 +48,7 @@
   roles: 	privateChat_currentUser 	privateChat_message
 
 - user: 	org.fulib.classmodel.Clazz
-  attributes: 	user_name 	user_id 	user_status
+  attributes: 	user_name 	user_id 	user_status 	user_description
   model: 	c
   modified: 	false
   name: 	User
@@ -56,7 +56,7 @@
   roles: 	user_privileged 	user_server 	user_currentUser
 
 - currentUser: 	org.fulib.classmodel.Clazz
-  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password 	currentUser_id
+  attributes: 	currentUser_name 	currentUser_userKey 	currentUser_password 	currentUser_id 	currentUser_description
   model: 	c
   modified: 	false
   name: 	CurrentUser
@@ -384,6 +384,15 @@
   type: 	boolean
   typeSignature: 	boolean
 
+- user_description: 	org.fulib.classmodel.Attribute
+  clazz: 	user
+  id: 	User_description
+  modified: 	false
+  name: 	description
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
 - user_privileged: 	org.fulib.classmodel.AssocRole
   aggregation: 	false
   cardinality: 	3
@@ -450,6 +459,15 @@
   id: 	CurrentUser_id
   modified: 	false
   name: 	id
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- currentUser_description: 	org.fulib.classmodel.Attribute
+  clazz: 	currentUser
+  id: 	CurrentUser_description
+  modified: 	false
+  name: 	description
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String

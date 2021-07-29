@@ -104,7 +104,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         this.stage = stage;
         app = mockApp;
         StageManager.setBuilder(builder);
-        app.setRestClient(restClient);
+        StageManager.setRestClient(restClient);
 
         builder.setLoadUserData(false);
 
@@ -135,6 +135,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", "60adc8aec77d3f78988b57a0");
         jsonObject.put("name", "Otto");
+        jsonObject.put("description", "");
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")

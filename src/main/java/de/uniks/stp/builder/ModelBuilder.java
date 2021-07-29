@@ -3,9 +3,11 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
+import de.uniks.stp.net.updateSteamGameController;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -40,6 +42,7 @@ public class ModelBuilder {
     private PrivateSystemWebSocketClient USER_CLIENT;
     private PrivateChatWebSocket privateChatWebSocketClient;
     private ServerChatWebSocket serverChatWebSocketClient;
+    private HomeViewController homeViewController;
 
 
     private RestClient restClient;
@@ -64,8 +67,9 @@ public class ModelBuilder {
     private String spotifyToken;
     private String steamToken;
     private LinePoolService linePoolService;
-
+    private Thread getSteamGame;
     private ObservableList<User> blockedUsers;
+    private boolean isSteamRun;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -74,31 +78,31 @@ public class ModelBuilder {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
     }
 
-    public User buildUser(String name, String id) {
+    public User buildUser(String name, String id, String description) {
         for (User user : personalUser.getUser()) {
             if (user.getId().equals(id)) {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(true);
+        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description);
         personalUser.withUser(newUser);
         return newUser;
     }
 
-    public User buildServerUser(Server server, String name, String id, Boolean status) {
+    public User buildServerUser(Server server, String name, String id, Boolean status, String description) {
         for (User user : server.getUser()) {
             if (user.getId().equals(id)) {
                 if (user.isStatus() == status) {
                     return user;
                 } else {
                     server.withoutUser(user);
-                    User updatedUser = new User().setName(name).setId(id).setStatus(status);
+                    User updatedUser = new User().setName(name).setId(id).setStatus(status).setDescription(description);
                     server.withUser(updatedUser);
                     return updatedUser;
                 }
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(status);
+        User newUser = new User().setName(name).setId(id).setStatus(status).setDescription(description);
         server.withUser(newUser);
         return newUser;
     }
@@ -495,12 +499,39 @@ public class ModelBuilder {
 
     public void removeBlockedUser(User blockedUser) {
         if (this.blockedUsers != null) {
-            for(User user : this.getBlockedUsers()) {
-                if(blockedUser.getId().equals(user.getId())) {
+            for (User user : this.getBlockedUsers()) {
+                if (blockedUser.getId().equals(user.getId())) {
                     this.blockedUsers.remove(user);
                     return;
                 }
             }
         }
+    }
+
+    public void getGame() {
+        if (getSteamGame == null) {
+            isSteamRun = true;
+            getSteamGame = new Thread(new updateSteamGameController(this));
+            getSteamGame.start();
+        }
+    }
+
+    public void stopGame() {
+        if (getSteamGame != null) {
+            isSteamRun = false;
+            getSteamGame = null;
+        }
+    }
+
+    public void setHomeViewController(HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
+    }
+
+    public boolean isSteamRun() {
+        return isSteamRun;
     }
 }

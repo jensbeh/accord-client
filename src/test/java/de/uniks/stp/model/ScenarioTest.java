@@ -336,7 +336,7 @@ public class ScenarioTest {
 
         user.firePropertyChange("server", server1, server1);
 
-        Assert.assertEquals(user.toString(), "Test 123");
+        Assert.assertEquals("Test 123 null", user.toString());
 
         user.removeYou();
     }

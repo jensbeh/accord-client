@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -38,6 +39,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private class UserCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
+            VBox vBox = new VBox();
             HBox cell = new HBox();
 
             Region hoverBg = new Region();
@@ -48,27 +50,42 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             Circle circle = new Circle(15);
             Label name = new Label();
             StackPane stackPane = new StackPane();
+            Label game = new Label();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
                 cell.setAlignment(Pos.CENTER_LEFT);
                 cell.setStyle("-fx-padding: 5 5 5 5;");
-                if (item.isStatus()) {
-                    circle.setFill(Paint.valueOf("#13d86b"));
-                } else {
-                    circle.setFill(Paint.valueOf("#eb4034"));
-                }
                 name.setId(item.getId());
                 name.setText("   " + item.getName());
                 name.setStyle("-fx-font-size: 18");
                 name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 name.setPrefWidth(135);
-                cell.getChildren().addAll(circle, name);
-
                 addContextMenu(item, name);
-                stackPane.getChildren().addAll(hoverBg, cell);
+                if (item.isStatus()) {
+                    circle.setFill(Paint.valueOf("#13d86b"));
+                    if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
+                        game.setText(item.getDescription());
+                        game.setText("   plays " + item.getDescription().substring(1));
+                        game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                        game.setPrefWidth(135);
+                        vBox.getChildren().addAll(name, game);
+                        cell.getChildren().addAll(circle, vBox);
+                        stackPane.getChildren().addAll(hoverBg, cell);
+                    } else {
+                        cell.getChildren().addAll(circle, name);
+                        stackPane.getChildren().addAll(hoverBg, cell);
+                        this.setGraphic(stackPane);
+                    }
+                } else {
+                    circle.setFill(Paint.valueOf("#eb4034"));
+                    cell.getChildren().addAll(circle, name);
+                    stackPane.getChildren().addAll(hoverBg, cell);
+                }
+                this.setGraphic(stackPane);
+            } else {
+                this.setGraphic(null);
             }
-            this.setGraphic(stackPane);
         }
 
         /**
