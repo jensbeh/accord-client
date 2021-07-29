@@ -215,6 +215,7 @@ public class SteamGameTest extends ApplicationTest {
     public void AddGameTest() throws InterruptedException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         loginInit(true);
+        mockApp.getBuilder().getPersonalUser().setDescription("?Nice Rocket 2");
         loginTestUser("Gustav", "60c8b3fb44453702009c07b3");
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -228,6 +229,7 @@ public class SteamGameTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("Gustav", userName);
+        mockApp.getBuilder().getPersonalUser().setDescription("?Brumbrum");
 
         JSONObject js = new JSONObject().put("action", "userDescriptionChanged").put("data", new JSONObject().put("id", "60c8b3fb44453702009c07b3").put("description", "?The Binding of Isaac: Rebirth"));
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(js.toString());
