@@ -303,7 +303,7 @@ public class ServerSystemWebSocket extends Endpoint {
     private void removeUserFromVoiceChat(JsonObject jsonData, ServerChannel serverChannel, AudioMember audioMember, String userId) {
         serverChannel.withoutAudioMember(audioMember);
 
-        playLeaveSound(audioMember,jsonData);
+        playLeaveSound(audioMember, jsonData);
         // personalUser disconnects
         if (userId.equals(builder.getPersonalUser().getId())) {
             builder.setCurrentAudioChannel(null);
@@ -318,7 +318,7 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
-    private void playLeaveSound(AudioMember audioMember,JsonObject jsonData) {
+    private void playLeaveSound(AudioMember audioMember, JsonObject jsonData) {
         if (!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
                 builder.getCurrentAudioChannel() != null &&
                 builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
@@ -378,8 +378,7 @@ public class ServerSystemWebSocket extends Endpoint {
         serverViewController.getHomeViewController().showServerUpdate();
 
         if (audioIsOpen) {
-            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
-            serverViewController.showAudioConnectedBox();
+            showAudioBox();
         }
     }
 
@@ -456,7 +455,6 @@ public class ServerSystemWebSocket extends Endpoint {
         Server currentServer;
         Categories deletedCategory;
         Node deletedNode;
-        String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
 
         ArrayList<Object> objectArrayList = findDeletedCategory(jsonData);
@@ -686,9 +684,13 @@ public class ServerSystemWebSocket extends Endpoint {
         }
 
         if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
-            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
-            serverViewController.showAudioConnectedBox();
+            showAudioBox();
         }
+    }
+
+    private void showAudioBox() {
+        builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
+        serverViewController.showAudioConnectedBox();
     }
 
     private ArrayList<User> getChannelMembers(JsonArray jsonArray) {
