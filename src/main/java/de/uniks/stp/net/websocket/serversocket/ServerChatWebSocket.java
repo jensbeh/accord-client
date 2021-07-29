@@ -100,78 +100,73 @@ public class ServerChatWebSocket extends Endpoint {
         System.out.println(msg);
 
         if (jsonObject.containsKey("channel")) {
-            Message message = null;
-            String channelId = jsonObject.getString("channel");
-            String from = jsonObject.getString("from");
-            String text = jsonObject.getString("text");
-            String id = jsonObject.getString("id");
-            long timestamp = new Date().getTime();
-            // currentUser send
-            if (from.equals(builder.getPersonalUser().getName())) {
-                message = new Message().setMessage(text).
-                        setFrom(from).
-                        setTimestamp(timestamp).
-                        setId(id).
-                        setServerChannel(serverViewController.getCurrentChannel());
-                if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
-                    Platform.runLater(() -> serverViewController.getChatViewController().clearMessageField());
-                }
-            }
-            // currentUser received
-            else if (!from.equals(builder.getPersonalUser().getName())) {
-                message = new Message().setMessage(text).
-                        setFrom(from).
-                        setTimestamp(timestamp).
-                        setId(id).
-                        setServerChannel(serverViewController.getCurrentChannel());
-                if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
-                    Platform.runLater(() -> serverViewController.getChatViewController().clearMessageField());
-                }
+            serverMessage(jsonObject);
+        }
+        if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
+            showServerChatAlert(jsonObject);
+        }
+    }
 
-                for (Categories categories : this.serverViewController.getServer().getCategories()) {
-                    for (ServerChannel channel : categories.getChannel()) {
-                        if (channel.getId().equals(channelId)) {
-                            channel.withMessage(message);
-                            if (!builder.isDoNotDisturb() && (serverViewController.getCurrentChannel() == null || channel != serverViewController.getCurrentChannel())) {
-                                if (builder.isPlaySound()) {
-                                    builder.playSound();
-                                }
-                                if (builder.isShowNotifications()) {
-                                    channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-                                }
-                            }
-                            if (builder.getCurrentServer() == serverViewController.getServer()) {
-                                serverViewController.getCategorySubControllerList().get(categories).refreshChannelList();
-                            }
-                            break;
+    private void showServerChatAlert(JsonObject jsonObject) {
+        String errorTitle;
+        String serverMessage = jsonObject.getJsonObject("data").getString("message");
+        if (serverMessage.equals("This is not your username.")) {
+            errorTitle = "Username Error";
+        } else {
+            errorTitle = "Chat Error";
+        }
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+            alert.setTitle(errorTitle);
+            alert.setHeaderText(serverMessage);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                serverViewController.buildSystemWebSocket();
+            }
+        });
+    }
+
+    private void serverMessage(JsonObject jsonObject) {
+        String channelId = jsonObject.getString("channel");
+        String from = jsonObject.getString("from");
+        String text = jsonObject.getString("text");
+        String id = jsonObject.getString("id");
+        long timestamp = new Date().getTime();
+        // currentUser send
+        Message message = new Message().setMessage(text).setFrom(from).setTimestamp(timestamp).setId(id).setServerChannel(serverViewController.getCurrentChannel());
+        if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
+            Platform.runLater(() -> serverViewController.getChatViewController().clearMessageField());
+        }
+        // currentUser received
+        else if (!from.equals(builder.getPersonalUser().getName())) {
+            for (Categories categories : this.serverViewController.getServer().getCategories()) {
+                for (ServerChannel channel : categories.getChannel()) {
+                    if (channel.getId().equals(channelId)) {
+                        channel.withMessage(message);
+                        messageNotifications(channel);
+                        if (builder.getCurrentServer() == serverViewController.getServer()) {
+                            serverViewController.getCategorySubControllerList().get(categories).refreshChannelList();
                         }
+                        break;
                     }
                 }
             }
-            if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
-                assert message != null;
-                serverViewController.getCurrentChannel().withMessage(message);
-                Message finalMessage = message;
-                Platform.runLater(() -> chatViewController.printMessage(finalMessage));
-            }
         }
-        if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
-            String errorTitle;
-            String serverMessage = jsonObject.getJsonObject("data").getString("message");
-            if (serverMessage.equals("This is not your username.")) {
-                errorTitle = "Username Error";
-            } else {
-                errorTitle = "Chat Error";
+        if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
+            assert message != null;
+            serverViewController.getCurrentChannel().withMessage(message);
+            Platform.runLater(() -> chatViewController.printMessage(message));
+        }
+    }
+
+    private void messageNotifications(ServerChannel channel) {
+        if (!builder.isDoNotDisturb() && (serverViewController.getCurrentChannel() == null || channel != serverViewController.getCurrentChannel())) {
+            if (builder.isPlaySound()) {
+                builder.playSound();
             }
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle(errorTitle);
-                alert.setHeaderText(serverMessage);
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    serverViewController.buildSystemWebSocket();
-                }
-            });
+            if (builder.isShowNotifications()) {
+                channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+            }
         }
     }
 
