@@ -87,7 +87,7 @@ public class ConnectionControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -180,6 +180,21 @@ public class ConnectionControllerTest extends ApplicationTest {
             .market(MARKET)
             .build();
 
+
+    @Test
+    public void ToggleTest() throws InterruptedException {
+        loginInit();
+        mockApp.getBuilder().setSpotifyToken("test");
+        mockApp.getBuilder().setSteamToken("test");
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        clickOn("#spotifyToggleStackPane");
+        clickOn("#steamToggleStackPane");
+        clickOn("#spotifyToggleStackPane");
+        clickOn("#steamToggleStackPane");
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().saveSettings();
+    }
 
     @Test
     public void SpotifyPopUpTest() throws InterruptedException {
