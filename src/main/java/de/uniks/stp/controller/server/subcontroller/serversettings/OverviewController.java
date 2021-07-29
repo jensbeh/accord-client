@@ -47,7 +47,7 @@ public class OverviewController {
 
     private void userExitedNotification(Server server) {
         if (builder.getServerChatWebSocketClient() != null) {
-            JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getName() + " left the Server");
+            JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getId() + "#exit");
             try {
                 builder.getServerChatWebSocketClient().sendMessage(obj.toString());
             } catch (IOException e) {

@@ -306,7 +306,7 @@ public class HomeViewController {
 
     private void userArrivedNotification(Server server) {
         if (builder.getServerChatWebSocketClient() != null) {
-            JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getName() + " arrived on the Server");
+            JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getId() + "#arrival");
             try {
                 builder.getServerChatWebSocketClient().sendMessage(obj.toString());
             } catch (IOException e) {
