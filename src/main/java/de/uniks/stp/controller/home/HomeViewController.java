@@ -114,7 +114,7 @@ public class HomeViewController {
         });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
-
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
         if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
             builder.getGame();
         }
@@ -145,7 +145,6 @@ public class HomeViewController {
                 }
             }
         });
-        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
     }
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {

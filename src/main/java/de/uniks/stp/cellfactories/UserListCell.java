@@ -39,7 +39,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private class UserCell extends ListCell<User> {
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
-            VBox object = new VBox();
+            VBox vBox = new VBox();
             HBox cell = new HBox();
 
             Region hoverBg = new Region();
@@ -69,9 +69,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                         game.setText("   plays " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
-                        cell.getChildren().addAll(circle, name);
-                        object.getChildren().addAll(cell, game);
-                        stackPane.getChildren().addAll(object, cell);
+                        vBox.getChildren().addAll(name, game);
+                        cell.getChildren().addAll(circle, vBox);
+                        stackPane.getChildren().addAll(hoverBg, cell);
                     } else{
                         cell.getChildren().addAll(circle, name);
                         stackPane.getChildren().addAll(hoverBg, cell);

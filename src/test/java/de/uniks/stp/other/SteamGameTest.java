@@ -36,7 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.Silent.class)           // TODO important
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SteamGameTest extends ApplicationTest {
 
     private Stage stage;
@@ -72,11 +72,23 @@ public class SteamGameTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response3;
 
+    @Mock
+    private HttpResponse<JsonNode> response4;
+
+    @Mock
+    private HttpResponse<JsonNode> response5;
+
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
+
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
 
     @BeforeClass
@@ -229,6 +241,47 @@ public class SteamGameTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("?The Binding of Isaac: Rebirth", desc);
-
+        js = new JSONObject().put("action", "userDescriptionChanged").put("data", new JSONObject().put("id", "60c8b3fb44453702009c07b3").put("description", "?"));
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(js.toString());
+        privateSystemWebSocketClient.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+        desc = "";
+        for (User u : itemList) {
+            if (u.getName().equals("Gustav")) {
+                desc = u.getDescription();
+                break;
+            }
+        }
+        Assert.assertEquals("?", desc);
     }
+
+    @Test
+    public void RestTest1() throws InterruptedException {
+        JSONObject jsonString = new JSONObject().put("response",new JSONObject().put("players",new JSONArray().put(new JSONObject().put("gameextrainfo","BigBoi"))));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor4.getValue();
+            callback.completed(response4);
+            return null;
+        }).when(restClient).getCurrentGame(anyString(), callbackCaptor4.capture());
+
+        loginInit(true);
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void RestTest2() throws InterruptedException {
+        JSONObject jsonString = new JSONObject().put("response",new JSONObject().put("players",new JSONArray().put(new JSONObject().put("Komm in die Gruppe","BigBoi"))));
+        String jsonNode = new JsonNode(jsonString.toString()).toString();
+        when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
+        doAnswer((Answer<Void>) invocation -> {
+            Callback<JsonNode> callback = callbackCaptor5.getValue();
+            callback.completed(response5);
+            return null;
+        }).when(restClient).getCurrentGame(anyString(), callbackCaptor5.capture());
+        loginInit(true);
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
 }

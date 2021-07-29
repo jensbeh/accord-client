@@ -67,8 +67,9 @@ public class ModelBuilder {
     private String spotifyToken;
     private String steamToken;
     private LinePoolService linePoolService;
-    private updateSteamGameController getSteamGame;
+    private Thread getSteamGame;
     private ObservableList<User> blockedUsers;
+    private boolean isSteamRun;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -509,15 +510,15 @@ public class ModelBuilder {
 
     public void getGame() {
         if (getSteamGame == null) {
-            getSteamGame = new updateSteamGameController(this);
-            getSteamGame.run();
+            isSteamRun = true;
+            getSteamGame = new Thread(new updateSteamGameController(this));
+            getSteamGame.start();
         }
     }
 
     public void stopGame() {
         if (getSteamGame != null) {
-            getSteamGame.stop();
-            while (!getSteamGame.getStopFlag()) ;
+            isSteamRun = false;
             getSteamGame = null;
         }
     }
@@ -528,5 +529,9 @@ public class ModelBuilder {
 
     public HomeViewController getHomeViewController() {
         return homeViewController;
+    }
+
+    public boolean isSteamRun() {
+        return isSteamRun;
     }
 }

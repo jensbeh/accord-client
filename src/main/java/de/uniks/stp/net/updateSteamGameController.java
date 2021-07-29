@@ -5,21 +5,25 @@ import kong.unirest.JsonNode;
 
 public class updateSteamGameController implements Runnable {
     private final ModelBuilder builder;
-    private boolean stop_flag = true;
 
     public updateSteamGameController(ModelBuilder builder) {
         this.builder = builder;
     }
-    public boolean getStopFlag(){
-        return stop_flag;
-    }
 
-    public void stop(){
-        stop_flag=false;
-    }
-
-    public void start(){
-        while (builder.isSteamShow()&&stop_flag) {
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+        while (builder.isSteamShow()&&builder.isSteamRun()) {
             builder.getRestClient().getCurrentGame(builder.getSteamToken(), response -> {
                 JsonNode body = response.getBody();
                 if (body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo")) {
@@ -34,11 +38,6 @@ public class updateSteamGameController implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void run() {
-        new Thread(this::start);
-        stop_flag=true;
     }
 }
 
