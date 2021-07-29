@@ -1,15 +1,25 @@
 package de.uniks.stp.controller.settings;
 
+import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERefreshRequest;
+import com.wrapper.spotify.requests.authorization.authorization_code.pkce.AuthorizationCodePKCERequest;
+import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
+import com.wrapper.spotify.requests.data.player.GetInformationAboutUsersCurrentPlaybackRequest;
+import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.settings.spotifyTest.TestUtil;
+import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -28,9 +38,11 @@ import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import javax.json.JsonObject;
+
+import static de.uniks.stp.controller.settings.spotifyTest.ITest.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ConnectionControllerTest extends ApplicationTest {
@@ -65,8 +77,14 @@ public class ConnectionControllerTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
+    @Mock
+    private SpotifyConnection spotifyConnection;
+
     @InjectMocks
     StageManager mockApp = new StageManager();
+
+    public ConnectionControllerTest() throws Exception {
+    }
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -87,6 +105,13 @@ public class ConnectionControllerTest extends ApplicationTest {
         app = mockApp;
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
+        SpotifyConnection spotifyConnection = new SpotifyConnection(mockApp.getBuilder());
+        mockApp.getBuilder().getSpotifyConnection().setSpotifyApi(SPOTIFY_API);
+        mockApp.getBuilder().getSpotifyConnection().setAuthorizationCodePKCERequest(authRequest);
+        mockApp.getBuilder().getSpotifyConnection().setAuthorizationCodePKCERefreshRequest(authRefresh);
+        mockApp.getBuilder().getSpotifyConnection().setGetInformationAboutUsersCurrentPlaybackRequest(getInformationAboutUsersCurrentPlaybackRequest);
+        mockApp.getBuilder().getSpotifyConnection().setGetTrackRequest(getTrackRequest);
+        mockApp.getBuilder().getSpotifyConnection().setGetAlbumRequest(getAlbumRequest);
 
         builder.setLoadUserData(false);
 
@@ -125,6 +150,123 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
     }
+
+
+    private final AuthorizationCodePKCERequest authRequest = SPOTIFY_API.authorizationCodePKCE(AUTHORIZATION_CODE, CODE_VERIFIER)
+            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthCode.json")).build();
+
+    private final AuthorizationCodePKCERefreshRequest authRefresh = SPOTIFY_API.authorizationCodePKCERefresh()
+            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthorizationCodeRefresh.json")).build();
+
+    private final GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = SPOTIFY_API
+            .getInformationAboutUsersCurrentPlayback()
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetInformationAboutUsersCurrentPlaybackRequest.json"))
+            .market(MARKET)
+            .additionalTypes(ADDITIONAL_TYPES)
+            .build();
+
+    private final GetTrackRequest getTrackRequest = SPOTIFY_API
+            .getTrack(ID_TRACK)
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetTrackRequest.json"))
+            .market(MARKET)
+            .build();
+
+    private final GetAlbumRequest getAlbumRequest = SPOTIFY_API.getAlbum(ID_ALBUM)
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetAlbumRequest.json"))
+            .market(MARKET)
+            .build();
+
+    @Test
+    public void SpotifyAccountTest() throws InterruptedException {
+        String spotifyToken = mockApp.getBuilder().getSpotifyToken();
+        String spotifyRefresh = mockApp.getBuilder().getSpotifyRefresh();
+        mockApp.getBuilder().setSpotifyShow(true);
+        mockApp.getBuilder().setSpotifyShow(false);
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        clickOn("#spotify");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (s.getTitle().equals("Spotify Login")) {
+                WebView webview = (WebView) s.getScene().getRoot();
+                System.out.println(webview.getEngine());
+                Platform.runLater(() -> {
+                    webview.getEngine().load("http://localhost:8888/callback/code=testCode");
+                });
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+        Assert.assertEquals("taHZ2SdB-bPA3FsK3D7ZN5npZS47cMy-IEySVEGttOhXmqaVAIo0ESvTCLjLBifhHOHOIuhFUKPW1WMDP7w6dj3MAZdWT8CLI2MkZaXbYLTeoDvXesf2eeiLYPBGdx8tIwQJKgV8XdnzH_DONk", mockApp.getBuilder().getSpotifyToken());
+        mockApp.getBuilder().setSpotifyToken(spotifyToken);
+        mockApp.getBuilder().setSpotifyRefresh(spotifyRefresh);
+        mockApp.getBuilder().saveSettings();
+    }
+
+    @Test
+    public void SpotifyPopUpTest() throws InterruptedException {
+        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
+        String spotifyToken = mockApp.getBuilder().getSpotifyToken();
+        String spotifyRefresh = mockApp.getBuilder().getSpotifyRefresh();
+        mockApp.getBuilder().setSpotifyShow(true);
+        mockApp.getBuilder().setSpotifyShow(false);
+        loginInit();
+        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\",\"description\":\"i.scdn.co\"}}";
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateSystemWebSocketClient.handleMessage(jsonObject);
+        
+        message = "{\"action\":\"userDescriptionChanged\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"description\":\"#Against The Current - lullaby#https://i.scdn.co/image/ab67616d00004851186660bbf3b0dd9a5195e182\"}}";
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        privateSystemWebSocketClient.handleMessage(jsonObject);
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        clickOn("#spotify");
+        WaitForAsyncUtils.waitForFxEvents();
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (s.getTitle().equals("Spotify Login")) {
+                WebView webview = (WebView) s.getScene().getRoot();
+                System.out.println(webview.getEngine());
+                Platform.runLater(() -> {
+                    webview.getEngine().load("http://localhost:8888/callback/code=testCode");
+                });
+                WaitForAsyncUtils.waitForFxEvents();
+                break;
+            }
+        }
+
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (s.getTitle().equals("Accord - Settings")) {
+                Platform.runLater(s::close);
+                break;
+            }
+        }
+
+        clickOn("#descriptionbox");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ListView<User> userList = lookup("#onlineUsers").query();
+        User testUserOne = userList.getItems().get(0);
+        doubleClickOn(userList.lookup("#" + testUserOne.getId()));
+        WaitForAsyncUtils.waitForFxEvents();
+
+
+        mockApp.getBuilder().setSpotifyToken(spotifyToken);
+        mockApp.getBuilder().setSpotifyRefresh(spotifyRefresh);
+        mockApp.getBuilder().saveSettings();
+    }
+
 
     @Test
     public void SteamProfilesLinkTest() throws InterruptedException {

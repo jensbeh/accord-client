@@ -66,8 +66,6 @@ public class PrivateViewController {
     private Label headphoneLabel;
     private Label microphoneLabel;
     private UserProfileController userProfileController;
-    private int lastTime;
-    boolean isdblClicked;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;

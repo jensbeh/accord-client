@@ -143,11 +143,15 @@ public class HomeViewController {
                 }
             }
         });
-        spotifyConnection = new SpotifyConnection(builder);
+
+        if (builder.getSpotifyConnection() == null) {
+            spotifyConnection = new SpotifyConnection(builder);
+        }
         builder.getSpotifyConnection().refreshToken();
         if (builder.getSpotifyToken() != null) {
             builder.getSpotifyConnection().updateUserDescriptionScheduler();
         }
+
         if (builder.getSteamToken() != null) {
             builder.getGame();
         }

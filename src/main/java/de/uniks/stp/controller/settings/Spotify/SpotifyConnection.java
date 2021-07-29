@@ -62,6 +62,10 @@ public class SpotifyConnection {
     private AuthorizationCodePKCERequest authorizationCodePKCERequest;
     private AuthorizationCodeCredentials authorizationCodeCredentials;
     private AuthorizationCodePKCERefreshRequest authorizationCodePKCERefreshRequest;
+
+    private GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest;
+    private GetAlbumRequest getAlbumRequest;
+
     private ConnectionController connectionController;
     private CurrentlyPlayingContext currentSong;
     private com.wrapper.spotify.model_objects.specification.Image artwork;
@@ -78,6 +82,7 @@ public class SpotifyConnection {
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> handle;
     private ScheduledExecutorService schedulerDescription;
+    private GetTrackRequest getTrackRequest;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -89,6 +94,15 @@ public class SpotifyConnection {
                 .build();
         builder.setSpotifyConnection(this);
     }
+
+    public void setSpotifyApi(SpotifyApi spotifyApi) {
+        this.spotifyApi = spotifyApi;
+    }
+
+    public void setGetInformationAboutUsersCurrentPlaybackRequest(GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest) {
+        this.getInformationAboutUsersCurrentPlaybackRequest = getInformationAboutUsersCurrentPlaybackRequest;
+    }
+
 
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
@@ -137,9 +151,16 @@ public class SpotifyConnection {
         return url;
     }
 
-    private void getAuthenticationToken() {
+    public void setAuthorizationCodePKCERequest(AuthorizationCodePKCERequest authorizationCodePKCERequest) {
+        this.authorizationCodePKCERequest = authorizationCodePKCERequest;
+    }
+
+    public void getAuthenticationToken() {
         try {
-            authorizationCodePKCERequest = spotifyApi.authorizationCodePKCE(code, codeVerifier).build();
+
+            if (authorizationCodePKCERequest == null) {
+                authorizationCodePKCERequest = spotifyApi.authorizationCodePKCE(code, codeVerifier).build();
+            }
             authorizationCodeCredentials = authorizationCodePKCERequest.execute();
             spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
@@ -162,10 +183,16 @@ public class SpotifyConnection {
         }
     }
 
+    public void setAuthorizationCodePKCERefreshRequest(AuthorizationCodePKCERefreshRequest authorizationCodePKCERefreshRequest) {
+        this.authorizationCodePKCERefreshRequest = authorizationCodePKCERefreshRequest;
+    }
+
     public void refreshToken() {
         if (builder.getSpotifyRefresh() != null) {
             try {
-                authorizationCodePKCERefreshRequest = spotifyApi.authorizationCodePKCERefresh().build();
+                if (!Objects.equals(spotifyApi.getClientId(), "default")) {
+                    authorizationCodePKCERefreshRequest = spotifyApi.authorizationCodePKCERefresh().build();
+                }
                 authorizationCodeCredentials = authorizationCodePKCERefreshRequest.execute();
                 spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
                 spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
@@ -180,7 +207,9 @@ public class SpotifyConnection {
 
     public CurrentlyPlayingContext getCurrentlyPlayingSong() {
         try {
-            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
+            if (!Objects.equals(spotifyApi.getClientId(), "default")) {
+                getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
+            }
             return getInformationAboutUsersCurrentPlaybackRequest.execute();
         } catch (IOException | SpotifyWebApiException | ParseException e) {
             e.printStackTrace();
@@ -188,13 +217,17 @@ public class SpotifyConnection {
         return null;
     }
 
+    public void setGetTrackRequest(GetTrackRequest getTrackRequest) {
+        this.getTrackRequest = getTrackRequest;
+    }
 
     public String getCurrentlyPlayingSongAlbumID() {
         try {
-            GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = spotifyApi.getInformationAboutUsersCurrentPlayback().build();
             CurrentlyPlayingContext currentlyPlayingContext = getInformationAboutUsersCurrentPlaybackRequest.execute();
             String idS = currentlyPlayingContext.getItem().getId();
-            GetTrackRequest getTrackRequest = spotifyApi.getTrack(idS).build();
+            if (!Objects.equals(spotifyApi.getClientId(), "default")) {
+                getTrackRequest = spotifyApi.getTrack(idS).build();
+            }
             Track track = getTrackRequest.execute();
             if (track != null) {
                 return track.getAlbum().getId();
@@ -205,10 +238,16 @@ public class SpotifyConnection {
         return null;
     }
 
+    public void setGetAlbumRequest(GetAlbumRequest getAlbumRequest) {
+        this.getAlbumRequest = getAlbumRequest;
+    }
+
     public Image getCurrentlyPlayingSongArtwork(String albumID) {
         if (albumID != null) {
             try {
-                GetAlbumRequest getAlbumRequest = spotifyApi.getAlbum(albumID).build();
+                if (!Objects.equals(spotifyApi.getClientId(), "default")) {
+                    getAlbumRequest = spotifyApi.getAlbum(albumID).build();
+                }
                 Album album = getAlbumRequest.execute();
                 album.getArtists();
                 artist = album.getArtists()[0].getName();
