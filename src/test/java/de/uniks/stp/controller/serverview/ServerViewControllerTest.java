@@ -151,7 +151,10 @@ public class ServerViewControllerTest extends ApplicationTest {
         AudioStreamClient.setSocket(mockAudioSocket);
         AudioStreamClient.setAddress(inetAddress);
 
-        builder.setLoadUserData(false);
+        builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
         builder.getAudioStreamClient();
         app.start(stage);
         stage.centerOnScreen();
@@ -216,6 +219,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter Lustig")
+                .put("description", "Test")
                 .put("online", true);
         members.put(member);
         JSONObject jsonString = new JSONObject()

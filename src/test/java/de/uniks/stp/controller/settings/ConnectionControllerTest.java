@@ -77,8 +77,6 @@ public class ConnectionControllerTest extends ApplicationTest {
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
-    @Mock
-    private SpotifyConnection spotifyConnection;
 
     @InjectMocks
     StageManager mockApp = new StageManager();
@@ -182,45 +180,16 @@ public class ConnectionControllerTest extends ApplicationTest {
             .market(MARKET)
             .build();
 
-    @Test
-    public void SpotifyAccountTest() throws InterruptedException {
-        String spotifyToken = mockApp.getBuilder().getSpotifyToken();
-        String spotifyRefresh = mockApp.getBuilder().getSpotifyRefresh();
-        mockApp.getBuilder().setSpotifyShow(true);
-        mockApp.getBuilder().setSpotifyShow(false);
-        loginInit();
-        clickOn("#settingsButton");
-        clickOn("#button_Connection");
-        clickOn("#spotify");
-        WaitForAsyncUtils.waitForFxEvents();
-        for (Window window : this.listTargetWindows()) {
-            Stage s = (Stage) window;
-            if (s.getTitle().equals("Spotify Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
-                System.out.println(webview.getEngine());
-                Platform.runLater(() -> {
-                    webview.getEngine().load("http://localhost:8888/callback/code=testCode");
-                });
-                WaitForAsyncUtils.waitForFxEvents();
-                break;
-            }
-        }
-        Assert.assertEquals("taHZ2SdB-bPA3FsK3D7ZN5npZS47cMy-IEySVEGttOhXmqaVAIo0ESvTCLjLBifhHOHOIuhFUKPW1WMDP7w6dj3MAZdWT8CLI2MkZaXbYLTeoDvXesf2eeiLYPBGdx8tIwQJKgV8XdnzH_DONk", mockApp.getBuilder().getSpotifyToken());
-        mockApp.getBuilder().setSpotifyToken(spotifyToken);
-        mockApp.getBuilder().setSpotifyRefresh(spotifyRefresh);
-        mockApp.getBuilder().saveSettings();
-    }
 
     @Test
     public void SpotifyPopUpTest() throws InterruptedException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
-        String spotifyToken = mockApp.getBuilder().getSpotifyToken();
-        String spotifyRefresh = mockApp.getBuilder().getSpotifyRefresh();
-        mockApp.getBuilder().setSpotifyShow(true);
-        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyRefresh("b0KuPuLw77Z0hQhCsK-GTHoEx_kethtn357V7iqwEpCTIsLgqbBC_vQBTGC6M5rINl0FrqHK-D3cbOsMOlfyVKuQPvpyGcLcxAoLOTpYXc28nVwB7iBq2oKj9G9lHkFOUKn");
+        mockApp.getBuilder().saveSettings();
         loginInit();
+        mockApp.getBuilder().setSpotifyShow(true);
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\",\"description\":\"i.scdn.co\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
@@ -258,12 +227,12 @@ public class ConnectionControllerTest extends ApplicationTest {
 
         ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
-        doubleClickOn(userList.lookup("#" + testUserOne.getId()));
+        clickOn(userList.lookup("#" + testUserOne.getId()));
         WaitForAsyncUtils.waitForFxEvents();
 
-
-        mockApp.getBuilder().setSpotifyToken(spotifyToken);
-        mockApp.getBuilder().setSpotifyRefresh(spotifyRefresh);
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
         mockApp.getBuilder().saveSettings();
     }
 

@@ -117,7 +117,10 @@ public class LoginViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);
+        builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();

@@ -131,7 +131,10 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);
+                builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
@@ -335,7 +338,6 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     @Test
     public void showCreateServerTest() throws InterruptedException {
         loginInit(true);
-
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 
