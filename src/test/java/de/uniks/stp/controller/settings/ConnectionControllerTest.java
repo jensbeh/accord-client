@@ -259,6 +259,7 @@ public class ConnectionControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
+        mockApp.getBuilder().setSteamShow(false);
         mockApp.getBuilder().saveSettings();
     }
 
@@ -294,6 +295,7 @@ public class ConnectionControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
+        mockApp.getBuilder().setSteamShow(false);
         mockApp.getBuilder().saveSettings();
     }
 }
