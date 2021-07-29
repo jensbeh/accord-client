@@ -171,9 +171,9 @@ public class ServerViewController {
         currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         onlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        onlineUsersList.setCellFactory(new UserListCell(builder));
         offlineUsersList = (ListView<User>) scrollPaneUserBox.getContent().lookup("#offlineUsers");
-        offlineUsersList.setCellFactory(new UserListCell());
+        offlineUsersList.setCellFactory(new UserListCell(builder));
         dividerLineUser = (Line) scrollPaneUserBox.getContent().lookup("#dividerline_online_offline_user");
         userBox = (VBox) scrollPaneUserBox.getContent().lookup("#userBox");
         chatBox = (VBox) view.lookup("#chatBox");
@@ -319,6 +319,38 @@ public class ServerViewController {
                 if (builder.getMuteHeadphones()) {
                     builder.muteHeadphones(false);
                     headphoneLabel.setVisible(false);
+                }
+            });
+            microphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    microphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            microphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    microphoneButton.setStyle("");
+                    setWhiteMode();
+                }
+            });
+            headphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            headphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    headphoneButton.setStyle("");
+                    setWhiteMode();
                 }
             });
             //unMute headphone
@@ -744,6 +776,9 @@ public class ServerViewController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if (currentChannel != null) {
+            showMessageView();
         }
         refreshAllChannelLists();
     }

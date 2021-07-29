@@ -35,6 +35,7 @@ public class Constants {
     public static String TEMP_PATH = "/temp";
     public static String EMOJIS_PATH = "/emojis";
     public static String PRIVATE_CHAT_PATH = "/private";
+    public static String BLOCKEDUSERS_PATH = "/blockedUsers";
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
     public static String NOTIFICATION_PATH = "/soundNotifications";

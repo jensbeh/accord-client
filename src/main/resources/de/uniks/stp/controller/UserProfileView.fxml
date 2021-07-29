@@ -24,7 +24,7 @@
          <children>
             <StackPane>
                <children>
-                  <Button id="mute_microphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎤 " textAlignment="CENTER">
+                  <Button id="mute_microphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎤 " textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -38,7 +38,7 @@
             </StackPane>
             <StackPane>
                <children>
-                  <Button id="mute_headphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎧 " textAlignment="CENTER">
+                  <Button id="mute_headphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎧 " textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>

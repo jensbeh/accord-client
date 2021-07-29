@@ -64,7 +64,15 @@ public class SettingsController {
         audioButton.setText("Audio Settings");
         addAction(audioButton, "Audio");
 
+        if (builder.getPersonalUser() != null) {
+            Button blockedButton = addItem("Blocked");
+            blockedButton.setText("Blocked");
+            addAction(blockedButton, "Blocked");
+        }
+
         onLanguageChanged(); // needs to be called because new buttons added
+
+        openSettings("General");
     }
 
     /**
@@ -150,6 +158,10 @@ public class SettingsController {
                     this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
                     break;
+                case "Blocked":
+                    subController = new BlockController(settingsField, builder);
+                    this.settingsContainer.getChildren().add(settingsField);
+                    subController.init();
             }
         } catch (Exception e) {
             System.err.println("Error on showing Settings Field Screen");

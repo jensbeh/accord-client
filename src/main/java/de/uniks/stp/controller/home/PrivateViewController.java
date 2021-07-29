@@ -86,7 +86,7 @@ public class PrivateViewController {
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell());
+        onlineUsersList.setCellFactory(new UserListCell(builder));
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
@@ -179,6 +179,38 @@ public class PrivateViewController {
             if (builder.getMuteHeadphones()) {
                 builder.muteHeadphones(false);
                 headphoneLabel.setVisible(false);
+            }
+        });
+        microphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                microphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                microphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        microphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                microphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                microphoneButton.setStyle("");
+                setWhiteMode();
+            }
+        });
+        headphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        headphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                headphoneButton.setStyle("");
+                setWhiteMode();
             }
         });
         //unMute headphone
@@ -399,6 +431,9 @@ public class PrivateViewController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if (builder.getCurrentPrivateChat() != null) {
+            MessageViews();
         }
     }
 

@@ -41,13 +41,27 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
             // creates a HBox for each cell of the listView
             StackPane cell = new StackPane();
             Circle circle = new Circle(34);
+            Circle topCircle = new Circle(34);
             Label serverName = new Label();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
+                topCircle.setFill(Color.TRANSPARENT);
+
+                topCircle.setOnMouseEntered(event -> {
+                    if (item != currentServer) {
+                        circle.setFill(Paint.valueOf("#bababa"));
+                    }
+                });
+                topCircle.setOnMouseExited(event -> {
+                    if (item != currentServer) {
+                        circle.setFill(Paint.valueOf("#a4a4a4"));
+                    }
+                });
 
                 circle.setId("serverName_" + item.getId());
+                topCircle.setId("serverName_" + item.getId());
                 if (item == currentServer) {
                     circle.setFill(Paint.valueOf("#5a5c5e"));
                 } else {
@@ -62,7 +76,7 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
                 serverName.setTextAlignment(TextAlignment.CENTER);
                 serverName.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                 serverName.setWrapText(true);
-                cell.getChildren().addAll(circle, serverName);
+                cell.getChildren().addAll(circle, serverName, topCircle);
             }
             this.setGraphic(cell);
         }

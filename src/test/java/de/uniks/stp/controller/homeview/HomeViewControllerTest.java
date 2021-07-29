@@ -3,11 +3,10 @@ package de.uniks.stp.controller.homeview;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
-import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -164,7 +163,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         }).when(restClient).getServers(anyString(), callbackCaptor2.capture());
     }
 
-    public void loginInit() throws InterruptedException {
+    public void loginInit(boolean writeMessage) throws InterruptedException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
@@ -199,14 +198,16 @@ public class HomeViewControllerTest extends ApplicationTest {
         passwordField.setText("1234");
         clickOn("#loginButton");
 
-        String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
-        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateSystemWebSocketClient.handleMessage(jsonObject);
+        if (writeMessage) {
+            String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\"}}";
+            JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+            privateSystemWebSocketClient.handleMessage(jsonObject);
 
 
-        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
+            message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
+            jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+            privateChatWebSocket.handleMessage(jsonObject);
+        }
     }
 
     public void loginTestUser(String name, String id) {
@@ -229,7 +230,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void personalUserTest() throws InterruptedException {
-        loginInit();
+        loginInit(true);
 
         Label personalUserName = lookup("#currentUserBox").lookup("#userName").query();
 
@@ -238,7 +239,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void serverBoxTest() throws InterruptedException {
-        loginInit();
+        loginInit(true);
 
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
@@ -283,7 +284,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void userBoxTest() throws InterruptedException {
-        loginInit();
+        loginInit(true);
         loginTestUser("Gustav", "60c8b3fb44453702009c07b3");
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -323,7 +324,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void privateChatTest() throws InterruptedException {
-        loginInit();
+        loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<User> userList = lookup("#onlineUsers").query();
@@ -343,7 +344,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test()
     public void logout() throws InterruptedException {
-        loginInit();
+        loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("Accord - Main", stage.getTitle());
@@ -357,7 +358,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void logoutMultiLogin() throws InterruptedException {
-        loginInit();
+        loginInit(true);
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         String message = "{\"action\":\"userLeft\",\"data\":{\"id\":\"" + "00" + "\",\"name\":\"" + "Peter" + "\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
@@ -373,7 +374,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
     @Test
     public void openExistingChat() throws InterruptedException {
-        loginInit();
+        loginInit(true);
 
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"5e2ffg75dd077d03df505\",\"name\":\"Test User\"}}";
@@ -406,13 +407,43 @@ public class HomeViewControllerTest extends ApplicationTest {
         Assert.assertEquals(testUserOne.getName(), app.getBuilder().getCurrentPrivateChat().getName());
         //Additional test if opened private chat is colored
         VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("5a5c5e", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
 
         //Additional test when homeButton is clicked and opened chat is the same
         //Clicking homeButton will load the view - same like clicking on server and back to home
         clickOn("#homeButton");
         WaitForAsyncUtils.waitForFxEvents();
         privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
-        Assert.assertEquals("999999", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2,8));
+        Assert.assertEquals("5a5c5e", privateChatCell.getBackground().getFills().get(0).getFill().toString().substring(2, 8));
+    }
+
+    @Test
+    public void blockTest() throws InterruptedException {
+        loginInit(false);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        ListView<User> userList = lookup("#onlineUsers").query();
+        User testUser = userList.getItems().get(0);
+        Label name = lookup("#" + testUser.getId()).query();
+        doubleClickOn(name);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        rightClickOn();
+        ContextMenu contextMenu = name.getContextMenu();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+        interact(() -> contextMenu.getItems().get(1).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#settingsButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("Blocked");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#user_blocked_" + testUser.getId());
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#button_unblock");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

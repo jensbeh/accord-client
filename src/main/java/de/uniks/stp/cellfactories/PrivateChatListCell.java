@@ -9,7 +9,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
@@ -50,6 +49,20 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             super.updateItem(item, empty);
 
             if (!empty) {
+
+                cell.setOnMouseEntered(event -> {
+                    if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
+                        cell.getStyleClass().clear();
+                        cell.getStyleClass().add("unselectedChatHover");
+                    }
+                });
+                cell.setOnMouseExited(event -> {
+                    if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
+                        cell.getStyleClass().clear();
+                        cell.getStyleClass().add("unselectedChat");
+                    }
+                });
+
                 // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setPrefHeight(USE_COMPUTED_SIZE);
@@ -81,7 +94,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 name.getStyleClass().clear();
                 name.getStyleClass().add("name");
                 name.setText(item.getName());
-                name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10;");
+                name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10; -fx-text-fill: white;");
 
                 nameCell.getChildren().add(name);
 
@@ -91,7 +104,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                     message.getStyleClass().clear();
                     message.getStyleClass().add("msg");
                     message.setPrefWidth(USE_COMPUTED_SIZE);
-                    message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10;");
+                    message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10; -fx-text-fill: white;");
                     message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
                     lastMessageCell.getChildren().add(message);
                 }
@@ -121,9 +134,10 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                     foreground.setId("notificationCounterForeground_" + item.getId());
 
                     Label numberText = new Label();
+                    numberText.getStyleClass().clear();
+                    numberText.getStyleClass().add("numberTextStyle");
                     numberText.setId("notificationCounter_" + item.getId());
                     numberText.setAlignment(Pos.CENTER);
-                    numberText.setTextFill(Color.BLACK);
                     numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
 
                     StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
