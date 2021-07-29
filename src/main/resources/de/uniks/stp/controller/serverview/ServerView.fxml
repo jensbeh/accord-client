@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <VBox id="channelBox" minWidth="190.0" HBox.hgrow="ALWAYS">
             <children>
@@ -43,7 +43,7 @@
                   <content>
                       <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
                           <children>
-                              <ListView id="onlineUsers" fixedCellSize="36.0" prefWidth="185.0" />
+                              <ListView id="onlineUsers" prefWidth="185.0" />
                               <Line id="dividerline_online_offline_user" startX="-185.0" stroke="#9e9e9e" />
                               <ListView id="offlineUsers" fixedCellSize="36.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="85.0" prefWidth="185.0" VBox.vgrow="ALWAYS" />
                           </children>

@@ -6,6 +6,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -26,9 +27,11 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -107,6 +110,10 @@ public class HomeViewController {
         });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+        if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
+            builder.getGame();
+        }
 
         ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
@@ -136,6 +143,15 @@ public class HomeViewController {
         });
     }
 
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if (!body.getObject().getString("status").equals("success")) {
+                System.err.println("Error in updateDescription");
+                System.err.println(body);
+            }
+        });
+    }
 
     /**
      * Returns the current HomeViewController.
@@ -409,6 +425,7 @@ public class HomeViewController {
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
+        builder.stopGame();
         if (stage != null) {
             this.stage.close();
             stage = null;
@@ -567,5 +584,9 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
+    }
+
+    public Map<Server, ServerViewController> getServerCtrls() {
+        return serverController;
     }
 }

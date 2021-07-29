@@ -208,7 +208,7 @@ public class ServerMessageTest extends ApplicationTest {
         String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserMainName).put("online", true));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserMainName).put("online", true).put("description",""));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -339,6 +339,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdC = "5e2fbd8770dd077d03dr458C";
         String messageIdD = "5e2fbd8770dd077d03dr458D";
         loginInit(true);
+        WaitForAsyncUtils.waitForFxEvents();
 
         Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
 

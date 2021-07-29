@@ -107,7 +107,7 @@ public class InviteUsersTempSubController {
      * when clicked the button the link text is copied to clipboard
      */
     private void onCopyLinkClicked(ActionEvent actionEvent) {
-        if(!linkLabel.getText().equals("link...")) {
+        if (!linkLabel.getText().equals("link...")) {
             copied.setVisible(true);
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), copied);
             fadeOut.setFromValue(1.0);

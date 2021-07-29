@@ -121,6 +121,7 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     public void handleMessage(JsonStructure msg) {
+        System.out.println("serverSystemWebSocket");
         System.out.println("msg: " + msg);
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
@@ -159,13 +160,13 @@ public class ServerSystemWebSocket extends Endpoint {
         }
 
         if (userAction.equals("userJoined")) {
-            buildServerUser(userName, userId, true);
+            buildServerUser(userName, userId, true, "");
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
                 Platform.runLater(StageManager::showLoginScreen);
             }
-            buildServerUser(userName, userId, false);
+            buildServerUser(userName, userId, false,"");
         }
 
         if (userAction.equals("serverDeleted")) {
@@ -190,11 +191,27 @@ public class ServerSystemWebSocket extends Endpoint {
         if (userAction.equals("messageDeleted")) {
             deleteMessage(jsonData);
         }
+        if (userAction.equals("userDescriptionChanged")) {
+            updateUser(jsonData);
+        }
 
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
     }
+
+    private void updateUser(JsonObject jsonData) {
+        jsonData = jsonData.getJsonObject("data");
+        for (User u : serverViewController.getServer().getUser()) {
+            if (u.getId().equals(jsonData.getString("id"))) {
+                System.out.println(jsonData.getString("description"));
+                u.setDescription(jsonData.getString("description"));
+                break;
+            }
+        }
+        serverViewController.showOnlineOfflineUsers();
+    }
+
 
     /**
      * refreshes the current category view and starts a new udp session
@@ -329,8 +346,8 @@ public class ServerSystemWebSocket extends Endpoint {
     /**
      * Build a serverUser with this instance of server.
      */
-    private User buildServerUser(String userName, String userId, boolean online) {
-        return builder.buildServerUser(serverViewController.getServer(), userName, userId, online);
+    private User buildServerUser(String userName, String userId, boolean online, String description) {
+        return builder.buildServerUser(serverViewController.getServer(), userName, userId, online, description);
     }
 
     /**
@@ -568,9 +585,10 @@ public class ServerSystemWebSocket extends Endpoint {
     private void userArrived(JsonObject jsonData) {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
+        String description = jsonData.getString("description");
         boolean status = jsonData.getBoolean("online");
 
-        serverViewController.getServer().withUser(buildServerUser(name, id, status));
+        serverViewController.getServer().withUser(buildServerUser(name, id, status,description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
@@ -582,7 +600,8 @@ public class ServerSystemWebSocket extends Endpoint {
     private void userExited(JsonObject jsonData) {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
-        serverViewController.getServer().withoutUser(buildServerUser(name, id, true));
+        String description = jsonData.getString("description");
+        serverViewController.getServer().withoutUser(buildServerUser(name, id, true,description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }

@@ -200,4 +200,16 @@ public class RestClient {
         HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_RESOLVE_VANITY + STEAM_API_KEY + "&vanityurl=" + vanitiyURL);
         sendRequest(request, callback);
     }
+
+    public void updateDescribtion(String userId, String description, String userKey, Callback<JsonNode> callback) {
+        JSONObject jsonObj = new JSONObject().accumulate("text", description);
+        String body = JSONObject.valueToString(jsonObj);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + USERS_PATH + "/" + userId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey);
+        sendRequest(request, callback);
+    }
+
+    public void getCurrentGame(String steamToken, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_PLAYER_SUMMARIES + STEAM_API_KEY + "&steamids=" + steamToken);
+        sendRequest(request, callback);
+    }
 }
