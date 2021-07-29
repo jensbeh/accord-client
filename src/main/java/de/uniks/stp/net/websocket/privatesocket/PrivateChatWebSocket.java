@@ -97,18 +97,22 @@ public class PrivateChatWebSocket extends Endpoint {
         this.session = null;
         System.out.println(closeReason.getCloseCode().toString());
         if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-                alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
-                alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
-                alert.setOnCloseRequest(e -> StageManager.showLoginScreen());
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    StageManager.showLoginScreen();
-                }
-            });
+            showNoConAlert();
         }
         super.onClose(session, closeReason);
+    }
+
+    public void showNoConAlert() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+            alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
+            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
+            alert.setOnCloseRequest(e -> StageManager.showLoginScreen());
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                StageManager.showLoginScreen();
+            }
+        });
     }
 
     private void onMessage(String message) {
@@ -156,104 +160,118 @@ public class PrivateChatWebSocket extends Endpoint {
         System.out.println("privateChatWebSocketClient");
         System.out.println(msg);
         if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
-            Message message;
-            String channelName;
-            boolean newChat = true;
-            // currentUser send
-            long timestamp = new Date().getTime();
-            if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
-                channelName = jsonObject.getString("to");
-                message = new Message().setMessage(jsonObject.getString("message")).
-                        setFrom(jsonObject.getString("from")).
-                        setTimestamp(timestamp);
-                privateViewController.getChatViewController().clearMessageField();
-            } else { // currentUser received
-                channelName = jsonObject.getString("from");
-
-                // if user is blocked, block the message
-                if (isBlocked(channelName)) {
-                    return;
-                }
-
-                message = new Message().setMessage(jsonObject.getString("message")).
-                        setFrom(jsonObject.getString("from")).
-                        setTimestamp(timestamp);
-            }
-            for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
-                if (channel.getName().equals(channelName)) {
-                    channel.withMessage(message);
-                    if (!builder.isDoNotDisturb() && (builder.getCurrentPrivateChat() == null || channel != builder.getCurrentPrivateChat())) {
-                        if (builder.isPlaySound()) {
-                            builder.playSound();
-                        }
-                        if (builder.isShowNotifications()) {
-                            channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-                        }
-                    }
-                    privateViewController.getPrivateChatList().refresh();
-                    newChat = false;
-                    break;
-                }
-            }
-            if (newChat) {
-                String userId = "";
-                for (User user : privateViewController.getOnlineUsersList().getItems()) {
-                    if (user.getName().equals(channelName)) {
-                        userId = user.getId();
-                    }
-                }
-                PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
-                try {
-                    // load messages for new channel
-                    channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
-                    channel.withMessage(message);
-                    if (!builder.isDoNotDisturb()) {
-                        if (builder.isPlaySound()) {
-                            builder.playSound();
-                        }
-                        if (builder.isShowNotifications()) {
-                            channel.setUnreadMessagesCounter(1);
-                        }
-                    }
-                    builder.getPersonalUser().withPrivateChat(channel);
-                    Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
-
-                } catch (IOException | JsonException e) {
-                    e.printStackTrace();
-                }
-            }
-            // save message
-            if (builder.getPersonalUser().getName().equals(message.getFrom())) {
-                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), builder.getCurrentPrivateChat().getName(), message);
-            } else {
-                ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
-            }
-            if (privateViewController.getChatViewController() != null) {
-                Platform.runLater(() -> chatViewController.printMessage(message));
-            }
+            privateMessage(jsonObject);
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
-            String errorTitle;
-            String serverMessage = jsonObject.getJsonObject("data").getString("message");
-            if (serverMessage.equals("This is not your username.")) {
-                errorTitle = StageManager.getLangBundle().getString("error.username");
-            } else {
-                errorTitle = StageManager.getLangBundle().getString("error.chat");
-            }
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle(errorTitle);
-                if (serverMessage.equals("This is not your username.")) {
-                    alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
-                } else {
-                    alert.setHeaderText(serverMessage);
-                }
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    privateViewController.showUsers();
-                }
-            });
+            showChatAlert(jsonObject);
         }
+    }
 
+    private void privateMessage(JsonObject jsonObject) {
+        Message message;
+        String channelName;
+        // currentUser send
+        long timestamp = new Date().getTime();
+        if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
+            channelName = jsonObject.getString("to");
+            message = new Message().setMessage(jsonObject.getString("message")).
+                    setFrom(jsonObject.getString("from")).
+                    setTimestamp(timestamp);
+            privateViewController.getChatViewController().clearMessageField();
+        } else { // currentUser received
+            channelName = jsonObject.getString("from");
+            if (isBlocked(channelName)) { // if user is blocked, block the message
+                return;
+            }
+            message = new Message().setMessage(jsonObject.getString("message")).
+                    setFrom(jsonObject.getString("from")).
+                    setTimestamp(timestamp);
+        }
+        boolean newChat = checkIfNewChat(channelName, message);
+        if (newChat) {
+            createNewChat(channelName, message);
+        }
+        saveMessage(message);
+        if (privateViewController.getChatViewController() != null) {
+            Platform.runLater(() -> chatViewController.printMessage(message));
+        }
+    }
+
+    private boolean checkIfNewChat(String channelName, Message message) {
+        for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
+            if (channel.getName().equals(channelName)) {
+                channel.withMessage(message);
+                if (!builder.isDoNotDisturb() && (builder.getCurrentPrivateChat() == null || channel != builder.getCurrentPrivateChat())) {
+                    if (builder.isPlaySound()) {
+                        builder.playSound();
+                    }
+                    if (builder.isShowNotifications()) {
+                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
+                    }
+                }
+                privateViewController.getPrivateChatList().refresh();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void createNewChat(String channelName, Message message) {
+        String userId = "";
+        for (User user : privateViewController.getOnlineUsersList().getItems()) {
+            if (user.getName().equals(channelName)) {
+                userId = user.getId();
+            }
+        }
+        PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
+        try {
+            // load messages for new channel
+            channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
+            channel.withMessage(message);
+            if (!builder.isDoNotDisturb()) {
+                if (builder.isPlaySound()) {
+                    builder.playSound();
+                }
+                if (builder.isShowNotifications()) {
+                    channel.setUnreadMessagesCounter(1);
+                }
+            }
+            builder.getPersonalUser().withPrivateChat(channel);
+            Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
+
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveMessage(Message message) {
+        if (builder.getPersonalUser().getName().equals(message.getFrom())) {
+            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), builder.getCurrentPrivateChat().getName(), message);
+        } else {
+            ResourceManager.savePrivatChat(builder.getPersonalUser().getName(), message.getFrom(), message);
+        }
+    }
+
+    private void showChatAlert(JsonObject jsonObject) {
+        String errorTitle;
+        String serverMessage = jsonObject.getJsonObject("data").getString("message");
+        if (serverMessage.equals("This is not your username.")) {
+            errorTitle = StageManager.getLangBundle().getString("error.username");
+        } else {
+            errorTitle = StageManager.getLangBundle().getString("error.chat");
+        }
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+            alert.setTitle(errorTitle);
+            if (serverMessage.equals("This is not your username.")) {
+                alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
+            } else {
+                alert.setHeaderText(serverMessage);
+            }
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                privateViewController.showUsers();
+            }
+        });
     }
 }
