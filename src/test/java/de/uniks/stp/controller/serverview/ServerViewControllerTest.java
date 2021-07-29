@@ -486,7 +486,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar")).toString();
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description", "test")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 

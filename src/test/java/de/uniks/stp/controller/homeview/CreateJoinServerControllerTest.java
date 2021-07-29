@@ -185,7 +185,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
         String testUserName = "Hendry Bracken";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description",""));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description","test"));
         String testServerId = "5e2fbd8770dd077d03df505";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")

@@ -224,7 +224,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description",""));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description","test"));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -243,7 +243,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df504";
         String testServerOwner2 = "5e2iof875dd077d03df505";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", "test"));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
