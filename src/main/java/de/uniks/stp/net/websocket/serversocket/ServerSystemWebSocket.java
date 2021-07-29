@@ -121,8 +121,6 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     public void handleMessage(JsonStructure msg) {
-        System.out.println("serverSystemWebSocket");
-        System.out.println("msg: " + msg);
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
@@ -166,7 +164,7 @@ public class ServerSystemWebSocket extends Endpoint {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
                 Platform.runLater(StageManager::showLoginScreen);
             }
-            buildServerUser(userName, userId, false,"");
+            buildServerUser(userName, userId, false, "");
         }
 
         if (userAction.equals("serverDeleted")) {
@@ -222,52 +220,61 @@ public class ServerSystemWebSocket extends Endpoint {
             if (jsonData.getString("category").equals(category.getId())) {
                 for (ServerChannel serverChannel : category.getChannel()) {
                     if (jsonData.getString("channel").equals(serverChannel.getId())) {
-
-
-                        // put name and id
-                        String userName = "";
-                        for (User user : builder.getPersonalUser().getUser()) {
-                            if (user.getId().equals(userId)) {
-                                userName = user.getName();
-                                break;
-                            }
-                        }
-                        if (!userName.equals("")) {
-                            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
-                            serverChannel.withAudioMember(audioMemberUser);
-                            if (builder.getAudioStreamClient() != null) {
-                                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
-                            }
-                        }
-                        if (builder.getPersonalUser().getId().equals(jsonData.getString("id"))
-                                || (builder.getCurrentAudioChannel() != null &&
-                                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
-                            builder.playChannelSound("join");
-                        }
+                        UserJoinVoiceChannel(userId, serverChannel);
+                        playJoinSound(jsonData);
                         // create new UDP-connection for personalUser when joined
                         if (userId.equals(builder.getPersonalUser().getId())) {
-                            if (builder.getAudioStreamClient() != null) {
-                                builder.getAudioStreamClient().disconnectStream();
-                                builder.setAudioStreamClient(null);
-                            }
-                            AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
-                            serverChannel.withAudioMember(audioMemberPersonalUser);
-
-                            builder.setCurrentAudioChannel(serverChannel);
-                            serverViewController.showAudioConnectedBox();
-                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
-                            builder.setAudioStreamClient(audiostreamClient);
-                            audiostreamClient.init();
-                            for (AudioMember audioMember : serverChannel.getAudioMember()) {
-                                audiostreamClient.setNewAudioMemberReceiver(audioMember);
-                            }
-                            audiostreamClient.startStream();
+                            createAudioCon(userId, serverChannel);
                         }
                         serverViewController.refreshAllChannelLists();
                     }
                 }
             }
         }
+    }
+
+    private void playJoinSound(JsonObject jsonData) {
+        if (builder.getPersonalUser().getId().equals(jsonData.getString("id"))
+                || (builder.getCurrentAudioChannel() != null &&
+                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
+            builder.playChannelSound("join");
+        }
+    }
+
+    private void UserJoinVoiceChannel(String userId, ServerChannel serverChannel) {
+        String userName = "";
+        for (User user : builder.getPersonalUser().getUser()) {
+            if (user.getId().equals(userId)) {
+                userName = user.getName();
+                break;
+            }
+        }
+        if (!userName.equals("")) {
+            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
+            serverChannel.withAudioMember(audioMemberUser);
+            if (builder.getAudioStreamClient() != null) {
+                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
+            }
+        }
+    }
+
+    private void createAudioCon(String userId, ServerChannel serverChannel) {
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
+        }
+        AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
+        serverChannel.withAudioMember(audioMemberPersonalUser);
+
+        builder.setCurrentAudioChannel(serverChannel);
+        serverViewController.showAudioConnectedBox();
+        AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
+        builder.setAudioStreamClient(audiostreamClient);
+        audiostreamClient.init();
+        for (AudioMember audioMember : serverChannel.getAudioMember()) {
+            audiostreamClient.setNewAudioMemberReceiver(audioMember);
+        }
+        audiostreamClient.startStream();
     }
 
     /**
@@ -282,25 +289,7 @@ public class ServerSystemWebSocket extends Endpoint {
                         // which audioMember disconnects?
                         for (AudioMember audioMember : serverChannel.getAudioMember()) {
                             if (audioMember.getId().equals(userId)) {
-                                serverChannel.withoutAudioMember(audioMember);
-
-                                if (!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
-                                        builder.getCurrentAudioChannel() != null &&
-                                        builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
-                                    builder.playChannelSound("left");
-                                }
-                                // personalUser disconnects
-                                if (userId.equals(builder.getPersonalUser().getId())) {
-                                    builder.setCurrentAudioChannel(null);
-                                    builder.getAudioStreamClient().disconnectStream();
-                                    builder.setAudioStreamClient(null);
-                                }
-                                // other user disconnects
-                                else {
-                                    if (builder.getAudioStreamClient() != null) {
-                                        builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
-                                    }
-                                }
+                                removeUserFromVoiceChat(jsonData, serverChannel, audioMember, userId);
                                 break;
                             }
                         }
@@ -308,6 +297,32 @@ public class ServerSystemWebSocket extends Endpoint {
                     }
                 }
             }
+        }
+    }
+
+    private void removeUserFromVoiceChat(JsonObject jsonData, ServerChannel serverChannel, AudioMember audioMember, String userId) {
+        serverChannel.withoutAudioMember(audioMember);
+
+        playLeaveSound(audioMember,jsonData);
+        // personalUser disconnects
+        if (userId.equals(builder.getPersonalUser().getId())) {
+            builder.setCurrentAudioChannel(null);
+            builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
+        }
+        // other user disconnects
+        else {
+            if (builder.getAudioStreamClient() != null) {
+                builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
+            }
+        }
+    }
+
+    private void playLeaveSound(AudioMember audioMember,JsonObject jsonData) {
+        if (!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
+                builder.getCurrentAudioChannel() != null &&
+                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
+            builder.playChannelSound("left");
         }
     }
 
@@ -384,25 +399,26 @@ public class ServerSystemWebSocket extends Endpoint {
                     }
                 }
             }
-
         }
 
-        Platform.runLater(() -> {
-            if (builder.getCurrentServer() == serverViewController.getServer()) {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().serverDeleted();
-            } else {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().refreshServerList();
-            }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-            alert.setTitle("Server deleted!");
-            alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
-            alert.showAndWait();
-        });
+        Platform.runLater(this::serverDeletedAlert);
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
+    }
+
+    private void serverDeletedAlert() {
+        if (builder.getCurrentServer() == serverViewController.getServer()) {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().serverDeleted();
+        } else {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().refreshServerList();
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+        alert.setTitle("Server deleted!");
+        alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
+        alert.showAndWait();
     }
 
     /**
@@ -437,29 +453,17 @@ public class ServerSystemWebSocket extends Endpoint {
      * deletes a category with controller and view
      */
     private void deleteCategory(JsonObject jsonData) {
-        Server currentServer = null;
-        Categories deletedCategory = null;
-        Node deletedNode = null;
+        Server currentServer;
+        Categories deletedCategory;
+        Node deletedNode;
         String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
 
-        for (Server server : builder.getPersonalUser().getServer()) {
-            if (server.getId().equals(serverId)) {
-                for (Categories categories : server.getCategories()) {
-                    currentServer = server;
-                    if (categories.getId().equals(categoryId)) {
-                        if (builder.getCurrentServer() == serverViewController.getServer()) {
-                            for (Node view : serverViewController.getCategoryBox().getChildren()) {
-                                if (view.getId().equals(categories.getId())) {
-                                    deletedCategory = categories;
-                                    deletedNode = view;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ArrayList<Object> objectArrayList = findDeletedCategory(jsonData);
+        currentServer = (Server) objectArrayList.get(0);
+        deletedCategory = (Categories) objectArrayList.get(1);
+        deletedNode = (Node) objectArrayList.get(2);
+
         if (deletedNode != null) {
             // thrown out from audioChannel
             if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
@@ -472,8 +476,7 @@ public class ServerSystemWebSocket extends Endpoint {
             }
 
             currentServer.withoutCategories(deletedCategory);
-            Node finalDeletedNode = deletedNode;
-            Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(finalDeletedNode));
+            Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(deletedNode));
             serverViewController.getCategorySubControllerList().get(deletedCategory).stop();
             serverViewController.getCategorySubControllerList().remove(deletedCategory);
             if (deletedCategory.getChannel().contains(serverViewController.getCurrentChannel()) || serverViewController.getServer().getCategories().size() == 0) {
@@ -481,6 +484,30 @@ public class ServerSystemWebSocket extends Endpoint {
             }
             serverViewController.refreshAllChannelLists();
         }
+    }
+
+    private ArrayList<Object> findDeletedCategory(JsonObject jsonData) {
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                objectArrayList.add(server);
+                for (Categories categories : server.getCategories()) {
+                    if (categories.getId().equals(categoryId)) {
+                        if (builder.getCurrentServer() == serverViewController.getServer()) {
+                            for (Node view : serverViewController.getCategoryBox().getChildren()) {
+                                if (view.getId().equals(categories.getId())) {
+                                    objectArrayList.add(categories);
+                                    objectArrayList.add(view);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return objectArrayList;
     }
 
     /**
@@ -588,7 +615,7 @@ public class ServerSystemWebSocket extends Endpoint {
         String description = jsonData.getString("description");
         boolean status = jsonData.getBoolean("online");
 
-        serverViewController.getServer().withUser(buildServerUser(name, id, status,description));
+        serverViewController.getServer().withUser(buildServerUser(name, id, status, description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
@@ -601,23 +628,27 @@ public class ServerSystemWebSocket extends Endpoint {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
         String description = jsonData.getString("description");
-        serverViewController.getServer().withoutUser(buildServerUser(name, id, true,description));
+        serverViewController.getServer().withoutUser(buildServerUser(name, id, true, description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
         if (name.equals(builder.getPersonalUser().getName())) {
-            Platform.runLater(() -> {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().serverDeleted();
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle("Server left!");
-                alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
-                alert.showAndWait();
-            });
-            serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
+            showExitAlert();
         }
+    }
+
+    private void showExitAlert() {
+        Platform.runLater(() -> {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().serverDeleted();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+            alert.setTitle("Server left!");
+            alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
+            alert.showAndWait();
+        });
+        serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }
 
     /**
@@ -630,18 +661,9 @@ public class ServerSystemWebSocket extends Endpoint {
         String channelType = jsonData.getString("type");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
-        String memberId;
-        boolean hasChannel = false;
-        ArrayList<User> member = new ArrayList<>();
 
-        for (int j = 0; j < jsonArray.size(); j++) {
-            memberId = jsonArray.getString(j);
-            for (User user : serverViewController.getServer().getUser()) {
-                if (user.getId().equals(memberId)) {
-                    member.add(user);
-                }
-            }
-        }
+        boolean hasChannel = false;
+        ArrayList<User> member = getChannelMembers(jsonArray);
 
         for (Categories category : serverViewController.getServer().getCategories()) {
             if (category.getId().equals(categoryId)) {
@@ -657,9 +679,8 @@ public class ServerSystemWebSocket extends Endpoint {
                     }
                 }
                 if (!hasChannel) {
-                    ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
-                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
-                    category.withChannel(newChannel);
+                    category.withChannel(new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
+                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member));
                 }
             }
         }
@@ -668,6 +689,21 @@ public class ServerSystemWebSocket extends Endpoint {
             builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
             serverViewController.showAudioConnectedBox();
         }
+    }
+
+    private ArrayList<User> getChannelMembers(JsonArray jsonArray) {
+        String memberId;
+        ArrayList<User> member = new ArrayList<>();
+
+        for (int j = 0; j < jsonArray.size(); j++) {
+            memberId = jsonArray.getString(j);
+            for (User user : serverViewController.getServer().getUser()) {
+                if (user.getId().equals(memberId)) {
+                    member.add(user);
+                }
+            }
+        }
+        return member;
     }
 
 
