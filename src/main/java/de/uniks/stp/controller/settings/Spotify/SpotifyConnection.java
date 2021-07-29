@@ -411,9 +411,13 @@ public class SpotifyConnection {
     }
 
     private void stop() {
-        webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
-        webView.getEngine().load(null);
-        server.stop(0);
+        if (webView != null) {
+            webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
+            webView.getEngine().load(null);
+        }
+        if (server != null) {
+            server.stop(0);
+        }
         server = null;
         popUp.close();
     }
