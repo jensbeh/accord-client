@@ -110,26 +110,11 @@ public class PrivateSystemWebSocketClient extends Endpoint {
     }
 
     public void handleMessage(JsonObject msg) {
-        System.out.println("privateSystemWebSocket");
-        System.out.println("msg: " + msg);
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         if (userAction.equals("userDescriptionChanged")) {
-            for (Server s : builder.getServers()) {
-                for (User u : s.getUser()) {
-                    if (u.getId().equals(jsonData.getString("id"))) {
-                        u.setDescription(jsonData.getString("description"));
-                        builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
-                    }
-                }
-            }
-            for (User u : builder.getPersonalUser().getUser()) {
-                if (u.getId().equals(jsonData.getString("id"))) {
-                    u.setDescription(jsonData.getString("description"));
-                    privateViewController.getOnlineUsersList().refresh();
-                }
-            }
+            updateUserDescription(jsonData);
         } else {
             String userName = jsonData.getString("name");
             String userId = jsonData.getString("id");
@@ -151,6 +136,23 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             Platform.runLater(() -> privateViewController.getOnlineUsersList().setItems(FXCollections.observableList(builder.
                     getPersonalUser().getUser()).sorted(new SortUser())));
             Platform.runLater(() -> privateViewController.getOnlineUsersList().refresh());
+        }
+    }
+
+    private void updateUserDescription(JsonObject jsonData) {
+        for (Server s : builder.getServers()) { //updates ServerUsers and ListViews
+            for (User u : s.getUser()) {
+                if (u.getId().equals(jsonData.getString("id"))) {
+                    u.setDescription(jsonData.getString("description"));
+                    builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
+                }
+            }
+        }
+        for (User u : builder.getPersonalUser().getUser()) {    //updates privateChatUsers and ListView
+            if (u.getId().equals(jsonData.getString("id"))) {
+                u.setDescription(jsonData.getString("description"));
+                privateViewController.getOnlineUsersList().refresh();
+            }
         }
     }
 }
