@@ -110,7 +110,8 @@ public class ServerChatWebSocket extends Endpoint {
             long timestamp = new Date().getTime();
 
             // check if message is arrived/exited message
-            if (text.equals(getUserIdByName(from) + "#arrival") || text.equals(getUserIdByName(from) + "#exit")) {
+            String userIdByName = getUserIdByName(from);
+            if (text.equals(userIdByName + "#arrival") || text.equals(userIdByName + "#exit")) {
                 messageIsInfo = true;
             }
 
