@@ -13,6 +13,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
+import java.util.ResourceBundle;
+
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
     private final ModelBuilder builder;
@@ -175,6 +177,10 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
+            ResourceBundle lang = StageManager.getLangBundle();
+            block.setText(lang.getString("menuItem.block"));
+            unblock.setText(lang.getString("menuItem.unblock"));
+
             boolean isBlocked = false;
             for (User user : builder.getBlockedUsers()) {
                 if (user.getId().equals(item.getId())) {
