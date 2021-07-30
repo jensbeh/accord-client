@@ -62,6 +62,8 @@ public class AudioController extends SubSetting {
         myRunnable = this::runMicrophoneTest;
 
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
+//        microphoneProgressBar.getStyleClass().clear();
+//        microphoneProgressBar.getStyleClass().add("progress-bar-gradient");
 
         // ComboBox Settings
         this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
@@ -158,6 +160,9 @@ public class AudioController extends SubSetting {
         }
     }
 
+    /**
+     * starts a new thread to test the audio input and output
+     */
     private void onMicrophoneTestStart(ActionEvent actionEvent) {
         if (builder.getPersonalUser() != null) {
             if (builder.getMuteHeadphones()) {
@@ -180,6 +185,9 @@ public class AudioController extends SubSetting {
         microphoneTestChangeAction(false);
     }
 
+    /**
+     * Stops the thread of the audio test and mutes users
+     */
     private void onMicrophoneTestStop(ActionEvent actionEvent) {
         senderActive = false;
         if (builder.getPersonalUser() != null) {
@@ -229,28 +237,28 @@ public class AudioController extends SubSetting {
     }
 
     public void runMicrophoneTest() {
-        // start sending
         if (senderActive) {
             microphone.startRecording();
             speaker.startPlayback();
             while (senderActive) {
-//                Progress Bar
-//                https://stackoverflow.com/questions/13357077/javafx-progressbar-how-to-change-bar-color/13372086#13372086
-//                Gradient
-//                http://www.java2s.com/Tutorials/Java/JavaFX/0110__JavaFX_Gradient_Color.htm
-//                Stop[] stops = new Stop[] { new Stop(0, Color.BLACK), new Stop(1, Color.RED)};
-//                LinearGradient lg1 = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
 
                 stopped = false;
-                // start recording audio
                 byte[] data = microphone.readData();
                 int volumeInPer = calculateRMSLevel(data);
+
+                if (volumeInPer > 0 && volumeInPer <= 35) {
+                    microphoneProgressBar.setId("progressBar_microphone_low");
+                } else if (volumeInPer > 35 && volumeInPer <= 65) {
+                    microphoneProgressBar.setId("progressBar_microphone_medium");
+                } else if (volumeInPer > 65) {
+                    microphoneProgressBar.setId("progressBar_microphone_high");
+                }
+
                 microphoneProgressBar.setProgress(volumeInPer * 0.01);
                 speaker.writeData(data);
 
             }
             microphoneProgressBar.setProgress(0);
-            // stop if senderActive is set to false in stop method in this class
             microphone.stopRecording();
             speaker.stopPlayback();
             stopped = true;
