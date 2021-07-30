@@ -45,6 +45,10 @@ public class OverviewController {
         });
     }
 
+    /**
+     * User sends a message to the server that he has exited
+     * @param server the server
+     */
     private void userExitedNotification(Server server) {
         if (builder.getServerChatWebSocketClient() != null) {
             JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getId() + "#exit");

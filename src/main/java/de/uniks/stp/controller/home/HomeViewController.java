@@ -7,7 +7,6 @@ import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
-import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -28,11 +27,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -345,6 +342,10 @@ public class HomeViewController {
         });
     }
 
+    /**
+     * User sends a message to the server that he has arrived
+     * @param server the server
+     */
     private void userArrivedNotification(Server server) {
         if (builder.getServerChatWebSocketClient() != null) {
             JSONObject obj = new JSONObject().put("channel", server.getCategories().get(0).getChannel().get(0).getId()).put("message", builder.getPersonalUser().getId() + "#arrival");
