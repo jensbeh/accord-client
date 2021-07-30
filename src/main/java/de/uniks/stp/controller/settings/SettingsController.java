@@ -25,6 +25,8 @@ public class SettingsController {
     private List<Button> itemList;
     private Button audioButton;
     private Button generalButton;
+    private Button connectionButton;
+    private Button blockedButton;
 
     private SubSetting subController;
 
@@ -55,17 +57,17 @@ public class SettingsController {
         }
 
         if (builder.getPersonalUser() != null) {
-            Button connectionButton = addItem("Connection");
+            connectionButton = addItem("Connection");
             connectionButton.setText("Connection");
             addAction(connectionButton, "Connection");
         }
 
-        Button audioButton = addItem("Audio");
+        audioButton = addItem("Audio");
         audioButton.setText("Audio Settings");
         addAction(audioButton, "Audio");
 
         if (builder.getPersonalUser() != null) {
-            Button blockedButton = addItem("Blocked");
+            blockedButton = addItem("Blocked");
             blockedButton.setText("Blocked");
             addAction(blockedButton, "Blocked");
         }
@@ -175,6 +177,9 @@ public class SettingsController {
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         generalButton.setText(lang.getString("button.settings_general"));
+        connectionButton.setText(lang.getString("button.settings_connection"));
+        audioButton.setText(lang.getString("button.settings_audio"));
+        blockedButton.setText(lang.getString("button.settings_blocked"));
         for (Button button : itemList) {
             button.getId();
             switch (button.getId()) {
