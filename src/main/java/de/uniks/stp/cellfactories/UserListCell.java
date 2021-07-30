@@ -26,31 +26,44 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
      * is returned.
      *
      * @param param The single argument upon which the returned value should be
-     *              determined.
+     * determined.
      * @return An object of type R that may be determined based on the provided
      * parameter value.
      */
+    private HBox root;
+
+    public void setRoot(HBox root) {
+        this.root = root;
+    }
+
+    public HBox getRoot() {
+        return root;
+    }
 
     @Override
     public ListCell<User> call(ListView<User> param) {
-        return new UserCell();
+        UserCell userCell = new UserCell();
+        return userCell;
     }
 
     private class UserCell extends ListCell<User> {
+        private User user;
+
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
+            this.user = item;
             VBox vBox = new VBox();
             HBox cell = new HBox();
 
             Region hoverBg = new Region();
             hoverBg.setPrefSize(175, 30);
             hoverBg.setOpacity(0.3);
-            setOnMouseEffects(hoverBg);
+            setOnMouseEffects(hoverBg, cell);
 
             Circle circle = new Circle(15);
             Label name = new Label();
-            StackPane stackPane = new StackPane();
             Label game = new Label();
+            StackPane stackPane = new StackPane();
             super.updateItem(item, empty);
             if (!empty) {
                 cell.setId("user");
@@ -91,7 +104,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         /**
          * this method adds onMouse Effects for hovering or clicking with mouse
          */
-        private void setOnMouseEffects(Region hoverBg) {
+        private void setOnMouseEffects(Region hoverBg, HBox cell) {
             this.setOnMouseEntered(event -> {
                 if (builder.getTheme().equals("Dark")) {
                     hoverBg.setStyle("-fx-background-color: #5b5d61; -fx-background-radius: 10 10 10 10");
@@ -110,6 +123,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             });
             this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
             this.setOnMouseReleased(event -> {
+                if (builder.isSpotifyShow()) {
+                    builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
+                }
                 if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
                     hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
                 } else if (builder.getTheme().equals("Dark")) {
@@ -119,74 +135,74 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 }
             });
         }
-    }
 
-    /**
-     * adds a ContextMenu to the User Cell, where block/unblock can be clicked
-     *
-     * @param item the user
-     * @param name the user name as Label
-     */
-    private void addContextMenu(User item, Label name) {
-        ContextMenu menu = new ContextMenu();
-        MenuItem block = new MenuItem("block");
-        MenuItem unblock = new MenuItem("unblock");
-        menu.setId("UserBlockControl");
-        block.setId("blockUser");
-        unblock.setId("unblockUser");
-        menu.getItems().addAll(block, unblock);
-        block.setVisible(false);
-        unblock.setVisible(false);
-        if (builder.getTheme().equals("Dark")) {
-            menu.setStyle("-fx-background-color: #23272a");
-            block.setStyle("-fx-text-fill: #FFFFFF");
-            unblock.setStyle("-fx-text-fill: #FFFFFF");
-        } else {
-            menu.setStyle("-fx-background-color: White");
-            block.setStyle("-fx-text-fill: #000000");
-            unblock.setStyle("-fx-text-fill: #000000");
+        /**
+         * adds a ContextMenu to the User Cell, where block/unblock can be clicked
+         *
+         * @param item the user
+         * @param name the user name as Label
+         */
+        private void addContextMenu(User item, Label name) {
+            ContextMenu menu = new ContextMenu();
+            MenuItem block = new MenuItem("block");
+            MenuItem unblock = new MenuItem("unblock");
+            menu.setId("UserBlockControl");
+            block.setId("blockUser");
+            unblock.setId("unblockUser");
+            menu.getItems().addAll(block, unblock);
+            block.setVisible(false);
+            unblock.setVisible(false);
+            if (builder.getTheme().equals("Dark")) {
+                menu.setStyle("-fx-background-color: #23272a");
+                block.setStyle("-fx-text-fill: #FFFFFF");
+                unblock.setStyle("-fx-text-fill: #FFFFFF");
+            } else {
+                menu.setStyle("-fx-background-color: White");
+                block.setStyle("-fx-text-fill: #000000");
+                unblock.setStyle("-fx-text-fill: #000000");
+            }
+
+            name.setContextMenu(menu);
+
+            updateContextMenuItems(item, block, unblock);
+
+            block.setOnAction(event -> blockUser(item, block, unblock));
+            unblock.setOnAction(event -> unblockUser(item, block, unblock));
+
+            // keep refreshing in case user has been unblocked from settings
+            name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
         }
 
-        name.setContextMenu(menu);
+        private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
+            boolean isBlocked = false;
+            for (User user : builder.getBlockedUsers()) {
+                if (user.getId().equals(item.getId())) {
+                    isBlocked = true;
+                    break;
+                }
+            }
 
-        updateContextMenuItems(item, block, unblock);
-
-        block.setOnAction(event -> blockUser(item, block, unblock));
-        unblock.setOnAction(event -> unblockUser(item, block, unblock));
-
-        // keep refreshing in case user has been unblocked from settings
-        name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
-    }
-
-    private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
-        boolean isBlocked = false;
-        for (User user : builder.getBlockedUsers()) {
-            if (user.getId().equals(item.getId())) {
-                isBlocked = true;
-                break;
+            if (isBlocked) {
+                block.setVisible(false);
+                unblock.setVisible(true);
+            } else {
+                block.setVisible(true);
+                unblock.setVisible(false);
             }
         }
 
-        if (isBlocked) {
+        private void blockUser(User item, MenuItem block, MenuItem unblock) {
+            builder.addBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
             block.setVisible(false);
             unblock.setVisible(true);
-        } else {
+        }
+
+        private void unblockUser(User item, MenuItem block, MenuItem unblock) {
+            builder.removeBlockedUser(item);
+            ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
             block.setVisible(true);
             unblock.setVisible(false);
         }
-    }
-
-    private void blockUser(User item, MenuItem block, MenuItem unblock) {
-        builder.addBlockedUser(item);
-        ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, true);
-        block.setVisible(false);
-        unblock.setVisible(true);
-    }
-
-    private void unblockUser(User item, MenuItem block, MenuItem unblock) {
-        builder.removeBlockedUser(item);
-        ResourceManager.saveBlockedUsers(builder.getPersonalUser().getName(), item, false);
-        block.setVisible(true);
-        unblock.setVisible(false);
     }
 }

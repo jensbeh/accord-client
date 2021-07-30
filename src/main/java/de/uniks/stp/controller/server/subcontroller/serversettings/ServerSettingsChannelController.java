@@ -10,9 +10,13 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
@@ -43,6 +47,8 @@ public class ServerSettingsChannelController extends SubSetting {
     private VBox root;
     private Label radioVoice;
     private Label radioText;
+    private Stage stage;
+    private Button okButton;
 
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
@@ -157,6 +163,14 @@ public class ServerSettingsChannelController extends SubSetting {
         editChannelsSelector.setOnAction(null);
         channelChangeButton.setOnAction(null);
         channelDeleteButton.setOnAction(null);
+
+        if (okButton != null) {
+            this.okButton.setOnAction(null);
+        }
+        if (stage != null ){
+            this.stage.close();
+            stage = null;
+        }
 
 
         if (selectedCategory != null) {
@@ -307,13 +321,44 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
-            // disconnect from audioChannel
-            if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+            if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
+                try {
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+                    stage = new Stage();
+                    Scene scene = new Scene(root);
+                    stage.setTitle(lang.getString("label.error"));
+                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+                    stage.setScene(scene);
+                    stage.show();
+                    okButton = (Button) root.lookup("#okButton");
+                    okButton.setText("OK");
+                    okButton.setOnAction(this::closeStage);
+                    if (builder.getTheme().equals("Bright")) {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                    } else {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                    }
+                    Label errorLabel = (Label) root.lookup("#errorLabel");
+                    errorLabel.setText(lang.getString("label.alertDefaultCha"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                // disconnect from audioChannel
+                if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                }
+                restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                });
             }
-            restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-            });
+
         }
+    }
+
+    private void closeStage(ActionEvent actionEvent) {
+        stage.close();
     }
 
     public String[] userListToStringArray(List<User> users) {

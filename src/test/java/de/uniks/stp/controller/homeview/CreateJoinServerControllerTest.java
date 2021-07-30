@@ -138,6 +138,9 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         StageManager.setRestClient(restClient);
 
         builder.setLoadUserData(false);
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
@@ -191,7 +194,7 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
         String testUserName = "Hendry Bracken";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", ""));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", "test"));
         String testServerId = "5e2fbd8770dd077d03df505";
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -284,6 +287,8 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     }
 
     public void getNoGame() {
+        mockApp.getBuilder().setSteamShow(false);
+        mockApp.getBuilder().saveSettings();
         JSONObject jsonString = new JSONObject();
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response10.getBody()).thenReturn(new JsonNode(jsonNode));
@@ -356,7 +361,6 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
     @Test
     public void showCreateServerTest() throws InterruptedException {
         loginInit(true);
-
         Circle addServer = lookup("#addServer").query();
         clickOn(addServer);
 

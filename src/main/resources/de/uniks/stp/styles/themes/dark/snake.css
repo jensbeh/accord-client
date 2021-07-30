@@ -1,0 +1,75 @@
+/* open snake */
+#openSnakeBox {
+    -fx-background-color: #36393f;
+}
+
+#label_congrats {
+    -fx-text-fill: WHITE;
+}
+#label_you-found {
+    -fx-text-fill: WHITE;
+}
+
+#button_start, #button_exit {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 20;
+}
+
+#button_start:hover, #button_exit:hover {
+    -fx-background-color: #ffbdbd;
+}
+
+#button_start:pressed, #button_exit:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+
+/* snake game */
+#actionBar{
+    -fx-background-color: #36393f;
+}
+
+#label_score{
+    -fx-text-fill: WHITE;
+}
+
+#label_highscore{
+    -fx-text-fill: WHITE;
+}
+
+#restartButton{
+    -fx-text-fill: BLACK;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 20;
+}
+#restartButton:hover{
+    -fx-background-color: #ffbdbd;
+}
+#restartButton:pressed{
+    -fx-background-color: #ff7d7d;
+}
+
+#exitButton, #button_gameover_exit {
+    -fx-text-fill: BLACK;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 20;
+}
+#exitButton:hover, #button_gameover_exit:hover {
+    -fx-background-color: #ffbdbd;
+}
+#exitButton:pressed, #button_gameover_exit:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+#muteButton{
+    -fx-text-fill: BLACK;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 20;
+}
+#muteButton:hover{
+    -fx-background-color: #ffbdbd;
+}
+#muteButton:pressed{
+    -fx-background-color: #ff7d7d;
+}

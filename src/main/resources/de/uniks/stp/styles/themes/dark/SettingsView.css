@@ -145,11 +145,33 @@
     -fx-border-color: white;
 }
 
+#progressBar_microphone {
+    -fx-border-color: #ff9999;
+    -fx-background-color: #ff9999;
+}
+
 #blockedUsersLV .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #2f3136;
+}
+.progress-bar {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 5;
+}
+
+
+#progressBar_microphone_low .bar {
+    -fx-background-color: linear-gradient(from 70% 70% to 100% 100%, yellow, green);
+}
+
+#progressBar_microphone_medium .bar {
+    -fx-background-color: linear-gradient(from 40% 40% to 100% 100%, yellow, green);
+}
+
+#progressBar_microphone_high .bar {
+    -fx-background-color: linear-gradient(to right, yellow 40%, green 70%, red 100%);
 }
 
 .blockedUserElement {
@@ -205,6 +227,7 @@
     -fx-background-color: white;
     -fx-background-insets: 0 0 0 0;
     -fx-padding: 6 8;
+    -fx-border-radius: 10;
     /*-fx-shape: "M 0 0 H 7 L 3.5 4 z";*/
 }
 
