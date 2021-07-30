@@ -660,6 +660,24 @@ public class SnakeGameController {
         seqT.stop();
     }
 
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/snake.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        view.getStylesheets().clear();
+        view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/snake.css")).toExternalForm());
+    }
+
 
     ////////////////////////////////////////////////
     //// only for testing
