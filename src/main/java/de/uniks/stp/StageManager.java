@@ -1,11 +1,13 @@
 package de.uniks.stp;
 
+import com.wrapper.spotify.SpotifyApi;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.login.LoginViewController;
 import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.controller.settings.SettingsController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.net.RestClient;
@@ -48,6 +50,7 @@ public class StageManager extends Application {
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
     private static SnakeGameController snakeGameController;
+    private static SpotifyConnection spotifyConnection;
 
     @Override
     public void start(Stage primaryStage) {
@@ -189,6 +192,10 @@ public class StageManager extends Application {
         if (homeViewController != null) {
             homeViewController.stop();
             homeViewController = null;
+        }
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().stopPersonalScheduler();
+            builder.getSpotifyConnection().stopDescriptionScheduler();
         }
     }
 

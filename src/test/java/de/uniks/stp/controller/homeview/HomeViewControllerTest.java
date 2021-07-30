@@ -1,8 +1,11 @@
 package de.uniks.stp.controller.homeview;
 
+import com.wrapper.spotify.model_objects.IPlaylistItem;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
@@ -71,6 +74,9 @@ public class HomeViewControllerTest extends ApplicationTest {
     private ServerChatWebSocket serverChatWebSocket;
 
     @Mock
+    private SpotifyConnection spotifyConnection;
+
+    @Mock
     private HttpResponse<JsonNode> response2;
 
     @Mock
@@ -106,7 +112,10 @@ public class HomeViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);
+        builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
@@ -116,6 +125,8 @@ public class HomeViewControllerTest extends ApplicationTest {
     static void setup() {
         MockitoAnnotations.openMocks(HomeViewController.class);
     }
+
+
 
     public void mockLogout() {
         JSONObject jsonString = new JSONObject()
@@ -174,6 +185,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
         doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(spotifyConnection).init(any());
+        doCallRealMethod().when(spotifyConnection).stopDescriptionScheduler();
+        doCallRealMethod().when(spotifyConnection).updateUserDescriptionScheduler();
+        doCallRealMethod().when(spotifyConnection).personalUserListener(any(), any(), any(), any(),any());
+        doCallRealMethod().when(spotifyConnection).showSpotifyPopupView(any(), any(), any());
+        doCallRealMethod().when(spotifyConnection).updateValuesUser(any());
+        when(spotifyConnection.getCurrentlyPlayingSongAlbumID()).thenReturn("resources/de/uniks/stp/icons/Spotify_Icon_RGB_Green.png");
+
         mockGetServers();
         mockGetUsers();
 

@@ -82,6 +82,8 @@ public class ServerViewController {
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
     }
 
+
+
     public ChatViewController getChatViewController() {
         return chatViewController;
     }

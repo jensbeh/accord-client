@@ -5,6 +5,8 @@ import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -22,8 +24,8 @@ public class UserProfileController {
 
 
     public UserProfileController(Parent view, ModelBuilder builder) {
-        this.view = view;
         this.builder = builder;
+        this.view = view;
     }
 
     public void init() {
@@ -31,6 +33,7 @@ public class UserProfileController {
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
         descriptionBox = (VBox) view.lookup("#descriptionbox");
+        descriptionBox.setOnMouseClicked(this::spotifyPopup);
         if (builder.getPersonalUser().getDescription() != null && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
@@ -49,11 +52,14 @@ public class UserProfileController {
     }
 
     private void addGame() {
-        Label currentGame = new Label();
-        currentGame.setText("plays " + builder.getPersonalUser().getDescription().substring(1));
-        currentGame.setStyle("-fx-text-fill: white;");
-        currentGame.setId("currentGame");
-        Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+        if (!builder.getPersonalUser().getDescription().contains("i.scdn.co")) {
+            Label currentGame = new Label();
+            currentGame.setText("plays " + builder.getPersonalUser().getDescription().substring(1));
+            currentGame.setStyle("-fx-text-fill: white;");
+            currentGame.setId("currentGame");
+            Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
+        }
+
     }
 
     public void setUserName(String name) {
@@ -68,6 +74,14 @@ public class UserProfileController {
     }
 
     public void stop() {
+        descriptionBox.setOnMouseClicked(null);
         builder.getPersonalUser().removePropertyChangeListener(this::onDescriptionChanged);
+    }
+
+    private void spotifyPopup(MouseEvent mouseEvent) {
+        if (builder.getSpotifyToken() != null && builder.isSpotifyShow()) {
+            builder.getSpotifyConnection().showSpotifyPopupView((HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0), true, null);
+            userName.setStyle("-fx-background-color: transparent");
+        }
     }
 }
