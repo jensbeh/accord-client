@@ -649,14 +649,28 @@ public class ServerSystemWebSocket extends Endpoint {
      * update userList when a user joins the server
      */
     private void userArrived(JsonObject jsonData) {
+        System.out.println("###############################################");
+        System.out.println(jsonData);
+        System.out.println("###############################################");
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
         boolean status = jsonData.getBoolean("online");
 
-        serverViewController.getServer().withUser(buildServerUser(name, id, status, ""));
+        String description = getUserDescription(id);
+
+        serverViewController.getServer().withUser(buildServerUser(name, id, status, description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
+    }
+
+    private String getUserDescription(String id) {
+        for (User u: builder.getPersonalUser().getUser()){
+            if(u.getId().equals(id)){
+                return u.getDescription();
+            }
+        }
+        return "";
     }
 
     /**
