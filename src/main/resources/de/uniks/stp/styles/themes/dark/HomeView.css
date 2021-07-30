@@ -23,13 +23,19 @@
     -fx-padding: 1;
 }
 
-#settingsButton {
+#settingsButton, #logoutButton {
     -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: BLACK;
+}
+
+#settingsButton:hover, #logoutButton:hover {
+    -fx-background-color: #ffbdbd;
     -fx-background-radius: 80;
 }
 
-#logoutButton {
-    -fx-background-color: #ff9999;
+#settingsButton:pressed, #logoutButton:pressed {
+    -fx-background-color: #ff7d7d;
     -fx-background-radius: 80;
 }
 

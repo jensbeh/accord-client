@@ -1,4 +1,3 @@
-
 #root {
     -fx-background-color: #2f3136;
     -fx-border-color: #2f3136;
@@ -17,10 +16,13 @@
 .serverMenuButton .menu-item .label {
     -fx-text-fill: WHITE;
 }
+.serverMenuButton .menu-item:focused .label {
+    -fx-text-fill: BLACK;
+}
 
 .serverMenuButton .menu-item:focused {
-    -fx-background-color: #2f3136;
-    -fx-border-color: white;
+    -fx-background-color: #ff9999;
+    -fx-text-fill: BLACK;
 }
 
 .serverMenuButton .context-menu {
@@ -112,18 +114,17 @@
     -fx-background-color: #2f3136;
 }
 
-#button_disconnectAudio {
+#button_disconnectAudio, #mute_headphone, #mute_microphone {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
+    -fx-text-fill: BLACK;
 }
-
-#mute_headphone {
-    -fx-background-color: #ff9999;
+#button_disconnectAudio:hover, #mute_headphone:hover, #mute_microphone:hover {
+    -fx-background-color: #ffbdbd;
     -fx-background-radius: 80;
 }
-
-#mute_microphone {
-    -fx-background-color: #ff9999;
+#button_disconnectAudio:pressed, #mute_headphone:pressed, #mute_microphone:pressed {
+    -fx-background-color: #ff7d7d;
     -fx-background-radius: 80;
 }
 

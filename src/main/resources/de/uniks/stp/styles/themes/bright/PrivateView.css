@@ -26,28 +26,25 @@
     -fx-background-color: #f2f3f5;
 }
 
+#onlineUsers {
+    -fx-border-color: #f2f3f5;
+    -fx-background-insets: 0;
+    -fx-background-color:  #f2f3f5;
+    -fx-padding: 1;
+    -fx-text-fill: BLACK;
+}
 #onlineUsers .scroll-bar:vertical {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #f2f3f5;
 }
-
 #onlineUsers .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #f2f3f5;
 }
-
-#onlineUsers {
-    -fx-border-color:  #f2f3f5;
-    -fx-background-insets: 0;
-    -fx-background-color:  #f2f3f5;
-    -fx-padding: 1;
-    -fx-text-fill: BLACK;
-}
-
 
 #onlineUsers .list-cell {
     -fx-border-color:  #f2f3f5;
@@ -92,20 +89,23 @@
 }
 
 #privateChatList .selectedChat {
-    -fx-background-color: #bfbfbf;
-    -fx-border-color: #7c7c7c;
-    -fx-border-width: 2px;
-    -fx-border-radius: 13px;
+    -fx-background-color: #5a5c5e;
+
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
 
 #privateChatList .unselectedChat {
-    -fx-background-color: #e2e2e2;
-    -fx-border-color: #c1c1c1;
-    -fx-border-width: 1.5px;
-    -fx-border-radius: 13px;
+    -fx-background-color: #a4a4a4;
+
+    -fx-background-radius: 13px;
+    -fx-pref-height: 65;
+    -fx-max-width: 183
+}
+#privateChatList .unselectedChatHover {
+    -fx-background-color: #bababa;
+
     -fx-background-radius: 13px;
     -fx-pref-height: 65;
     -fx-max-width: 183
@@ -151,17 +151,20 @@
     -fx-background-color: #f2f3f5;
 }
 
-#button_disconnectAudio {
+#button_disconnectAudio, #mute_headphone, #mute_microphone {
     -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: white;
+}
+#button_disconnectAudio:hover, #mute_headphone:hover, #mute_microphone:hover {
+    -fx-background-color: #a0bade;
+    -fx-background-radius: 80;
+}
+#button_disconnectAudio:pressed, #mute_headphone:pressed, #mute_microphone:pressed {
+    -fx-background-color: #6899de;
     -fx-background-radius: 80;
 }
 
-#mute_headphone {
-    -fx-background-color: #7da6df;
-    -fx-background-radius: 80;
-}
-
-#mute_microphone {
-    -fx-background-color: #7da6df;
-    -fx-background-radius: 80;
+.numberTextStyle {
+    -fx-text-fill: WHITE;
 }

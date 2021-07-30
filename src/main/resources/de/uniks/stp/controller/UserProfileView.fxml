@@ -10,21 +10,25 @@
 
 <VBox id="root" alignment="CENTER" minHeight="110.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox alignment="CENTER" maxWidth="188.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
+      <VBox id="descriptionbox" alignment="TOP_CENTER" prefHeight="60.0" prefWidth="186.0">
          <children>
-            <Circle id="onlineStatus" fill="#7289da" radius="17.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-            <Label id="userName" prefHeight="30.0" prefWidth="115.0" textFill="WHITE" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
+            <HBox alignment="CENTER" maxWidth="188.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
+               <children>
+                  <Circle id="onlineStatus" fill="#7289da" radius="17.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                  <Label id="userName" prefHeight="30.0" prefWidth="115.0" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
          </children>
-      </HBox>
+      </VBox>
       <HBox id="headset" alignment="CENTER" maxWidth="182.0" minHeight="55.0" prefWidth="220.0" spacing="10.0">
          <children>
             <StackPane>
                <children>
-                  <Button id="mute_microphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎤 " textAlignment="CENTER">
+                  <Button id="mute_microphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎤 " textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -38,7 +42,7 @@
             </StackPane>
             <StackPane>
                <children>
-                  <Button id="mute_headphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎧 " textAlignment="CENTER">
+                  <Button id="mute_headphone" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text=" 🎧 " textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>

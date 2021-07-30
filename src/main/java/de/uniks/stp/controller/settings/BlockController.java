@@ -55,6 +55,7 @@ public class BlockController extends SubSetting {
 
     /**
      * pushes a blocked user as button into a List
+     *
      * @param button the button to be added in the container
      */
     public void addButtonToContainer(Button button) {
@@ -66,6 +67,7 @@ public class BlockController extends SubSetting {
 
     /**
      * selects a blocked user from the List
+     *
      * @param button the blocked user who got clicked
      */
     public void onBlockedUserClicked(Button button) {
@@ -84,6 +86,7 @@ public class BlockController extends SubSetting {
 
     /**
      * removes the user from block list
+     *
      * @param actionEvent the mouse click event
      */
     private void onUnblockButtonClicked(ActionEvent actionEvent) {

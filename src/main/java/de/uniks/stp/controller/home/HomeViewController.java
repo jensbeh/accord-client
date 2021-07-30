@@ -6,6 +6,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -19,15 +20,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -40,6 +44,7 @@ public class HomeViewController {
     private final Parent view;
     private ListView<Server> serverList;
     private Circle addServer;
+    private Circle addServerBg;
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
@@ -74,8 +79,15 @@ public class HomeViewController {
         settingsButton = (Button) view.lookup("#settingsButton");
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
+
         addServer = (Circle) view.lookup("#addServer");
+        addServerBg = (Circle) view.lookup("#addServerBg");
         addServer.setOnMouseClicked(this::onShowCreateServer);
+        addServer.setOnMouseEntered(event -> addServerBg.setFill(Paint.valueOf("#bababa")));
+        addServer.setOnMouseExited(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+        addServer.setOnMousePressed(event -> addServerBg.setFill(Paint.valueOf("#828282")));
+        addServer.setOnMouseReleased(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverListCellFactory = new ServerListCell();
         serverList.setCellFactory(serverListCellFactory);
@@ -83,8 +95,22 @@ public class HomeViewController {
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+        this.homeButton.setOnMouseEntered(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#bababa"));
+            }
+        });
+        this.homeButton.setOnMouseExited(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+            }
+        });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
+        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
+        if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
+            builder.getGame();
+        }
 
         ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
@@ -110,6 +136,16 @@ public class HomeViewController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+    }
+
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if (!body.getObject().getString("status").equals("success")) {
+                System.err.println("Error in updateDescription");
+                System.err.println(body);
             }
         });
     }
@@ -219,6 +255,8 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
             createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
             createJoinServerController.setTheme();
@@ -383,11 +421,20 @@ public class HomeViewController {
      */
     public void stop() {
         this.addServer.setOnMouseClicked(null);
+        this.addServerBg.setOnMouseEntered(null);
+        this.addServerBg.setOnMouseExited(null);
+        this.addServerBg.setOnMousePressed(null);
+        this.addServerBg.setOnMouseReleased(null);
+
         this.homeButton.setOnMouseClicked(null);
+        this.homeButton.setOnMouseEntered(null);
+        this.homeButton.setOnMouseExited(null);
         this.homeCircle.setOnMouseClicked(null);
+
         this.settingsButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
+        builder.stopGame();
         if (stage != null) {
             this.stage.close();
             stage = null;
@@ -546,5 +593,9 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
+    }
+
+    public Map<Server, ServerViewController> getServerCtrls() {
+        return serverController;
     }
 }

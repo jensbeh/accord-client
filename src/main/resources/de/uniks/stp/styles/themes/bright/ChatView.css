@@ -2,20 +2,24 @@
     -fx-background-color: WHITE;
 }
 
-#editButton, #deleteEditMessage {
+#editButton, #deleteEditMessage, #abortButton {
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
     -fx-text-fill: WHITE;
 }
-
-#abortButton {
-    -fx-background-color: #7da6df;
-    -fx-background-radius: 80;
-    -fx-text-fill: WHITE;
+#editButton:hover, #deleteEditMessage:hover, #abortButton:hover {
+    -fx-background-color: #a0bade;
+}
+#editButton:pressed, #deleteEditMessage:pressed, #abortButton:pressed {
+    -fx-background-color: #6899de;
 }
 
 #deleteMsgScroll {
-    -fx-background-color: WHITE;
+    -fx-background-color: GREY;
+}
+
+#rootDelete {
+    -fx-background-color: #ededed;
 }
 
 #deleteWarning, #editWarningText {
@@ -31,10 +35,24 @@
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
 }
+#chooseDelete:hover {
+    -fx-background-color: #a0bade;
+}
+#chooseDelete:pressed {
+    -fx-background-color: #6899de;
+}
 
 #chooseCancel, #abortEditMessage {
     -fx-background-radius: 80;
     -fx-background-color: #717177;
+}
+#chooseCancel:hover, #abortEditMessage:hover {
+    -fx-background-radius: 80;
+    -fx-background-color: #8b8b94;
+}
+#chooseCancel:pressed, #abortEditMessage:pressed {
+    -fx-background-radius: 80;
+    -fx-background-color: #636369;
 }
 
 #messageScrollPane #messageScrollPane {
@@ -63,9 +81,23 @@
 }
 
 
-.messageLabelTo {
+#messageBoxCurrentUser {
     -fx-background-color: #7da6df;
-    -fx-background-radius: 4;
+    -fx-background-radius: 4 0 4 4;
+    -fx-padding: 5 5 5 5;
+}
+
+#messageBoxOtherUser {
+    -fx-background-color: #d4d4d4;
+    -fx-background-radius: 0 4 4 4;
+    -fx-padding: 5 5 5 5;
+}
+
+.messagePolygonCurrentUser {
+    -fx-fill: #7da6df;
+}
+.messagePolygonOther {
+    -fx-fill: #d4d4d4;
 }
 
 #userNameLabel {
@@ -98,6 +130,13 @@
 #sendButton {
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+#sendButton:hover {
+    -fx-background-color: #a0bade;
+}
+#sendButton:pressed {
+    -fx-background-color: #6899de;
 }
 
 #messageVBox {
@@ -108,6 +147,12 @@
     -fx-background-color: #7da6df;
     -fx-background-radius: 80;
     -fx-text-fill: WHITE;
+}
+#playButton:hover {
+    -fx-background-color: #a0bade;
+}
+#playButton:pressed {
+    -fx-background-color: #6899de;
 }
 
 #timeLabel {
@@ -133,4 +178,18 @@
 .context-menu {
     -fx-background-color: WHITE;
     -fx-background-radius: 6
+}
+
+.slider .thumb {
+    -fx-background-color: #7da6df;
+    -fx-pref-height: 16px;
+    -fx-pref-width: 16px;
+    -fx-background-radius: 100;
+}
+
+.slider .thumb:hover {
+    -fx-background-color: #a0bade;
+}
+.slider .thumb:pressed {
+    -fx-background-color: #6899de;
 }

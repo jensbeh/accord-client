@@ -254,5 +254,6 @@ public class PrivateChatWebSocket extends Endpoint {
                 }
             });
         }
+
     }
 }

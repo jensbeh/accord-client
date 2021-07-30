@@ -60,6 +60,7 @@ public class PrivateViewController {
     private Button microphoneButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
+    private UserProfileController userProfileController;
 
     public PrivateViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -127,8 +128,9 @@ public class PrivateViewController {
             for (int i = 0; i < jsonResponse.length(); i++) {
                 String userName = jsonResponse.getJSONObject(i).get("name").toString();
                 String userId = jsonResponse.getJSONObject(i).get("id").toString();
+                String description = jsonResponse.getJSONObject(i).get("description").toString();
                 if (!userName.equals(builder.getPersonalUser().getName())) {
-                    builder.buildUser(userName, userId);
+                    builder.buildUser(userName, userId, description);
                 } else {
                     builder.getPersonalUser().setId(userId);
                 }
@@ -145,7 +147,7 @@ public class PrivateViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            UserProfileController userProfileController = new UserProfileController(root);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -179,6 +181,38 @@ public class PrivateViewController {
             if (builder.getMuteHeadphones()) {
                 builder.muteHeadphones(false);
                 headphoneLabel.setVisible(false);
+            }
+        });
+        microphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                microphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                microphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        microphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                microphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                microphoneButton.setStyle("");
+                setWhiteMode();
+            }
+        });
+        headphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        headphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                headphoneButton.setStyle("");
+                setWhiteMode();
             }
         });
         //unMute headphone
@@ -359,6 +393,9 @@ public class PrivateViewController {
     public void stop() {
         this.onlineUsersList.setOnMouseReleased(null);
         this.privateChatList.setOnMouseReleased(null);
+        if (userProfileController != null) {
+            userProfileController.stop();
+        }
         try {
             if (privateSystemWebSocketClient != null) {
                 if (privateSystemWebSocketClient.getSession() != null) {
@@ -399,6 +436,9 @@ public class PrivateViewController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if (builder.getCurrentPrivateChat() != null) {
+            MessageViews();
         }
     }
 

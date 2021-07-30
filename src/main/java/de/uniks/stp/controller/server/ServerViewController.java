@@ -67,6 +67,7 @@ public class ServerViewController {
     private Button disconnectAudioButton;
     private Label headphoneLabel;
     private Label microphoneLabel;
+    private UserProfileController userProfileController;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -119,6 +120,10 @@ public class ServerViewController {
 
     public ServerChannel getCurrentAudioChannel() {
         return builder.getCurrentAudioChannel();
+    }
+
+    public ListView<User> getOnlineUsersList() {
+        return onlineUsersList;
     }
 
     /**
@@ -294,7 +299,7 @@ public class ServerViewController {
     private void showCurrentUser() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/UserProfileView.fxml")));
-            UserProfileController userProfileController = new UserProfileController(root);
+            userProfileController = new UserProfileController(root, builder);
             userProfileController.init();
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
@@ -319,6 +324,38 @@ public class ServerViewController {
                 if (builder.getMuteHeadphones()) {
                     builder.muteHeadphones(false);
                     headphoneLabel.setVisible(false);
+                }
+            });
+            microphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    microphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            microphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    microphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    microphoneButton.setStyle("");
+                    setWhiteMode();
+                }
+            });
+            headphoneLabel.setOnMouseEntered(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+                } else {
+                    headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+                }
+            });
+            headphoneLabel.setOnMouseExited(event -> {
+                if (builder.getTheme().equals("Dark")) {
+                    headphoneButton.setStyle("");
+                    setDarkMode();
+                } else {
+                    headphoneButton.setStyle("");
+                    setWhiteMode();
                 }
             });
             //unMute headphone
@@ -427,9 +464,10 @@ public class ServerViewController {
                 for (int i = 0; i < members.length(); i++) {
                     JSONObject member = members.getJSONObject(i);
                     String id = member.getString("id");
+                    String description = member.getString("description");
                     String name = member.getString("name");
                     boolean online = member.getBoolean("online");
-                    builder.buildServerUser(this.server, name, id, online);
+                    builder.buildServerUser(this.server, name, id, online, description);
                 }
                 serverInfoCallback.onSuccess(status);
             } else if (status.equals("failure")) {
@@ -616,6 +654,9 @@ public class ServerViewController {
     }
 
     public void stop() {
+        if (userProfileController != null) {
+            userProfileController.stop();
+        }
         try {
             if (this.serverSystemWebSocket != null) {
                 if (this.serverSystemWebSocket.getSession() != null) {
@@ -744,6 +785,9 @@ public class ServerViewController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if (currentChannel != null) {
+            showMessageView();
         }
         refreshAllChannelLists();
     }

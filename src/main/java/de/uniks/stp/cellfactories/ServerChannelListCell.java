@@ -77,6 +77,34 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             super.updateItem(item, empty);
             if (!empty) {
 
+                cell.setOnMouseEntered(event -> {
+                    if (item != serverViewController.getCurrentChannel() && item != serverViewController.getCurrentAudioChannel()) {
+                        if (isScrollBarVisible) {
+                            this.setId("channelScrollbarTrueUnselectedHover");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("channelScrollbarFalseUnselectedHover");
+                        }
+                    }
+                });
+                cell.setOnMouseExited(event -> {
+                    if (item != serverViewController.getCurrentChannel() && item.getType().equals("text")) {
+                        if (isScrollBarVisible) {
+                            this.setId("textChannelScrollbarTrueUnselected");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("textChannelScrollbarFalseUnselected");
+                        }
+                    }
+                    if (item != serverViewController.getCurrentAudioChannel() && item.getType().equals("audio")) {
+                        if (isScrollBarVisible) {
+                            this.setId("audioChannelScrollbarTrueUnselected");
+                        }
+                        if (!isScrollBarVisible) {
+                            this.setId("audioChannelScrollbarFalseUnselected");
+                        }
+                    }
+                });
                 if (item == serverViewController.getCurrentChannel()) {
                     if (item == serverViewController.getCurrentChannel() && isScrollBarVisible) {
                         this.setId("textChannelScrollbarTrueSelected");
