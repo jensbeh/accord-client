@@ -141,7 +141,7 @@ public class ServerChatWebSocket extends Endpoint {
         // currentUser received
         else if (!from.equals(builder.getPersonalUser().getName())) {
             for (Categories categories : this.serverViewController.getServer().getCategories()) {
-                addMessageToChannel(categories,channelId,message);
+                addMessageToChannel(categories, channelId, message);
             }
         }
         if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
