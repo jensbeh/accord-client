@@ -14,7 +14,7 @@
             <children>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                     <children>
-                        <Label id="blockedUsersLabel" text="Blocked Users">
+                        <Label id="blockedUsersLabel" text="%label.block_blocked_users">
                             <font>
                                 <Font size="16.0"/>
                             </font>
@@ -41,7 +41,7 @@
         </HBox>
         <VBox prefHeight="49.0" prefWidth="580.0" spacing="20.0">
             <children>
-                <Button id="button_unblock" mnemonicParsing="false" prefHeight="109.0" prefWidth="87.0" text="Unblock">
+                <Button id="button_unblock" mnemonicParsing="false" prefHeight="109.0" prefWidth="87.0" text="%button.block_unblock">
                     <VBox.margin>
                         <Insets bottom="25.0" left="315.0" top="-40.0"/>
                     </VBox.margin>
