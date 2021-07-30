@@ -149,6 +149,18 @@ public class AudioController extends SubSetting {
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().setNewMicrophone();
         }
+        if (senderActive) {
+            refreshDevice();
+        }
+    }
+
+    public void refreshDevice() {
+        stopRecord();
+        microphone.init();
+        speaker.init();
+        senderActive = true;
+        soundThread = new Thread(myRunnable);
+        soundThread.start();
     }
 
     /**
@@ -160,6 +172,9 @@ public class AudioController extends SubSetting {
 
         if (builder.getAudioStreamClient() != null) {
             builder.getAudioStreamClient().setNewSpeaker();
+        }
+        if (senderActive) {
+            refreshDevice();
         }
     }
 

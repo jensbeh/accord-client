@@ -87,7 +87,7 @@ public class SettingsControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -393,8 +393,41 @@ public class SettingsControllerTest extends ApplicationTest {
         clickOn("#button_audioStart");
         Assert.assertEquals(micProgress.getProgress(), test, 0.001);
         clickOn("#button_audioStart");
-        // set input volume
         WaitForAsyncUtils.waitForFxEvents();
 
     }
+
+    @Test
+    public void changeMicAndSpeakerInAudioTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ProgressBar micProgress = lookup("#progressBar_microphone").query();
+
+        clickOn("#button_audioStart");
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        clickOn(inputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on mic
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(outputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on speaker
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#button_audioStart");
+        WaitForAsyncUtils.waitForFxEvents();
+
+    }
+
+
 }
