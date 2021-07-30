@@ -39,6 +39,11 @@ public class AudioController extends SubSetting {
     public AudioController(Parent view, ModelBuilder builder) {
         this.view = view;
         this.builder = builder;
+        this.builder.setAudioController(this);
+    }
+
+    public void setMicrophone(Microphone microphone) {
+        this.microphone = microphone;
     }
 
     @SuppressWarnings("unchecked")
@@ -62,8 +67,6 @@ public class AudioController extends SubSetting {
         myRunnable = this::runMicrophoneTest;
 
         microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
-//        microphoneProgressBar.getStyleClass().clear();
-//        microphoneProgressBar.getStyleClass().add("progress-bar-gradient");
 
         // ComboBox Settings
         this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
@@ -174,7 +177,9 @@ public class AudioController extends SubSetting {
                 handleMuteHeadphones();
             }
         }
-        microphone = new Microphone(this.builder);
+        if (microphone == null) {
+            microphone = new Microphone(this.builder);
+        }
         microphone.init();
         speaker = new Speaker(this.builder);
         speaker.init();
@@ -246,7 +251,7 @@ public class AudioController extends SubSetting {
                 byte[] data = microphone.readData();
                 int volumeInPer = calculateRMSLevel(data);
 
-                if (volumeInPer > 0 && volumeInPer <= 35) {
+                if (volumeInPer >= 0 && volumeInPer <= 35) {
                     microphoneProgressBar.setId("progressBar_microphone_low");
                 } else if (volumeInPer > 35 && volumeInPer <= 65) {
                     microphoneProgressBar.setId("progressBar_microphone_medium");

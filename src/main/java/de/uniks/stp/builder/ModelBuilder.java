@@ -4,9 +4,11 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.home.HomeViewController;
+import de.uniks.stp.controller.settings.AudioController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
+import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.updateSteamGameController;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
@@ -71,6 +73,7 @@ public class ModelBuilder {
     private ObservableList<User> blockedUsers;
     private boolean isSteamRun;
     private Runnable handleMicrophoneHeadphone;
+    private AudioController audiocontroller;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -542,5 +545,12 @@ public class ModelBuilder {
 
     public Runnable getHandleMicrophoneHeadphone() {
         return this.handleMicrophoneHeadphone;
+    }
+
+    public void setAudioController(AudioController audiocontroller) {
+        this.audiocontroller = audiocontroller;
+    }
+    public AudioController getAudioController() {
+        return this.audiocontroller;
     }
 }
