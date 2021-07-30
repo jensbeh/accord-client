@@ -262,7 +262,7 @@ public class SteamGameTest extends ApplicationTest {
 
     @Test
     public void RestTest1() throws InterruptedException {
-        JSONObject jsonString = new JSONObject().put("response",new JSONObject().put("players",new JSONArray().put(new JSONObject().put("gameextrainfo","BigBoi"))));
+        JSONObject jsonString = new JSONObject().put("response", new JSONObject().put("players", new JSONArray().put(new JSONObject().put("gameextrainfo", "BigBoi"))));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -272,12 +272,14 @@ public class SteamGameTest extends ApplicationTest {
         }).when(restClient).getCurrentGame(anyString(), callbackCaptor4.capture());
 
         loginInit(true);
+        mockApp.getBuilder().setSteamShow(true);
+        mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
     public void RestTest2() throws InterruptedException {
-        JSONObject jsonString = new JSONObject().put("response",new JSONObject().put("players",new JSONArray().put(new JSONObject().put("Komm in die Gruppe","BigBoi"))));
+        JSONObject jsonString = new JSONObject().put("response", new JSONObject().put("players", new JSONArray().put(new JSONObject().put("Komm in die Gruppe", "BigBoi"))));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response5.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -286,6 +288,8 @@ public class SteamGameTest extends ApplicationTest {
             return null;
         }).when(restClient).getCurrentGame(anyString(), callbackCaptor5.capture());
         loginInit(true);
+        mockApp.getBuilder().setSteamShow(true);
+        mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
     }
 

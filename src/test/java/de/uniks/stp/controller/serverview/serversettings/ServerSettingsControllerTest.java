@@ -4,14 +4,13 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.model.Server;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
@@ -31,9 +30,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -227,7 +224,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description","test"));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", ""));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")

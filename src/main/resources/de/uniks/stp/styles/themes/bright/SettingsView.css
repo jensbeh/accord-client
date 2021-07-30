@@ -17,10 +17,12 @@
     -fx-alignment: center-left;
     -fx-background-radius: 0;
 }
+
 .settingsButton:hover {
     -fx-background-color: #a0bade;
     -fx-text-fill: WHITE;
 }
+
 .settingsButton:focused {
     -fx-background-color: #7da6df;
     -fx-text-fill: WHITE;
@@ -73,9 +75,11 @@
     -fx-font-size: 14px;
     -fx-text-fill: WHITE;
 }
+
 #volume .thumb:hover {
     -fx-background-color: #a0bade;
 }
+
 #volume .thumb:pressed {
     -fx-background-color: #6899de;
 }
@@ -132,9 +136,11 @@
     -fx-font-size: 14px;
     -fx-text-fill: WHITE;
 }
+
 #slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
     -fx-background-color: #a0bade;
 }
+
 #slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
     -fx-background-color: #6899de;
 }
@@ -177,7 +183,7 @@
     -fx-text-fill: BLACK;
     -fx-alignment: center;
     -fx-border-radius: 2;
-    -fx-border-color: #e3e5e8 ;
+    -fx-border-color: #e3e5e8;
     -fx-font-size: 18;
     -fx-padding: 0 0 0 0;
 }

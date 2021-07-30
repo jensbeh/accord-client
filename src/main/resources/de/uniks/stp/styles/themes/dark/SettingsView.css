@@ -17,10 +17,12 @@
     -fx-alignment: center-left;
     -fx-background-radius: 0;
 }
+
 .settingsButton:hover {
     -fx-background-color: #ffbdbd;
     -fx-text-fill: BLACK;
 }
+
 .settingsButton:focused {
     -fx-background-color: #ff9999;
     -fx-text-fill: BLACK;
@@ -73,22 +75,24 @@
     -fx-font-size: 14px;
     -fx-text-fill: BLACK;
 }
+
 #volume .thumb:hover {
     -fx-background-color: #ffbdbd;
 }
+
 #volume .thumb:pressed {
     -fx-background-color: #ff7d7d;
 }
 
 /* Connection */
 #spotifyVbox {
-    -fx-background-color: #2f3136 ;
-    -fx-border-color: #36393f ;
+    -fx-background-color: #2f3136;
+    -fx-border-color: #36393f;
 }
 
 #steamVbox {
-    -fx-background-color: #2f3136 ;
-    -fx-border-color: #36393f ;
+    -fx-background-color: #2f3136;
+    -fx-border-color: #36393f;
 }
 
 .buttonOn {
@@ -132,9 +136,11 @@
     -fx-font-size: 14px;
     -fx-text-fill: BLACK;
 }
+
 #slider_volumeInput .thumb:hover, #slider_volumeOutput .thumb:hover {
     -fx-background-color: #ffbdbd;
 }
+
 #slider_volumeInput .thumb:pressed, #slider_volumeOutput .thumb:pressed {
     -fx-background-color: #ff7d7d;
 }
@@ -179,7 +185,7 @@
     -fx-text-fill: WHITE;
     -fx-alignment: center;
     -fx-border-radius: 2;
-    -fx-border-color: #000000 ;
+    -fx-border-color: #000000;
     -fx-font-size: 18;
     -fx-padding: 0 0 0 0;
 }
@@ -206,6 +212,7 @@
     -fx-background-color: #2f3136;
     -fx-text-fill: WHITE;
 }
+
 .list-view .list-cell:odd {
     -fx-background-color: #2f3136;
     -fx-text-fill: WHITE;

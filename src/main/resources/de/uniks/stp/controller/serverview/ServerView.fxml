@@ -1,57 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
-
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <VBox id="channelBox" minWidth="190.0" HBox.hgrow="ALWAYS">
             <children>
                 <VBox>
                     <children>
-                        <MenuButton id="serverMenuButton" prefHeight="25.0" prefWidth="190.0" style="-fx-alignment: center;" styleClass="serverMenuButton" text="ServerName" textFill="WHITE">
+                        <MenuButton id="serverMenuButton" prefHeight="25.0" prefWidth="190.0"
+                                    style="-fx-alignment: center;" styleClass="serverMenuButton" text="ServerName"
+                                    textFill="WHITE">
                             <items>
-                                <MenuItem id="ServerSettings" style="-fx-pref-width: 172;" styleClass="ServerSettings" text="menuItem.serverSettings" />
-                                <MenuItem id="InviteUsers" style="-fx-pref-width: 172;" styleClass="InviteUsers" text="menuItem.inviteUsers" />
+                                <MenuItem id="ServerSettings" style="-fx-pref-width: 172;" styleClass="ServerSettings"
+                                          text="menuItem.serverSettings"/>
+                                <MenuItem id="InviteUsers" style="-fx-pref-width: 172;" styleClass="InviteUsers"
+                                          text="menuItem.inviteUsers"/>
                             </items>
                         </MenuButton>
-                        <Line endX="190.0" fill="#9e9e9e" stroke="#9e9e9e" />
+                        <Line endX="190.0" fill="#9e9e9e" stroke="#9e9e9e"/>
                     </children>
                 </VBox>
-            <ScrollPane id="scrollPaneCategories" hbarPolicy="NEVER" prefWidth="190.0">
-               <content>
-                      <VBox id="categoryVbox" minHeight="35.0" prefWidth="190.0" />
-               </content>
-            </ScrollPane>
+                <ScrollPane id="scrollPaneCategories" hbarPolicy="NEVER" prefWidth="190.0">
+                    <content>
+                        <VBox id="categoryVbox" minHeight="35.0" prefWidth="190.0"/>
+                    </content>
+                </ScrollPane>
             </children>
         </VBox>
-        <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="2110.0" prefWidth="3469.0" spacing="10.0" />
-      <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0">
-         <children>
-            <VBox>
-               <children>
-                  <VBox id="currentUserBox" alignment="CENTER" prefHeight="100.0" prefWidth="180.0" />
-               </children>
-            </VBox>
-                    <Line id="line" startX="-185.0" stroke="#9e9e9e" />
-              <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" maxWidth="185.0" minWidth="185.0" pannable="true" prefHeight="4000.0" prefWidth="185.0" vbarPolicy="NEVER">
-                  <content>
-                      <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
-                          <children>
-                              <ListView id="onlineUsers" prefWidth="185.0" />
-                              <Line id="dividerline_online_offline_user" startX="-185.0" stroke="#9e9e9e" />
-                              <ListView id="offlineUsers" fixedCellSize="36.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="85.0" prefWidth="185.0" VBox.vgrow="ALWAYS" />
-                          </children>
-                      </VBox>
-                  </content>
-              </ScrollPane>
-            <VBox id="audioConnectionBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0" />
-         </children>
-      </VBox>
+        <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="2110.0" prefWidth="3469.0"
+              spacing="10.0"/>
+        <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0">
+            <children>
+                <VBox>
+                    <children>
+                        <VBox id="currentUserBox" alignment="CENTER" prefHeight="100.0" prefWidth="180.0"/>
+                    </children>
+                </VBox>
+                <Line id="line" startX="-185.0" stroke="#9e9e9e"/>
+                <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" maxWidth="185.0" minWidth="185.0" pannable="true"
+                            prefHeight="4000.0" prefWidth="185.0" vbarPolicy="NEVER">
+                    <content>
+                        <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
+                            <children>
+                                <ListView id="onlineUsers" prefWidth="185.0"/>
+                                <Line id="dividerline_online_offline_user" startX="-185.0" stroke="#9e9e9e"/>
+                                <ListView id="offlineUsers" fixedCellSize="36.0" maxHeight="1.7976931348623157E308"
+                                          maxWidth="1.7976931348623157E308" prefHeight="85.0" prefWidth="185.0"
+                                          VBox.vgrow="ALWAYS"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+                <VBox id="audioConnectionBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0"/>
+            </children>
+        </VBox>
     </children>
 </HBox>

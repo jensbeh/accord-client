@@ -148,7 +148,7 @@ public class ThemeControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter")
-                .put("online", true).put("description","");
+                .put("online", true).put("description", "");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -344,7 +344,7 @@ public class ThemeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
-        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true).put("description","")).toString();
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true).put("description", "")).toString();
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 

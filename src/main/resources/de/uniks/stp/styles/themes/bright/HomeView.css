@@ -1,5 +1,5 @@
 .scroll-pane {
-    -fx-background-color:transparent;
+    -fx-background-color: transparent;
 }
 
 #serverList .scroll-bar:vertical {
@@ -9,16 +9,16 @@
     -fx-border-color: #e3e5e8;
 }
 
-#serverList  {
+#serverList {
     -fx-border-color: #e3e5e8;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #e3e5e8;
     -fx-padding: 1;
 }
 
 #serverList .list-cell {
     -fx-border-color: #e3e5e8;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #e3e5e8;
     -fx-padding: 1;
 }
@@ -41,7 +41,7 @@
 
 #root {
     -fx-background-color: #ffffff;
-    -fx-border-color: #e3e5e8 ;
+    -fx-border-color: #e3e5e8;
 }
 
 #homeViewVBox {
