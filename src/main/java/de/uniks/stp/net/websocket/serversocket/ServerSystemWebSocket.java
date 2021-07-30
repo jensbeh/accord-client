@@ -649,9 +649,6 @@ public class ServerSystemWebSocket extends Endpoint {
      * update userList when a user joins the server
      */
     private void userArrived(JsonObject jsonData) {
-        System.out.println("###############################################");
-        System.out.println(jsonData);
-        System.out.println("###############################################");
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
         boolean status = jsonData.getBoolean("online");
