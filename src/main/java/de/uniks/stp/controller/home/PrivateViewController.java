@@ -443,6 +443,11 @@ public class PrivateViewController {
         if (chatViewController != null) {
             chatViewController.onLanguageChanged();
         }
+        if (userProfileController != null) {
+            userProfileController.onLanguageChanged();
+        }
+        // needed for update users description
+        Platform.runLater(() -> onlineUsersList.refresh());
     }
 
     public void setTheme() {

@@ -1,5 +1,6 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
@@ -79,7 +80,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     circle.setFill(Paint.valueOf("#13d86b"));
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
-                        game.setText("   plays " + item.getDescription().substring(1));
+                        game.setText("   " + StageManager.getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
                         vBox.getChildren().addAll(name, game);

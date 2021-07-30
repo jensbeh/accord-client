@@ -44,6 +44,7 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -114,7 +115,7 @@ public class SpotifyConnection {
         webView.getEngine().load(createSpotifyAuthenticationURLPKCE());
         webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
         popUp.setScene(new Scene(webView));
-        popUp.setTitle("Spotify Login");
+        popUp.setTitle(StageManager.getLangBundle().getString("window_title_spotify"));
         popUp.show();
     }
 
@@ -276,12 +277,17 @@ public class SpotifyConnection {
         this.isPersonalUser = isPersonalUser;
         Parent root;
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")));
+            root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")), StageManager.getLangBundle());
+            Label spotifyHeaderLabel = (Label) root.lookup("#spotifyHeaderLabel");
             spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
             bandAndSong = (Label) root.lookup("#bandAndSong");
             timePlayed = (Label) root.lookup("#timePlayed");
             timeTotal = (Label) root.lookup("#timeTotal");
             progressBar = (ProgressBar) root.lookup("#progressBar");
+
+            ResourceBundle lang = StageManager.getLangBundle();
+            spotifyHeaderLabel.setText(lang.getString("label.spotifyHeaderLabel"));
+            bandAndSong.setText(lang.getString("label.no_song_playing"));
 
             if (isPersonalUser) {
                 builder.getSpotifyConnection().personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);

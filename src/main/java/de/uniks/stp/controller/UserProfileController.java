@@ -1,5 +1,6 @@
 package de.uniks.stp.controller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
@@ -54,7 +55,7 @@ public class UserProfileController {
     private void addGame() {
         if (!builder.getPersonalUser().getDescription().contains("i.scdn.co")) {
             Label currentGame = new Label();
-            currentGame.setText("plays " + builder.getPersonalUser().getDescription().substring(1));
+            currentGame.setText(StageManager.getLangBundle().getString("label.steam_playing") + " " + builder.getPersonalUser().getDescription().substring(1));
             currentGame.setStyle("-fx-text-fill: white;");
             currentGame.setId("currentGame");
             Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
@@ -83,5 +84,12 @@ public class UserProfileController {
             builder.getSpotifyConnection().showSpotifyPopupView((HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0), true, null);
             userName.setStyle("-fx-background-color: transparent");
         }
+    }
+
+    /**
+     * when language changed reset labels and texts with correct language
+     */
+    public void onLanguageChanged() {
+        onDescriptionChanged(null);
     }
 }
