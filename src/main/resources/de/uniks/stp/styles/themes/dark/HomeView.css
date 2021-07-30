@@ -1,5 +1,5 @@
 .scroll-pane {
-    -fx-background-color:transparent;
+    -fx-background-color: transparent;
 }
 
 #serverList .scroll-bar:vertical {
@@ -9,16 +9,16 @@
     -fx-border-color: #202225;
 }
 
-#serverList  {
+#serverList {
     -fx-border-color: #202225;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #202225;
     -fx-padding: 1;
 }
 
 #serverList .list-cell {
     -fx-border-color: #202225;
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
     -fx-background-color: #202225;
     -fx-padding: 1;
 }
@@ -41,7 +41,7 @@
 
 #root {
     -fx-background-color: #36393f;
-    -fx-border-color: #36393f ;
+    -fx-border-color: #36393f;
 }
 
 #homeViewVBox {

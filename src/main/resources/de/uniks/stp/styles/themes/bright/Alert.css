@@ -1,18 +1,22 @@
-.AlertStyle{
+.AlertStyle {
     -fx-background-color: WHITE;
 }
-.AlertStyle > *.button-bar > *.container{
+
+.AlertStyle > *.button-bar > *.container {
     -fx-background-color: WHITE;
 
 }
-.AlertStyle > *.label.content{
+
+.AlertStyle > *.label.content {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-.AlertStyle:header *.header-panel{
+
+.AlertStyle:header *.header-panel {
     -fx-background-color: WHITE;
 }
-.AlertStyle:header *.header-panel *.label{
+
+.AlertStyle:header *.header-panel *.label {
     -fx-font-size: 18px;
     -fx-fill: WHITE;
     -fx-text-fill: BLACK;

@@ -226,7 +226,7 @@ public class ResourceManager {
             JsonObject obj = new JsonObject();
             obj.put("id", user.getId());
             obj.put("name", user.getName());
-            if(blocking)
+            if (blocking)
                 parser.add(obj);
             else
                 parser.remove(obj);

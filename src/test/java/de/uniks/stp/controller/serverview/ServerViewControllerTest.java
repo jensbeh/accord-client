@@ -190,7 +190,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter Lustig")
-                .put("online", true).put("description","");
+                .put("online", true).put("description", "");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
@@ -269,13 +269,13 @@ public class ServerViewControllerTest extends ApplicationTest {
         JSONArray audioMembers = new JSONArray().put("60ad230ac77d3f78988b3e5b");
         JSONArray data = new JSONArray();
         data.put(new JSONObject()
-                .put("id", "60b77ba0026b3534ca5a61af")
-                .put("name", "testChannel")
-                .put("type", "text")
-                .put("privileged", false)
-                .put("category", "60b77ba0026b3534ca5a61ae")
-                .put("members", members)
-                .put("audioMembers", new JSONArray()))
+                        .put("id", "60b77ba0026b3534ca5a61af")
+                        .put("name", "testChannel")
+                        .put("type", "text")
+                        .put("privileged", false)
+                        .put("category", "60b77ba0026b3534ca5a61ae")
+                        .put("members", members)
+                        .put("audioMembers", new JSONArray()))
                 .put(new JSONObject()
                         .put("id", "60b77ba0026b3534ca5a61dd")
                         .put("name", "audioChannel")
@@ -484,13 +484,13 @@ public class ServerViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
-        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true).put("description","")).toString();
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("online", true).put("description", "")).toString();
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description", "test")).toString();
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description", "")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
@@ -514,8 +514,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false,"");
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true,"");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false, "");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true, "");
 
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");
@@ -543,8 +543,8 @@ public class ServerViewControllerTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false,"");
-        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true,"");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test", "1234", false, "");
+        app.getBuilder().buildServerUser(app.getBuilder().getCurrentServer(), "Test1", "12234", true, "");
 
         ScrollPane scrollPaneUserBox = lookup("#scrollPaneUserBox").query();
         ListView<User> onlineUserList = (ListView<User>) scrollPaneUserBox.lookup("#onlineUsers");

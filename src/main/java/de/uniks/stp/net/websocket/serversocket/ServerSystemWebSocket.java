@@ -166,7 +166,7 @@ public class ServerSystemWebSocket extends Endpoint {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
                 Platform.runLater(StageManager::showLoginScreen);
             }
-            buildServerUser(userName, userId, false,"");
+            buildServerUser(userName, userId, false, "");
         }
 
         if (userAction.equals("serverDeleted")) {
@@ -588,7 +588,7 @@ public class ServerSystemWebSocket extends Endpoint {
         String description = jsonData.getString("description");
         boolean status = jsonData.getBoolean("online");
 
-        serverViewController.getServer().withUser(buildServerUser(name, id, status,description));
+        serverViewController.getServer().withUser(buildServerUser(name, id, status, description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
@@ -601,7 +601,7 @@ public class ServerSystemWebSocket extends Endpoint {
         String id = jsonData.getString("id");
         String name = jsonData.getString("name");
         String description = jsonData.getString("description");
-        serverViewController.getServer().withoutUser(buildServerUser(name, id, true,description));
+        serverViewController.getServer().withoutUser(buildServerUser(name, id, true, description));
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
