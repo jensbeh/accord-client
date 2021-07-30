@@ -275,6 +275,7 @@ public class SteamGameTest extends ApplicationTest {
         mockApp.getBuilder().setSteamShow(true);
         mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
+        mockApp.getBuilder().setSteamShow(false);
     }
 
     @Test
@@ -291,6 +292,7 @@ public class SteamGameTest extends ApplicationTest {
         mockApp.getBuilder().setSteamShow(true);
         mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
+        mockApp.getBuilder().setSteamShow(false);
     }
 
 }
