@@ -20,6 +20,7 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -121,8 +122,6 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     public void handleMessage(JsonStructure msg) {
-        System.out.println("serverSystemWebSocket");
-        System.out.println("msg: " + msg);
         JsonObject jsonMsg = JsonUtil.parse(msg.toString());
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
@@ -178,10 +177,10 @@ public class ServerSystemWebSocket extends Endpoint {
 
         // audioChannel
         if (userAction.equals("audioJoined")) {
-            joinVoiceChannel(jsonData);
+            joinAudio(jsonData);
         }
         if (userAction.equals("audioLeft")) {
-            leaveVoiceChannel(jsonData);
+            leaveAudio(jsonData);
         }
 
         if (userAction.equals("messageUpdated")) {
@@ -216,98 +215,125 @@ public class ServerSystemWebSocket extends Endpoint {
     /**
      * refreshes the current category view and starts a new udp session
      */
-    private void joinVoiceChannel(JsonObject jsonData) {
-        String userId = jsonData.getString("id");
+    private void joinAudio(JsonObject jsonData) {
         for (Categories category : this.serverViewController.getServer().getCategories()) {
             if (jsonData.getString("category").equals(category.getId())) {
-                for (ServerChannel serverChannel : category.getChannel()) {
-                    if (jsonData.getString("channel").equals(serverChannel.getId())) {
-
-
-                        // put name and id
-                        String userName = "";
-                        for (User user : builder.getPersonalUser().getUser()) {
-                            if (user.getId().equals(userId)) {
-                                userName = user.getName();
-                                break;
-                            }
-                        }
-                        if (!userName.equals("")) {
-                            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
-                            serverChannel.withAudioMember(audioMemberUser);
-                            if (builder.getAudioStreamClient() != null) {
-                                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
-                            }
-                        }
-                        if (builder.getPersonalUser().getId().equals(jsonData.getString("id"))
-                                || (builder.getCurrentAudioChannel() != null &&
-                                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
-                            builder.playChannelSound("join");
-                        }
-                        // create new UDP-connection for personalUser when joined
-                        if (userId.equals(builder.getPersonalUser().getId())) {
-                            if (builder.getAudioStreamClient() != null) {
-                                builder.getAudioStreamClient().disconnectStream();
-                                builder.setAudioStreamClient(null);
-                            }
-                            AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
-                            serverChannel.withAudioMember(audioMemberPersonalUser);
-
-                            builder.setCurrentAudioChannel(serverChannel);
-                            serverViewController.showAudioConnectedBox();
-                            AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
-                            builder.setAudioStreamClient(audiostreamClient);
-                            audiostreamClient.init();
-                            for (AudioMember audioMember : serverChannel.getAudioMember()) {
-                                audiostreamClient.setNewAudioMemberReceiver(audioMember);
-                            }
-                            audiostreamClient.startStream();
-                        }
-                        serverViewController.refreshAllChannelLists();
-                    }
-                }
+                joinVoiceChannel(jsonData, category);
             }
         }
+    }
+
+    private void joinVoiceChannel(JsonObject jsonData, Categories category) {
+        String userId = jsonData.getString("id");
+        for (ServerChannel serverChannel : category.getChannel()) {
+            if (jsonData.getString("channel").equals(serverChannel.getId())) {
+                UserJoinVoiceChannel(userId, serverChannel);
+                playJoinSound(jsonData);
+                // create new UDP-connection for personalUser when joined
+                if (userId.equals(builder.getPersonalUser().getId())) {
+                    createAudioCon(userId, serverChannel);
+                }
+                serverViewController.refreshAllChannelLists();
+            }
+        }
+    }
+
+    private void playJoinSound(JsonObject jsonData) {
+        if (builder.getPersonalUser().getId().equals(jsonData.getString("id"))
+                || (builder.getCurrentAudioChannel() != null &&
+                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
+            builder.playChannelSound("join");
+        }
+    }
+
+    private void UserJoinVoiceChannel(String userId, ServerChannel serverChannel) {
+        String userName = "";
+        for (User user : builder.getPersonalUser().getUser()) {
+            if (user.getId().equals(userId)) {
+                userName = user.getName();
+                break;
+            }
+        }
+        if (!userName.equals("")) {
+            AudioMember audioMemberUser = new AudioMember().setId(userId).setName(userName);
+            serverChannel.withAudioMember(audioMemberUser);
+            if (builder.getAudioStreamClient() != null) {
+                builder.getAudioStreamClient().setNewAudioMemberReceiver(audioMemberUser);
+            }
+        }
+    }
+
+    private void createAudioCon(String userId, ServerChannel serverChannel) {
+        if (builder.getAudioStreamClient() != null) {
+            builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
+        }
+        AudioMember audioMemberPersonalUser = new AudioMember().setId(userId).setName(builder.getPersonalUser().getName());
+        serverChannel.withAudioMember(audioMemberPersonalUser);
+
+        builder.setCurrentAudioChannel(serverChannel);
+        serverViewController.showAudioConnectedBox();
+        AudioStreamClient audiostreamClient = new AudioStreamClient(builder, serverChannel);
+        builder.setAudioStreamClient(audiostreamClient);
+        audiostreamClient.init();
+        for (AudioMember audioMember : serverChannel.getAudioMember()) {
+            audiostreamClient.setNewAudioMemberReceiver(audioMember);
+        }
+        audiostreamClient.startStream();
     }
 
     /**
      * refreshes the current category view and stops the udp session
      */
-    private void leaveVoiceChannel(JsonObject jsonData) {
-        String userId = jsonData.getString("id");
+    private void leaveAudio(JsonObject jsonData) {
         for (Categories category : this.serverViewController.getServer().getCategories()) {
             if (jsonData.getString("category").equals(category.getId())) {
-                for (ServerChannel serverChannel : category.getChannel()) {
-                    if (jsonData.getString("channel").equals(serverChannel.getId())) {
-                        // which audioMember disconnects?
-                        for (AudioMember audioMember : serverChannel.getAudioMember()) {
-                            if (audioMember.getId().equals(userId)) {
-                                serverChannel.withoutAudioMember(audioMember);
-
-                                if (!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
-                                        builder.getCurrentAudioChannel() != null &&
-                                        builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
-                                    builder.playChannelSound("left");
-                                }
-                                // personalUser disconnects
-                                if (userId.equals(builder.getPersonalUser().getId())) {
-                                    builder.setCurrentAudioChannel(null);
-                                    builder.getAudioStreamClient().disconnectStream();
-                                    builder.setAudioStreamClient(null);
-                                }
-                                // other user disconnects
-                                else {
-                                    if (builder.getAudioStreamClient() != null) {
-                                        builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        serverViewController.refreshAllChannelLists();
-                    }
-                }
+                leaveVoiceChannel(jsonData, category);
             }
+        }
+    }
+
+    private void leaveVoiceChannel(JsonObject jsonData, Categories category) {
+        for (ServerChannel serverChannel : category.getChannel()) {
+            if (jsonData.getString("channel").equals(serverChannel.getId())) {
+                removeAudioMember(serverChannel, jsonData);
+                serverViewController.refreshAllChannelLists();
+            }
+        }
+    }
+
+    private void removeAudioMember(ServerChannel serverChannel, JsonObject jsonData) { // which audioMember disconnects?
+        String userId = jsonData.getString("id");
+        for (AudioMember audioMember : serverChannel.getAudioMember()) {
+            if (audioMember.getId().equals(userId)) {
+                removeUserFromVoiceChat(jsonData, serverChannel, audioMember, userId);
+                break;
+            }
+        }
+    }
+
+    private void removeUserFromVoiceChat(JsonObject jsonData, ServerChannel serverChannel, AudioMember audioMember, String userId) {
+        serverChannel.withoutAudioMember(audioMember);
+        playLeaveSound(audioMember, jsonData);
+        // personalUser disconnects
+        if (userId.equals(builder.getPersonalUser().getId())) {
+            builder.setCurrentAudioChannel(null);
+            builder.getAudioStreamClient().disconnectStream();
+            builder.setAudioStreamClient(null);
+        }
+        // other user disconnects
+        else {
+            if (builder.getAudioStreamClient() != null) {
+                builder.getAudioStreamClient().removeAudioMemberReceiver(audioMember);
+            }
+        }
+    }
+
+    private void playLeaveSound(AudioMember audioMember, JsonObject jsonData) {
+        if (!audioMember.getId().equals(builder.getPersonalUser().getId()) &&
+                builder.getCurrentAudioChannel() != null &&
+                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel"))) {
+            builder.playChannelSound("left");
         }
     }
 
@@ -363,8 +389,7 @@ public class ServerSystemWebSocket extends Endpoint {
         serverViewController.getHomeViewController().showServerUpdate();
 
         if (audioIsOpen) {
-            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
-            serverViewController.showAudioConnectedBox();
+            showAudioBox();
         }
     }
 
@@ -376,33 +401,38 @@ public class ServerSystemWebSocket extends Endpoint {
         if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
             for (Categories categories : serverViewController.getServer().getCategories()) {
                 if (categories.getId().equals(builder.getCurrentAudioChannel().getCategories().getId())) {
-                    for (ServerChannel channel : categories.getChannel()) {
-                        if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
-                            disconnectAudioChannelNotOwner(serverViewController.getServer().getId(), categories.getId(), builder.getCurrentAudioChannel().getId());
-                            break;
-                        }
-                    }
+                    disconnectFromChannel(categories);
                 }
             }
-
         }
 
-        Platform.runLater(() -> {
-            if (builder.getCurrentServer() == serverViewController.getServer()) {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().serverDeleted();
-            } else {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().refreshServerList();
-            }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-            alert.setTitle("Server deleted!");
-            alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
-            alert.showAndWait();
-        });
+        Platform.runLater(this::serverDeletedAlert);
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
+    }
+
+    private void disconnectFromChannel(Categories categories) {
+        for (ServerChannel channel : categories.getChannel()) {
+            if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
+                disconnectAudioChannelNotOwner(serverViewController.getServer().getId(), categories.getId(), builder.getCurrentAudioChannel().getId());
+                break;
+            }
+        }
+    }
+
+    private void serverDeletedAlert() {
+        if (builder.getCurrentServer() == serverViewController.getServer()) {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().serverDeleted();
+        } else {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().refreshServerList();
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+        alert.setTitle("Server deleted!");
+        alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
+        alert.showAndWait();
     }
 
     /**
@@ -414,66 +444,53 @@ public class ServerSystemWebSocket extends Endpoint {
         String name = jsonData.getString("name");
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
-                boolean found = false;
-                for (Categories categories : server.getCategories()) {
-                    if (categories.getId().equals(categoryId)) {
-                        found = true;
-                        break;
-                    }
-                }
+                boolean found = checkForCategory(server, categoryId);
                 if (!found) {
-                    Categories category = new Categories().setName(name).setId(categoryId);
-                    server.withCategories(category);
-                    if (builder.getCurrentServer() == serverViewController.getServer()) {
-                        serverViewController.generateCategoryChannelView(category);
-                    }
-                    serverViewController.refreshAllChannelLists();
+                    createNewCategory(server, categoryId, name);
                 }
             }
         }
+    }
+
+    private void createNewCategory(Server server, String categoryId, String name) {
+        Categories category = new Categories().setName(name).setId(categoryId);
+        server.withCategories(category);
+        if (builder.getCurrentServer() == serverViewController.getServer()) {
+            serverViewController.generateCategoryChannelView(category);
+        }
+        serverViewController.refreshAllChannelLists();
+    }
+
+    private boolean checkForCategory(Server server, String categoryId) {
+        for (Categories categories : server.getCategories()) {
+            if (categories.getId().equals(categoryId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * deletes a category with controller and view
      */
     private void deleteCategory(JsonObject jsonData) {
-        Server currentServer = null;
-        Categories deletedCategory = null;
-        Node deletedNode = null;
-        String serverId = jsonData.getString("server");
-        String categoryId = jsonData.getString("id");
+        Server currentServer;
+        Categories deletedCategory;
+        Node deletedNode;
 
-        for (Server server : builder.getPersonalUser().getServer()) {
-            if (server.getId().equals(serverId)) {
-                for (Categories categories : server.getCategories()) {
-                    currentServer = server;
-                    if (categories.getId().equals(categoryId)) {
-                        if (builder.getCurrentServer() == serverViewController.getServer()) {
-                            for (Node view : serverViewController.getCategoryBox().getChildren()) {
-                                if (view.getId().equals(categories.getId())) {
-                                    deletedCategory = categories;
-                                    deletedNode = view;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        ArrayList<Object> objectArrayList = findDeletedCategory(jsonData);
+        currentServer = (Server) objectArrayList.get(0);
+        deletedCategory = (Categories) objectArrayList.get(1);
+        deletedNode = (Node) objectArrayList.get(2);
+
         if (deletedNode != null) {
             // thrown out from audioChannel
             if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
-                for (ServerChannel channel : deletedCategory.getChannel()) {
-                    if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
-                        disconnectAudioChannelNotOwner(currentServer.getId(), categoryId, builder.getCurrentAudioChannel().getId());
-                        break;
-                    }
-                }
+                disconnectFromChannel(deletedCategory);
             }
 
             currentServer.withoutCategories(deletedCategory);
-            Node finalDeletedNode = deletedNode;
-            Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(finalDeletedNode));
+            Platform.runLater(() -> this.serverViewController.getCategoryBox().getChildren().remove(deletedNode));
             serverViewController.getCategorySubControllerList().get(deletedCategory).stop();
             serverViewController.getCategorySubControllerList().remove(deletedCategory);
             if (deletedCategory.getChannel().contains(serverViewController.getCurrentChannel()) || serverViewController.getServer().getCategories().size() == 0) {
@@ -483,22 +500,58 @@ public class ServerSystemWebSocket extends Endpoint {
         }
     }
 
+    private ArrayList<Object> findDeletedCategory(JsonObject jsonData) {
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        String serverId = jsonData.getString("server");
+        String categoryId = jsonData.getString("id");
+        for (Server server : builder.getPersonalUser().getServer()) {
+            if (server.getId().equals(serverId)) {
+                objectArrayList.add(server);
+                objectArrayList.addAll(getCategoryAndNode(server, categoryId));
+            }
+        }
+        return objectArrayList;
+    }
+
+    private ArrayList<Object> getCategoryAndNode(Server server, String categoryId) {
+        for (Categories categories : server.getCategories()) {
+            if (categories.getId().equals(categoryId)) {
+                if (builder.getCurrentServer() == serverViewController.getServer()) {
+                    return getNode(categories);
+                }
+            }
+        }
+        return new ArrayList<>(Arrays.asList(null, null));
+    }
+
+    private ArrayList<Object> getNode(Categories categories) {
+        for (Node view : serverViewController.getCategoryBox().getChildren()) {
+            if (view.getId().equals(categories.getId())) {
+                return new ArrayList<>(Arrays.asList(categories, view));
+            }
+        }
+        return new ArrayList<>(Arrays.asList(null, null));
+    }
+
     /**
      * rename a Category and update it on the view
      */
     private void updateCategory(JsonObject jsonData) {
         String serverId = jsonData.getString("server");
-        String categoryId = jsonData.getString("id");
-        String name = jsonData.getString("name");
-
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
-                for (Categories categories : server.getCategories()) {
-                    if (categories.getId().equals(categoryId) && !categories.getName().equals(name)) {
-                        categories.setName(name);
-                        break;
-                    }
-                }
+                findCategoryToUpdate(server, jsonData);
+            }
+        }
+    }
+
+    private void findCategoryToUpdate(Server server, JsonObject jsonData) {
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
+        for (Categories categories : server.getCategories()) {
+            if (categories.getId().equals(categoryId) && !categories.getName().equals(name)) {
+                categories.setName(name);
+                break;
             }
         }
     }
@@ -509,20 +562,24 @@ public class ServerSystemWebSocket extends Endpoint {
      * @param jsonData the message data
      */
     private void createChannel(JsonObject jsonData) {
+        for (Server server : builder.getPersonalUser().getServer()) {
+            findCategoryForNewChannel(server, jsonData);
+        }
+    }
+
+    private void findCategoryForNewChannel(Server server, JsonObject jsonData) {
         String channelId = jsonData.getString("id");
         String channelName = jsonData.getString("name");
         String channelType = jsonData.getString("type");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         String categoryId = jsonData.getString("category");
 
-        for (Server server : builder.getPersonalUser().getServer()) {
-            for (Categories cat : server.getCategories()) {
-                if (cat.getId().equals(categoryId)) {
-                    ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
-                    cat.withChannel(newChannel);
-                    serverViewController.refreshAllChannelLists();
-                    break;
-                }
+        for (Categories cat : server.getCategories()) {
+            if (cat.getId().equals(categoryId)) {
+                ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName).setPrivilege(channelPrivileged);
+                cat.withChannel(newChannel);
+                serverViewController.refreshAllChannelLists();
+                break;
             }
         }
     }
@@ -534,31 +591,39 @@ public class ServerSystemWebSocket extends Endpoint {
      * @param jsonData the message data
      */
     private void deleteChannel(JsonObject jsonData) {
+        for (Server server : builder.getPersonalUser().getServer()) {
+            findCategoryForChannelDel(server, jsonData);
+        }
+    }
+
+    private void findCategoryForChannelDel(Server server, JsonObject jsonData) {
+        String categoryId = jsonData.getString("category");
+        for (Categories cat : server.getCategories()) {
+            if (cat.getId().equals(categoryId)) {
+                findChannelForDelete(server, cat, jsonData);
+            }
+        }
+    }
+
+    private void findChannelForDelete(Server server, Categories categories, JsonObject jsonData) {
         String channelId = jsonData.getString("id");
         String categoryId = jsonData.getString("category");
-
-        for (Server server : builder.getPersonalUser().getServer()) {
-            for (Categories cat : server.getCategories()) {
-                if (cat.getId().equals(categoryId)) {
-                    for (ServerChannel channel : cat.getChannel()) {
-                        if (channel.getId().equals(channelId)) {
-                            // thrown out from audioChannel
-                            if (channel.getType().equals("audio")) {
-                                if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null && builder.getCurrentAudioChannel().getId().equals(channelId)) {
-                                    disconnectAudioChannelNotOwner(server.getId(), categoryId, channelId);
-                                }
-                            }
-                            cat.withoutChannel(channel);
-                            if (builder.getCurrentServer() == serverViewController.getServer()) {
-                                if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
-                                    serverViewController.throwOutUserFromChatView();
-                                }
-                            }
-                            serverViewController.refreshAllChannelLists();
-                            return;
-                        }
+        for (ServerChannel channel : categories.getChannel()) {
+            if (channel.getId().equals(channelId)) {
+                // thrown out from audioChannel
+                if (channel.getType().equals("audio")) {
+                    if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null && builder.getCurrentAudioChannel().getId().equals(channelId)) {
+                        disconnectAudioChannelNotOwner(server.getId(), categoryId, channelId);
                     }
                 }
+                categories.withoutChannel(channel);
+                if (builder.getCurrentServer() == serverViewController.getServer()) {
+                    if (serverViewController.getCurrentChannel().equals(channel) && channel.getType().equals("text")) {
+                        serverViewController.throwOutUserFromChatView();
+                    }
+                }
+                serverViewController.refreshAllChannelLists();
+                return;
             }
         }
     }
@@ -606,18 +671,22 @@ public class ServerSystemWebSocket extends Endpoint {
             serverViewController.showOnlineOfflineUsers();
         }
         if (name.equals(builder.getPersonalUser().getName())) {
-            Platform.runLater(() -> {
-                builder.getPersonalUser().withoutServer(serverViewController.getServer());
-                builder.setCurrentServer(null);
-                serverViewController.getHomeViewController().serverDeleted();
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-                alert.setTitle("Server left!");
-                alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
-                alert.showAndWait();
-            });
-            serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
+            showExitAlert();
         }
+    }
+
+    private void showExitAlert() {
+        Platform.runLater(() -> {
+            builder.getPersonalUser().withoutServer(serverViewController.getServer());
+            builder.setCurrentServer(null);
+            serverViewController.getHomeViewController().serverDeleted();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
+            alert.setTitle("Server left!");
+            alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
+            alert.showAndWait();
+        });
+        serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }
 
     /**
@@ -630,8 +699,51 @@ public class ServerSystemWebSocket extends Endpoint {
         String channelType = jsonData.getString("type");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
-        String memberId;
+
         boolean hasChannel = false;
+        ArrayList<User> member = getChannelMembers(jsonArray);
+
+        for (Categories category : serverViewController.getServer().getCategories()) {
+            if (category.getId().equals(categoryId)) {
+                hasChannel = findChannelToUpdate(jsonData, category);
+            }
+            if (!hasChannel) {
+                category.withChannel(new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
+                        .setPrivilege(channelPrivileged).withPrivilegedUsers(member));
+            }
+        }
+    }
+
+    private boolean findChannelToUpdate(JsonObject jsonData, Categories category) {
+        boolean hasChannel = false;
+        String channelId = jsonData.getString("id");
+        String channelName = jsonData.getString("name");
+        boolean channelPrivileged = jsonData.getBoolean("privileged");
+        JsonArray jsonArray = jsonData.getJsonArray("members");
+        ArrayList<User> member = getChannelMembers(jsonArray);
+        for (ServerChannel channel : category.getChannel()) {
+            if (channel.getId().equals(channelId)) {
+                channel.setName(channelName);
+                channel.setPrivilege(channelPrivileged);
+                ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
+                channel.withoutPrivilegedUsers(privileged);
+                channel.withPrivilegedUsers(member);
+                hasChannel = true;
+            }
+        }
+        if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
+            showAudioBox();
+        }
+        return hasChannel;
+    }
+
+    private void showAudioBox() {
+        builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
+        serverViewController.showAudioConnectedBox();
+    }
+
+    private ArrayList<User> getChannelMembers(JsonArray jsonArray) {
+        String memberId;
         ArrayList<User> member = new ArrayList<>();
 
         for (int j = 0; j < jsonArray.size(); j++) {
@@ -642,32 +754,7 @@ public class ServerSystemWebSocket extends Endpoint {
                 }
             }
         }
-
-        for (Categories category : serverViewController.getServer().getCategories()) {
-            if (category.getId().equals(categoryId)) {
-                for (ServerChannel channel : category.getChannel()) {
-                    if (channel.getId().equals(channelId)) {
-                        hasChannel = true;
-                        channel.setName(channelName);
-                        channel.setPrivilege(channelPrivileged);
-                        ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
-                        channel.withoutPrivilegedUsers(privileged);
-                        channel.withPrivilegedUsers(member);
-                        break;
-                    }
-                }
-                if (!hasChannel) {
-                    ServerChannel newChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
-                            .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
-                    category.withChannel(newChannel);
-                }
-            }
-        }
-
-        if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
-            builder.getPrivateChatWebSocketClient().getPrivateViewController().showAudioConnectedBox();
-            serverViewController.showAudioConnectedBox();
-        }
+        return member;
     }
 
 
