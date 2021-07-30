@@ -6,7 +6,7 @@ import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSetting
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -34,7 +34,6 @@ import javax.json.JsonObject;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doCallRealMethod;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerSettingsChannelControllerTest extends ApplicationTest {
@@ -149,7 +148,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -210,7 +209,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
         String[] categories = new String[1];
         categories[0] = "5e2fbd8770dd077d03df600";
         String testServerOwner = "5e2iof875dd077d03df505";
-        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description","test"));
+        JSONArray members = new JSONArray().put(new JSONObject().put("id", testServerOwner).put("name", testUserName).put("online", true).put("description", "test"));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -300,7 +299,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
             Callback<JsonNode> callback = callbackCaptor9.getValue();
             callback.completed(response9);
             return null;
-        }).when(restClient).updateChannel(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean(), any(),  callbackCaptor9.capture());
+        }).when(restClient).updateChannel(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean(), any(), callbackCaptor9.capture());
     }
 
     public void mockCreateChannel() {
@@ -316,7 +315,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
             Callback<JsonNode> callback = callbackCaptor10.getValue();
             callback.completed(response10);
             return null;
-        }).when(restClient).createChannel(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean(), any(),  callbackCaptor10.capture());
+        }).when(restClient).createChannel(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean(), any(), callbackCaptor10.capture());
     }
 
     public void mockDeleteChannel() {
@@ -537,5 +536,28 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void deleteDefaultChannelTest() throws InterruptedException {
+        loginInit(false);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        clickOn("#channelBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ComboBox<Categories> categorySelector = lookup("#categorySelector").query();
+        Platform.runLater(() -> categorySelector.getSelectionModel().select(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        ComboBox<ServerChannel> editChannelsSelector = lookup("#editChannelsSelector").query();
+        Platform.runLater(() -> editChannelsSelector.getSelectionModel().select(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#channelDeleteButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#okButton");
+
     }
 }

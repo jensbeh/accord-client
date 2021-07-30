@@ -9,15 +9,18 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -33,6 +36,8 @@ public class ServerSettingsCategoryController extends SubSetting {
     private TextField createCategoryNameTextField;
     private Button createCategoryButton;
     private VBox root;
+    private Stage stage;
+    private Button okButton;
 
     private final Server currentServer;
     private Categories selectedCategory;
@@ -126,19 +131,48 @@ public class ServerSettingsCategoryController extends SubSetting {
      */
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
-            // disconnect from audioChannel
-            if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
-            }
-            restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-                if (status.equals("success")) {
-                    Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
-                    Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
+            if (builder.getCurrentServer().getCategories().get(0) == selectedCategory) {
+                try {
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+                    stage = new Stage();
+                    Scene scene = new Scene(root);
+                    stage.setTitle(lang.getString("label.error"));
+                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+                    stage.setScene(scene);
+                    stage.show();
+                    okButton = (Button) root.lookup("#okButton");
+                    okButton.setText("OK");
+                    okButton.setOnAction(this::closeStage);
+                    if (builder.getTheme().equals("Bright")) {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                    } else {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                    }
+                    Label errorLabel = (Label) root.lookup("#errorLabel");
+                    errorLabel.setText(lang.getString("label.alertDefaultCat"));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
+            } else {
+                // disconnect from audioChannel
+                if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                }
+                restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
+                        Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
+                    }
+                });
+            }
         }
+    }
+
+    private void closeStage(ActionEvent actionEvent) {
+        stage.close();
     }
 
     /**
@@ -169,6 +203,13 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.deleteCategoryButton.setOnMouseClicked(null);
         this.createCategoryButton.setOnMouseClicked(null);
         this.categoriesSelector.setOnAction(null);
+        if (okButton != null) {
+            this.okButton.setOnAction(null);
+        }
+        if (stage != null ){
+            this.stage.close();
+            stage = null;
+        }
     }
 
     public void setTheme() {
