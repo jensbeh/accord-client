@@ -320,8 +320,9 @@ public class StageManager extends Application {
             Scene scene = new Scene(root);
 
             // init controller
-            startSnakeController = new StartSnakeController(root);
+            startSnakeController = new StartSnakeController(root, builder);
             startSnakeController.init();
+            startSnakeController.setTheme();
 
             //start snake stage
             subStage = new Stage();
@@ -362,6 +363,7 @@ public class StageManager extends Application {
             // init controller
             snakeGameController = new SnakeGameController(scene, root, builder);
             snakeGameController.init();
+            snakeGameController.setTheme();
 
             //start snake game stage
             subStage = new Stage();
