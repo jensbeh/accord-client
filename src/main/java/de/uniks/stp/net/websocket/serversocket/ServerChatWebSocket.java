@@ -6,7 +6,6 @@ import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
-import de.uniks.stp.model.User;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
 import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
@@ -202,14 +201,5 @@ public class ServerChatWebSocket extends Endpoint {
 
     public void setChatViewController(ChatViewController chatViewController) {
         this.chatViewController = chatViewController;
-    }
-
-    public String getUserIdByName(String from) {
-        for (User user : this.serverViewController.getServer().getUser()) {
-            if (user.getName().equals(from)) {
-                return user.getId();
-            }
-        }
-        return null;
     }
 }

@@ -441,17 +441,18 @@ public class ServerSystemWebSocket extends Endpoint {
     private void createCategory(JsonObject jsonData) {
         String serverId = jsonData.getString("server");
         String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
                 boolean found = checkForCategory(server, categoryId);
                 if (!found) {
-                    createNewCategory(server, categoryId);
+                    createNewCategory(server, categoryId, name);
                 }
             }
         }
     }
 
-    private void createNewCategory(Server server, String categoryId) {
+    private void createNewCategory(Server server, String categoryId, String name) {
         Categories category = new Categories().setName(name).setId(categoryId);
         server.withCategories(category);
         if (builder.getCurrentServer() == serverViewController.getServer()) {
@@ -537,16 +538,16 @@ public class ServerSystemWebSocket extends Endpoint {
      */
     private void updateCategory(JsonObject jsonData) {
         String serverId = jsonData.getString("server");
-        String categoryId = jsonData.getString("id");
-
         for (Server server : builder.getPersonalUser().getServer()) {
             if (server.getId().equals(serverId)) {
-                findCategoryToUpdate(server, categoryId);
+                findCategoryToUpdate(server, jsonData);
             }
         }
     }
 
-    private void findCategoryToUpdate(Server server, String categoryId) {
+    private void findCategoryToUpdate(Server server, JsonObject jsonData) {
+        String categoryId = jsonData.getString("id");
+        String name = jsonData.getString("name");
         for (Categories categories : server.getCategories()) {
             if (categories.getId().equals(categoryId) && !categories.getName().equals(name)) {
                 categories.setName(name);
@@ -727,7 +728,7 @@ public class ServerSystemWebSocket extends Endpoint {
                 ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                 channel.withoutPrivilegedUsers(privileged);
                 channel.withPrivilegedUsers(member);
-                hasChannel= true;
+                hasChannel = true;
             }
         }
         if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
