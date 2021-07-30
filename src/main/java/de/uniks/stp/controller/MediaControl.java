@@ -61,8 +61,8 @@ public class MediaControl extends BorderPane {
     public VBox setMediaControls(MediaView mediaView) {
 
         VBox mediaBox = new VBox();
-
         MediaPlayer mp = mediaView.getMediaPlayer();
+
         mediaBar = new HBox();
         mediaBar.setAlignment(Pos.CENTER);
         mediaBar.setPadding(new Insets(5, 10, 5, 10));
@@ -180,7 +180,6 @@ public class MediaControl extends BorderPane {
     }
 
     protected void updateValues(MediaPlayer mp) {
-
         if (playTime != null && timeSlider != null && volumeSlider != null) {
             Platform.runLater(() -> {
                 Duration currentTime = mp.getCurrentTime();

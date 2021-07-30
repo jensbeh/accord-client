@@ -87,7 +87,10 @@ public class SettingsControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);
+        builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
@@ -276,6 +279,9 @@ public class SettingsControllerTest extends ApplicationTest {
         //Assert.assertNotEquals("", app.getBuilder().getSteamToken());
         //Assert.assertFalse(app.getBuilder().isSpotifyShow());
         //Assert.assertTrue(app.getBuilder().isSteamShow());
+        app.getBuilder().setSteamShow(false);
+        app.getBuilder().saveSettings();
+
     }
 
     @Test

@@ -2,6 +2,7 @@ package de.uniks.stp.controller.login;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
 import javafx.application.Platform;

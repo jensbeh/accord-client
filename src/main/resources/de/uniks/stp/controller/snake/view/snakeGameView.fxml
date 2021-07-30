@@ -22,14 +22,14 @@
                   <Insets top="25.0" />
                </VBox.margin>
             </Canvas>
-            <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="800.0" style="-fx-background-color: #292929;">
+            <HBox id="actionBar" alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="800.0">
                <children>
                   <HBox prefHeight="40.0" prefWidth="40.0">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="20.0" top="5.0" />
                      </HBox.margin>
                      <children>
-                        <Button id="muteButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="muteButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="🔊">
+                        <Button id="muteButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" text="🔊">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -38,7 +38,7 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="40.0" prefWidth="84.0">
                      <children>
-                        <Button id="button_exit" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" style="-fx-background-color: #454545;" styleClass="exitButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="Exit" textFill="WHITE">
+                        <Button id="button_exit" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Exit" textFill="WHITE">
                            <font>
                               <Font size="22.0" />
                            </font>
@@ -79,7 +79,7 @@
             </HBox>
          </children>
       </VBox>
-      <Pane id="gameOverBox" layoutX="62.0" layoutY="164.0" prefHeight="475.0" prefWidth="650.0" styleClass="bodybg" stylesheets="@../../../styles/snake/snakeStyles.css" AnchorPane.bottomAnchor="261.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="164.0">
+      <Pane id="gameOverBox" layoutX="62.0" layoutY="164.0" prefHeight="475.0" prefWidth="650.0" styleClass="bodybg" stylesheets="@../../../styles/snakeBg/snakeBg.css" AnchorPane.bottomAnchor="261.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="164.0">
          <children>
             <ImageView id="imageview_endImage" fitHeight="550.0" fitWidth="434.0" layoutX="75.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" x="33.0" y="11.0">
                <image>
@@ -91,12 +91,12 @@
                   <Font size="36.0" />
                </font>
             </Text>
-            <Button id="restartButton" layoutX="207.0" layoutY="261.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="236.0" styleClass="restartButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="Restart">
+            <Button id="restartButton" layoutX="207.0" layoutY="261.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="236.0" text="Restart">
                <font>
                   <Font size="32.0" />
                </font>
             </Button>
-            <Button id="button_gameover_exit" layoutX="290.0" layoutY="345.0" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" styleClass="restartButton" stylesheets="@../../../styles/snake/snakeStyles.css" text="Exit" textFill="WHITE">
+            <Button id="button_gameover_exit" layoutX="290.0" layoutY="345.0" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="74.0" text="Exit" textFill="WHITE">
                <font>
                   <Font size="22.0" />
                </font>

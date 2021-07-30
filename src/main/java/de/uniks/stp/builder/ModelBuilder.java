@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.settings.AudioController;
 import de.uniks.stp.model.*;
@@ -16,6 +17,10 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import kong.unirest.JsonNode;
+import org.apache.commons.io.FileUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -23,6 +28,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import java.beans.PropertyChangeEvent;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -46,7 +52,6 @@ public class ModelBuilder {
     private ServerChatWebSocket serverChatWebSocketClient;
     private HomeViewController homeViewController;
 
-
     private RestClient restClient;
     private boolean playSound;
     private boolean doNotDisturb;
@@ -67,10 +72,27 @@ public class ModelBuilder {
     private boolean spotifyShow;
     private boolean steamShow;
     private String spotifyToken;
+    private String spotifyRefresh;
     private String steamToken;
     private LinePoolService linePoolService;
+    private SpotifyConnection spotifyConnection;
+
+
     private Thread getSteamGame;
     private ObservableList<User> blockedUsers;
+
+
+    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
+        System.out.println("PropertyChange");
+        getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
+            JsonNode body = response.getBody();
+            if (!body.getObject().getString("status").equals("success")) {
+                System.err.println("Error in updateDescription");
+                System.err.println(body);
+            }
+        });
+    }
+
     private boolean isSteamRun;
     private Runnable handleMicrophoneHeadphone;
     private AudioController audiocontroller;
@@ -79,7 +101,8 @@ public class ModelBuilder {
     /////////////////////////////////////////
 
     public void buildPersonalUser(String name, String password, String userKey) {
-        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password);
+        personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password).setDescription("#");
+        personalUser.addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
     }
 
     public User buildUser(String name, String id, String description) {
@@ -283,6 +306,7 @@ public class ModelBuilder {
             settings.put("firstMuted", firstMuted);
             settings.put("spotifyShow", spotifyShow);
             settings.put("spotifyToken", spotifyToken);
+            settings.put("spotifyRefresh", spotifyRefresh);
             settings.put("steamShow", steamShow);
             settings.put("steamToken", steamToken);
             settings.put("microphone", getLinePoolService().getSelectedMicrophoneName());
@@ -309,7 +333,8 @@ public class ModelBuilder {
                 muteHeadphones = false;
                 firstMuted = false;
                 spotifyShow = false;
-                spotifyToken = "";
+                spotifyToken = null;
+                spotifyRefresh = null;
                 steamShow = false;
                 steamToken = "";
                 getLinePoolService().setMicrophoneVolume(0.2f);
@@ -328,6 +353,7 @@ public class ModelBuilder {
             spotifyShow = (boolean) parsedSettings.get("spotifyShow");
             steamShow = (boolean) parsedSettings.get("steamShow");
             spotifyToken = (String) parsedSettings.get("spotifyToken");
+            spotifyRefresh = (String) parsedSettings.get("spotifyRefresh");
             steamToken = (String) parsedSettings.get("steamToken");
             getLinePoolService().setMicrophoneVolume(((BigDecimal) parsedSettings.get("microphoneVolume")).floatValue());
             getLinePoolService().setSpeakerVolume(((BigDecimal) parsedSettings.get("speakerVolume")).floatValue());
@@ -468,6 +494,22 @@ public class ModelBuilder {
 
     public void setSpotifyToken(String spotifyToken) {
         this.spotifyToken = spotifyToken;
+    }
+
+    public String getSpotifyRefresh() {
+        return spotifyRefresh;
+    }
+
+    public void setSpotifyRefresh(String spotifyRefresh) {
+        this.spotifyRefresh = spotifyRefresh;
+    }
+
+    public SpotifyConnection getSpotifyConnection() {
+        return spotifyConnection;
+    }
+
+    public void setSpotifyConnection(SpotifyConnection spotifyConnection) {
+        this.spotifyConnection = spotifyConnection;
     }
 
     public String getSteamToken() {
