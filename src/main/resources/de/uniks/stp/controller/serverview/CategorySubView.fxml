@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <HBox alignment="CENTER_LEFT">
-         <children>
-            <Label id="categoryName" text="Label" textFill="WHITE">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-         </children>
-         <VBox.margin>
-            <Insets top="5.0" />
-         </VBox.margin>
-         <padding>
-            <Insets left="10.0" />
-         </padding>
-      </HBox>
-      <ListView id="channelList" prefHeight="3433.0" prefWidth="174.0" VBox.vgrow="ALWAYS">
-         <VBox.margin>
-            <Insets bottom="10.0" />
-         </VBox.margin>
-      </ListView>
-   </children>
-   <padding>
-      <Insets right="16.0" top="5.0" />
-   </padding>
+<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/11"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <HBox alignment="CENTER_LEFT">
+            <children>
+                <Label id="categoryName" text="Label" textFill="WHITE">
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Label>
+            </children>
+            <VBox.margin>
+                <Insets top="5.0"/>
+            </VBox.margin>
+            <padding>
+                <Insets left="10.0"/>
+            </padding>
+        </HBox>
+        <ListView id="channelList" prefHeight="3433.0" prefWidth="174.0" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+                <Insets bottom="10.0"/>
+            </VBox.margin>
+        </ListView>
+    </children>
+    <padding>
+        <Insets right="16.0" top="5.0"/>
+    </padding>
 </VBox>

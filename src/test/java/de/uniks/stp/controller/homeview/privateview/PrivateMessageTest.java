@@ -2,7 +2,6 @@ package de.uniks.stp.controller.homeview.privateview;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
@@ -11,7 +10,6 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -31,7 +29,6 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -143,7 +140,7 @@ public class PrivateMessageTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter Lustig")
-                .put("online", true).put("description","");
+                .put("online", true).put("description", "");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")

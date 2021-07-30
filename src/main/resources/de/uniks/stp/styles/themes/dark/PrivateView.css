@@ -34,12 +34,14 @@
     -fx-padding: 1;
     -fx-text-fill: WHITE;
 }
+
 #onlineUsers .scroll-bar:vertical {
     -fx-scale-x: 0;
     -fx-padding: -10;
     -fx-opacity: 0;
     -fx-border-color: #2f3136;
 }
+
 #onlineUsers .scroll-bar:horizontal {
     -fx-scale-x: 0;
     -fx-padding: -10;
@@ -102,6 +104,7 @@
     -fx-pref-height: 65;
     -fx-max-width: 183
 }
+
 #privateChatList .unselectedChatHover {
     -fx-background-color: #bababa;
     -fx-background-radius: 13px;
@@ -153,10 +156,12 @@
     -fx-background-radius: 80;
     -fx-text-fill: BLACK;
 }
+
 #button_disconnectAudio:hover, #mute_headphone:hover, #mute_microphone:hover {
     -fx-background-color: #ffbdbd;
     -fx-background-radius: 80;
 }
+
 #button_disconnectAudio:pressed, #mute_headphone:pressed, #mute_microphone:pressed {
     -fx-background-color: #ff7d7d;
     -fx-background-radius: 80;

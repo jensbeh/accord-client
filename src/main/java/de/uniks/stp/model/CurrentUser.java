@@ -18,7 +18,7 @@ public class CurrentUser {
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
     public static final String PROPERTY_CHANNEL = "channel";
-   public static final String PROPERTY_DESCRIPTION = "description";
+    public static final String PROPERTY_DESCRIPTION = "description";
     private String name;
     private String userKey;
     protected PropertyChangeSupport listeners;
@@ -28,7 +28,7 @@ public class CurrentUser {
     private List<Server> server;
     private List<PrivateChat> privateChat;
     private List<ServerChannel> channel;
-   private String description;
+    private String description;
 
     public String getName()
    {
@@ -366,12 +366,12 @@ public class CurrentUser {
       return this;
    }
 
-   public String getDescription()
+    public String getDescription()
    {
       return this.description;
    }
 
-   public CurrentUser setDescription(String value)
+    public CurrentUser setDescription(String value)
    {
       if (Objects.equals(value, this.description))
       {
@@ -423,20 +423,20 @@ public class CurrentUser {
       this.withoutChannel(new ArrayList<>(this.getChannel()));
    }
 
-   public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners == null) {
-         this.listeners = new PropertyChangeSupport(this);
-      }
-      this.listeners.addPropertyChangeListener(propertyName, listener);
-      return true;
-   }
+    public boolean addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners == null) {
+            this.listeners = new PropertyChangeSupport(this);
+        }
+        this.listeners.addPropertyChangeListener(propertyName, listener);
+        return true;
+    }
 
-   public boolean removePropertyChangeListener(PropertyChangeListener listener) {
-      // No fulib
-      if (this.listeners != null) {
-         this.listeners.removePropertyChangeListener(listener);
-      }
-      return true;
-   }
+    public boolean removePropertyChangeListener(PropertyChangeListener listener) {
+        // No fulib
+        if (this.listeners != null) {
+            this.listeners.removePropertyChangeListener(listener);
+        }
+        return true;
+    }
 }

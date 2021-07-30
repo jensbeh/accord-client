@@ -37,7 +37,7 @@ public class SteamLoginController {
             if (selector.equals("id")) {   // https://steamcommunity.com/id/VanityID/
                 resolveVanityUrl(link);
             } else if (selector.equals("profiles")) { // https://steamcommunity.com/profiles/steam64ID/
-                setSteam64ID(link[link.length - 1]);
+                Platform.runLater(() -> setSteam64ID(link[link.length - 1]));
             }
         }
     }

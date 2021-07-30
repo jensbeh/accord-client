@@ -15,7 +15,7 @@ public class User {
     public static final String PROPERTY_PRIVILEGED = "privileged";
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
-   public static final String PROPERTY_DESCRIPTION = "description";
+    public static final String PROPERTY_DESCRIPTION = "description";
     private String name;
     private String id;
     private boolean status;
@@ -24,7 +24,7 @@ public class User {
     private List<ServerChannel> privileged;
     private List<Server> server;
     private CurrentUser currentUser;
-   private String description;
+    private String description;
 
     public String getName()
    {
@@ -239,12 +239,12 @@ public class User {
       return this;
    }
 
-   public String getDescription()
+    public String getDescription()
    {
       return this.description;
    }
 
-   public User setDescription(String value)
+    public User setDescription(String value)
    {
       if (Objects.equals(value, this.description))
       {

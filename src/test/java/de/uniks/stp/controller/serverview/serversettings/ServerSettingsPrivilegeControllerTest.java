@@ -6,12 +6,15 @@ import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
-import de.uniks.stp.net.*;
+import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import kong.unirest.Callback;
@@ -36,7 +39,6 @@ import java.util.ArrayList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
@@ -149,7 +151,7 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter")
-                .put("online", true).put("description","");
+                .put("online", true).put("description", "");
         members.put(member);
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")

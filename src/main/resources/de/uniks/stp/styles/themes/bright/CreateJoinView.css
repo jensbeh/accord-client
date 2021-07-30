@@ -67,9 +67,11 @@
     -fx-padding: 0 0 0 0;
     -fx-text-fill: WHITE;
 }
+
 #createServer:hover, #joinServer:hover {
     -fx-background-color: #a0bade;
 }
+
 #createServer:pressed, #joinServer:pressed {
     -fx-background-color: #6899de;
 }
