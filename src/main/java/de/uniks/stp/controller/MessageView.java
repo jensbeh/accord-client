@@ -196,7 +196,9 @@ public class MessageView {
 
         cell.setAlignment(Pos.CENTER_RIGHT);
         cell.getChildren().addAll(vbox);
-        cell.setOnMouseClicked(chatViewController::chatClicked);
+        if (!messageIsInfo) {
+            cell.setOnMouseClicked(chatViewController::chatClicked);
+        }
         chatViewController.getContainer().getChildren().add(cell);
         chatViewController.getMessagesHashMap().put(cell, item);
         chatViewController.getStackPaneHashMap().put(item, cell);
