@@ -38,17 +38,17 @@ public class UserProfileController {
         if (builder.getPersonalUser().getDescription() != null && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
-
-        builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged);
+        Platform.runLater(()->builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged));
     }
 
     private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
         Label oldLabel = (Label) view.lookup("#currentGame");
         if (oldLabel != null) {
             Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
-        }
-        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
-            addGame();
+        } else {
+            if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
+                addGame();
+            }
         }
     }
 
@@ -60,7 +60,6 @@ public class UserProfileController {
             currentGame.setId("currentGame");
             Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
         }
-
     }
 
     public void setUserName(String name) {
