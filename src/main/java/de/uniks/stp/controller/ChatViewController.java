@@ -653,6 +653,9 @@ public class ChatViewController {
             editButton.setText(lang.getString("button.edit"));
         if (abortButton != null)
             abortButton.setText(lang.getString("button.abort"));
+
+        // set theme to refresh chat view
+        StageManager.setTheme();
     }
 
     public void stop() {

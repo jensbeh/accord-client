@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import javafx.geometry.Bounds;
@@ -31,6 +32,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,10 +128,11 @@ public class MessageView {
             }
             String str = null;
             if (messageIsInfo) {
+                ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
-                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " arrived to the Server");
+                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived"));
                 } else if(item.getMessage().endsWith("#exit")) {
-                    str = handleSpacing(":no_entry: " + item.getFrom() + " left the Server");
+                    str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
                 }
             } else {
                 str = handleSpacing(textMessage);
