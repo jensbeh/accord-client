@@ -177,9 +177,13 @@ public class SettingsController {
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
         generalButton.setText(lang.getString("button.settings_general"));
-        connectionButton.setText(lang.getString("button.settings_connection"));
         audioButton.setText(lang.getString("button.settings_audio"));
-        blockedButton.setText(lang.getString("button.settings_blocked"));
+        if (connectionButton != null) {
+            connectionButton.setText(lang.getString("button.settings_connection"));
+        }
+        if (blockedButton != null) {
+            blockedButton.setText(lang.getString("button.settings_blocked"));
+        }
         for (Button button : itemList) {
             button.getId();
             switch (button.getId()) {
