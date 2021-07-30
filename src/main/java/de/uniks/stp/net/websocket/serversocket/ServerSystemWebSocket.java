@@ -714,6 +714,7 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     private boolean findChannelToUpdate(JsonObject jsonData, Categories category) {
+        boolean hasChannel = false;
         String channelId = jsonData.getString("id");
         String channelName = jsonData.getString("name");
         boolean channelPrivileged = jsonData.getBoolean("privileged");
@@ -726,13 +727,13 @@ public class ServerSystemWebSocket extends Endpoint {
                 ArrayList<User> privileged = new ArrayList<>(channel.getPrivilegedUsers());
                 channel.withoutPrivilegedUsers(privileged);
                 channel.withPrivilegedUsers(member);
-                return true;
+                hasChannel= true;
             }
         }
         if (builder.getCurrentAudioChannel() != null && channelId.equals(builder.getCurrentAudioChannel().getId())) {
             showAudioBox();
         }
-        return false;
+        return hasChannel;
     }
 
     private void showAudioBox() {
