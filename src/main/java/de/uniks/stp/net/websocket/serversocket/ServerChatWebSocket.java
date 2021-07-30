@@ -141,22 +141,26 @@ public class ServerChatWebSocket extends Endpoint {
         // currentUser received
         else if (!from.equals(builder.getPersonalUser().getName())) {
             for (Categories categories : this.serverViewController.getServer().getCategories()) {
-                for (ServerChannel channel : categories.getChannel()) {
-                    if (channel.getId().equals(channelId)) {
-                        channel.withMessage(message);
-                        messageNotifications(channel);
-                        if (builder.getCurrentServer() == serverViewController.getServer()) {
-                            serverViewController.getCategorySubControllerList().get(categories).refreshChannelList();
-                        }
-                        break;
-                    }
-                }
+                addMessageToChannel(categories,channelId,message);
             }
         }
         if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
             assert message != null;
             serverViewController.getCurrentChannel().withMessage(message);
             Platform.runLater(() -> chatViewController.printMessage(message));
+        }
+    }
+
+    private void addMessageToChannel(Categories categories, String channelId, Message message) {
+        for (ServerChannel channel : categories.getChannel()) {
+            if (channel.getId().equals(channelId)) {
+                channel.withMessage(message);
+                messageNotifications(channel);
+                if (builder.getCurrentServer() == serverViewController.getServer()) {
+                    serverViewController.getCategorySubControllerList().get(categories).refreshChannelList();
+                }
+                break;
+            }
         }
     }
 

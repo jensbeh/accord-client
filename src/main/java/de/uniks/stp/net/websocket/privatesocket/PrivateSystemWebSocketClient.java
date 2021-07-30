@@ -114,24 +114,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         if (userAction.equals("userDescriptionChanged")) {
-            for (Server s : builder.getServers()) {
-                for (User u : s.getUser()) {
-                    if (u.getId().equals(jsonData.getString("id"))) {
-                        u.setDescription(jsonData.getString("description"));
-                        builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
-                        builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
-                        if (!builder.getPersonalUser().getId().equals(u.getId())) {
-                            Platform.runLater(() -> builder.getSpotifyConnection().updateValuesUser(u.getDescription()));
-                        }
-                    }
-                }
-            }
-            for (User u : builder.getPersonalUser().getUser()) {
-                if (u.getId().equals(jsonData.getString("id"))) {
-                    u.setDescription(jsonData.getString("description"));
-                    privateViewController.getOnlineUsersList().refresh();
-                }
-            }
             updateUserDescription(jsonData);
         } else {
             String userName = jsonData.getString("name");
@@ -158,18 +140,32 @@ public class PrivateSystemWebSocketClient extends Endpoint {
     }
 
     private void updateUserDescription(JsonObject jsonData) {
-        for (Server s : builder.getServers()) { //updates ServerUsers and ListViews
-            for (User u : s.getUser()) {
-                if (u.getId().equals(jsonData.getString("id"))) {
-                    u.setDescription(jsonData.getString("description"));
-                    builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
-                }
-            }
+        for (Server s : builder.getServers()) {
+            updateServerUser(jsonData, s);
         }
-        for (User u : builder.getPersonalUser().getUser()) {    //updates privateChatUsers and ListView
+        updatePrivateChatUser(jsonData);
+    }
+
+    private void updatePrivateChatUser(JsonObject jsonData) {
+        for (User u : builder.getPersonalUser().getUser()) {
             if (u.getId().equals(jsonData.getString("id"))) {
                 u.setDescription(jsonData.getString("description"));
                 privateViewController.getOnlineUsersList().refresh();
+                break;
+            }
+        }
+    }
+
+    private void updateServerUser(JsonObject jsonData, Server server) {
+        for (User u : server.getUser()) {
+            if (u.getId().equals(jsonData.getString("id"))) {
+                u.setDescription(jsonData.getString("description"));
+                builder.getHomeViewController().getServerCtrls().get(server).getOnlineUsersList().refresh();
+                builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
+                if (!builder.getPersonalUser().getId().equals(u.getId())) {
+                    Platform.runLater(() -> builder.getSpotifyConnection().updateValuesUser(u.getDescription()));
+                }
+                break;
             }
         }
     }

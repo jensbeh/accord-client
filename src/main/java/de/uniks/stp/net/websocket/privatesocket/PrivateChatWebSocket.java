@@ -174,19 +174,16 @@ public class PrivateChatWebSocket extends Endpoint {
         long timestamp = new Date().getTime();
         if (jsonObject.getString("from").equals(builder.getPersonalUser().getName())) {
             channelName = jsonObject.getString("to");
-            message = new Message().setMessage(jsonObject.getString("message")).
-                    setFrom(jsonObject.getString("from")).
-                    setTimestamp(timestamp);
             privateViewController.getChatViewController().clearMessageField();
         } else { // currentUser received
             channelName = jsonObject.getString("from");
             if (isBlocked(channelName)) { // if user is blocked, block the message
                 return;
             }
-            message = new Message().setMessage(jsonObject.getString("message")).
-                    setFrom(jsonObject.getString("from")).
-                    setTimestamp(timestamp);
         }
+        message = new Message().setMessage(jsonObject.getString("message")).
+                setFrom(jsonObject.getString("from")).
+                setTimestamp(timestamp);
         boolean newChat = checkIfNewChat(channelName, message);
         if (newChat) {
             createNewChat(channelName, message);
@@ -202,18 +199,26 @@ public class PrivateChatWebSocket extends Endpoint {
             if (channel.getName().equals(channelName)) {
                 channel.withMessage(message);
                 if (!builder.isDoNotDisturb() && (builder.getCurrentPrivateChat() == null || channel != builder.getCurrentPrivateChat())) {
-                    if (builder.isPlaySound()) {
-                        builder.playSound();
-                    }
-                    if (builder.isShowNotifications()) {
-                        channel.setUnreadMessagesCounter(channel.getUnreadMessagesCounter() + 1);
-                    }
+                    playSound();
+                    updateUnreadCounter(channel, channel.getUnreadMessagesCounter() + 1);
                 }
                 privateViewController.getPrivateChatList().refresh();
                 return false;
             }
         }
         return true;
+    }
+
+    private void playSound() {
+        if (builder.isPlaySound()) {
+            builder.playSound();
+        }
+    }
+
+    private void updateUnreadCounter(PrivateChat channel, int count) {
+        if (builder.isShowNotifications()) {
+            channel.setUnreadMessagesCounter(count);
+        }
     }
 
     private void createNewChat(String channelName, Message message) {
@@ -229,12 +234,8 @@ public class PrivateChatWebSocket extends Endpoint {
             channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
             channel.withMessage(message);
             if (!builder.isDoNotDisturb()) {
-                if (builder.isPlaySound()) {
-                    builder.playSound();
-                }
-                if (builder.isShowNotifications()) {
-                    channel.setUnreadMessagesCounter(1);
-                }
+                playSound();
+                updateUnreadCounter(channel, 1);
             }
             builder.getPersonalUser().withPrivateChat(channel);
             Platform.runLater(() -> privateViewController.getPrivateChatList().getItems().add(channel));
@@ -243,6 +244,7 @@ public class PrivateChatWebSocket extends Endpoint {
             e.printStackTrace();
         }
     }
+
 
     private void saveMessage(Message message) {
         if (builder.getPersonalUser().getName().equals(message.getFrom())) {
