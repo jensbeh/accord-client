@@ -12,7 +12,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
@@ -307,13 +309,37 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
-            // disconnect from audioChannel
-            if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+            if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
+                ResourceBundle lang = StageManager.getLangBundle();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                alert.setTitle(lang.getString("label.error"));
+                alert.setHeaderText(lang.getString("label.alertDefaultCha"));
+                setAlertStyle(alert);
+
+            } else {
+                // disconnect from audioChannel
+                if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                }
+                restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                });
             }
-            restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-            });
+
         }
+    }
+
+    public void setAlertStyle(Alert alert) {
+        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
+        buttonBar.getButtons().get(0).setId("okButton");
+        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
+        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+        if (builder.getTheme().equals("Bright")) {
+            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+        } else {
+            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+        }
+        alert.getDialogPane().getStyleClass().add("AlertStyle");
+        alert.showAndWait();
     }
 
     public String[] userListToStringArray(List<User> users) {

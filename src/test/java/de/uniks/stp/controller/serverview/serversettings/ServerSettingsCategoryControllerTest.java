@@ -435,4 +435,26 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             }
         }
     }
+
+    @Test
+    public void deleteDefaultCategoryTest() throws InterruptedException{
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        clickOn("#categoryBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ComboBox<Categories> categoriesSelector = lookup("#editCategoriesSelector").query();
+        clickOn(categoriesSelector);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn(categoriesSelector.getItems().get(0).getName());
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#deleteCategoryButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#okButton");
+
+    }
 }

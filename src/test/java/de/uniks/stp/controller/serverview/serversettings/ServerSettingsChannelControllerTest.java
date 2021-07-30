@@ -133,7 +133,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -537,5 +537,31 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void deleteDefaultChannelTest() throws InterruptedException{
+        loginInit(false);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        clickOn("#channelBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ComboBox<Categories> categorySelector = lookup("#categorySelector").query();
+        clickOn(categorySelector);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn(categorySelector.getItems().get(0).getName());
+        WaitForAsyncUtils.waitForFxEvents();
+        ComboBox<ServerChannel> editChannelsSelector = lookup("#editChannelsSelector").query();
+        clickOn(editChannelsSelector);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn(editChannelsSelector.getItems().get(0).getName());
+        clickOn("#channelDeleteButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#okButton");
+
     }
 }

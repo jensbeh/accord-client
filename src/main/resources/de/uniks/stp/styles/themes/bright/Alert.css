@@ -18,3 +18,7 @@
     -fx-text-fill: BLACK;
     -fx-alignment: TOP_CENTER;
 }
+
+#okButton {
+    -fx-background-color: #7da6df;
+}
