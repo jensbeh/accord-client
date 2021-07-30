@@ -99,9 +99,6 @@ public class MessageView {
             userName.setText((formatterTime.format(date)));
 
             message = handleEmojis("system");
-            //Message background
-            message.getStyleClass().clear();
-            message.getStyleClass().add("messageLabelSystem");
         }
         else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
@@ -130,9 +127,9 @@ public class MessageView {
             String str = null;
             if (messageIsInfo) {
                 if (item.getMessage().endsWith("#arrival")) {
-                    str = ":white_check_mark: " + item.getFrom() + " arrived to the Server";
+                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " arrived to the Server");
                 } else if(item.getMessage().endsWith("#exit")) {
-                    str = ":no_entry: " + item.getFrom() + " left the Server";
+                    str = handleSpacing(":no_entry: " + item.getFrom() + " left the Server");
                 }
             } else {
                 str = handleSpacing(textMessage);
@@ -156,7 +153,14 @@ public class MessageView {
 
         //Message background
         Polygon polygon = new Polygon();
-        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+        if(messageIsInfo) {
+            polygon.getStyleClass().add("messagePolygonSystem");
+            messageBox.setId("messageBoxSystem");
+            polygon.getPoints().addAll(0.0, 0.0,
+                    10.0, 0.0,
+                    10.0, 10.0);
+            finalMessageBox.getChildren().addAll(polygon, messageBox);
+        } else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             polygon.getStyleClass().add("messagePolygonCurrentUser");
             messageBox.setId("messageBoxCurrentUser");
             polygon.getPoints().addAll(0.0, 0.0,
