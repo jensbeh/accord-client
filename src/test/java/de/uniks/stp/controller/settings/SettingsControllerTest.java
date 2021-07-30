@@ -364,11 +364,15 @@ public class SettingsControllerTest extends ApplicationTest {
         loginInit();
         clickOn("#settingsButton");
         clickOn("#button_Audio");
+
+        ProgressBar micProgress = lookup("#progressBar_microphone").query();
+        mockApp.getBuilder().setMicrophoneFirstMuted(true);
         mockApp.getBuilder().getAudioController().setMicrophone(microphone);
         byte[] data = new byte[1024];
 
         when(microphone.readData()).thenReturn(data);
         clickOn("#button_audioStart");
+        Assert.assertEquals(micProgress.getProgress(), 0, 0.001);
         clickOn("#button_audioStart");
 
         Slider volumeOutput = lookup("#slider_volumeOutput").query();
@@ -379,8 +383,9 @@ public class SettingsControllerTest extends ApplicationTest {
             data[i] += i;
         }
         when(microphone.readData()).thenReturn(data);
-
+        double test = 0.74;
         clickOn("#button_audioStart");
+        Assert.assertEquals(micProgress.getProgress(), test, 0.001);
         clickOn("#button_audioStart");
         // set input volume
         WaitForAsyncUtils.waitForFxEvents();
