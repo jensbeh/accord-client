@@ -10,7 +10,9 @@ import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -45,6 +47,8 @@ public class ServerSettingsChannelController extends SubSetting {
     private VBox root;
     private Label radioVoice;
     private Label radioText;
+    private Stage stage;
+    private Button okButton;
 
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
@@ -159,6 +163,14 @@ public class ServerSettingsChannelController extends SubSetting {
         editChannelsSelector.setOnAction(null);
         channelChangeButton.setOnAction(null);
         channelDeleteButton.setOnAction(null);
+
+        if (okButton != null) {
+            this.okButton.setOnAction(null);
+        }
+        if (stage != null ){
+            this.stage.close();
+            stage = null;
+        }
 
 
         if (selectedCategory != null) {
@@ -310,11 +322,28 @@ public class ServerSettingsChannelController extends SubSetting {
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
             if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
-                ResourceBundle lang = StageManager.getLangBundle();
-                Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-                alert.setTitle(lang.getString("label.error"));
-                alert.setHeaderText(lang.getString("label.alertDefaultCha"));
-                setAlertStyle(alert);
+                try {
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+                    stage = new Stage();
+                    Scene scene = new Scene(root);
+                    stage.setTitle(lang.getString("label.error"));
+                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+                    stage.setScene(scene);
+                    stage.show();
+                    okButton = (Button) root.lookup("#okButton");
+                    okButton.setText("OK");
+                    okButton.setOnAction(this::closeStage);
+                    if (builder.getTheme().equals("Bright")) {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                    } else {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                    }
+                    Label errorLabel = (Label) root.lookup("#errorLabel");
+                    errorLabel.setText(lang.getString("label.alertDefaultCha"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             } else {
                 // disconnect from audioChannel
@@ -328,18 +357,8 @@ public class ServerSettingsChannelController extends SubSetting {
         }
     }
 
-    public void setAlertStyle(Alert alert) {
-        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        buttonBar.getButtons().get(0).setId("okButton");
-        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
-        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-        if (builder.getTheme().equals("Bright")) {
-            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-        } else {
-            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-        }
-        alert.getDialogPane().getStyleClass().add("AlertStyle");
-        alert.showAndWait();
+    private void closeStage(ActionEvent actionEvent) {
+        stage.close();
     }
 
     public String[] userListToStringArray(List<User> users) {

@@ -22,3 +22,11 @@
 #okButton {
     -fx-background-color: #ff9999;
 }
+
+#errorLabel {
+    -fx-text-fill: WHITE;
+}
+
+#errorVbox {
+    -fx-background-color: #2f3136;
+}

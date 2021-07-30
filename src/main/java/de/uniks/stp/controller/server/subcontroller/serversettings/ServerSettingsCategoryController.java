@@ -9,7 +9,9 @@ import de.uniks.stp.net.RestClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
@@ -18,6 +20,7 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -33,6 +36,8 @@ public class ServerSettingsCategoryController extends SubSetting {
     private TextField createCategoryNameTextField;
     private Button createCategoryButton;
     private VBox root;
+    private Stage stage;
+    private Button okButton;
 
     private final Server currentServer;
     private Categories selectedCategory;
@@ -127,11 +132,28 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
             if (builder.getCurrentServer().getCategories().get(0) == selectedCategory) {
-                ResourceBundle lang = StageManager.getLangBundle();
-                Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-                alert.setTitle(lang.getString("label.error"));
-                alert.setHeaderText(lang.getString("label.alertDefaultCat"));
-                setAlertStyle(alert);
+                try {
+                    ResourceBundle lang = StageManager.getLangBundle();
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+                    stage = new Stage();
+                    Scene scene = new Scene(root);
+                    stage.setTitle(lang.getString("label.error"));
+                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+                    stage.setScene(scene);
+                    stage.show();
+                    okButton = (Button) root.lookup("#okButton");
+                    okButton.setText("OK");
+                    okButton.setOnAction(this::closeStage);
+                    if (builder.getTheme().equals("Bright")) {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                    } else {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                    }
+                    Label errorLabel = (Label) root.lookup("#errorLabel");
+                    errorLabel.setText(lang.getString("label.alertDefaultCat"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
@@ -149,18 +171,8 @@ public class ServerSettingsCategoryController extends SubSetting {
         }
     }
 
-    public void setAlertStyle(Alert alert) {
-        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        buttonBar.getButtons().get(0).setId("okButton");
-        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
-        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-        if (builder.getTheme().equals("Bright")) {
-            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-        } else {
-            alert.getDialogPane().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-        }
-        alert.getDialogPane().getStyleClass().add("AlertStyle");
-        alert.showAndWait();
+    private void closeStage(ActionEvent actionEvent) {
+        stage.close();
     }
 
     /**
@@ -191,6 +203,13 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.deleteCategoryButton.setOnMouseClicked(null);
         this.createCategoryButton.setOnMouseClicked(null);
         this.categoriesSelector.setOnAction(null);
+        if (okButton != null) {
+            this.okButton.setOnAction(null);
+        }
+        if (stage != null ){
+            this.stage.close();
+            stage = null;
+        }
     }
 
     public void setTheme() {
