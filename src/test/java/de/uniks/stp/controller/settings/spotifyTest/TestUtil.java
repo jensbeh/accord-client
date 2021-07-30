@@ -1,14 +1,12 @@
 package de.uniks.stp.controller.settings.spotifyTest;
 
 import com.wrapper.spotify.IHttpManager;
-import com.wrapper.spotify.SpotifyApi;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;

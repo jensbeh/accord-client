@@ -274,10 +274,9 @@ public class SpotifyConnection {
 
     public void showSpotifyPopupView(HBox cell, Boolean isPersonalUser, String userDescription) {
         this.isPersonalUser = isPersonalUser;
-        Parent root = null;
+        Parent root;
         try {
             root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")));
-            VBox spotifyRoot = (VBox) root.lookup("spotifyRoot");
             spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
             bandAndSong = (Label) root.lookup("#bandAndSong");
             timePlayed = (Label) root.lookup("#timePlayed");
@@ -290,24 +289,17 @@ public class SpotifyConnection {
                 updateValuesUser(userDescription);
             }
 
-            HBox hBox = cell;
-//            if (mouseEvent.getSource() instanceof VBox) {
-//                hBox = (HBox) ((VBox) mouseEvent.getSource()).getChildren().get(0);
-//            } else {
-//                hBox = (HBox) mouseEvent.getSource();
-//            }
-
-            hBox.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 10 10 0; -fx-padding: 5 5 5 5;");
-            Bounds bounds = (hBox.localToScreen(hBox.getBoundsInLocal()));
+            cell.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 10 10 0; -fx-padding: 5 5 5 5;");
+            Bounds bounds = (cell.localToScreen(cell.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
             double y = bounds.getMinY();
 
             final Stage dialog = new Stage();
-            dialog.initOwner(hBox.getScene().getWindow());
+            dialog.initOwner(cell.getScene().getWindow());
             dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
                 if (!isNowFocused) {
                     dialog.close();
-                    hBox.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10; -fx-padding: 5 5 5 5;");
+                    cell.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10; -fx-padding: 5 5 5 5;");
                     builder.getSpotifyConnection().stopPersonalScheduler();
                 }
             });
@@ -331,15 +323,13 @@ public class SpotifyConnection {
             artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
             builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
             schedulerDescription = Executors.newScheduledThreadPool(1);
-            schedulerDescription.scheduleAtFixedRate(new Runnable() {
-                public void run() {
-                    currentSong = getCurrentlyPlayingSong();
-                    String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-                    artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-                    if (builder.isSpotifyShow()) {
-                        builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-                        System.out.println(builder.getPersonalUser().getDescription());
-                    }
+            schedulerDescription.scheduleAtFixedRate(() -> {
+                currentSong = getCurrentlyPlayingSong();
+                String albumID1 = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+                artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID1);
+                if (builder.isSpotifyShow()) {
+                    builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                    System.out.println(builder.getPersonalUser().getDescription());
                 }
             }, 0, 15, TimeUnit.SECONDS);
         }
@@ -357,12 +347,10 @@ public class SpotifyConnection {
             if (currentlyPlayingContext.getIs_playing() && isPersonalUser) {
                 scheduler = Executors.newScheduledThreadPool(1);
                 handle = scheduler.scheduleAtFixedRate(updatePersonalUserViewRunnable, 0, 1, TimeUnit.SECONDS);
-                scheduler.schedule(new Runnable() {
-                    public void run() {
-                        handle.cancel(true);
-                        scheduler.shutdown();
-                        personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
-                    }
+                scheduler.schedule(() -> {
+                    handle.cancel(true);
+                    scheduler.shutdown();
+                    personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
                 }, timeToPlayLeft, TimeUnit.MILLISECONDS);
             }
         }
@@ -388,7 +376,7 @@ public class SpotifyConnection {
     }
 
     private void formatTime(int elapsed, int duration) {
-        int intElapsed = (int) Math.floor(elapsed / 1000);
+        int intElapsed = (int) Math.floor(elapsed / 1000.0);
         int elapsedHours = intElapsed / (60 * 60);
         if (elapsedHours > 0) {
             intElapsed -= elapsedHours * 60 * 60;
@@ -397,7 +385,7 @@ public class SpotifyConnection {
         int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
 
         if (duration > 0) {
-            int intDuration = (int) Math.floor(duration / 1000);
+            int intDuration = (int) Math.floor(duration / 1000.0);
             int durationHours = intDuration / (60 * 60);
             if (durationHours > 0) {
                 intDuration -= durationHours * 60 * 60;
