@@ -97,6 +97,12 @@
     -fx-background-color: #36393f;
 }
 
+#messageBoxSystem {
+    -fx-background-color: #bc84e0;
+    -fx-background-radius: 0 4 4 4;
+    -fx-padding: 5 5 5 5;
+}
+
 #messageBoxCurrentUser {
     -fx-background-color: #ff9999;
     -fx-background-radius: 4 0 4 4;
@@ -107,6 +113,10 @@
     -fx-background-color: WHITE;
     -fx-background-radius: 0 4 4 4;
     -fx-padding: 5 5 5 5;
+}
+
+.messagePolygonSystem {
+    -fx-fill: #bc84e0;
 }
 .messagePolygonCurrentUser {
     -fx-fill: #ff9999;
@@ -119,9 +129,6 @@
     -fx-text-fill: WHITE;
     -fx-background-color: #36393f;
 }
-
-
-
 
 #messageBox {
     -fx-background-color: #36393f;
