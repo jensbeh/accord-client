@@ -723,6 +723,9 @@ public class ServerViewController {
 
         if (chatViewController != null)
             chatViewController.onLanguageChanged();
+
+        if (userProfileController != null)
+            userProfileController.onLanguageChanged();
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {

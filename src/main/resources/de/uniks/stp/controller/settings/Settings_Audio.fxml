@@ -11,7 +11,7 @@
             <children>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                     <children>
-                        <Label id="label_input" text="Input">
+                        <Label id="label_input" text="%label.audio_input">
                             <font>
                                 <Font size="16.0"/>
                             </font>
@@ -21,7 +21,7 @@
                 </VBox>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                     <children>
-                        <Label id="label_output" text="Output">
+                        <Label id="label_output" text="%label.audio_output">
                             <font>
                                 <Font size="16.0"/>
                             </font>
@@ -35,7 +35,7 @@
             <children>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="233.0" spacing="10.0">
                     <children>
-                        <Label id="label_volumeInput" text="Volume Input">
+                        <Label id="label_volumeInput" text="%label.audio_volume_input">
                             <font>
                                 <Font size="16.0"/>
                             </font>
@@ -45,7 +45,7 @@
                 </VBox>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="233.0" spacing="10.0">
                     <children>
-                        <Label id="label_volumeOutput" text="Volume Output">
+                        <Label id="label_volumeOutput" text="%label.audio_volume_output">
                             <font>
                                 <Font size="16.0"/>
                             </font>
@@ -57,14 +57,14 @@
         </HBox>
         <VBox prefHeight="119.0" prefWidth="584.0" spacing="20.0">
             <children>
-                <Label id="label_microphoneCheck" text="Microphone Check">
+                <Label id="label_microphoneCheck" text="%label.audio_microphone_check">
                     <font>
                         <Font size="16.0"/>
                     </font>
                 </Label>
                 <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                     <children>
-                        <Button id="button_audioStart" mnemonicParsing="false" text="Start"/>
+                        <Button id="button_audioStart" mnemonicParsing="false" text="%button.audio_start"/>
                         <ProgressBar id="progressBar_microphone" prefHeight="18.0" prefWidth="319.0" progress="0.0"/>
                     </children>
                     <padding>

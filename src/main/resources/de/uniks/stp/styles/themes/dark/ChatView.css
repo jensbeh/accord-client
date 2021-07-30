@@ -125,6 +125,10 @@
     -fx-padding: 5 5 5 5;
 }
 
+.messagePolygonSystem {
+    -fx-fill: #bc84e0;
+}
+
 .messagePolygonCurrentUser {
     -fx-fill: #ff9999;
 }

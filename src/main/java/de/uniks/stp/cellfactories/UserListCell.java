@@ -1,5 +1,6 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;
@@ -11,6 +12,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+
+import java.util.ResourceBundle;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
@@ -79,7 +82,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     circle.setFill(Paint.valueOf("#13d86b"));
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
                         game.setText(item.getDescription());
-                        game.setText("   plays " + item.getDescription().substring(1));
+                        game.setText("   " + StageManager.getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
                         game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
                         game.setPrefWidth(135);
                         vBox.getChildren().addAll(name, game);
@@ -174,6 +177,10 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
+            ResourceBundle lang = StageManager.getLangBundle();
+            block.setText(lang.getString("menuItem.block"));
+            unblock.setText(lang.getString("menuItem.unblock"));
+
             boolean isBlocked = false;
             for (User user : builder.getBlockedUsers()) {
                 if (user.getId().equals(item.getId())) {

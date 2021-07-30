@@ -1,5 +1,6 @@
 package de.uniks.stp.controller.settings.subcontroller;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -25,7 +26,7 @@ public class SteamLoginController {
         webView.getEngine().load("https://steamcommunity.com/login/home/?goto=");
         webView.getEngine().locationProperty().addListener(this::getSteam64ID);
         popUp.setScene(new Scene(webView));
-        popUp.setTitle("Steam Login");
+        popUp.setTitle(StageManager.getLangBundle().getString("window_title_steam"));
         popUp.show();
     }
 

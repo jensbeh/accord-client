@@ -653,6 +653,12 @@ public class ChatViewController {
             editButton.setText(lang.getString("button.edit"));
         if (abortButton != null)
             abortButton.setText(lang.getString("button.abort"));
+
+        // for translating the blocking info
+        checkBlocked();
+
+        // set theme to refresh chat view
+        StageManager.setTheme();
     }
 
     public void stop() {
@@ -720,7 +726,7 @@ public class ChatViewController {
         messageTextField.setDisable(true);
         emojiButton.setDisable(true);
         sendButton.setDisable(true);
-        messageTextField.setText("Unblock to keep chatting with " + user.getName());
+        messageTextField.setText(StageManager.getLangBundle().getString("textField.unblock_info") + " " + user.getName());
     }
 
     public void setTheme() {

@@ -12,7 +12,7 @@
 
 <VBox id="spotifyRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #1db954; -fx-background-radius: 10 0 10 10;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label text="Listening to Spotify" textFill="WHITE">
+      <Label id="spotifyHeaderLabel" text="%label.spotifyHeaderLabel" textFill="WHITE">
          <font>
             <Font name="System Bold" size="17.0" />
          </font>
@@ -26,7 +26,7 @@
                <effect>
                   <DropShadow />
                </effect></ImageView>
-            <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0" prefWidth="90.0" text="No Song is playing" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
+            <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0" prefWidth="90.0" text="%label.no_song_playing" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
