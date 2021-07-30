@@ -23,12 +23,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 
@@ -87,7 +92,9 @@ public class PrivateViewController {
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
-        onlineUsersList.setCellFactory(new UserListCell(builder));
+        UserListCell userListCell = new UserListCell(builder);
+        userListCell.setRoot(root);
+        onlineUsersList.setCellFactory(userListCell);
         this.onlineUsersList.setOnMouseReleased(this::onOnlineUsersListClicked);
         welcomeToAccord = (Label) view.lookup("#welcomeToAccord");
         showCurrentUser();
@@ -100,6 +107,7 @@ public class PrivateViewController {
         privateChatWebSocket.setBuilder(builder);
         privateChatWebSocket.setPrivateViewController(this);
         builder.setPrivateChatWebSocketClient(privateChatWebSocket);
+        builder.setHandleMicrophoneHeadphone(this::handleMicrophoneHeadphone);
     }
 
     private void startWebSocketConnection() {
@@ -243,6 +251,11 @@ public class PrivateViewController {
         microphoneLabel.setVisible(true);
         builder.muteHeadphones(true);
         builder.muteMicrophone(true);
+    }
+
+    public void handleMicrophoneHeadphone() {
+        headphoneLabel.setVisible(builder.getMuteHeadphones());
+        microphoneLabel.setVisible(builder.getMuteMicrophone());
     }
 
     /**
@@ -410,6 +423,7 @@ public class PrivateViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        builder.setHandleMicrophoneHeadphone(null);
     }
 
     public ListView<User> getOnlineUsersList() {

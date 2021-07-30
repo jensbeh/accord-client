@@ -152,6 +152,9 @@ public class ServerViewControllerTest extends ApplicationTest {
         AudioStreamClient.setAddress(inetAddress);
 
         builder.setLoadUserData(false);
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
         builder.getAudioStreamClient();
         app.start(stage);
         stage.centerOnScreen();
@@ -216,6 +219,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         JSONObject member = new JSONObject();
         member.put("id", "60ad230ac77d3f78988b3e5b")
                 .put("name", "Peter Lustig")
+                .put("description", "Test")
                 .put("online", true);
         members.put(member);
         JSONObject jsonString = new JSONObject()
@@ -486,7 +490,7 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description","")).toString();
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "5e2fbd8770dd077d03df505").put("name", "Natasha Yar").put("description", "test")).toString();
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         serverSystemWebSocket.handleMessage(jsonObject);
 

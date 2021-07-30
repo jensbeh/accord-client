@@ -6,6 +6,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -59,6 +60,7 @@ public class HomeViewController {
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
+    private SpotifyConnection spotifyConnection;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -107,7 +109,6 @@ public class HomeViewController {
         });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
-        this.builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::updateDescription);
         if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
             builder.getGame();
         }
@@ -138,16 +139,18 @@ public class HomeViewController {
                 }
             }
         });
-    }
 
-    private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
-        builder.getRestClient().updateDescribtion(builder.getPersonalUser().getId(), builder.getPersonalUser().getDescription(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            if (!body.getObject().getString("status").equals("success")) {
-                System.err.println("Error in updateDescription");
-                System.err.println(body);
-            }
-        });
+        if (builder.getSpotifyConnection() == null) {
+            spotifyConnection = new SpotifyConnection(builder);
+        }
+        builder.getSpotifyConnection().refreshToken();
+        if (builder.getSpotifyToken() != null) {
+            builder.getSpotifyConnection().updateUserDescriptionScheduler();
+        }
+
+        if (builder.getSteamToken() != null) {
+            builder.getGame();
+        }
     }
 
     /**
@@ -435,6 +438,7 @@ public class HomeViewController {
         logoutButton.setOnAction(null);
         builder.saveSettings();
         builder.stopGame();
+        builder.setHandleMicrophoneHeadphone(null);
         if (stage != null) {
             this.stage.close();
             stage = null;
