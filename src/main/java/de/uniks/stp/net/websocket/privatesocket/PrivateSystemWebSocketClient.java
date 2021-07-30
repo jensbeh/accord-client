@@ -114,6 +114,24 @@ public class PrivateSystemWebSocketClient extends Endpoint {
         String userAction = jsonMsg.getString("action");
         JsonObject jsonData = jsonMsg.getJsonObject("data");
         if (userAction.equals("userDescriptionChanged")) {
+            for (Server s : builder.getServers()) {
+                for (User u : s.getUser()) {
+                    if (u.getId().equals(jsonData.getString("id"))) {
+                        u.setDescription(jsonData.getString("description"));
+                        builder.getHomeViewController().getServerCtrls().get(s).getOnlineUsersList().refresh();
+                        builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
+                        if (!builder.getPersonalUser().getId().equals(u.getId())) {
+                            Platform.runLater(() -> builder.getSpotifyConnection().updateValuesUser(u.getDescription()));
+                        }
+                    }
+                }
+            }
+            for (User u : builder.getPersonalUser().getUser()) {
+                if (u.getId().equals(jsonData.getString("id"))) {
+                    u.setDescription(jsonData.getString("description"));
+                    privateViewController.getOnlineUsersList().refresh();
+                }
+            }
             updateUserDescription(jsonData);
         } else {
             String userName = jsonData.getString("name");

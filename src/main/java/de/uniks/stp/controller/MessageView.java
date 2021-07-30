@@ -50,11 +50,16 @@ public class MessageView {
     }
 
     public void updateItem(Message item) {
+        boolean messageIsInfo = false;
         boolean loadImage;
         boolean loadVideo;
         StackPane cell = new StackPane();
         cell.setId("messageCell");
         //Background for the messages
+
+        if (item.getMessage().endsWith("#arrival") || item.getMessage().endsWith("#exit")) {
+            messageIsInfo = true;
+        }
 
         VBox vbox = new VBox();
         Label userName = new Label();
@@ -89,16 +94,22 @@ public class MessageView {
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
         }
 
-        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+        if(messageIsInfo) {
+            vbox.setAlignment(Pos.CENTER_LEFT);
+            userName.setText((formatterTime.format(date)));
+
+            message = handleEmojis("system");
+        }
+        else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis(true);
+            message = handleEmojis("self");
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis(false);
+            message = handleEmojis("other");
         }
         Text textToCalculateWidth = new Text(textMessage);
         if (!textMessage.equals("")) {
@@ -113,7 +124,16 @@ public class MessageView {
                 message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
                 message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
             }
-            String str = handleSpacing(textMessage);
+            String str = null;
+            if (messageIsInfo) {
+                if (item.getMessage().endsWith("#arrival")) {
+                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " arrived to the Server");
+                } else if(item.getMessage().endsWith("#exit")) {
+                    str = handleSpacing(":no_entry: " + item.getFrom() + " left the Server");
+                }
+            } else {
+                str = handleSpacing(textMessage);
+            }
             message.parseAndAppend(str);
         }
 
@@ -133,7 +153,14 @@ public class MessageView {
 
         //Message background
         Polygon polygon = new Polygon();
-        if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+        if(messageIsInfo) {
+            polygon.getStyleClass().add("messagePolygonSystem");
+            messageBox.setId("messageBoxSystem");
+            polygon.getPoints().addAll(0.0, 0.0,
+                    10.0, 0.0,
+                    10.0, 10.0);
+            finalMessageBox.getChildren().addAll(polygon, messageBox);
+        } else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             polygon.getStyleClass().add("messagePolygonCurrentUser");
             messageBox.setId("messageBoxCurrentUser");
             polygon.getPoints().addAll(0.0, 0.0,
@@ -175,32 +202,27 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlow handleEmojis(boolean isUser) {
-        if (isUser) {
-            EmojiTextFlowParameters emojiTextFlowParameters;
-            {
-                emojiTextFlowParameters = new EmojiTextFlowParameters();
-                emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                if (builder.getTheme().equals("Dark")) {
-                    emojiTextFlowParameters.setTextColor(Color.BLACK);
-                } else {
-                    emojiTextFlowParameters.setTextColor(Color.WHITE);
-                }
-            }
-            return new EmojiTextFlow(emojiTextFlowParameters);
-        } else {
-            EmojiTextFlowParameters emojiTextFlowParameters;
-            {
-                emojiTextFlowParameters = new EmojiTextFlowParameters();
-                emojiTextFlowParameters.setEmojiScaleFactor(1D);
-                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
-                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-                emojiTextFlowParameters.setTextColor(Color.BLACK);
-            }
-            return new EmojiTextFlow(emojiTextFlowParameters);
+    private EmojiTextFlow handleEmojis(String type) {
+        EmojiTextFlowParameters emojiTextFlowParameters;
+        {
+            emojiTextFlowParameters = new EmojiTextFlowParameters();
+            emojiTextFlowParameters.setEmojiScaleFactor(1D);
+            emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+            emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
         }
+        if (type.equals("system")) {
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
+        }
+        else if (type.equals("self")) {
+            if (builder.getTheme().equals("Dark")) {
+                emojiTextFlowParameters.setTextColor(Color.BLACK);
+            } else {
+                emojiTextFlowParameters.setTextColor(Color.WHITE);
+            }
+        } else {
+            emojiTextFlowParameters.setTextColor(Color.BLACK);
+        }
+        return new EmojiTextFlow(emojiTextFlowParameters);
     }
 
     private String handleSpacing(String str) {

@@ -130,6 +130,9 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         StageManager.setRestClient(restClient);
 
         builder.setLoadUserData(false);
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
@@ -353,10 +356,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             }
         }
 
-        clickOn(categoriesSelector);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        clickOn(newCategory.getName());
+        Platform.runLater(() -> categoriesSelector.getSelectionModel().select(1));
         WaitForAsyncUtils.waitForFxEvents();
 
         categoryNameTextField.setText("NewCategoryName");
@@ -393,10 +393,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         assert currentServer != null;
         Assert.assertTrue(currentServer.getCategories().contains(newCategory));
 
-        clickOn(categoriesSelector);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        clickOn(newCategory.getName());
+        Platform.runLater(() -> categoriesSelector.getSelectionModel().select(1));
         WaitForAsyncUtils.waitForFxEvents();
 
         jsonString = new JSONObject()
@@ -419,7 +416,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         serverSystemWebSocket.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
-        categoriesSelector = lookup("#editCategoriesSelector").query();
+//        categoriesSelector = lookup("#editCategoriesSelector").query();
         Assert.assertFalse(builder.getCurrentServer().getCategories().contains(newCategory));
 
         Assert.assertFalse(categoriesSelector.getItems().contains(newCategory));
@@ -431,5 +428,25 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 break;
             }
         }
+    }
+
+    @Test
+    public void deleteDefaultCategoryTest() throws InterruptedException {
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        clickOn("#categoryBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ComboBox<Categories> categoriesSelector = lookup("#editCategoriesSelector").query();
+        Platform.runLater(() -> categoriesSelector.getSelectionModel().select(0));
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#deleteCategoryButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#okButton");
+
     }
 }

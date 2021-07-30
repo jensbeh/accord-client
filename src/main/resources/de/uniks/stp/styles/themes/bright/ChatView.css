@@ -80,6 +80,11 @@
     -fx-padding: 1;
 }
 
+#messageBoxSystem {
+    -fx-background-color: #bc84e0;
+    -fx-background-radius: 0 4 4 4;
+    -fx-padding: 5 5 5 5;
+}
 
 #messageBoxCurrentUser {
     -fx-background-color: #7da6df;
@@ -93,6 +98,9 @@
     -fx-padding: 5 5 5 5;
 }
 
+.messagePolygonSystem {
+    -fx-fill: #bc84e0;
+}
 .messagePolygonCurrentUser {
     -fx-fill: #7da6df;
 }

@@ -18,3 +18,15 @@
     -fx-text-fill: BLACK;
     -fx-alignment: TOP_CENTER;
 }
+
+#okButton {
+    -fx-background-color: #7da6df;
+}
+
+#errorLabel {
+    -fx-text-fill: BLACK;
+}
+
+#errorVbox {
+    -fx-background-color: WHITE;
+}

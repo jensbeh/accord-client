@@ -150,7 +150,10 @@ public class ServerMessageTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);
+        builder.setLoadUserData(false);           
+        mockApp.getBuilder().setSpotifyShow(false);
+        mockApp.getBuilder().setSpotifyToken(null);
+        mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
@@ -212,7 +215,7 @@ public class ServerMessageTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner).put("categories", categories).put("members", members));
+                .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner+"I_AM_NOT_OWNER").put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -621,5 +624,56 @@ public class ServerMessageTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverChatWebSocket.handleMessage(jsonObject);
         Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
+    }
+
+    @Test
+    public void arrivalExitMessage() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        loginInit(true);
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String message = new JSONObject().put("action", "userArrived").put("data", new JSONObject().put("id", "60c8b3fb44453702009c0abc").put("name", "Visitor").put("online", true).put("description", "Test")).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", "60c8b3fb44453702009c0abc#arrival").put("from", "Visitor").put("id", "60c8b3fb44453702009c0abc").toString();
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("action", "userExited").put("data", new JSONObject().put("id", "60c8b3fb44453702009c0abc").put("name", "Visitor").put("online", true).put("description", "Test")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257999).put("text", "60c8b3fb44453702009c0abc#exit").put("from", "Visitor").put("id", "60c8b3fb44453702009c0abc").toString();
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
+        serverChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#serverMenuButton");
+        clickOn("#ServerSettings");
+        Thread.sleep(3000);
+        clickOn("#leaveServer");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

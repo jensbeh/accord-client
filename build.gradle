@@ -26,6 +26,7 @@ javafx {
 
 dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
     // https://mvnrepository.com/artifact/org.fulib/fulibScenarios
     fulibScenarios group: 'org.fulib', name: 'fulibScenarios', version: '1.7.0'
@@ -70,6 +71,8 @@ dependencies {
     //compile 'com.vdurmont:emoji-java:5.1.1'
 
     implementation name: 'JavaFXEmojiTextFlow_twemoji-1.0'
+
+    compile 'se.michaelthelin.spotify:spotify-web-api-java:6.5.4'
 
     // https://mvnrepository.com/artifact/org.sharegov/mjson
     compile group: 'org.sharegov', name: 'mjson', version: '1.3'
