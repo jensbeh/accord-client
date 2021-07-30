@@ -70,6 +70,7 @@ public class ModelBuilder {
     private Thread getSteamGame;
     private ObservableList<User> blockedUsers;
     private boolean isSteamRun;
+    private Runnable handleMicrophoneHeadphone;
     /////////////////////////////////////////
     //  Setter
     /////////////////////////////////////////
@@ -533,5 +534,13 @@ public class ModelBuilder {
 
     public boolean isSteamRun() {
         return isSteamRun;
+    }
+
+    public void setHandleMicrophoneHeadphone(Runnable handleMicrophoneHeadphone) {
+        this.handleMicrophoneHeadphone = handleMicrophoneHeadphone;
+    }
+
+    public Runnable getHandleMicrophoneHeadphone() {
+        return this.handleMicrophoneHeadphone;
     }
 }

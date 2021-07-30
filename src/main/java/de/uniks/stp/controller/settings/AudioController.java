@@ -159,12 +159,14 @@ public class AudioController extends SubSetting {
     }
 
     private void onMicrophoneTestStart(ActionEvent actionEvent) {
-        if (this.builder.getPersonalUser() != null) {
-            if (this.builder.getMuteHeadphones()) {
+        if (builder.getPersonalUser() != null) {
+            if (builder.getMuteHeadphones()) {
                 isMuted = true;
             } else {
                 isMuted = false;
-                this.builder.muteHeadphones(true);
+                builder.muteHeadphones(true);
+                builder.muteMicrophone(true);
+                handleMuteHeadphones();
             }
         }
         microphone = new Microphone(this.builder);
@@ -180,15 +182,26 @@ public class AudioController extends SubSetting {
 
     private void onMicrophoneTestStop(ActionEvent actionEvent) {
         senderActive = false;
-        if (this.builder.getPersonalUser() != null) {
+        if (builder.getPersonalUser() != null) {
             if (!isMuted) {
-                this.builder.muteHeadphones(false);
+                builder.muteHeadphones(false);
+                builder.muteMicrophone(false);
+                handleMuteHeadphones();
             }
         }
 
         stopRecord();
 
         microphoneTestChangeAction(true);
+    }
+
+    public void handleMuteHeadphones() {
+        if (builder.getMicrophoneFirstMuted()) {
+            builder.muteMicrophone(true);
+        }
+        if (builder.getHandleMicrophoneHeadphone() != null) {
+            builder.getHandleMicrophoneHeadphone().run();
+        }
     }
 
     private void microphoneTestChangeAction(Boolean stopTest) {
@@ -250,15 +263,15 @@ public class AudioController extends SubSetting {
             lSum = lSum + audioDatum;
         }
         double dAvg = lSum / audioData.length;
-        double sumMeanSquare = 0d;
+        double sumMeanSquare = 0;
 
         for (byte audioDatum : audioData) {
-            sumMeanSquare += Math.pow(audioDatum - dAvg, 2d);
+            sumMeanSquare += Math.pow(audioDatum - dAvg, 2);
         }
 
         double averageMeanSquare = sumMeanSquare / audioData.length;
 
-        return (int) (Math.pow(averageMeanSquare, 0.5d) + 0.5);
+        return (int) (Math.sqrt(averageMeanSquare) + 0.5);
     }
 
 }

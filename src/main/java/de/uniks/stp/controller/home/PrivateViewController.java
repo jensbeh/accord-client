@@ -100,6 +100,7 @@ public class PrivateViewController {
         privateChatWebSocket.setBuilder(builder);
         privateChatWebSocket.setPrivateViewController(this);
         builder.setPrivateChatWebSocketClient(privateChatWebSocket);
+        builder.setHandleMicrophoneHeadphone(this::handleMicrophoneHeadphone);
     }
 
     private void startWebSocketConnection() {
@@ -243,6 +244,11 @@ public class PrivateViewController {
         microphoneLabel.setVisible(true);
         builder.muteHeadphones(true);
         builder.muteMicrophone(true);
+    }
+
+    public void handleMicrophoneHeadphone() {
+        headphoneLabel.setVisible(builder.getMuteHeadphones());
+        microphoneLabel.setVisible(builder.getMuteMicrophone());
     }
 
     /**
@@ -410,6 +416,7 @@ public class PrivateViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        builder.setHandleMicrophoneHeadphone(null);
     }
 
     public ListView<User> getOnlineUsersList() {

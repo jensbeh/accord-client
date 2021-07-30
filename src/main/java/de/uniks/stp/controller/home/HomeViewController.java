@@ -426,6 +426,7 @@ public class HomeViewController {
         logoutButton.setOnAction(null);
         builder.saveSettings();
         builder.stopGame();
+        builder.setHandleMicrophoneHeadphone(null);
         if (stage != null) {
             this.stage.close();
             stage = null;

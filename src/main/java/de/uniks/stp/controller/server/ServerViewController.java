@@ -210,6 +210,7 @@ public class ServerViewController {
         }
         onLanguageChanged();
         builder.setServerChatWebSocketClient(this.chatWebSocketClient); // TODO because of message view
+        builder.setHandleMicrophoneHeadphone(this::handleMicrophoneHeadphone);
 
         showCurrentUser();
         showOnlineOfflineUsers();
@@ -389,6 +390,11 @@ public class ServerViewController {
         microphoneLabel.setVisible(true);
         builder.muteHeadphones(true);
         builder.muteMicrophone(true);
+    }
+
+    public void handleMicrophoneHeadphone() {
+        headphoneLabel.setVisible(builder.getMuteHeadphones());
+        microphoneLabel.setVisible(builder.getMuteMicrophone());
     }
 
     /**
@@ -686,6 +692,8 @@ public class ServerViewController {
             builder.getAudioStreamClient().disconnectStream();
             builder.setAudioStreamClient(null);
         }
+
+        builder.setHandleMicrophoneHeadphone(null);
     }
 
     /**
