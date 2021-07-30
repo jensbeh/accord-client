@@ -3,6 +3,7 @@ package de.uniks.stp.controller.settings;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
@@ -44,6 +45,8 @@ public class SettingsControllerTest extends ApplicationTest {
     @Mock
     private HttpResponse<JsonNode> response;
 
+    @Mock
+    private Microphone microphone;
 
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
@@ -84,7 +87,7 @@ public class SettingsControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -361,4 +364,70 @@ public class SettingsControllerTest extends ApplicationTest {
         volumeOutput.setValue(0.4f);
         WaitForAsyncUtils.waitForFxEvents();
     }
+
+    @Test
+    public void startMicAndSpeakerTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ProgressBar micProgress = lookup("#progressBar_microphone").query();
+        mockApp.getBuilder().setMicrophoneFirstMuted(true);
+        mockApp.getBuilder().getAudioController().setMicrophone(microphone);
+        byte[] data = new byte[1024];
+
+        when(microphone.readData()).thenReturn(data);
+        clickOn("#button_audioStart");
+        Assert.assertEquals(micProgress.getProgress(), 0, 0.001);
+        clickOn("#button_audioStart");
+
+        Slider volumeOutput = lookup("#slider_volumeOutput").query();
+        volumeOutput.setValue(0.0f);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        for (int i = 0; i < data.length; i++) {
+            data[i] += i;
+        }
+        when(microphone.readData()).thenReturn(data);
+        double test = 0.74;
+        clickOn("#button_audioStart");
+        Assert.assertEquals(micProgress.getProgress(), test, 0.001);
+        clickOn("#button_audioStart");
+        WaitForAsyncUtils.waitForFxEvents();
+
+    }
+
+    @Test
+    public void changeMicAndSpeakerInAudioTest() throws InterruptedException {
+        loginInit();
+        clickOn("#settingsButton");
+        clickOn("#button_Audio");
+
+        ProgressBar micProgress = lookup("#progressBar_microphone").query();
+
+        clickOn("#button_audioStart");
+        ComboBox<String> inputDeviceComboBox = lookup("#comboBox_input").query();
+        ComboBox<String> outputDeviceComboBox = lookup("#comboBox_output").query();
+
+        clickOn(inputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on mic
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn(outputDeviceComboBox);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // click on speaker
+        moveBy(0, 25);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#button_audioStart");
+        WaitForAsyncUtils.waitForFxEvents();
+
+    }
+
+
 }

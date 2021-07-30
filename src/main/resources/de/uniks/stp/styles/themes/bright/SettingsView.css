@@ -152,6 +152,26 @@
     -fx-border-color: #2f3136;
 }
 
+#progressBar_microphone {
+    -fx-background-color: linear-gradient(to right, yellow 40%, green 70%, red 100%);
+}
+
+.progress-bar {
+    -fx-background-color: #6899de;
+}
+
+#progressBar_microphone_low .bar {
+    -fx-background-color: linear-gradient(from 70% 70% to 100% 100%, yellow, green);
+}
+
+#progressBar_microphone_medium .bar {
+    -fx-background-color: linear-gradient(from 40% 40% to 100% 100%, yellow, green);
+}
+
+#progressBar_microphone_high .bar {
+    -fx-background-color: linear-gradient(to right, yellow 40%, green 70%, red 100%);
+}
+
 .blockedUserElement {
     -fx-background-color: #f2f3f5;
     -fx-text-fill: BLACK;
