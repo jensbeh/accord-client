@@ -129,7 +129,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -437,7 +437,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void deleteDefaultCategoryTest() throws InterruptedException{
+    public void deleteDefaultCategoryTest() throws InterruptedException {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#serverName_5e2fbd8770dd077d03df505");
@@ -448,9 +448,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ComboBox<Categories> categoriesSelector = lookup("#editCategoriesSelector").query();
-        clickOn(categoriesSelector);
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn(categoriesSelector.getItems().get(0).getName());
+        Platform.runLater(() -> categoriesSelector.getSelectionModel().select(0));
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#deleteCategoryButton");
         WaitForAsyncUtils.waitForFxEvents();
