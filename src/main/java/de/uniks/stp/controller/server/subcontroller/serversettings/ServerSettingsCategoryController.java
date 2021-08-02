@@ -35,6 +35,7 @@ public class ServerSettingsCategoryController extends SubSetting {
     private final Parent view;
     private final ModelBuilder builder;
     private final RestClient restClient;
+    private final Server currentServer;
     private ComboBox<Categories> categoriesSelector;
     private TextField changeCategoryNameTextField;
     private Button changeCategoryNameButton;
@@ -44,8 +45,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     private VBox root;
     private Stage stage;
     private Button okButton;
-
-    private final Server currentServer;
     private Categories selectedCategory;
 
 

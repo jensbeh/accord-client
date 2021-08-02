@@ -18,11 +18,6 @@ import java.util.ResourceBundle;
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
     private final ModelBuilder builder;
-
-    public UserListCell(ModelBuilder builder) {
-        this.builder = builder;
-    }
-
     /**
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
@@ -35,12 +30,16 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
      */
     private HBox root;
 
-    public void setRoot(HBox root) {
-        this.root = root;
+    public UserListCell(ModelBuilder builder) {
+        this.builder = builder;
     }
 
     public HBox getRoot() {
         return root;
+    }
+
+    public void setRoot(HBox root) {
+        this.root = root;
     }
 
     @Override

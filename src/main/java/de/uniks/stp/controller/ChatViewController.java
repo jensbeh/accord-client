@@ -52,10 +52,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
-    private ContextMenu contextMenu;
     private final ModelBuilder builder;
-    private ServerChannel currentChannel;
     private final Parent view;
+    private ContextMenu contextMenu;
+    private ServerChannel currentChannel;
     private VBox root;
     private Button sendButton;
     private TextField messageTextField;

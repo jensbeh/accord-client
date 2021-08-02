@@ -37,10 +37,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageView {
+    boolean loadVideo;
     private String urlType;
     private ModelBuilder builder;
     private ChatViewController chatViewController;
-    boolean loadVideo;
     private Runnable scroll;
 
     public void setBuilder(ModelBuilder builder) {
@@ -96,13 +96,12 @@ public class MessageView {
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
         }
 
-        if(messageIsInfo) {
+        if (messageIsInfo) {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText((formatterTime.format(date)));
 
             message = handleEmojis("system");
-        }
-        else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
+        } else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
@@ -131,7 +130,7 @@ public class MessageView {
                 ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
                     str = handleSpacing(":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived"));
-                } else if(item.getMessage().endsWith("#exit")) {
+                } else if (item.getMessage().endsWith("#exit")) {
                     str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
                 }
             } else {
@@ -156,7 +155,7 @@ public class MessageView {
 
         //Message background
         Polygon polygon = new Polygon();
-        if(messageIsInfo) {
+        if (messageIsInfo) {
             polygon.getStyleClass().add("messagePolygonSystem");
             messageBox.setId("messageBoxSystem");
             polygon.getPoints().addAll(0.0, 0.0,
@@ -217,8 +216,7 @@ public class MessageView {
         }
         if (type.equals("system")) {
             emojiTextFlowParameters.setTextColor(Color.BLACK);
-        }
-        else if (type.equals("self")) {
+        } else if (type.equals("self")) {
             if (builder.getTheme().equals("Dark")) {
                 emojiTextFlowParameters.setTextColor(Color.BLACK);
             } else {

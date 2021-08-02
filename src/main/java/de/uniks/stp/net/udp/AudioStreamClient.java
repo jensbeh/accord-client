@@ -16,14 +16,14 @@ import static de.uniks.stp.util.Constants.AUDIO_STREAM_PORT;
 public class AudioStreamClient {
 
 
+    private static DatagramSocket socket;
+    private static InetAddress address;
     private final ModelBuilder builder;
     private final ServerChannel currentAudioChannel;
     private AudioStreamReceiver receiver;
     private AudioStreamSender sender;
     private Thread receiverThread;
     private Thread senderThread;
-    private static DatagramSocket socket;
-    private static InetAddress address;
 
     public AudioStreamClient(ModelBuilder builder, ServerChannel currentAudioChannel) {
         this.builder = builder;

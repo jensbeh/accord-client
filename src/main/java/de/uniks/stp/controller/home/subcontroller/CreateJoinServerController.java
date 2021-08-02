@@ -31,8 +31,8 @@ public class CreateJoinServerController {
     private final RestClient restClient;
     private final ModelBuilder builder;
     private final Parent view;
-    private TextField serverName;
     private final Stage stage;
+    private TextField serverName;
     private Button createServer;
     private Runnable create;
     private String error;

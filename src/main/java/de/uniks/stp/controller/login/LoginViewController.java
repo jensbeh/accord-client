@@ -26,6 +26,9 @@ import java.util.Scanner;
 
 public class LoginViewController {
     private final Parent root;
+    private final RestClient restClient;
+    private final ModelBuilder builder;
+    public boolean noConnectionTest;
     private TextField usernameTextField;
     private PasswordField passwordTextField;
     private CheckBox rememberCheckBox;
@@ -35,12 +38,9 @@ public class LoginViewController {
     private Button settingsButton;
     private Label errorLabel;
     private String message;
-    private final RestClient restClient;
     private Label connectionLabel;
-    private final ModelBuilder builder;
     private String error;
     private String connectionError;
-    public boolean noConnectionTest;
     private TitleBarController titleBarController;
 
     public LoginViewController(Parent root, ModelBuilder builder) {

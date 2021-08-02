@@ -28,7 +28,8 @@ public class Constants {
     public static final String REST_SERVER_URL = "https://ac.uniks.de";
     public static final String WS_SERVER_URL = "wss://ac.uniks.de";
     public static final String STEAM_API_PLAYER_SUMMARIES = "/GetPlayerSummaries/v0002";
-
+    // Rescources
+    public static final String ROOT_PATH = "/de/uniks/stp";
     // Local user
     public static String APPDIR_ACCORD_PATH;
     public static String CONFIG_PATH = "/config";
@@ -41,10 +42,6 @@ public class Constants {
     public static String SETTINGS_FILE = "/Settings.properties";
     public static String USERDATA_FILE = "/userData.txt";
     public static String NOTIFICATION_PATH = "/soundNotifications";
-
-    // Rescources
-    public static final String ROOT_PATH = "/de/uniks/stp";
-
     // AudioStream
     public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de";
     public static int AUDIO_STREAM_PORT = 33100;

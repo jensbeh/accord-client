@@ -38,8 +38,9 @@ import static de.uniks.stp.controller.snake.Constants.*;
 public class SnakeGameController {
 
     private final Parent view;
-    private ModelBuilder builder;
     private final Scene scene;
+    private final int snakeHead = 0;
+    private ModelBuilder builder;
     private Label scoreLabel;
     private Label highScoreLabel;
     private GraphicsContext brush;
@@ -47,7 +48,6 @@ public class SnakeGameController {
     private int speed = 300;
     private ArrayList<Snake> snake;
     private Food food;
-    private final int snakeHead = 0;
     private ArrayList<Snake> addNewBodyQueue;
     private Timeline gameTimeline;
     private boolean gameOver;
@@ -694,7 +694,6 @@ public class SnakeGameController {
             titleBarController.setTheme();
         }
     }
-
 
     ////////////////////////////////////////////////
     //// only for testing

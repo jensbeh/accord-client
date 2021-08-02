@@ -42,10 +42,11 @@ import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
+    private final Parent view;
+    public boolean inServerChat;
     private HBox root;
     private HBox homeView;
     private ScrollPane scrollPaneServerBox;
-    private final Parent view;
     private ListView<Server> serverList;
     private Circle addServer;
     private Circle addServerBg;
@@ -59,7 +60,6 @@ public class HomeViewController {
     private ServerListCell serverListCellFactory;
     private PrivateViewController privateViewController;
     private Parent privateView;
-    public boolean inServerChat;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;

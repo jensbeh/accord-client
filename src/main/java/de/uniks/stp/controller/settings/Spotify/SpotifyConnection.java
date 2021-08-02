@@ -49,11 +49,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SpotifyConnection {
+    private final ModelBuilder builder;
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
     private String codeVerifier = "";
     private String codeChallenge = "";
     private String code = "";
-    private final ModelBuilder builder;
     private WebView webView;
     private Stage loginStage;
     private HttpServer server;
@@ -82,6 +82,15 @@ public class SpotifyConnection {
     private ScheduledFuture<?> handle;
     private ScheduledExecutorService schedulerDescription;
     private GetTrackRequest getTrackRequest;
+    Runnable updatePersonalUserViewRunnable = new Runnable() {
+        public void run() {
+            currentSong = getCurrentlyPlayingSong();
+            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
+        }
+    };
     private Parent spotifyLoginView;
     private TitleBarController titleBarController;
 
@@ -103,7 +112,6 @@ public class SpotifyConnection {
     public void setGetInformationAboutUsersCurrentPlaybackRequest(GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest) {
         this.getInformationAboutUsersCurrentPlaybackRequest = getInformationAboutUsersCurrentPlaybackRequest;
     }
-
 
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
@@ -386,16 +394,6 @@ public class SpotifyConnection {
             }
         }
     }
-
-    Runnable updatePersonalUserViewRunnable = new Runnable() {
-        public void run() {
-            currentSong = getCurrentlyPlayingSong();
-            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
-        }
-    };
 
     private void updatePersonalUserView(double elapsed, double duration) {
         bandAndSong.setText(builder.getPersonalUser().getDescription().split("#")[1]);

@@ -52,80 +52,6 @@ public class StageManager extends Application {
     private static SnakeGameController snakeGameController;
     private static SpotifyConnection spotifyConnection;
 
-    @Override
-    public void start(Stage primaryStage) {
-        if (builder == null) {
-            builder = new ModelBuilder();
-        }
-        if (restClient == null) {
-            restClient = new RestClient();
-        }
-        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
-
-        loadAppDir();
-        languageSetup();
-
-        LinePoolService linePoolService = new LinePoolService();
-        linePoolService.init();
-        builder.setLinePoolService(linePoolService);
-        builder.loadSettings();
-
-        // start application
-        stage = primaryStage;
-        stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-        stage.initStyle(StageStyle.TRANSPARENT);
-
-        showLoginScreen();
-        primaryStage.show();
-    }
-
-    private void loadAppDir() {
-        AppDirs appDirs = AppDirsFactory.getInstance();
-        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
-    }
-
-    /**
-     * First check if there is a settings file already in user local directory - if not, create
-     */
-    private void languageSetup() {
-        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
-
-        Properties prop = new Properties();
-        File file = new File(path_to_config + Constants.SETTINGS_FILE);
-        File dir = new File(path_to_config);
-        if (!file.exists()) {
-            try {
-                dir.mkdirs();
-                if (file.createNewFile()) {
-                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
-                    prop.setProperty("LANGUAGE", "en");
-                    prop.store(op, null);
-                }
-            } catch (Exception e) {
-                System.out.println(e + "");
-                e.printStackTrace();
-            }
-        }
-
-        // load language from Settings
-        prop = new Properties();
-        try {
-            String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
-            FileInputStream ip = new FileInputStream(PATH_FILE_SETTINGS);
-            prop.load(ip);
-            Locale currentLocale = new Locale(prop.getProperty("LANGUAGE"));
-            Locale.setDefault(currentLocale);
-            resetLangBundle();
-        } catch (Exception e) {
-            System.err.println(e + "");
-            e.printStackTrace();
-        }
-    }
-
-    public static void setBuilder(ModelBuilder newBuilder) {
-        builder = newBuilder;
-    }
-
     public static void showLoginScreen() {
         cleanup();
         //show login screen
@@ -172,18 +98,6 @@ public class StageManager extends Application {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void stop() throws IOException {
-        try {
-            super.stop();
-        } catch (Exception e) {
-            System.err.println("Error while shutdown");
-            e.printStackTrace();
-        }
-        cleanup();
-    }
-
 
     private static void cleanup() {
         // call cascading stop
@@ -287,7 +201,6 @@ public class StageManager extends Application {
             e.printStackTrace();
         }
     }
-
 
     public static void showInviteUsersScreen() {
         try {
@@ -410,25 +323,8 @@ public class StageManager extends Application {
         }
     }
 
-
-    public SnakeGameController getSnakeGameController() {
-        return snakeGameController;
-    }
-
     public static void setRestClient(RestClient rest) {
         restClient = rest;
-    }
-
-    public ModelBuilder getBuilder() {
-        return builder;
-    }
-
-    public HomeViewController getHomeViewController() {
-        return homeViewController;
-    }
-
-    public LoginViewController getLoginViewController() {
-        return loginViewController;
     }
 
     public static ResourceBundle getLangBundle() {
@@ -458,7 +354,6 @@ public class StageManager extends Application {
         }
     }
 
-
     public static void setTheme() {
         if (homeViewController != null) {
             homeViewController.setTheme();
@@ -475,5 +370,106 @@ public class StageManager extends Application {
         if (builder.getSteamLoginController() != null) {
             builder.getSteamLoginController().setTheme();
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        if (builder == null) {
+            builder = new ModelBuilder();
+        }
+        if (restClient == null) {
+            restClient = new RestClient();
+        }
+        langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
+
+        loadAppDir();
+        languageSetup();
+
+        LinePoolService linePoolService = new LinePoolService();
+        linePoolService.init();
+        builder.setLinePoolService(linePoolService);
+        builder.loadSettings();
+
+        // start application
+        stage = primaryStage;
+        stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+        stage.initStyle(StageStyle.TRANSPARENT);
+
+        showLoginScreen();
+        primaryStage.show();
+    }
+
+    private void loadAppDir() {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        Constants.APPDIR_ACCORD_PATH = appDirs.getUserConfigDir("Accord", null, null);
+    }
+
+    /**
+     * First check if there is a settings file already in user local directory - if not, create
+     */
+    private void languageSetup() {
+        String path_to_config = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH;
+
+        Properties prop = new Properties();
+        File file = new File(path_to_config + Constants.SETTINGS_FILE);
+        File dir = new File(path_to_config);
+        if (!file.exists()) {
+            try {
+                dir.mkdirs();
+                if (file.createNewFile()) {
+                    FileOutputStream op = new FileOutputStream(path_to_config + Constants.SETTINGS_FILE);
+                    prop.setProperty("LANGUAGE", "en");
+                    prop.store(op, null);
+                }
+            } catch (Exception e) {
+                System.out.println(e + "");
+                e.printStackTrace();
+            }
+        }
+
+        // load language from Settings
+        prop = new Properties();
+        try {
+            String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+            FileInputStream ip = new FileInputStream(PATH_FILE_SETTINGS);
+            prop.load(ip);
+            Locale currentLocale = new Locale(prop.getProperty("LANGUAGE"));
+            Locale.setDefault(currentLocale);
+            resetLangBundle();
+        } catch (Exception e) {
+            System.err.println(e + "");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void stop() throws IOException {
+        try {
+            super.stop();
+        } catch (Exception e) {
+            System.err.println("Error while shutdown");
+            e.printStackTrace();
+        }
+        cleanup();
+    }
+
+    public SnakeGameController getSnakeGameController() {
+        return snakeGameController;
+    }
+
+    public ModelBuilder getBuilder() {
+        return builder;
+    }
+
+    public static void setBuilder(ModelBuilder newBuilder) {
+        builder = newBuilder;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
+    }
+
+    public LoginViewController getLoginViewController() {
+        return loginViewController;
     }
 }

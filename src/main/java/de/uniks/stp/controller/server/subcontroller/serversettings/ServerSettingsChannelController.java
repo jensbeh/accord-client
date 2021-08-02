@@ -56,10 +56,9 @@ public class ServerSettingsChannelController extends SubSetting {
 
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
-    private String channelType;
-
     private final PropertyChangeListener channelNamePCL = this::onChannelNameChanged;
     private final PropertyChangeListener channelListPCL = this::onChannelListChanged;
+    private String channelType;
 
 
     public ServerSettingsChannelController(Parent view, ModelBuilder builder, Server server) {

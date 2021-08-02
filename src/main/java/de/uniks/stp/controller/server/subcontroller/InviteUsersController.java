@@ -17,13 +17,13 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class InviteUsersController {
+    private final Server server;
+    private final ModelBuilder builder;
     private RadioButton tempSelected;
     private RadioButton userLimitSelected;
     private VBox inviteBox;
     private Label tempLabel;
     private Label userLimitLabel;
-    private final Server server;
-    private final ModelBuilder builder;
     private Parent view;
     private VBox root;
     private InviteUsersTempSubController inviteUsersTempSubController;
