@@ -9,9 +9,9 @@
 
 <HBox id="titleBarBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT" maxWidth="78.0" minWidth="78.0" prefWidth="78.0">
+      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT" maxWidth="73.0" minWidth="73.0" prefWidth="73.0">
          <children>
-            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../icons/AccordIcon.png" />
                </image>
@@ -26,15 +26,15 @@
             <Insets />
          </HBox.margin>
          <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
          </padding>
       </HBox>
       <HBox id="titleBarSpace" />
-      <HBox id="titleButtons" alignment="TOP_RIGHT" maxWidth="109.0" minWidth="109.0" prefWidth="109.0" spacing="2.0">
+      <HBox id="titleButtons" alignment="TOP_RIGHT" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" spacing="2.0">
          <children>
-            <Button id="Button_minTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
-            <Button id="Button_maxTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />
-            <Button id="Button_closeTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="X" />
+            <Button id="Button_minTitleBar" maxWidth="48.0" minWidth="48.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="48.0" text="🗕" />
+            <Button id="Button_maxTitleBar" maxWidth="48.0" minWidth="48.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="48.0" text="🗖" />
+            <Button id="Button_closeTitleBar" maxWidth="48.0" minWidth="48.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="48.0" text="🗙" />
          </children>
       </HBox>
    </children>

@@ -43,6 +43,7 @@ public class TitleBarController {
         titleBarSpaceBox.prefWidthProperty().bind(stage.widthProperty().subtract(logoAndLabelBox.getPrefWidth() + buttonsBox.getPrefWidth())); // 78 + 109 = 187
 
         setOnListener();
+//🗕 🗗 🗖 🗙
     }
 
     private void setOnListener() {
@@ -52,7 +53,13 @@ public class TitleBarController {
         });
         maxButton.setOnAction(event -> {
             Stage thisStage = (Stage) maxButton.getScene().getWindow();
-            thisStage.setMaximized(!thisStage.isMaximized());
+            if (thisStage.isMaximized()) {
+                thisStage.setMaximized(false);
+                maxButton.setText("\uD83D\uDDD6");
+            } else {
+                thisStage.setMaximized(true);
+                maxButton.setText("\uD83D\uDDD7");
+            }
         });
         closeButton.setOnAction(event -> {
             Stage thisStage = (Stage) closeButton.getScene().getWindow();
