@@ -3,13 +3,12 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
-import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.settings.AudioController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
-import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.updateSteamGameController;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
@@ -17,12 +16,9 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import kong.unirest.JsonNode;
-import org.apache.commons.io.FileUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -563,10 +559,9 @@ public class ModelBuilder {
     }
 
     public void stopGame() {
-        if (getSteamGame != null) {
-            isSteamRun = false;
-            getSteamGame = null;
-        }
+        isSteamRun = false;
+        getSteamGame.interrupt();
+        getSteamGame = null;
     }
 
     public void setHomeViewController(HomeViewController homeViewController) {
@@ -592,6 +587,7 @@ public class ModelBuilder {
     public void setAudioController(AudioController audiocontroller) {
         this.audiocontroller = audiocontroller;
     }
+
     public AudioController getAudioController() {
         return this.audiocontroller;
     }
