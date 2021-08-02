@@ -43,7 +43,6 @@ public class TitleBarController {
         titleBarSpaceBox.prefWidthProperty().bind(stage.widthProperty().subtract(logoAndLabelBox.getPrefWidth() + buttonsBox.getPrefWidth())); // 78 + 109 = 187
 
         setOnListener();
-//🗕 🗗 🗖 🗙
     }
 
     private void setOnListener() {

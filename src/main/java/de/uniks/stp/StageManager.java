@@ -228,6 +228,10 @@ public class StageManager extends Application {
             subStage.initStyle(StageStyle.TRANSPARENT);
             subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
 
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/SettingsView.css").toExternalForm());
+
             // init controller
             settingsController = new SettingsController(builder, root);
             settingsController.init(subStage);
@@ -297,13 +301,18 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsers.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
+            subStage = new Stage();
+            subStage.initStyle(StageStyle.TRANSPARENT);
+            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/ServerSettings.css").toExternalForm());
+
             // init controller
             inviteUsersController = new InviteUsersController(root, builder, builder.getCurrentServer());
-            inviteUsersController.init();
+            inviteUsersController.init(subStage);
             inviteUsersController.setTheme();
-
-            subStage = new Stage();
-            subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
 
             setSubStageTitle("window_title_inviteUsers");
             subStage.setResizable(false);

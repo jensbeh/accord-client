@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox id="rootInvite" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="640.0" spacing="10.0" xmlns="http://javafx.com/javafx/11"
-      xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <HBox prefHeight="25.0" prefWidth="590.0">
-            <children>
-                <Pane prefHeight="25.0" prefWidth="35.0"/>
-                <RadioButton id="tempSelected" mnemonicParsing="false" selected="true">
-                    <toggleGroup>
-                        <ToggleGroup fx:id="InviteUsers"/>
-                    </toggleGroup>
-                </RadioButton>
-                <Pane prefHeight="25.0" prefWidth="62.0"/>
-                <RadioButton id="userLimitSelected" mnemonicParsing="false" toggleGroup="$InviteUsers"/>
-            </children>
-        </HBox>
-        <HBox prefHeight="25.0" prefWidth="590.0">
-            <children>
-                <Pane prefHeight="25.0" prefWidth="29.0"/>
-                <Label id="tempLabel" style="-fx-font-size: 16;" text="%label.temp" textFill="WHITE"/>
-                <Pane prefHeight="25.0" prefWidth="36.0"/>
-                <Label id="userLimitLabel" style="-fx-font-size: 16;" text="%label.userLimit" textFill="WHITE"/>
-            </children>
-        </HBox>
-        <VBox id="inviteBox" prefHeight="320.0" prefWidth="590.0"/>
-    </children>
-    <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-    </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox id="titleBarBox" />
+      <VBox id="rootInvite" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="640.0" spacing="10.0">
+         <children>
+            <HBox prefHeight="25.0" prefWidth="590.0">
+               <children>
+                  <Pane prefHeight="25.0" prefWidth="35.0" />
+                  <RadioButton id="tempSelected" mnemonicParsing="false" selected="true">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="InviteUsers" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <Pane prefHeight="25.0" prefWidth="62.0" />
+                  <RadioButton id="userLimitSelected" mnemonicParsing="false" toggleGroup="$InviteUsers" />
+               </children>
+            </HBox>
+            <HBox prefHeight="25.0" prefWidth="590.0">
+               <children>
+                  <Pane prefHeight="25.0" prefWidth="29.0" />
+                  <Label id="tempLabel" style="-fx-font-size: 16;" text="%label.temp" textFill="WHITE" />
+                  <Pane prefHeight="25.0" prefWidth="36.0" />
+                  <Label id="userLimitLabel" style="-fx-font-size: 16;" text="%label.userLimit" textFill="WHITE" />
+               </children>
+            </HBox>
+            <VBox id="inviteBox" prefHeight="320.0" prefWidth="590.0" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
 </VBox>
