@@ -496,5 +496,8 @@ public class StageManager extends Application {
         if (settingsController != null) {
             settingsController.setTheme();
         }
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().setTheme();
+        }
     }
 }

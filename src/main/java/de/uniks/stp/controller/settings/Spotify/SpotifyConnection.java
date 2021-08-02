@@ -16,22 +16,20 @@ import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.ConnectionController;
+import de.uniks.stp.controller.titlebar.TitleBarController;
+import de.uniks.stp.util.ResizeHelper;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Cell;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -84,6 +82,8 @@ public class SpotifyConnection {
     private ScheduledFuture<?> handle;
     private ScheduledExecutorService schedulerDescription;
     private GetTrackRequest getTrackRequest;
+    private Parent spotifyLoginView;
+    private TitleBarController titleBarController;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -107,16 +107,45 @@ public class SpotifyConnection {
 
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
-        webView = new WebView();
-        popUp = new Stage();
+
+        try {
+            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyLoginView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.TRANSPARENT);
+        Scene scene = new Scene(Objects.requireNonNull(spotifyLoginView));
+
+        webView = (WebView) spotifyLoginView.lookup("#spotifyLoginWebView");
+        HBox titleBarBox = (HBox) spotifyLoginView.lookup("#titleBarBox");
+        try {
+            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+            titleBarBox.getChildren().add(titleBarView);
+            titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setMaximizable(true);
+            titleBarController.setTheme();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         createHttpServer();
         createCodeVerifier();
         createCodeChallenge();
         webView.getEngine().load(createSpotifyAuthenticationURLPKCE());
         webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
-        popUp.setScene(new Scene(webView));
-        popUp.setTitle(StageManager.getLangBundle().getString("window_title_spotify"));
-        popUp.show();
+
+        webView.prefHeightProperty().bind(stage.heightProperty());
+        webView.prefWidthProperty().bind(stage.widthProperty());
+
+        stage.setScene(scene);
+        stage.setResizable(true);
+        stage.setMinWidth(660);
+        stage.setMinHeight(710);
+        stage.show();
+        ResizeHelper.addResizeListener(stage);
     }
 
     private void createHttpServer() {
@@ -426,6 +455,34 @@ public class SpotifyConnection {
     public void stopDescriptionScheduler() {
         if (schedulerDescription != null) {
             schedulerDescription.shutdownNow();
+        }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        if (spotifyLoginView != null) {
+            spotifyLoginView.getStylesheets().clear();
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/SpotifyLogin.css")).toExternalForm());
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
+    }
+
+    private void setDarkMode() {
+        if (spotifyLoginView != null) {
+            spotifyLoginView.getStylesheets().clear();
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/SpotifyLogin.css")).toExternalForm());
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 }

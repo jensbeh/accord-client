@@ -70,6 +70,7 @@ public class ConnectionController extends SubSetting {
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
         builder.getSpotifyConnection().init(this);
+        builder.getSpotifyConnection().setTheme();
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
