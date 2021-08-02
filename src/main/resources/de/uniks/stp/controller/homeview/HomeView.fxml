@@ -12,10 +12,9 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox prefHeight="625.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <fx:include source="../titlebar/titleBar.fxml" />
+      <HBox id="titleBarBox" />
       <HBox id="homeView">
          <children>
             <VBox id="homeViewVBox" prefWidth="100.0">

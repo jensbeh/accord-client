@@ -7,6 +7,7 @@ import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -14,7 +15,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,7 +28,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -63,7 +62,6 @@ public class HomeViewController {
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
-    private double x, y;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -79,41 +77,15 @@ public class HomeViewController {
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
 
-        HBox titleBarSpace = (HBox) view.lookup("#titleBarSpace");
-        HBox titleLogoAndLabel = (HBox) view.lookup("#titleLogoAndLabel");
-        HBox titleButtons = (HBox) view.lookup("#titleButtons");
-        Button minButton = (Button) view.lookup("#minButton");
-        Button maxButton = (Button) view.lookup("#maxButton");
-        Button closeButton = (Button) view.lookup("#closeButton");
-        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(73 + 83));
-
-        minButton.setOnAction(event -> {
-            Stage thisStage = (Stage) minButton.getScene().getWindow();
-            thisStage.setIconified(true);
-        });
-        maxButton.setOnAction(event -> {
-            Stage thisStage = (Stage) maxButton.getScene().getWindow();
-            if (thisStage.isMaximized()) {
-                thisStage.setMaximized(false);
-            } else {
-                thisStage.setMaximized(true);
-            }
-        });
-        closeButton.setOnAction(event -> {
-            Stage thisStage = (Stage) closeButton.getScene().getWindow();
-            thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
-        });
-
-        titleBarSpace.setOnMouseDragged(event -> {
-            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            thisStage.setX(event.getScreenX() - x);
-            thisStage.setY(event.getScreenY() - y);
-        });
-
-        titleBarSpace.setOnMousePressed(event -> {
-            x = event.getSceneX();
-            y = event.getSceneY();
-        });
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        try {
+            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView);
+            titleBarController.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");

@@ -42,3 +42,31 @@
 #root {
     -fx-background-color: #36393f;
 }
+
+/* TitleBar */
+#titleBarBox {
+    -fx-background-color: #36393f;
+}
+#Label_AccordTitleBar {
+    -fx-text-fill: WHITE;
+}
+#Button_minTitleBar, #Button_maxTitleBar {
+    -fx-background-color: #4a4d54;
+    -fx-text-fill: WHITE;
+}
+#Button_minTitleBar:hover, #Button_maxTitleBar:hover {
+    -fx-background-color: #5f6269;
+}
+#Button_minTitleBar:pressed, #Button_maxTitleBar:pressed {
+    -fx-background-color: #43464d;
+}
+
+#Button_closeTitleBar {
+    -fx-background-color: #ff3030;
+}
+#Button_closeTitleBar:hover {
+    -fx-background-color: #ff4a4a;
+}
+#Button_closeTitleBar:pressed {
+    -fx-background-color: #ff1f1f;
+}

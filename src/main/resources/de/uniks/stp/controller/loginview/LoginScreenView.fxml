@@ -15,11 +15,7 @@
 
 <VBox id="root" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="523.0" prefWidth="395.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-      <HBox>
-         <children>
-            <fx:include source="../titlebar/titleBar.fxml" />
-         </children>
-      </HBox>
+      <HBox id="titleBarBox" />
         <HBox alignment="CENTER" prefHeight="231.0" prefWidth="395.0">
             <children>
                 <VBox prefHeight="200.0" prefWidth="191.0" HBox.hgrow="ALWAYS" />

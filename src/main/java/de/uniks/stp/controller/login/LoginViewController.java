@@ -2,24 +2,21 @@ package de.uniks.stp.controller.login;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -51,43 +48,15 @@ public class LoginViewController {
     }
 
     public void init(Stage stage) {
-        HBox titleBarSpace = (HBox) root.lookup("#titleBarSpace");
-        HBox logoAndLabel = (HBox) root.lookup("#titleLogoAndLabel");
-        HBox Buttons = (HBox) root.lookup("#titleButtons");
-        Button minButton = (Button) root.lookup("#minButton");
-        Button maxButton = (Button) root.lookup("#maxButton");
-        maxButton.setDisable(true);
-        Button closeButton = (Button) root.lookup("#closeButton");
-        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(73 + 83));
-
-        minButton.setOnAction(event -> {
-            Stage thisStage = (Stage) minButton.getScene().getWindow();
-            thisStage.setIconified(true);
-        });
-        maxButton.setOnAction(event -> {
-            Stage thisStage = (Stage) maxButton.getScene().getWindow();
-            if (thisStage.isMaximized()) {
-                thisStage.setMaximized(false);
-            } else {
-                thisStage.setMaximized(true);
-            }
-        });
-        closeButton.setOnAction(event -> {
-            Stage thisStage = (Stage) closeButton.getScene().getWindow();
-            thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
-        });
-
-        titleBarSpace.setOnMouseDragged(event -> {
-            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            thisStage.setX(event.getScreenX() - x);
-            thisStage.setY(event.getScreenY() - y);
-        });
-
-        titleBarSpace.setOnMousePressed(event -> {
-            x = event.getSceneX();
-            y = event.getSceneY();
-        });
-
+        HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+        try {
+            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView);
+            titleBarController.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");

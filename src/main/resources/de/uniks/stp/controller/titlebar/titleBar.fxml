@@ -7,7 +7,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-
 <HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT">
@@ -17,7 +16,7 @@
                   <Image url="@../../icons/AccordIcon.png" />
                </image>
             </ImageView>
-            <Label text="Accord">
+            <Label id="Label_AccordTitleBar" text="Accord">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
@@ -30,9 +29,9 @@
       <HBox id="titleBarSpace" />
       <HBox id="titleButtons" alignment="CENTER_RIGHT" spacing="2.0">
          <children>
-            <Button id="minButton" mnemonicParsing="false" prefWidth="25.0" text="-" />
-            <Button id="maxButton" mnemonicParsing="false" prefWidth="25.0" text="+" />
-            <Button id="closeButton" mnemonicParsing="false" prefWidth="25.0" text="X" />
+            <Button id="Button_minTitleBar" mnemonicParsing="false" prefWidth="25.0" text="-" />
+            <Button id="Button_maxTitleBar" mnemonicParsing="false" prefWidth="25.0" text="+" />
+            <Button id="Button_closeTitleBar" mnemonicParsing="false" prefWidth="25.0" text="X" />
          </children>
       </HBox>
    </children>
