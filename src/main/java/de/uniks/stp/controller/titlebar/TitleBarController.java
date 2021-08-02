@@ -37,7 +37,7 @@ public class TitleBarController {
         this.builder = builder;
 
         try {
-            this.titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+            this.titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/titleBar.fxml")), StageManager.getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
