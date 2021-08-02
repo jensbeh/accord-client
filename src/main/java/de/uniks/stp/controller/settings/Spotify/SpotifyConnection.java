@@ -55,7 +55,7 @@ public class SpotifyConnection {
     private String code = "";
     private final ModelBuilder builder;
     private WebView webView;
-    private Stage popUp;
+    private Stage loginStage;
     private HttpServer server;
     private SpotifyApi spotifyApi;
     private AuthorizationCodePKCERequest authorizationCodePKCERequest;
@@ -109,13 +109,13 @@ public class SpotifyConnection {
         this.connectionController = connectionController;
 
         try {
-            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyLoginView.fxml")), StageManager.getLangBundle());
+            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), StageManager.getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Stage stage = new Stage();
-        stage.initStyle(StageStyle.TRANSPARENT);
+        loginStage = new Stage();
+        loginStage.initStyle(StageStyle.TRANSPARENT);
         Scene scene = new Scene(Objects.requireNonNull(spotifyLoginView));
 
         webView = (WebView) spotifyLoginView.lookup("#spotifyLoginWebView");
@@ -123,7 +123,7 @@ public class SpotifyConnection {
         try {
             Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
             titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController = new TitleBarController(loginStage, titleBarView, builder);
             titleBarController.init();
             titleBarController.setMaximizable(true);
             titleBarController.setTheme();
@@ -137,15 +137,15 @@ public class SpotifyConnection {
         webView.getEngine().load(createSpotifyAuthenticationURLPKCE());
         webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
 
-        webView.prefHeightProperty().bind(stage.heightProperty());
-        webView.prefWidthProperty().bind(stage.widthProperty());
+        webView.prefHeightProperty().bind(loginStage.heightProperty());
+        webView.prefWidthProperty().bind(loginStage.widthProperty());
 
-        stage.setScene(scene);
-        stage.setResizable(true);
-        stage.setMinWidth(660);
-        stage.setMinHeight(710);
-        stage.show();
-        ResizeHelper.addResizeListener(stage);
+        loginStage.setScene(scene);
+        loginStage.setResizable(true);
+        loginStage.setMinWidth(660);
+        loginStage.setMinHeight(710);
+        loginStage.show();
+        ResizeHelper.addResizeListener(loginStage);
     }
 
     private void createHttpServer() {
@@ -442,7 +442,7 @@ public class SpotifyConnection {
             server.stop(0);
         }
         server = null;
-        popUp.close();
+        loginStage.close();
     }
 
     public void stopPersonalScheduler() {
@@ -469,7 +469,7 @@ public class SpotifyConnection {
     private void setWhiteMode() {
         if (spotifyLoginView != null) {
             spotifyLoginView.getStylesheets().clear();
-            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/SpotifyLogin.css")).toExternalForm());
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/LoginWebView.css")).toExternalForm());
         }
         if (titleBarController != null) {
             titleBarController.setTheme();
@@ -479,7 +479,7 @@ public class SpotifyConnection {
     private void setDarkMode() {
         if (spotifyLoginView != null) {
             spotifyLoginView.getStylesheets().clear();
-            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/SpotifyLogin.css")).toExternalForm());
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/LoginWebView.css")).toExternalForm());
         }
         if (titleBarController != null) {
             titleBarController.setTheme();

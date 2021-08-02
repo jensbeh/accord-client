@@ -77,6 +77,7 @@ public class ConnectionController extends SubSetting {
         steamLoginController = new SteamLoginController(builder);
         steamLoginController.refresh(this::refreshSteam);
         steamLoginController.init();
+        steamLoginController.setTheme();
         init();
     }
 
