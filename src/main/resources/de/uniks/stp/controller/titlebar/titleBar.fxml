@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="titleBarBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT">
          <children>
@@ -27,11 +27,11 @@
          </HBox.margin>
       </HBox>
       <HBox id="titleBarSpace" />
-      <HBox id="titleButtons" alignment="CENTER_RIGHT" spacing="2.0">
+      <HBox id="titleButtons" alignment="TOP_RIGHT" spacing="2.0">
          <children>
-            <Button id="Button_minTitleBar" mnemonicParsing="false" prefWidth="25.0" text="-" />
-            <Button id="Button_maxTitleBar" mnemonicParsing="false" prefWidth="25.0" text="+" />
-            <Button id="Button_closeTitleBar" mnemonicParsing="false" prefWidth="25.0" text="X" />
+            <Button id="Button_minTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
+            <Button id="Button_maxTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />
+            <Button id="Button_closeTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="X" />
          </children>
       </HBox>
    </children>

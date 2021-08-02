@@ -39,7 +39,7 @@ public class LoginViewController {
     private String error;
     private String connectionError;
     public boolean noConnectionTest;
-    private double x, y;
+    private TitleBarController titleBarController;
 
     public LoginViewController(Parent root, ModelBuilder builder) {
         this.restClient = builder.getRestClient();
@@ -52,8 +52,9 @@ public class LoginViewController {
         try {
             Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
             titleBarBox.getChildren().add(titleBarView);
-            TitleBarController titleBarController = new TitleBarController(stage, titleBarView);
+            titleBarController = new TitleBarController(stage, titleBarView, builder);
             titleBarController.init();
+            titleBarController.setMaximizable(false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -379,11 +380,17 @@ public class LoginViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Login.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Login.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     public void setNoConnectionTest(boolean noConnectionTestState) {

@@ -62,6 +62,7 @@ public class HomeViewController {
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
+    private TitleBarController titleBarController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -81,8 +82,9 @@ public class HomeViewController {
         try {
             Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
             titleBarBox.getChildren().add(titleBarView);
-            TitleBarController titleBarController = new TitleBarController(stage, titleBarView);
+            titleBarController = new TitleBarController(stage, titleBarView, builder);
             titleBarController.init();
+            titleBarController.setMaximizable(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -603,6 +605,9 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
@@ -613,6 +618,9 @@ public class HomeViewController {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 

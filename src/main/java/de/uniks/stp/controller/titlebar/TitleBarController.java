@@ -1,5 +1,7 @@
 package de.uniks.stp.controller.titlebar;
 
+import de.uniks.stp.StageManager;
+import de.uniks.stp.builder.ModelBuilder;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -7,9 +9,12 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.util.Objects;
+
 public class TitleBarController {
     private final Stage stage;
     private final Parent titleBarView;
+    private final ModelBuilder builder;
     private HBox titleBarSpace;
     private HBox logoAndLabel;
     private HBox Buttons;
@@ -19,9 +24,10 @@ public class TitleBarController {
 
     private double x, y;
 
-    public TitleBarController(Stage stage, Parent titleBarView) {
+    public TitleBarController(Stage stage, Parent titleBarView, ModelBuilder builder) {
         this.stage = stage;
         this.titleBarView = titleBarView;
+        this.builder = builder;
     }
 
 
@@ -33,9 +39,7 @@ public class TitleBarController {
         maxButton = (Button) titleBarView.lookup("#Button_maxTitleBar");
         closeButton = (Button) titleBarView.lookup("#Button_closeTitleBar");
 
-        maxButton.setDisable(true);
-
-        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(73 + 83));
+        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(99 + 83));
 
         setOnListener();
     }
@@ -68,5 +72,27 @@ public class TitleBarController {
             x = event.getSceneX();
             y = event.getSceneY();
         });
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        titleBarView.getStylesheets().clear();
+        titleBarView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/TitleBar.css")).toExternalForm());
+    }
+
+    private void setDarkMode() {
+        titleBarView.getStylesheets().clear();
+        titleBarView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/TitleBar.css")).toExternalForm());
+    }
+
+    public void setMaximizable(boolean state) {
+        maxButton.setDisable(!state);
     }
 }
