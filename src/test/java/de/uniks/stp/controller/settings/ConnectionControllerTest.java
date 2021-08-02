@@ -16,6 +16,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -197,10 +198,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#spotify");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Spotify Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Spotify Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("http://localhost:8888/callback/code=testCode");
@@ -212,7 +214,7 @@ public class ConnectionControllerTest extends ApplicationTest {
 
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Accord - Settings")) {
+            if (((Label) s.getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord - Settings")) {
                 Platform.runLater(s::close);
                 break;
             }
@@ -241,10 +243,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#steam");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Steam Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/profiles/1234");
@@ -253,6 +256,7 @@ public class ConnectionControllerTest extends ApplicationTest {
                 break;
             }
         }
+
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
         mockApp.getBuilder().setSteamShow(false);
@@ -277,10 +281,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#steam");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Steam Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/id/Hungriger_Hugo");
@@ -289,6 +294,7 @@ public class ConnectionControllerTest extends ApplicationTest {
                 break;
             }
         }
+
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
         mockApp.getBuilder().setSteamShow(false);

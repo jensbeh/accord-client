@@ -358,13 +358,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
+
         // Clicking logout...
         mockLogout();
         clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
     @Test
@@ -377,7 +378,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
         mockLogout();
         restClient.logout(userKey, response -> {
         });

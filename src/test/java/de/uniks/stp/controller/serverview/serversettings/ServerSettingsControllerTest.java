@@ -485,12 +485,13 @@ public class ServerSettingsControllerTest extends ApplicationTest {
 
         //delete Server
         clickOn("#deleteServer");
-        String result;
-        for (Object s : this.listTargetWindows()) {
-            if (s != stage) {
-                result = ((Stage) s).getTitle();
-                Assert.assertEquals("ServerSettings", result);
-                Platform.runLater(((Stage) s)::close);
+        String serverSettingsTitle;
+
+        for (Object object : this.listTargetWindows()) {
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
+                serverSettingsTitle = ((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText();
+                Assert.assertEquals("Server Settings", serverSettingsTitle);
+                Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }

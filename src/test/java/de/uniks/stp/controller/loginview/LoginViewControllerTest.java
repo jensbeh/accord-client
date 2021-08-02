@@ -208,7 +208,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         rememberBox.setSelected(true);
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
     @Test()
@@ -355,7 +355,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         clickOn("#loginButton");
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
     @Test
@@ -382,7 +382,7 @@ public class LoginViewControllerTest extends ApplicationTest {
     public void rememberMeNotTest() {
         loginInit(false);
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
         WaitForAsyncUtils.waitForFxEvents();
 
         //Check if file with username and password is empty
@@ -424,7 +424,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         clearCheckBoxes();
         loginInit(true);
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
         WaitForAsyncUtils.waitForFxEvents();
 
         //Check if file with username and password were saved

@@ -391,7 +391,9 @@ public class StageManager extends Application {
         // start application
         stage = primaryStage;
         stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-        stage.initStyle(StageStyle.TRANSPARENT);
+        if (!stage.getStyle().equals(StageStyle.TRANSPARENT)) {
+            stage.initStyle(StageStyle.TRANSPARENT);
+        }
 
         showLoginScreen();
         primaryStage.show();

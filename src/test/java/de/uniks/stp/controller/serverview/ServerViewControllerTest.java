@@ -546,7 +546,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         privateSystemWebSocketClient.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
 

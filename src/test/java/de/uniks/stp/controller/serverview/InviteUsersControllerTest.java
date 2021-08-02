@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -485,12 +486,13 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals("", checkDel);
 
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#serverMenuButton");
         moveBy(0, 50);
         write("\n");
@@ -515,13 +517,15 @@ public class InviteUsersControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("", checkDelete);
 
-        for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                Platform.runLater(((Stage) object)::close);
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (!(((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Accord"))) {
+                Platform.runLater(((Stage) s)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#logoutButton");
     }
 
@@ -566,12 +570,13 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals("", checkDel);
 
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#logoutButton");
     }
 
@@ -595,9 +600,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
         String inviteLink = linkLabel.getText();
 
         String serverSettingsTitle;
+
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                serverSettingsTitle = ((Stage) object).getTitle();
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
+                serverSettingsTitle = ((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText();
                 Assert.assertNotEquals("", serverSettingsTitle);
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
@@ -638,8 +644,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(errorLabel.getText(), "Insert invite link first");
-
-        clickOn("#logoutButton");
     }
 
     @Test

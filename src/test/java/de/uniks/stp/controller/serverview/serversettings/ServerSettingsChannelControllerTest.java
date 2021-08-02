@@ -351,7 +351,7 @@ public class ServerSettingsChannelControllerTest extends ApplicationTest {
             }
         }
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         clickOn(serverListView.lookup("#serverName_" + testServerId));
         WaitForAsyncUtils.waitForFxEvents();

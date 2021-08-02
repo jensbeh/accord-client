@@ -317,7 +317,7 @@ public class ServerMessageTest extends ApplicationTest {
         loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -510,7 +510,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -551,7 +551,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -583,7 +583,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));

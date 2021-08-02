@@ -17,6 +17,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -136,12 +137,13 @@ public class SnakeControllerTest extends ApplicationTest {
 
         // check if title is correct
         boolean found = false;
-        for (Object object : this.listTargetWindows()) {
-            if (((Stage) object).getTitle().equals("Snake")) {
-                Stage snake = (Stage) object;
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Snake")) {
                 found = true;
             }
         }
+
         if (!found) {
             Assert.fail();
         }

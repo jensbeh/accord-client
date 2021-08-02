@@ -42,7 +42,7 @@ public class SteamLoginController {
         loginStage.initStyle(StageStyle.TRANSPARENT);
         Scene scene = new Scene(Objects.requireNonNull(steamLoginView));
 
-        webView = (WebView) steamLoginView.lookup("#spotifyLoginWebView");
+        webView = (WebView) steamLoginView.lookup("#loginWebView");
 
         // create titleBar
         HBox titleBarBox = (HBox) steamLoginView.lookup("#titleBarBox");
@@ -50,6 +50,7 @@ public class SteamLoginController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Steam Login");
 
         webView.prefHeightProperty().bind(loginStage.heightProperty());
         webView.prefWidthProperty().bind(loginStage.widthProperty());
