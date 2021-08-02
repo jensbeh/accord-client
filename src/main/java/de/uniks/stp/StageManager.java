@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -256,14 +257,19 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
-            // init controller
-            serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
-            serverSettingsController.init();
-            serverSettingsController.setTheme();
-
             //setting stage settings
             subStage = new Stage();
+            subStage.initStyle(StageStyle.TRANSPARENT);
             subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/ServerSettings.css").toExternalForm());
+
+            // init controller
+            serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
+            serverSettingsController.init(subStage);
+            serverSettingsController.setTheme();
 
             setSubStageTitle("window_title_serverSettings");
             subStage.setResizable(false);
