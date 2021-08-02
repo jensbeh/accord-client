@@ -41,102 +41,72 @@ public class InviteUsersControllerTest extends ApplicationTest {
     private final String testServerId = "5e2fbd8770dd077d03df505";
 
     private final String inviteLinkIds = "5e2fbd8770dd077d445qs900";
+    @InjectMocks
+    StageManager mockApp = new StageManager();
     private int inviteLinksCount = 0;
     private int inviteLinksCountDelete = 0;
-
     @Mock
     private RestClient restClient;
-
     @Mock
     private HttpResponse<JsonNode> response;
-
     @Mock
     private HttpResponse<JsonNode> response2;
-
     @Mock
     private HttpResponse<JsonNode> response3;
-
     @Mock
     private HttpResponse<JsonNode> response4;
-
     @Mock
     private HttpResponse<JsonNode> response5;
-
     @Mock
     private HttpResponse<JsonNode> response6;
-
     @Mock
     private HttpResponse<JsonNode> response7;
-
     @Mock
     private HttpResponse<JsonNode> response8;
-
     @Mock
     private HttpResponse<JsonNode> response9;
-
     @Mock
     private HttpResponse<JsonNode> response10;
-
     @Mock
     private HttpResponse<JsonNode> response11;
-
     @Mock
     private HttpResponse<JsonNode> response12;
-
     @Mock
     private HttpResponse<JsonNode> response13;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor11;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor12;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor13;
-
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
     @Mock
     private PrivateChatWebSocket privateChatWebSocket;
-
     @Mock
     private ServerSystemWebSocket serverSystemWebSocket;
-
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
-
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -144,9 +114,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
-
-    @InjectMocks
-    StageManager mockApp = new StageManager();
 
     @BeforeAll
     static void setup() {
@@ -165,7 +132,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);

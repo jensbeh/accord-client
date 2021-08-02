@@ -6,8 +6,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox id="createServerBox" alignment="CENTER" prefWidth="480.0" spacing="15.0" xmlns="http://javafx.com/javafx/11"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="createServerBox" alignment="CENTER" prefWidth="480.0" spacing="15.0"
+      xmlns="http://javafx.com/javafx/11">
     <children>
         <Label id="join_errorLabel" textFill="#fc0000" VBox.vgrow="ALWAYS">
             <font>

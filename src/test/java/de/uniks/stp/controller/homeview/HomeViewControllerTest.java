@@ -42,23 +42,18 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)           // TODO important
 public class HomeViewControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
     // main user
     private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
-
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
 
@@ -97,6 +92,11 @@ public class HomeViewControllerTest extends ApplicationTest {
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(HomeViewController.class);
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -118,12 +118,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         app.start(stage);
         this.stage.centerOnScreen();
     }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
-    }
-
 
     public void mockLogout() {
         JSONObject jsonString = new JSONObject()

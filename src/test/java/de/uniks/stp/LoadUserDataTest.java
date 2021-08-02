@@ -28,23 +28,25 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class LoadUserDataTest extends ApplicationTest {
 
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
     @Override
@@ -59,11 +61,6 @@ public class LoadUserDataTest extends ApplicationTest {
 
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
     public void mockLogin() {

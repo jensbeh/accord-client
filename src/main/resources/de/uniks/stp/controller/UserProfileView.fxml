@@ -4,8 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.*?>
-<VBox id="root" alignment="CENTER" minHeight="110.0" prefWidth="186.0" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="root" alignment="CENTER" minHeight="110.0" prefWidth="186.0"
+      xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <VBox id="descriptionbox" alignment="TOP_CENTER" prefHeight="60.0" prefWidth="186.0">
             <children>

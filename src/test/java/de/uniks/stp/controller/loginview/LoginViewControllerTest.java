@@ -44,57 +44,43 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class LoginViewControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
     // main user
     private final String testUserName = "Hendry Bracken";
     private final String testUserPw = "stp2021pw";
     private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
+    @InjectMocks
+    StageManager mockApp = new StageManager();
+    private Stage stage;
+    private StageManager app;
     // optional user
     private String testUserOneName;
     private String testUserOnePw;
-
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
     @Mock
     private PrivateChatWebSocket privateChatWebSocket;
-
     @Mock
     private ServerSystemWebSocket serverSystemWebSocket;
-
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
-
     @Mock
     private RestClient restClient;
-
     @Mock
     private HttpResponse<JsonNode> response;
-
     @Mock
     private HttpResponse<JsonNode> response2;
-
     @Mock
     private HttpResponse<JsonNode> response3;
-
     @Mock
     private HttpResponse<JsonNode> response4;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
-    @InjectMocks
-    StageManager mockApp = new StageManager();
     private ModelBuilder builder;
 
     @BeforeClass
@@ -102,6 +88,11 @@ public class LoginViewControllerTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
     @Override
@@ -117,18 +108,13 @@ public class LoginViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
     public void mockLogin() {

@@ -6,8 +6,8 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0" xmlns="http://javafx.com/javafx/11"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="categoryVbox" alignment="TOP_CENTER" prefWidth="190.0" spacing="5.0"
+      xmlns="http://javafx.com/javafx/11">
     <children>
         <HBox alignment="CENTER_LEFT">
             <children>

@@ -3,14 +3,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
-
-<VBox prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <HBox id="titleBarBox" />
-      <VBox id="webViewBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308">
-         <children>
-            <WebView id="spotifyLoginWebView" prefHeight="500.0" prefWidth="500.0" />
-         </children>
-      </VBox>
-   </children>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1">
+    <children>
+        <HBox id="titleBarBox"/>
+        <VBox id="webViewBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308">
+            <children>
+                <WebView id="spotifyLoginWebView" prefHeight="500.0" prefWidth="500.0"/>
+            </children>
+        </VBox>
+    </children>
 </VBox>

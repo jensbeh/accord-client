@@ -3,8 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0"
-      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns:fx="http://javafx.com/fxml/1" id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0"
+      minWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <VBox id="channelBox" minWidth="190.0" HBox.hgrow="ALWAYS">
             <children>

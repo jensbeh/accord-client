@@ -44,37 +44,34 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class SnakeControllerTest extends ApplicationTest {
-    private StageManager app;
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
+    private StageManager app;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
 
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(SnakeControllerTest.class);
     }
 
     @Override
@@ -89,18 +86,13 @@ public class SnakeControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(SnakeControllerTest.class);
     }
 
     public void mockLogin() {
