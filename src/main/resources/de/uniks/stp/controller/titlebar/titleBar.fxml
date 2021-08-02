@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+
+<HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT">
+         <children>
+            <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../icons/AccordIcon.png" />
+               </image>
+            </ImageView>
+            <Label text="Accord">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+         <HBox.margin>
+            <Insets bottom="5.0" left="5.0" top="5.0" />
+         </HBox.margin>
+      </HBox>
+      <HBox id="titleBarSpace" />
+      <HBox id="titleButtons" alignment="CENTER_RIGHT" spacing="2.0">
+         <children>
+            <Button id="minButton" mnemonicParsing="false" prefWidth="25.0" text="-" />
+            <Button id="maxButton" mnemonicParsing="false" prefWidth="25.0" text="+" />
+            <Button id="closeButton" mnemonicParsing="false" prefWidth="25.0" text="X" />
+         </children>
+      </HBox>
+   </children>
+</HBox>
