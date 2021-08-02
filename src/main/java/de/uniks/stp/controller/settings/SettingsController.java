@@ -190,6 +190,8 @@ public class SettingsController {
         ResourceBundle lang = StageManager.getLangBundle();
         generalButton.setText(lang.getString("button.settings_general"));
         audioButton.setText(lang.getString("button.settings_audio"));
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
+
         if (connectionButton != null) {
             connectionButton.setText(lang.getString("button.settings_connection"));
         }
