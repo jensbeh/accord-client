@@ -119,9 +119,12 @@ public class SpotifyConnection {
         Scene scene = new Scene(Objects.requireNonNull(spotifyLoginView));
 
         webView = (WebView) spotifyLoginView.lookup("#spotifyLoginWebView");
+
+        // create titleBar
         HBox titleBarBox = (HBox) spotifyLoginView.lookup("#titleBarBox");
         titleBarController = new TitleBarController(loginStage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(true);
 
         createHttpServer();

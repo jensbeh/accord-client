@@ -41,9 +41,11 @@ public class SettingsController {
 
     public void init(Stage stage) {
         //init view
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         root = (Pane) view.lookup("#root");

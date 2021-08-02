@@ -152,9 +152,11 @@ public class ServerSettingsCategoryController extends SubSetting {
                     scene.setFill(Color.TRANSPARENT);
                     scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
+                    // create titleBar
                     HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
                     TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
                     titleBarController.init();
+                    titleBarController.setTheme();
                     titleBarController.setMaximizable(false);
 
                     stage.setScene(scene);

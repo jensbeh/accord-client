@@ -29,9 +29,11 @@ public class StartSnakeController {
     }
 
     public void init(Stage stage) {
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         startGame = (Button) view.lookup("#button_start");

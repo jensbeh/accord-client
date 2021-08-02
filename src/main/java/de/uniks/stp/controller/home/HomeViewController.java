@@ -80,9 +80,11 @@ public class HomeViewController {
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
 
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(true);
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");

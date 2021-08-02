@@ -37,9 +37,11 @@ public class InviteUsersController {
     }
 
     public void init(Stage stage) {
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         root = (VBox) view.lookup("#rootInvite");

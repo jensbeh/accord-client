@@ -321,9 +321,11 @@ public class ChatViewController {
             scene.setFill(Color.TRANSPARENT);
             scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
+            // create titleBar
             HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
             TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
             titleBarController.init();
+            titleBarController.setTheme();
             titleBarController.setMaximizable(false);
 
             Label msg = (Label) subview.lookup("#deleteWarning");
@@ -470,9 +472,11 @@ public class ChatViewController {
                 scene.setFill(Color.TRANSPARENT);
                 scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
+                // create titleBar
                 HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
                 TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
                 titleBarController.init();
+                titleBarController.setTheme();
                 titleBarController.setMaximizable(false);
 
                 Label msg = (Label) subview.lookup("#editWarningText");

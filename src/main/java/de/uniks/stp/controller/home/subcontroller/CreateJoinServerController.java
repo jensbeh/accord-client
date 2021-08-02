@@ -63,9 +63,11 @@ public class CreateJoinServerController {
      * Initialise all view parameters
      */
     public void init() {
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         tapPane = (TabPane) view.lookup("#tabView");

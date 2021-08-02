@@ -50,9 +50,11 @@ public class LoginViewController {
     }
 
     public void init(Stage stage) {
+        // create titleBar
         HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");

@@ -76,9 +76,11 @@ public class SnakeGameController {
     }
 
     public void init(Stage stage) throws InterruptedException {
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         titleBarController = new TitleBarController(stage, titleBarBox, builder);
         titleBarController.init();
+        titleBarController.setTheme();
         titleBarController.setMaximizable(false);
 
         loadAllSounds();

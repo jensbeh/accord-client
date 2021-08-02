@@ -43,16 +43,12 @@ public class ServerSettingsController {
     }
 
     public void init(Stage stage) {
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarBox, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
 
         //init of sideButtons
         root = (Pane) view.lookup("#root");
