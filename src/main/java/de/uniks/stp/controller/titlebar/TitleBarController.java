@@ -42,7 +42,6 @@ public class TitleBarController {
             e.printStackTrace();
         }
         titleBarBox.getChildren().add(titleBarView);
-
     }
 
     /**
