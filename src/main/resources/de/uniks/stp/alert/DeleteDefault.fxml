@@ -6,13 +6,18 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox id="errorVbox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="187.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="errorLabel" text="Label" />
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+      <HBox id="titleBarBox" />
+      <VBox id="errorVbox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="187.0" prefWidth="601.0">
          <children>
-            <Button id="okButton" mnemonicParsing="false" text="Button" />
+            <Label id="errorLabel" text="Label" />
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button id="okButton" mnemonicParsing="false" text="Button" />
+               </children>
+            </HBox>
          </children>
-      </HBox>
+      </VBox>
    </children>
 </VBox>

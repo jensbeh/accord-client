@@ -3,6 +3,7 @@ package de.uniks.stp.controller.server.subcontroller.serversettings;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.SubSetting;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
@@ -15,13 +16,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -167,7 +172,7 @@ public class ServerSettingsChannelController extends SubSetting {
         if (okButton != null) {
             this.okButton.setOnAction(null);
         }
-        if (stage != null ){
+        if (stage != null) {
             this.stage.close();
             stage = null;
         }
@@ -324,13 +329,33 @@ public class ServerSettingsChannelController extends SubSetting {
             if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
                 try {
                     ResourceBundle lang = StageManager.getLangBundle();
+
                     Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
                     stage = new Stage();
+                    stage.initStyle(StageStyle.TRANSPARENT);
                     Scene scene = new Scene(root);
                     stage.setTitle(lang.getString("label.error"));
                     stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+                    // DropShadow of Scene
+                    scene.setFill(Color.TRANSPARENT);
+                    scene.getStylesheets().add(StageManager.class.getResource("styles/DropShadow/DropShadow.css").toExternalForm());
+
+                    HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+                    try {
+                        Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+                        titleBarBox.getChildren().add(titleBarView);
+                        TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                        titleBarController.init();
+                        titleBarController.setMaximizable(false);
+                        titleBarController.setTheme();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     stage.setScene(scene);
                     stage.show();
+
                     okButton = (Button) root.lookup("#okButton");
                     okButton.setText("OK");
                     okButton.setOnAction(this::closeStage);
