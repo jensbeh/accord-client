@@ -24,6 +24,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -275,6 +276,10 @@ public class HomeViewController {
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/CreateJoinView.css").toExternalForm());
 
             createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
