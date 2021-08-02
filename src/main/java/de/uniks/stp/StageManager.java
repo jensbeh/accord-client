@@ -339,14 +339,19 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/snake/view/startSnakeView.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
-            // init controller
-            startSnakeController = new StartSnakeController(root, builder);
-            startSnakeController.init();
-            startSnakeController.setTheme();
-
             //start snake stage
             subStage = new Stage();
+            subStage.initStyle(StageStyle.TRANSPARENT);
             subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/snake.css").toExternalForm());
+
+            // init controller
+            startSnakeController = new StartSnakeController(root, builder);
+            startSnakeController.init(subStage);
+            startSnakeController.setTheme();
 
             subStage.setTitle("Snake");
             subStage.setResizable(false);
