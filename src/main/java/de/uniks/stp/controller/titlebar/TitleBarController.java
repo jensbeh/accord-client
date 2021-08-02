@@ -26,10 +26,14 @@ public class TitleBarController {
     private double x, y;
     private boolean topBorderIsSized;
 
+    /**
+     * @param stage       from the view where the titleBar is added
+     * @param titleBarBox where the view is loading to
+     */
     public TitleBarController(Stage stage, HBox titleBarBox, ModelBuilder builder) {
         this.stage = stage;
         this.builder = builder;
-        
+
         try {
             this.titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
         } catch (IOException e) {
@@ -39,7 +43,9 @@ public class TitleBarController {
 
     }
 
-
+    /**
+     * init the titleBar and calculate the space when the view is made bigger/smaller
+     */
     public void init() {
         titleBarSpaceBox = (HBox) titleBarView.lookup("#titleBarSpace");
         logoAndLabelBox = (HBox) titleBarView.lookup("#titleLogoAndLabel");
@@ -53,6 +59,9 @@ public class TitleBarController {
         setOnListener();
     }
 
+    /**
+     * creates onListener for the Buttons and Labels
+     */
     private void setOnListener() {
         minButton.setOnAction(event -> stage.setIconified(true));
         maxButton.setOnAction(event -> {
@@ -76,6 +85,9 @@ public class TitleBarController {
         logoAndLabelBox.setOnMouseReleased(event -> topBorderIsSized = false);
     }
 
+    /**
+     * sets the new stage position
+     */
     private void setStagePos(MouseEvent event) {
         if (!topBorderIsSized) {
             stage.setX(event.getScreenX() - x);
@@ -83,6 +95,9 @@ public class TitleBarController {
         }
     }
 
+    /**
+     * gets the current stage position
+     */
     private void getScenePos(MouseEvent event) {
         int border = 5;
         double mouseEventX = event.getSceneX(),
@@ -94,6 +109,13 @@ public class TitleBarController {
         }
         x = event.getSceneX();
         y = event.getSceneY();
+    }
+
+    /**
+     * sets if the view should be able to maximize or not
+     */
+    public void setMaximizable(boolean state) {
+        maxButton.setDisable(!state);
     }
 
     public void setTheme() {
@@ -112,9 +134,5 @@ public class TitleBarController {
     private void setDarkMode() {
         titleBarView.getStylesheets().clear();
         titleBarView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/TitleBar.css")).toExternalForm());
-    }
-
-    public void setMaximizable(boolean state) {
-        maxButton.setDisable(!state);
     }
 }
