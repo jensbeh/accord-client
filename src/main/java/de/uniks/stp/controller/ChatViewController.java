@@ -315,7 +315,6 @@ public class ChatViewController {
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
-            stage.setTitle(lang.getString("window_title_delete_message"));
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
@@ -327,6 +326,7 @@ public class ChatViewController {
             titleBarController.init();
             titleBarController.setTheme();
             titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("window_title_delete_message"));
 
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
@@ -471,6 +471,7 @@ public class ChatViewController {
                 // DropShadow of Scene
                 scene.setFill(Color.TRANSPARENT);
                 scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+                lang = StageManager.getLangBundle();
 
                 // create titleBar
                 HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
@@ -478,13 +479,13 @@ public class ChatViewController {
                 titleBarController.init();
                 titleBarController.setTheme();
                 titleBarController.setMaximizable(false);
+                titleBarController.setTitle(lang.getString("title.edit_warning"));
+
 
                 Label msg = (Label) subview.lookup("#editWarningText");
                 Button yes = (Button) subview.lookup("#deleteEditMessage");
                 Button no = (Button) subview.lookup("#abortEditMessage");
                 //language
-                lang = StageManager.getLangBundle();
-                stage.setTitle(lang.getString("title.edit_warning"));
                 msg.setText(lang.getString("label.edit_warning"));
                 yes.setText(lang.getString("button.edit_delete"));
                 no.setText(lang.getString("button.abort_edit_delete"));

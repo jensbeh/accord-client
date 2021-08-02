@@ -47,6 +47,7 @@ public class SettingsController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
 
         root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");

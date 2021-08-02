@@ -46,8 +46,6 @@ public class StageManager extends Application {
     private static SettingsController settingsController;
     private static Scene scene;
     private static ResourceBundle langBundle;
-    private static String stageTitleName;
-    private static String subStageTitleName;
     private static ServerSettingsController serverSettingsController;
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
@@ -139,7 +137,6 @@ public class StageManager extends Application {
             loginViewController = new LoginViewController(root, builder);
             loginViewController.init(stage);
             loginViewController.setTheme();
-            setStageTitle("window_title_login");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.sizeToScene();
@@ -161,7 +158,6 @@ public class StageManager extends Application {
             builder.setHomeViewController(homeViewController);
             homeViewController.init(stage);
             homeViewController.setTheme();
-            setStageTitle("window_title_home");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.sizeToScene();
@@ -236,7 +232,6 @@ public class StageManager extends Application {
             settingsController = new SettingsController(builder, root);
             settingsController.init(subStage);
             settingsController.setTheme();
-            setSubStageTitle("window_title_settings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -275,7 +270,6 @@ public class StageManager extends Application {
             serverSettingsController.init(subStage);
             serverSettingsController.setTheme();
 
-            setSubStageTitle("window_title_serverSettings");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -314,7 +308,6 @@ public class StageManager extends Application {
             inviteUsersController.init(subStage);
             inviteUsersController.setTheme();
 
-            setSubStageTitle("window_title_inviteUsers");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -353,7 +346,6 @@ public class StageManager extends Application {
             startSnakeController.init(subStage);
             startSnakeController.setTheme();
 
-            subStage.setTitle("Snake");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.centerOnScreen();
@@ -399,7 +391,6 @@ public class StageManager extends Application {
             snakeGameController.init(subStage);
             snakeGameController.setTheme();
 
-            subStage.setTitle("Snake");
             subStage.setResizable(false);
             subStage.setScene(scene);
             subStage.sizeToScene();
@@ -444,16 +435,6 @@ public class StageManager extends Application {
         return langBundle;
     }
 
-    public static void setStageTitle(String name) {
-        stageTitleName = name;
-        stage.setTitle(getLangBundle().getString(stageTitleName));
-    }
-
-    public static void setSubStageTitle(String name) {
-        subStageTitleName = name;
-        subStage.setTitle(getLangBundle().getString(subStageTitleName));
-    }
-
     public static void resetLangBundle() {
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
     }
@@ -463,14 +444,6 @@ public class StageManager extends Application {
      */
     public static void onLanguageChanged() {
         resetLangBundle();
-
-        // Titles
-        if (stageTitleName != null && !stageTitleName.equals("")) {
-            stage.setTitle(getLangBundle().getString(stageTitleName));
-        }
-        if (subStageTitleName != null && !subStageTitleName.equals("")) {
-            subStage.setTitle(getLangBundle().getString(subStageTitleName));
-        }
 
         settingsController.onLanguageChanged();
 

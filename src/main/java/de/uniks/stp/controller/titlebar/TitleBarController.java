@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ public class TitleBarController {
     private Parent titleBarView;
     private HBox titleBarSpaceBox;
     private HBox logoAndLabelBox;
+    private Label accordTitleLabel;
     private Button minButton;
     private Button maxButton;
     private Button closeButton;
@@ -49,6 +51,7 @@ public class TitleBarController {
     public void init() {
         titleBarSpaceBox = (HBox) titleBarView.lookup("#titleBarSpace");
         logoAndLabelBox = (HBox) titleBarView.lookup("#titleLogoAndLabel");
+        accordTitleLabel = (Label) titleBarView.lookup("#Label_AccordTitleBar");
         HBox buttonsBox = (HBox) titleBarView.lookup("#titleButtons");
         minButton = (Button) titleBarView.lookup("#Button_minTitleBar");
         maxButton = (Button) titleBarView.lookup("#Button_maxTitleBar");
@@ -116,6 +119,13 @@ public class TitleBarController {
      */
     public void setMaximizable(boolean state) {
         maxButton.setDisable(!state);
+    }
+
+    /**
+     * sets the view title
+     */
+    public void setTitle(String title) {
+        accordTitleLabel.setText(title);
     }
 
     public void setTheme() {

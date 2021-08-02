@@ -35,6 +35,7 @@ public class StartSnakeController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
+        titleBarController.setTitle("Snake");
 
         startGame = (Button) view.lookup("#button_start");
         exitGame = (Button) view.lookup("#button_exit");

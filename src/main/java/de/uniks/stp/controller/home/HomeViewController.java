@@ -86,6 +86,7 @@ public class HomeViewController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Accord");
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");

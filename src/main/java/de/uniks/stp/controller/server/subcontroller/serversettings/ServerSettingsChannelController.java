@@ -333,7 +333,6 @@ public class ServerSettingsChannelController extends SubSetting {
                     stage = new Stage();
                     stage.initStyle(StageStyle.TRANSPARENT);
                     Scene scene = new Scene(root);
-                    stage.setTitle(lang.getString("label.error"));
                     stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
 
                     // DropShadow of Scene
@@ -346,6 +345,7 @@ public class ServerSettingsChannelController extends SubSetting {
                     titleBarController.init();
                     titleBarController.setTheme();
                     titleBarController.setMaximizable(false);
+                    titleBarController.setTitle(lang.getString("label.error"));
 
                     stage.setScene(scene);
                     stage.show();

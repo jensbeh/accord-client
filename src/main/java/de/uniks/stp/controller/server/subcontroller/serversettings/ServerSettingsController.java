@@ -49,6 +49,7 @@ public class ServerSettingsController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_serverSettings"));
 
         //init of sideButtons
         root = (Pane) view.lookup("#root");

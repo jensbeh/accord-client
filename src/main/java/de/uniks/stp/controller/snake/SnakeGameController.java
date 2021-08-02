@@ -82,6 +82,7 @@ public class SnakeGameController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
+        titleBarController.setTitle("Snake");
 
         loadAllSounds();
 

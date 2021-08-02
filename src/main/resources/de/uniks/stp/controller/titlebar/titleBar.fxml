@@ -9,14 +9,14 @@
 
 <HBox id="titleBarBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT" maxWidth="73.0" minWidth="73.0" prefWidth="73.0">
+      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT" maxWidth="200.0" minWidth="200.0" prefWidth="200.0">
          <children>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../icons/AccordIcon.png" />
                </image>
             </ImageView>
-            <Label id="Label_AccordTitleBar" text="Accord">
+            <Label id="Label_AccordTitleBar" maxWidth="170.0" minWidth="170.0" prefWidth="170.0" text="Accord">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
