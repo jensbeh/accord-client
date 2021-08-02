@@ -317,6 +317,10 @@ public class ChatViewController {
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(lang.getString("window_title_delete_message"));
 
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/DropShadow/DropShadow.css").toExternalForm());
+
             HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
             try {
                 Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
@@ -468,6 +472,10 @@ public class ChatViewController {
                 Scene scene = new Scene(subview);
                 stage = new Stage();
                 stage.initStyle(StageStyle.TRANSPARENT);
+
+                // DropShadow of Scene
+                scene.setFill(Color.TRANSPARENT);
+                scene.getStylesheets().add(StageManager.class.getResource("styles/DropShadow/DropShadow.css").toExternalForm());
 
                 HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
                 try {
