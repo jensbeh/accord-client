@@ -2,6 +2,7 @@ package de.uniks.stp.controller.home.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -12,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -44,6 +46,7 @@ public class CreateJoinServerController {
     private Label create_errorLabel;
     private Label join_errorLabel;
     private String last_error_type;
+    private TitleBarController titleBarController;
 
 
     /**
@@ -60,6 +63,17 @@ public class CreateJoinServerController {
      * Initialise all view parameters
      */
     public void init() {
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        try {
+            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+            titleBarBox.getChildren().add(titleBarView);
+            titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setMaximizable(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         tapPane = (TabPane) view.lookup("#tabView");
         create_tab = tapPane.getTabs().get(0);
         join_tab = tapPane.getTabs().get(1);
@@ -273,10 +287,16 @@ public class CreateJoinServerController {
     private void setWhiteMode() {
         tapPane.getStylesheets().clear();
         tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/CreateJoinView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         tapPane.getStylesheets().clear();
         tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/CreateJoinView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 }
