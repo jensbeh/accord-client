@@ -647,8 +647,8 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     private String getUserDescription(String id) {
-        for (User u: builder.getPersonalUser().getUser()){
-            if(u.getId().equals(id)){
+        for (User u : builder.getPersonalUser().getUser()) {
+            if (u.getId().equals(id)) {
                 return u.getDescription();
             }
         }
