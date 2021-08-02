@@ -37,7 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageView {
-    boolean loadVideo;
     private String urlType;
     private ModelBuilder builder;
     private ChatViewController chatViewController;
@@ -282,7 +281,7 @@ public class MessageView {
     }
 
     private void setVideo(String url, MediaView mediaView) {
-        Media mediaUrl = null;
+        Media mediaUrl;
         if (urlType.equals("localVideo")) {
             File file = new File(url);
             mediaUrl = new Media(file.toURI().toString());
@@ -335,7 +334,7 @@ public class MessageView {
             int height = 0;
             int width = 0;
             if (!urlType.equals("None")) {
-                URL url_stream = null;
+                URL url_stream;
                 if (url.contains("src/test")) {
                     File file = new File(url);
                     url_stream = new URL(file.toURI().toString());

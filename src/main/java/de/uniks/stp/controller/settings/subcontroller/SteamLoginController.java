@@ -57,9 +57,6 @@ public class SteamLoginController {
         java.net.CookieHandler.setDefault(new java.net.CookieManager());
         webView.getEngine().load("https://steamcommunity.com/login/home/?goto=");
         webView.getEngine().locationProperty().addListener(this::getSteam64ID);
-//        popUp.setScene(new Scene(webView));
-//        popUp.setTitle(StageManager.getLangBundle().getString("window_title_steam"));
-//        popUp.show();
 
         loginStage.setScene(scene);
         loginStage.setResizable(true);
