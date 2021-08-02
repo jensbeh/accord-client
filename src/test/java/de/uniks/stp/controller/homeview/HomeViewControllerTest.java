@@ -1,7 +1,5 @@
 package de.uniks.stp.controller.homeview;
 
-import com.wrapper.spotify.model_objects.IPlaylistItem;
-import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
@@ -112,7 +110,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -125,7 +123,6 @@ public class HomeViewControllerTest extends ApplicationTest {
     static void setup() {
         MockitoAnnotations.openMocks(HomeViewController.class);
     }
-
 
 
     public void mockLogout() {
@@ -188,7 +185,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(spotifyConnection).init(any());
         doCallRealMethod().when(spotifyConnection).stopDescriptionScheduler();
         doCallRealMethod().when(spotifyConnection).updateUserDescriptionScheduler();
-        doCallRealMethod().when(spotifyConnection).personalUserListener(any(), any(), any(), any(),any());
+        doCallRealMethod().when(spotifyConnection).personalUserListener(any(), any(), any(), any(), any());
         doCallRealMethod().when(spotifyConnection).showSpotifyPopupView(any(), any(), any());
         doCallRealMethod().when(spotifyConnection).updateValuesUser(any());
         when(spotifyConnection.getCurrentlyPlayingSongAlbumID()).thenReturn("resources/de/uniks/stp/icons/Spotify_Icon_RGB_Green.png");
