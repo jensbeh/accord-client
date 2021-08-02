@@ -1,6 +1,5 @@
 package de.uniks.stp;
 
-import com.wrapper.spotify.SpotifyApi;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.login.LoginViewController;
@@ -20,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import kong.unirest.Unirest;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
@@ -73,6 +73,7 @@ public class StageManager extends Application {
         // start application
         stage = primaryStage;
         stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+        stage.initStyle(StageStyle.TRANSPARENT);
 
         showLoginScreen();
         primaryStage.show();
@@ -134,7 +135,7 @@ public class StageManager extends Application {
             builder.setRestClient(restClient);
             builder.loadSettings();
             loginViewController = new LoginViewController(root, builder);
-            loginViewController.init();
+            loginViewController.init(stage);
             loginViewController.setTheme();
             setStageTitle("window_title_login");
             stage.setResizable(false);
@@ -156,14 +157,14 @@ public class StageManager extends Application {
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             builder.setHomeViewController(homeViewController);
-            homeViewController.init();
+            homeViewController.init(stage);
             homeViewController.setTheme();
             setStageTitle("window_title_home");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.sizeToScene();
-            stage.setMinHeight(650);
-            stage.setMinWidth(900);
+            stage.setMinHeight(625);
+            stage.setMinWidth(1020);
             stage.setOnCloseRequest(event -> stopAll());
             stage.show();
         } catch (Exception e) {

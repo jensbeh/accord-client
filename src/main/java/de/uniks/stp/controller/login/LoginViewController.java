@@ -2,13 +2,16 @@ package de.uniks.stp.controller.login;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
@@ -39,6 +42,7 @@ public class LoginViewController {
     private String error;
     private String connectionError;
     public boolean noConnectionTest;
+    private double x, y;
 
     public LoginViewController(Parent root, ModelBuilder builder) {
         this.restClient = builder.getRestClient();
@@ -46,7 +50,45 @@ public class LoginViewController {
         this.builder = builder;
     }
 
-    public void init() {
+    public void init(Stage stage) {
+        HBox titleBarSpace = (HBox) root.lookup("#titleBarSpace");
+        HBox logoAndLabel = (HBox) root.lookup("#titleLogoAndLabel");
+        HBox Buttons = (HBox) root.lookup("#titleButtons");
+        Button minButton = (Button) root.lookup("#minButton");
+        Button maxButton = (Button) root.lookup("#maxButton");
+        maxButton.setDisable(true);
+        Button closeButton = (Button) root.lookup("#closeButton");
+        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(73 + 83));
+
+        minButton.setOnAction(event -> {
+            Stage thisStage = (Stage) minButton.getScene().getWindow();
+            thisStage.setIconified(true);
+        });
+        maxButton.setOnAction(event -> {
+            Stage thisStage = (Stage) maxButton.getScene().getWindow();
+            if (thisStage.isMaximized()) {
+                thisStage.setMaximized(false);
+            } else {
+                thisStage.setMaximized(true);
+            }
+        });
+        closeButton.setOnAction(event -> {
+            Stage thisStage = (Stage) closeButton.getScene().getWindow();
+            thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+        });
+
+        titleBarSpace.setOnMouseDragged(event -> {
+            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            thisStage.setX(event.getScreenX() - x);
+            thisStage.setY(event.getScreenY() - y);
+        });
+
+        titleBarSpace.setOnMousePressed(event -> {
+            x = event.getSceneX();
+            y = event.getSceneY();
+        });
+
+
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");
         rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
