@@ -3,18 +3,20 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<HBox id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <VBox id="settingsItems" maxHeight="1.7976931348623157E308" minHeight="360.0" minWidth="200.0">
-            <children>
-                <Button mnemonicParsing="false" prefHeight="32.0" prefWidth="198.0"
-                        style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: center-left; -fx-background-radius: 0;"
-                        text="Button"/>
-            </children>
-        </VBox>
-        <VBox id="settingsContainer" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308"
-              maxWidth="1.7976931348623157E308" minWidth="580.0">
-        </VBox>
-    </children>
-</HBox>
+
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox id="titleBarBox" />
+      <HBox id="root" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+         <children>
+            <VBox id="settingsItems" maxHeight="1.7976931348623157E308" minHeight="360.0" minWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" prefHeight="32.0" prefWidth="198.0" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: center-left; -fx-background-radius: 0;" text="Button" />
+               </children>
+            </VBox>
+            <VBox id="settingsContainer" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="580.0" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

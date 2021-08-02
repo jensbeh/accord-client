@@ -223,14 +223,14 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
-            // init controller
-            settingsController = new SettingsController(builder, root);
-            settingsController.init();
-            settingsController.setTheme();
-
             subStage = new Stage();
+            subStage.initStyle(StageStyle.TRANSPARENT);
             subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
 
+            // init controller
+            settingsController = new SettingsController(builder, root);
+            settingsController.init(subStage);
+            settingsController.setTheme();
             setSubStageTitle("window_title_settings");
             subStage.setResizable(false);
             subStage.setScene(scene);
