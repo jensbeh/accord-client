@@ -6,6 +6,7 @@ import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
@@ -36,6 +37,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
@@ -307,11 +309,26 @@ public class ChatViewController {
     private void delete(ActionEvent actionEvent) {
         try {
             ResourceBundle lang = StageManager.getLangBundle();
+
             Parent subview = FXMLLoader.load(Objects.requireNonNull(
                     StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
             stage.setTitle(lang.getString("window_title_delete_message"));
+
+            HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
+            try {
+                Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+                titleBarBox.getChildren().add(titleBarView);
+                TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                titleBarController.init();
+                titleBarController.setMaximizable(false);
+                titleBarController.setTheme();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
@@ -450,6 +467,20 @@ public class ChatViewController {
                         StageManager.class.getResource("alert/EditWarningMessage.fxml")), StageManager.getLangBundle());
                 Scene scene = new Scene(subview);
                 stage = new Stage();
+                stage.initStyle(StageStyle.TRANSPARENT);
+
+                HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
+                try {
+                    Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+                    titleBarBox.getChildren().add(titleBarView);
+                    TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                    titleBarController.init();
+                    titleBarController.setMaximizable(false);
+                    titleBarController.setTheme();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 Label msg = (Label) subview.lookup("#editWarningText");
                 Button yes = (Button) subview.lookup("#deleteEditMessage");
                 Button no = (Button) subview.lookup("#abortEditMessage");
