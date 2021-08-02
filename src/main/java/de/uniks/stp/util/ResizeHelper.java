@@ -81,7 +81,7 @@ public class ResizeHelper {
         private Stage stage;
         private Cursor cursorEvent = Cursor.DEFAULT;
         private boolean resizing = true;
-        private int border = 4;
+        private int border = 5;
         private double startX = 0;
         private double startY = 0;
         private double screenOffsetX = 0;

@@ -24,6 +24,7 @@ public class TitleBarController {
     private Button closeButton;
 
     private double x, y;
+    private boolean topBorderIsSized;
 
     public TitleBarController(Stage stage, Parent titleBarView, ModelBuilder builder) {
         this.stage = stage;
@@ -60,6 +61,7 @@ public class TitleBarController {
                 maxButton.setText("\uD83D\uDDD7");
             }
         });
+
         closeButton.setOnAction(event -> {
             Stage thisStage = (Stage) closeButton.getScene().getWindow();
             thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -67,18 +69,31 @@ public class TitleBarController {
 
         titleBarSpaceBox.setOnMouseDragged(this::setStagePos);
         titleBarSpaceBox.setOnMousePressed(this::getScenePos);
+        titleBarSpaceBox.setOnMouseReleased(event -> topBorderIsSized = false);
 
         logoAndLabelBox.setOnMouseDragged(this::setStagePos);
         logoAndLabelBox.setOnMousePressed(this::getScenePos);
+        logoAndLabelBox.setOnMouseReleased(event -> topBorderIsSized = false);
     }
 
     private void setStagePos(MouseEvent event) {
-        Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        thisStage.setX(event.getScreenX() - x);
-        thisStage.setY(event.getScreenY() - y);
+        if (!topBorderIsSized) {
+            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            thisStage.setX(event.getScreenX() - x);
+            thisStage.setY(event.getScreenY() - y);
+        }
+
     }
 
     private void getScenePos(MouseEvent event) {
+        int border = 5;
+        double mouseEventX = event.getSceneX(),
+                mouseEventY = event.getSceneY(),
+                sceneWidth = stage.getScene().getWidth();
+
+        if ((mouseEventX < border && mouseEventY < border) || (mouseEventX > sceneWidth - border && mouseEventY < border) || (mouseEventY < border)) {
+            topBorderIsSized = true;
+        }
         x = event.getSceneX();
         y = event.getSceneY();
     }
