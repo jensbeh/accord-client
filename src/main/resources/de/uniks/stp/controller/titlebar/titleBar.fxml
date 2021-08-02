@@ -9,7 +9,7 @@
 
 <HBox id="titleBarBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT">
+      <HBox id="titleLogoAndLabel" alignment="CENTER_LEFT" maxWidth="78.0" minWidth="78.0" prefWidth="78.0">
          <children>
             <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -23,11 +23,14 @@
             </Label>
          </children>
          <HBox.margin>
-            <Insets bottom="5.0" left="5.0" top="5.0" />
+            <Insets />
          </HBox.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
       </HBox>
       <HBox id="titleBarSpace" />
-      <HBox id="titleButtons" alignment="TOP_RIGHT" spacing="2.0">
+      <HBox id="titleButtons" alignment="TOP_RIGHT" maxWidth="109.0" minWidth="109.0" prefWidth="109.0" spacing="2.0">
          <children>
             <Button id="Button_minTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="-" />
             <Button id="Button_maxTitleBar" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" text="+" />

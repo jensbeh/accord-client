@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -15,9 +16,9 @@ public class TitleBarController {
     private final Stage stage;
     private final Parent titleBarView;
     private final ModelBuilder builder;
-    private HBox titleBarSpace;
-    private HBox logoAndLabel;
-    private HBox Buttons;
+    private HBox titleBarSpaceBox;
+    private HBox logoAndLabelBox;
+    private HBox buttonsBox;
     private Button minButton;
     private Button maxButton;
     private Button closeButton;
@@ -32,14 +33,14 @@ public class TitleBarController {
 
 
     public void init() {
-        titleBarSpace = (HBox) titleBarView.lookup("#titleBarSpace");
-        logoAndLabel = (HBox) titleBarView.lookup("#titleLogoAndLabel");
-        Buttons = (HBox) titleBarView.lookup("#titleButtons");
+        titleBarSpaceBox = (HBox) titleBarView.lookup("#titleBarSpace");
+        logoAndLabelBox = (HBox) titleBarView.lookup("#titleLogoAndLabel");
+        buttonsBox = (HBox) titleBarView.lookup("#titleButtons");
         minButton = (Button) titleBarView.lookup("#Button_minTitleBar");
         maxButton = (Button) titleBarView.lookup("#Button_maxTitleBar");
         closeButton = (Button) titleBarView.lookup("#Button_closeTitleBar");
 
-        titleBarSpace.prefWidthProperty().bind(stage.widthProperty().subtract(99 + 83));
+        titleBarSpaceBox.prefWidthProperty().bind(stage.widthProperty().subtract(logoAndLabelBox.getPrefWidth() + buttonsBox.getPrefWidth())); // 78 + 109 = 187
 
         setOnListener();
     }
@@ -51,27 +52,29 @@ public class TitleBarController {
         });
         maxButton.setOnAction(event -> {
             Stage thisStage = (Stage) maxButton.getScene().getWindow();
-            if (thisStage.isMaximized()) {
-                thisStage.setMaximized(false);
-            } else {
-                thisStage.setMaximized(true);
-            }
+            thisStage.setMaximized(!thisStage.isMaximized());
         });
         closeButton.setOnAction(event -> {
             Stage thisStage = (Stage) closeButton.getScene().getWindow();
             thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
-        titleBarSpace.setOnMouseDragged(event -> {
-            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            thisStage.setX(event.getScreenX() - x);
-            thisStage.setY(event.getScreenY() - y);
-        });
+        titleBarSpaceBox.setOnMouseDragged(this::setStagePos);
+        titleBarSpaceBox.setOnMousePressed(this::getScenePos);
 
-        titleBarSpace.setOnMousePressed(event -> {
-            x = event.getSceneX();
-            y = event.getSceneY();
-        });
+        logoAndLabelBox.setOnMouseDragged(this::setStagePos);
+        logoAndLabelBox.setOnMousePressed(this::getScenePos);
+    }
+
+    private void setStagePos(MouseEvent event) {
+        Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        thisStage.setX(event.getScreenX() - x);
+        thisStage.setY(event.getScreenY() - y);
+    }
+
+    private void getScenePos(MouseEvent event) {
+        x = event.getSceneX();
+        y = event.getSceneY();
     }
 
     public void setTheme() {
