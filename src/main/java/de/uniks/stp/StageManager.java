@@ -385,14 +385,19 @@ public class StageManager extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/snake/view/snakeGameView.fxml")), getLangBundle());
             Scene scene = new Scene(root);
 
-            // init controller
-            snakeGameController = new SnakeGameController(scene, root, builder);
-            snakeGameController.init();
-            snakeGameController.setTheme();
-
             //start snake game stage
             subStage = new Stage();
+            subStage.initStyle(StageStyle.TRANSPARENT);
             subStage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/snake.css").toExternalForm());
+
+            // init controller
+            snakeGameController = new SnakeGameController(scene, root, builder);
+            snakeGameController.init(subStage);
+            snakeGameController.setTheme();
 
             subStage.setTitle("Snake");
             subStage.setResizable(false);
@@ -408,6 +413,7 @@ public class StageManager extends Application {
                 }
             });
             subStage.show();
+            System.out.println(subStage.getWidth() + " " + subStage.getHeight());
         } catch (Exception e) {
             e.printStackTrace();
         }
