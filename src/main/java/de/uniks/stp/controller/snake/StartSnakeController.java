@@ -4,14 +4,12 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.titlebar.TitleBarController;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class StartSnakeController {
@@ -32,15 +30,9 @@ public class StartSnakeController {
 
     public void init(Stage stage) {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(false);
 
         startGame = (Button) view.lookup("#button_start");
         exitGame = (Button) view.lookup("#button_exit");

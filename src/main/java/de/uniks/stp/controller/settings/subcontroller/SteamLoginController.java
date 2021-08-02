@@ -44,16 +44,9 @@ public class SteamLoginController {
 
         webView = (WebView) steamLoginView.lookup("#spotifyLoginWebView");
         HBox titleBarBox = (HBox) steamLoginView.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(loginStage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(true);
-            titleBarController.setTheme();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(loginStage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(true);
 
         webView.prefHeightProperty().bind(loginStage.heightProperty());
         webView.prefWidthProperty().bind(loginStage.widthProperty());

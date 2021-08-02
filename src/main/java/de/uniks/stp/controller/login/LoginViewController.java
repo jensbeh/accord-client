@@ -7,7 +7,6 @@ import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -16,7 +15,10 @@ import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -49,15 +51,9 @@ public class LoginViewController {
 
     public void init(Stage stage) {
         HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(false);
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");

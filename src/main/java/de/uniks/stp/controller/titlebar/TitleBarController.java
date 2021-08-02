@@ -2,7 +2,7 @@ package de.uniks.stp.controller.titlebar;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -10,15 +10,15 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class TitleBarController {
     private final Stage stage;
-    private final Parent titleBarView;
     private final ModelBuilder builder;
+    private Parent titleBarView;
     private HBox titleBarSpaceBox;
     private HBox logoAndLabelBox;
-    private HBox buttonsBox;
     private Button minButton;
     private Button maxButton;
     private Button closeButton;
@@ -26,17 +26,24 @@ public class TitleBarController {
     private double x, y;
     private boolean topBorderIsSized;
 
-    public TitleBarController(Stage stage, Parent titleBarView, ModelBuilder builder) {
+    public TitleBarController(Stage stage, HBox titleBarBox, ModelBuilder builder) {
         this.stage = stage;
-        this.titleBarView = titleBarView;
         this.builder = builder;
+        
+        try {
+            this.titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+
     }
 
 
     public void init() {
         titleBarSpaceBox = (HBox) titleBarView.lookup("#titleBarSpace");
         logoAndLabelBox = (HBox) titleBarView.lookup("#titleLogoAndLabel");
-        buttonsBox = (HBox) titleBarView.lookup("#titleButtons");
+        HBox buttonsBox = (HBox) titleBarView.lookup("#titleButtons");
         minButton = (Button) titleBarView.lookup("#Button_minTitleBar");
         maxButton = (Button) titleBarView.lookup("#Button_maxTitleBar");
         closeButton = (Button) titleBarView.lookup("#Button_closeTitleBar");
@@ -47,25 +54,18 @@ public class TitleBarController {
     }
 
     private void setOnListener() {
-        minButton.setOnAction(event -> {
-            Stage thisStage = (Stage) minButton.getScene().getWindow();
-            thisStage.setIconified(true);
-        });
+        minButton.setOnAction(event -> stage.setIconified(true));
         maxButton.setOnAction(event -> {
-            Stage thisStage = (Stage) maxButton.getScene().getWindow();
-            if (thisStage.isMaximized()) {
-                thisStage.setMaximized(false);
+            if (stage.isMaximized()) {
+                stage.setMaximized(false);
                 maxButton.setText("\uD83D\uDDD6");
             } else {
-                thisStage.setMaximized(true);
+                stage.setMaximized(true);
                 maxButton.setText("\uD83D\uDDD7");
             }
         });
 
-        closeButton.setOnAction(event -> {
-            Stage thisStage = (Stage) closeButton.getScene().getWindow();
-            thisStage.fireEvent(new WindowEvent(thisStage, WindowEvent.WINDOW_CLOSE_REQUEST));
-        });
+        closeButton.setOnAction(event -> stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST)));
 
         titleBarSpaceBox.setOnMouseDragged(this::setStagePos);
         titleBarSpaceBox.setOnMousePressed(this::getScenePos);
@@ -78,11 +78,9 @@ public class TitleBarController {
 
     private void setStagePos(MouseEvent event) {
         if (!topBorderIsSized) {
-            Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            thisStage.setX(event.getScreenX() - x);
-            thisStage.setY(event.getScreenY() - y);
+            stage.setX(event.getScreenX() - x);
+            stage.setY(event.getScreenY() - y);
         }
-
     }
 
     private void getScenePos(MouseEvent event) {

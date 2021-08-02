@@ -120,16 +120,9 @@ public class SpotifyConnection {
 
         webView = (WebView) spotifyLoginView.lookup("#spotifyLoginWebView");
         HBox titleBarBox = (HBox) spotifyLoginView.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(loginStage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(true);
-            titleBarController.setTheme();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(loginStage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(true);
 
         createHttpServer();
         createCodeVerifier();

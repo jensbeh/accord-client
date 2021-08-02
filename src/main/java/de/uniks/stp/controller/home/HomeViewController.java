@@ -81,15 +81,9 @@ public class HomeViewController {
         root = (HBox) view.lookup("#root");
 
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(true);
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -279,7 +273,7 @@ public class HomeViewController {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/CreateJoinView.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();

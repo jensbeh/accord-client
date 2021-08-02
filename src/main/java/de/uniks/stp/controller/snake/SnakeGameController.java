@@ -9,7 +9,6 @@ import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.util.ResourceManager;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -29,7 +28,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -79,15 +77,9 @@ public class SnakeGameController {
 
     public void init(Stage stage) throws InterruptedException {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(false);
 
         loadAllSounds();
 

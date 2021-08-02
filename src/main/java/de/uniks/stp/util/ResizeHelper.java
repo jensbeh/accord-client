@@ -50,7 +50,7 @@ public class ResizeHelper {
         for (Node child : children) {
             if (child instanceof ScrollBar) {
                 isScrollbar = true;
-            } else if (!(child instanceof ScrollBar)) {
+            } else {
                 isScrollbar = false;
                 addListenerDeeply(child, resizeListener);
             }
@@ -69,7 +69,7 @@ public class ResizeHelper {
             for (Node child : children) {
                 if (child instanceof ScrollBar) {
                     isScrollbar = true;
-                } else if (!(child instanceof ScrollBar)) {
+                } else {
                     isScrollbar = false;
                     addListenerDeeply(child, listener);
                 }
@@ -78,10 +78,9 @@ public class ResizeHelper {
     }
 
     static class ResizeListener implements EventHandler<MouseEvent> {
-        private Stage stage;
+        private final Stage stage;
         private Cursor cursorEvent = Cursor.DEFAULT;
         private boolean resizing = true;
-        private int border = 5;
         private double startX = 0;
         private double startY = 0;
         private double screenOffsetX = 0;
@@ -123,7 +122,8 @@ public class ResizeHelper {
                     sceneWidth = scene.getWidth(),
                     sceneHeight = scene.getHeight();
 
-            if (MouseEvent.MOUSE_MOVED.equals(mouseEventType) && stage.isMaximized() == false) {
+            int border = 5;
+            if (MouseEvent.MOUSE_MOVED.equals(mouseEventType) && !stage.isMaximized()) {
                 if (mouseEventX < border && mouseEventY < border) {
                     cursorEvent = Cursor.NW_RESIZE;
                 } else if (mouseEventX < border && mouseEventY > sceneHeight - border) {
@@ -192,7 +192,7 @@ public class ResizeHelper {
 
             }
 
-            if (MouseEvent.MOUSE_DRAGGED.equals(mouseEventType) && Cursor.DEFAULT.equals(cursorEvent) && resizing == false) {
+            if (MouseEvent.MOUSE_DRAGGED.equals(mouseEventType) && Cursor.DEFAULT.equals(cursorEvent) && !resizing) {
                 stage.setX(mouseEvent.getScreenX() + screenOffsetX);
                 stage.setY(mouseEvent.getScreenY() + screenOffsetY);
 

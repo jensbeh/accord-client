@@ -64,15 +64,9 @@ public class CreateJoinServerController {
      */
     public void init() {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        try {
-            Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-            titleBarBox.getChildren().add(titleBarView);
-            titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setMaximizable(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        titleBarController.init();
+        titleBarController.setMaximizable(false);
 
         tapPane = (TabPane) view.lookup("#tabView");
         create_tab = tapPane.getTabs().get(0);

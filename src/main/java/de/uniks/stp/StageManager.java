@@ -230,7 +230,7 @@ public class StageManager extends Application {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/SettingsView.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // init controller
             settingsController = new SettingsController(builder, root);
@@ -268,7 +268,7 @@ public class StageManager extends Application {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/ServerSettings.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // init controller
             serverSettingsController = new ServerSettingsController(root, builder, builder.getCurrentServer());
@@ -307,7 +307,7 @@ public class StageManager extends Application {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/ServerSettings.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // init controller
             inviteUsersController = new InviteUsersController(root, builder, builder.getCurrentServer());
@@ -346,7 +346,7 @@ public class StageManager extends Application {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/snake.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // init controller
             startSnakeController = new StartSnakeController(root, builder);
@@ -392,7 +392,7 @@ public class StageManager extends Application {
 
             // DropShadow of Scene
             scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(StageManager.class.getResource("styles/themes/bright/snake.css").toExternalForm());
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // init controller
             snakeGameController = new SnakeGameController(scene, root, builder);

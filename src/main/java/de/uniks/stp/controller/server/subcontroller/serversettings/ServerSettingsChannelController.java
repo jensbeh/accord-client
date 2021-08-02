@@ -26,7 +26,6 @@ import kong.unirest.JsonNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -339,19 +338,12 @@ public class ServerSettingsChannelController extends SubSetting {
 
                     // DropShadow of Scene
                     scene.setFill(Color.TRANSPARENT);
-                    scene.getStylesheets().add(StageManager.class.getResource("styles/DropShadow/DropShadow.css").toExternalForm());
+                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
                     HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-                    try {
-                        Parent titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBar.fxml")), StageManager.getLangBundle());
-                        titleBarBox.getChildren().add(titleBarView);
-                        TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-                        titleBarController.init();
-                        titleBarController.setMaximizable(false);
-                        titleBarController.setTheme();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
+                    titleBarController.init();
+                    titleBarController.setMaximizable(false);
 
                     stage.setScene(scene);
                     stage.show();
