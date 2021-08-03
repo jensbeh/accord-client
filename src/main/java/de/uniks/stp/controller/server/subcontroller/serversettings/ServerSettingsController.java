@@ -45,7 +45,14 @@ public class ServerSettingsController {
     public void init(Stage stage) {
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);

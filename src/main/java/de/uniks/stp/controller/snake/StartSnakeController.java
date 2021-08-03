@@ -4,12 +4,14 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.titlebar.TitleBarController;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class StartSnakeController {
@@ -31,7 +33,14 @@ public class StartSnakeController {
     public void init(Stage stage) {
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);

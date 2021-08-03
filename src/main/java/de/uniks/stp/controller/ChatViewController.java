@@ -322,7 +322,14 @@ public class ChatViewController {
 
             // create titleBar
             HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
-            TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
             titleBarController.init();
             titleBarController.setTheme();
             titleBarController.setMaximizable(false);
@@ -475,7 +482,14 @@ public class ChatViewController {
 
                 // create titleBar
                 HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
-                TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
+                Parent titleBarView = null;
+                try {
+                    titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                titleBarBox.getChildren().add(titleBarView);
+                TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
                 titleBarController.init();
                 titleBarController.setTheme();
                 titleBarController.setMaximizable(false);

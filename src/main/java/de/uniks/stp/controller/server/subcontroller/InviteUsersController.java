@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -39,7 +40,14 @@ public class InviteUsersController {
     public void init(Stage stage) {
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        titleBarController = new TitleBarController(stage, titleBarBox, builder);
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);

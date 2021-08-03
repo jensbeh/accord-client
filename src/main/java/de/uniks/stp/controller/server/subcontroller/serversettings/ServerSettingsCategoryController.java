@@ -27,6 +27,7 @@ import javafx.util.StringConverter;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -46,7 +47,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     private Stage stage;
     private Button okButton;
     private Categories selectedCategory;
-
 
     public ServerSettingsCategoryController(Parent view, ModelBuilder builder, Server server) {
         this.view = view;
@@ -152,7 +152,14 @@ public class ServerSettingsCategoryController extends SubSetting {
 
                     // create titleBar
                     HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-                    TitleBarController titleBarController = new TitleBarController(stage, titleBarBox, builder);
+                    Parent titleBarView = null;
+                    try {
+                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    titleBarBox.getChildren().add(titleBarView);
+                    TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
                     titleBarController.init();
                     titleBarController.setTheme();
                     titleBarController.setMaximizable(false);

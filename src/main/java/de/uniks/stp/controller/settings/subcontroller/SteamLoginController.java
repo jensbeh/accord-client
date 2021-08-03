@@ -46,7 +46,14 @@ public class SteamLoginController {
 
         // create titleBar
         HBox titleBarBox = (HBox) steamLoginView.lookup("#titleBarBox");
-        titleBarController = new TitleBarController(loginStage, titleBarBox, builder);
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(loginStage, titleBarView, builder);
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
