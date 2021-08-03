@@ -51,7 +51,7 @@ public class ServerListCell implements javafx.util.Callback<ListView<Server>, Li
                 cell.setId("server");
                 cell.setAlignment(Pos.CENTER);
                 topCircle.setId("serverName_" + item.getId());
-                
+
                 cell.getChildren().addAll(circle, serverName, topCircle);
             }
             this.setGraphic(cell);
