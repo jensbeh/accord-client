@@ -30,6 +30,8 @@ public class ConnectionController extends SubSetting {
     private VBox steamVbox;
     private boolean spotifyShow;
     private boolean steamShow;
+    private Button spotifyDisconnect;
+    private VBox spotifyVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -42,7 +44,10 @@ public class ConnectionController extends SubSetting {
         spotifyToggleStackPane = (StackPane) view.lookup("#spotifyToggleStackPane");
         steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
 
-        VBox spotifyVbox = (VBox) view.lookup("#spotifyVbox");
+        spotifyDisconnect = (Button) view.lookup("#disconnectSpotify");
+        spotifyDisconnect.setOnMouseClicked(this::disconnectSpotify);
+
+        spotifyVbox = (VBox) view.lookup("#spotifyVbox");
         steamVbox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
         steamVbox.setVisible(false);
@@ -89,6 +94,16 @@ public class ConnectionController extends SubSetting {
         init();
     }
 
+    private void disconnectSpotify(MouseEvent mouseEvent) {
+        builder.setSpotifyRefresh(null);
+        builder.setSpotifyToken(null);
+        builder.setSpotifyShow(false);
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().stopDescriptionScheduler();
+        }
+        builder.saveSettings();
+        spotifyVbox.setVisible(false);
+    }
 
     private void toggleInit(StackPane stackPane, Rectangle backgroundToggle, Button toggleButton, Boolean toggleShow) {
         setBackgroundToggleButton(stackPane, backgroundToggle, toggleButton);
