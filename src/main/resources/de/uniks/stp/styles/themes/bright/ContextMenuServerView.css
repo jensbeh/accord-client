@@ -1,0 +1,49 @@
+/* VARIABLES: */
+* {
+    -my-background-color: #e3e5e8;                  /* Change according to your needs */
+    -my-background-color-highlighted: #a0bade;      /* Change according to your needs */
+    -my-font-color: BLACK;             /* Change according to your needs */
+    -my-font-color-highlighted: WHITE; /* Change according to your needs */
+}
+
+/* CONTEXT MENU */
+#AudioMemberControlContextMenu {
+    -fx-pref-width: 180;
+    -fx-background-color: -my-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-padding: 10 8 10 8;
+}
+
+/* SEPARATOR */
+#AudioMemberControlContextMenu .separator:horizontal .line {
+    -fx-border-color: transparent;
+    -fx-padding: 10 0 0 0;
+}
+
+/* MENU ITEM */
+/*** The item itself (not hovered / focused) ***/
+#muteAudioMemberMenuItem, #unMuteAudioMemberMenuItem, #sliderAudioMemberMenuItem {
+    -fx-background-color: -my-background-color;
+    -fx-background-radius: 5 5 5 5;
+}
+
+/*** The item's label (not hovered / focused) ***/
+#muteAudioMemberMenuItem .label, #unMuteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label {
+    -fx-text-fill: -my-font-color;
+}
+
+/*** The item's label (disabled) ***/
+#muteAudioMemberMenuItem .label:disabled, #unMuteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled {
+    -fx-opacity: 1.0;
+}
+
+/*** The item itself (hovered / focused) ***/
+#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #unMuteAudioMemberMenuItem:focused, #unMuteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered {
+    -fx-background-color: -my-background-color-highlighted;
+}
+
+/*** The item's label (hovered / focused) ***/
+#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #unMuteAudioMemberMenuItem:focused .label, #unMuteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label {
+    -fx-text-fill: -my-font-color-highlighted;
+}
+
