@@ -1,5 +1,6 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
@@ -20,10 +21,12 @@ import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private final ServerViewController serverViewController;
+    private final ModelBuilder builder;
     private ListView<ServerChannel> channelListView;
 
-    public ServerChannelListCell(ServerViewController serverViewController) {
+    public ServerChannelListCell(ServerViewController serverViewController, ModelBuilder builder) {
         this.serverViewController = serverViewController;
+        this.builder = builder;
     }
 
 
@@ -199,11 +202,10 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 muteBox.getChildren().addAll(muteLabel, checkBoxMute);
                 muteBox.setSpacing(100);
                 muteBox.prefWidthProperty().bind(contextMenu.widthProperty());
-                CustomMenuItem customMenuItem = new CustomMenuItem(muteBox);
-                customMenuItem.setHideOnClick(false);
+                CustomMenuItem muteItem = new CustomMenuItem(muteBox);
+                muteItem.setHideOnClick(false);
 
                 // initialize sliderItem - with slider and custom thumb on showing contextMenu
-                MenuItem sliderItem = new MenuItem();
                 Slider slider = new Slider(0, 100, 50);
                 slider.setPrefWidth(155);
                 slider.setId("slider_userVolume");
@@ -216,6 +218,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                         valueTextInputSlider.setFill(Color.WHITE);
                     }
                     valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                    thumbInputSlider.getChildren().clear();
                     thumbInputSlider.getChildren().add(valueTextInputSlider);
                 });
                 VBox sliderBox = new VBox();
@@ -224,16 +227,17 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 volumeLabel.setFont(new Font(14));
                 volumeLabel.setText("User Volume");
                 sliderBox.getChildren().addAll(volumeLabel, slider);
-                sliderItem.setGraphic(sliderBox);
+                CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
+                sliderItem.setHideOnClick(false);
 
                 // set item id's
                 contextMenu.setId("AudioMemberControlContextMenu");
-                customMenuItem.setId("muteAudioMemberMenuItem");
+                muteItem.setId("muteAudioMemberMenuItem");
                 sliderItem.setId("sliderAudioMemberMenuItem");
                 SeparatorMenuItem sep = new SeparatorMenuItem();
 
                 // set contextMenuItems
-                contextMenu.getItems().addAll(customMenuItem, sep, sliderItem);
+                contextMenu.getItems().addAll(muteItem, sep, sliderItem);
 
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
@@ -281,7 +285,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
                                 audioMemberCell.setOnMouseClicked((ae) -> {
-                                    customMenuItem.setOnAction(event -> {
+                                    muteItem.setOnAction(event -> {
                                         if (checkBoxMute.isSelected()) {
                                             audioMemberName.setText(user.getName());
                                             serverViewController.setUnMutedAudioMember(user.getName());
@@ -297,9 +301,8 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 //                                        builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
 //                                        valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
 //                                        builder.saveSettings();
+                                        builder.getAudioStreamClient().setNewVolumeToUser(user.getName(), slider.getValue());
                                         valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
-
-                                        System.out.println(user.getName() + ": " + newValue);
                                     });
                                 });
                                 audioMemberCount++;

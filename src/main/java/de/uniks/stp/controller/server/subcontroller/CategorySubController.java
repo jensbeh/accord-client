@@ -40,7 +40,7 @@ public class CategorySubController {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channelList");
-        ServerChannelListCell channelListCellFactory = new ServerChannelListCell(serverViewController);
+        ServerChannelListCell channelListCellFactory = new ServerChannelListCell(serverViewController, builder);
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         channelList.getSelectionModel().select(builder.getCurrentAudioChannel());

@@ -160,4 +160,8 @@ public class AudioStreamReceiver implements Runnable {
         }
         currentlySetNewSpeaker = false;
     }
+
+    public void setNewVolumeToUser(String userName, double newVolume) {
+        System.out.println("Set new Volume " + newVolume + " to user " + userName);
+    }
 }
