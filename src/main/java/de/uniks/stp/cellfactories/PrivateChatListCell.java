@@ -3,6 +3,7 @@ package de.uniks.stp.cellfactories;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -39,29 +40,17 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
         protected void updateItem(PrivateChat item, boolean empty) {
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
-            HBox nameAndNotificationCell = new HBox();
-            HBox nameCell = new HBox();
-            HBox lastMessageCell = new HBox();
-            Label name = new Label();
-            Label message = new Label();
-            HBox notificationCell = new HBox();
-            notificationCell.setId("notification");
             super.updateItem(item, empty);
 
             if (!empty) {
+                float notificationCircleSize = 20;
+                HBox nameAndNotificationCell = new HBox();
+                HBox nameCell = new HBox();
+                HBox lastMessageCell = lastMessageCell();
 
-                cell.setOnMouseEntered(event -> {
-                    if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
-                        cell.getStyleClass().clear();
-                        cell.getStyleClass().add("unselectedChatHover");
-                    }
-                });
-                cell.setOnMouseExited(event -> {
-                    if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
-                        cell.getStyleClass().clear();
-                        cell.getStyleClass().add("unselectedChat");
-                    }
-                });
+                HBox notificationCell = notificationCell(notificationCircleSize);
+
+                addMouseEvents(cell, item);
 
                 // init complete cell
                 cell.setId("cell_" + item.getId());
@@ -75,38 +64,11 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 nameCell.setPrefWidth(159);
                 nameCell.setAlignment(Pos.CENTER_LEFT);
 
-                // init lastMessage cell
-                lastMessageCell.setPrefWidth(179);
-                lastMessageCell.setAlignment(Pos.CENTER_LEFT);
-                lastMessageCell.setStyle("-fx-padding: 5 0 0 0");
-
-                // init notificationCell cell
-                notificationCell.setAlignment(Pos.CENTER);
-                float notificationCircleSize = 20;
-                notificationCell.setMinHeight(notificationCircleSize);
-                notificationCell.setMaxHeight(notificationCircleSize);
-                notificationCell.setMinWidth(notificationCircleSize);
-                notificationCell.setMaxWidth(notificationCircleSize);
-                notificationCell.setStyle("-fx-padding: 15 15 0 0;");
-
-                // set userName
-                name.setId(item.getId());
-                name.getStyleClass().clear();
-                name.getStyleClass().add("name");
-                name.setText(item.getName());
-                name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10; -fx-text-fill: white;");
-
-                nameCell.getChildren().add(name);
+                nameCell.getChildren().add(name(item));
 
                 // set lastMessage
                 if (item.getMessage().size() > 0) {
-                    message.setId("msg_" + item.getId());
-                    message.getStyleClass().clear();
-                    message.getStyleClass().add("msg");
-                    message.setPrefWidth(USE_COMPUTED_SIZE);
-                    message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10; -fx-text-fill: white;");
-                    message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-                    lastMessageCell.getChildren().add(message);
+                    lastMessageCell.getChildren().add(getLastMessage(item));
                 }
 
                 // set chatColor - if selected / else not selected
@@ -121,29 +83,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
                 // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
-
-                    Circle background = new Circle(notificationCircleSize / 2);
-                    Circle foreground = new Circle(notificationCircleSize / 2 - 1);
-
-                    //IDs to use CSS styling
-                    background.getStyleClass().clear();
-                    foreground.getStyleClass().clear();
-                    background.getStyleClass().add("notificationCounterBackground");
-                    foreground.getStyleClass().add("notificationCounterForeground");
-                    background.setId("notificationCounterBackground_" + item.getId());
-                    foreground.setId("notificationCounterForeground_" + item.getId());
-
-                    Label numberText = new Label();
-                    numberText.getStyleClass().clear();
-                    numberText.getStyleClass().add("numberTextStyle");
-                    numberText.setId("notificationCounter_" + item.getId());
-                    numberText.setAlignment(Pos.CENTER);
-                    numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
-
-                    StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
-                    stackPaneUnreadMessages.setAlignment(Pos.CENTER);
-
-                    notificationCell.getChildren().add(stackPaneUnreadMessages);
+                    notificationCell.getChildren().add(unreadMessageCounter(notificationCircleSize, item));
                 }
 
                 // set cells finally
@@ -151,6 +91,86 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 cell.getChildren().addAll(nameAndNotificationCell, lastMessageCell);
             }
             this.setGraphic(cell);
+        }
+
+        private Node unreadMessageCounter(float notificationCircleSize, PrivateChat item) {
+            Circle background = new Circle(notificationCircleSize / 2);
+            Circle foreground = new Circle(notificationCircleSize / 2 - 1);
+
+            //IDs to use CSS styling
+            background.getStyleClass().clear();
+            foreground.getStyleClass().clear();
+            background.getStyleClass().add("notificationCounterBackground");
+            foreground.getStyleClass().add("notificationCounterForeground");
+            background.setId("notificationCounterBackground_" + item.getId());
+            foreground.setId("notificationCounterForeground_" + item.getId());
+
+            Label numberText = new Label();
+            numberText.getStyleClass().clear();
+            numberText.getStyleClass().add("numberTextStyle");
+            numberText.setId("notificationCounter_" + item.getId());
+            numberText.setAlignment(Pos.CENTER);
+            numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
+
+            StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
+            stackPaneUnreadMessages.setAlignment(Pos.CENTER);
+            return stackPaneUnreadMessages;
+        }
+
+        private Label name(PrivateChat item) {
+            Label name = new Label();
+            name.setId(item.getId());
+            name.getStyleClass().clear();
+            name.getStyleClass().add("name");
+            name.setText(item.getName());
+            name.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-padding: 5 0 0 10; -fx-text-fill: white;");
+            return name;
+        }
+
+        private HBox lastMessageCell() {
+            HBox lastMessageCell = new HBox();
+            lastMessageCell.setPrefWidth(179);
+            lastMessageCell.setAlignment(Pos.CENTER_LEFT);
+            lastMessageCell.setStyle("-fx-padding: 5 0 0 0");
+            return lastMessageCell;
+        }
+
+        private Label getLastMessage(PrivateChat item) {
+            Label message = new Label();
+            message.setId("msg_" + item.getId());
+            message.getStyleClass().clear();
+            message.getStyleClass().add("msg");
+            message.setPrefWidth(USE_COMPUTED_SIZE);
+            message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10; -fx-text-fill: white;");
+            message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
+            return message;
+        }
+
+        private HBox notificationCell(float notificationCircleSize) {
+            HBox notificationCell = new HBox();
+            notificationCell.setId("notification");
+            notificationCell.setAlignment(Pos.CENTER);
+            notificationCell.setMinHeight(notificationCircleSize);
+            notificationCell.setMaxHeight(notificationCircleSize);
+            notificationCell.setMinWidth(notificationCircleSize);
+            notificationCell.setMaxWidth(notificationCircleSize);
+            notificationCell.setStyle("-fx-padding: 15 15 0 0;");
+            return notificationCell;
+        }
+
+        private void addMouseEvents(VBox cell, PrivateChat item) {
+            cell.setOnMouseEntered(event -> {
+                if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("unselectedChatHover");
+                }
+            });
+            cell.setOnMouseExited(event -> {
+                if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().getName().equals(item.getName())) {
+                    cell.getStyleClass().clear();
+                    cell.getStyleClass().add("unselectedChat");
+                }
+            });
         }
     }
 }
