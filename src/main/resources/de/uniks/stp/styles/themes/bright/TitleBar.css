@@ -1,0 +1,40 @@
+#titleBar {
+    -fx-background-color: #ffffff;
+}
+#Label_AccordTitleBar {
+    -fx-text-fill: BLACK;
+}
+#Button_minTitleBar {
+    -fx-background-color: #ededed;
+    -fx-background-radius: 0 0 0 0;
+    -fx-text-fill: BLACK;
+}
+#Button_minTitleBar:hover {
+    -fx-background-color: #f2f2f2;
+}
+#Button_minTitleBar:pressed {
+    -fx-background-color: #e0e0e0;
+}
+
+#Button_maxTitleBar {
+    -fx-background-color: #ededed;
+    -fx-background-radius: 0 0 0 0;
+    -fx-text-fill: BLACK;
+}
+#Button_maxTitleBar:hover {
+    -fx-background-color: #f2f2f2;
+}
+#Button_maxTitleBar:pressed {
+    -fx-background-color: #e0e0e0;
+}
+
+#Button_closeTitleBar {
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 0 0 0 0;
+}
+#Button_closeTitleBar:hover {
+    -fx-background-color: #ff4a4a;
+}
+#Button_closeTitleBar:pressed {
+    -fx-background-color: #ff1f1f;
+}

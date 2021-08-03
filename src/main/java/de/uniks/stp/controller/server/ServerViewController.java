@@ -41,6 +41,7 @@ public class ServerViewController {
     private final RestClient restClient;
     private final Server server;
     private final Parent view;
+    private final HomeViewController homeViewController;
     private MenuButton serverMenuButton;
     private Label textChannelLabel;
     private Label generalLabel;
@@ -55,7 +56,6 @@ public class ServerViewController {
     private MenuItem inviteUsers;
     private Map<Categories, CategorySubController> categorySubControllerList;
     private VBox categoryBox;
-    private final HomeViewController homeViewController;
     private Line dividerLineUser;
     private VBox userBox;
     private int loadedCategories;
@@ -81,7 +81,6 @@ public class ServerViewController {
         this.serverSystemWebSocket = builder.getServerSystemWebSocket();
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
     }
-
 
 
     public ChatViewController getChatViewController() {
@@ -484,7 +483,6 @@ public class ServerViewController {
         });
     }
 
-
     /**
      * Split Users into offline and online users then update the list
      */
@@ -736,7 +734,6 @@ public class ServerViewController {
         StageManager.showInviteUsersScreen();
     }
 
-
     /**
      * generates new views for all categories of the server
      */
@@ -817,7 +814,6 @@ public class ServerViewController {
             }
         }
     }
-
 
     private void setDarkMode() {
         root.getStylesheets().clear();

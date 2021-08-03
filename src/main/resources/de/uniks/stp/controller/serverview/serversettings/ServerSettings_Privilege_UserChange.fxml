@@ -3,9 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox id="rootPrivilege" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="270.0" prefWidth="400.0" spacing="20.0" xmlns="http://javafx.com/javafx/11"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="rootPrivilege" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="270.0" prefWidth="400.0" spacing="20.0"
+      xmlns="http://javafx.com/javafx/11">
     <children>
         <VBox>
             <children>

@@ -24,25 +24,13 @@ import java.util.TimerTask;
 
 public class ServerChatWebSocket extends Endpoint {
 
-    private Session session;
-    private final Timer noopTimer;
-    private ModelBuilder builder;
     public final String COM_NOOP = "noop";
+    private final Timer noopTimer;
+    private Session session;
+    private ModelBuilder builder;
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
     private String name;
-
-    public void setServerViewController(ServerViewController serverViewController) {
-        this.serverViewController = serverViewController;
-    }
-
-    public ModelBuilder getBuilder() {
-        return builder;
-    }
-
-    public void setBuilder(ModelBuilder builder) {
-        this.builder = builder;
-    }
 
     public ServerChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -56,6 +44,18 @@ public class ServerChatWebSocket extends Endpoint {
         } catch (Exception e) {
             System.err.println("Error during establishing WebSocket connection:");
         }
+    }
+
+    public void setServerViewController(ServerViewController serverViewController) {
+        this.serverViewController = serverViewController;
+    }
+
+    public ModelBuilder getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(ModelBuilder builder) {
+        this.builder = builder;
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.uniks.stp.controller.home.subcontroller;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.CurrentUser;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -12,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
@@ -29,8 +31,8 @@ public class CreateJoinServerController {
     private final RestClient restClient;
     private final ModelBuilder builder;
     private final Parent view;
-    private TextField serverName;
     private final Stage stage;
+    private TextField serverName;
     private Button createServer;
     private Runnable create;
     private String error;
@@ -44,7 +46,7 @@ public class CreateJoinServerController {
     private Label create_errorLabel;
     private Label join_errorLabel;
     private String last_error_type;
-
+    private TitleBarController titleBarController;
 
     /**
      * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
@@ -60,6 +62,20 @@ public class CreateJoinServerController {
      * Initialise all view parameters
      */
     public void init() {
+        // create titleBar
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+
         tapPane = (TabPane) view.lookup("#tabView");
         create_tab = tapPane.getTabs().get(0);
         join_tab = tapPane.getTabs().get(1);
@@ -155,7 +171,7 @@ public class CreateJoinServerController {
      */
     public void onLanguageChanged() {
         ResourceBundle lang = StageManager.getLangBundle();
-        stage.setTitle(lang.getString("window_title_create"));
+        titleBarController.setTitle(lang.getString("window_title_create"));
         createServer.setText(lang.getString("button.create_server"));
         joinServer.setText(lang.getString("button.join_server"));
         create_tab.setText(lang.getString("tabPane.create_server"));
@@ -273,10 +289,16 @@ public class CreateJoinServerController {
     private void setWhiteMode() {
         tapPane.getStylesheets().clear();
         tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/CreateJoinView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         tapPane.getStylesheets().clear();
         tapPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/CreateJoinView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 }

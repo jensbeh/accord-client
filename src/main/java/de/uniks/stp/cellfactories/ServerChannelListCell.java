@@ -16,8 +16,8 @@ import javafx.scene.shape.Circle;
 import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
-    private ListView<ServerChannel> channelListView;
     private final ServerViewController serverViewController;
+    private ListView<ServerChannel> channelListView;
 
     public ServerChannelListCell(ServerViewController serverViewController) {
         this.serverViewController = serverViewController;

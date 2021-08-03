@@ -6,9 +6,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-      minWidth="-Infinity" prefHeight="400.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/13"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="rootUserTemp" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="590.0"
+      xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="590.0" spacing="200.0">
             <children>

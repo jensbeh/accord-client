@@ -7,6 +7,7 @@ import de.uniks.stp.cellfactories.ServerListCell;
 import de.uniks.stp.controller.home.subcontroller.CreateJoinServerController;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.ResourceManager;
@@ -23,23 +24,29 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class HomeViewController {
     private final RestClient restClient;
+    private final Parent view;
+    public boolean inServerChat;
     private HBox root;
     private HBox homeView;
     private ScrollPane scrollPaneServerBox;
-    private final Parent view;
     private ListView<Server> serverList;
     private Circle addServer;
     private Circle addServerBg;
@@ -53,11 +60,11 @@ public class HomeViewController {
     private ServerListCell serverListCellFactory;
     private PrivateViewController privateViewController;
     private Parent privateView;
-    public boolean inServerChat;
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
+    private TitleBarController titleBarController;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -66,12 +73,28 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() throws IOException, URISyntaxException {
+    public void init(Stage stage) throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
+
+        // create titleBar
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Accord");
+
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
         homeButton = (Circle) view.lookup("#homeButton");
@@ -255,7 +278,12 @@ public class HomeViewController {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
             stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             createJoinServerController = new CreateJoinServerController(root, builder, stage);
             createJoinServerController.init();
@@ -344,6 +372,7 @@ public class HomeViewController {
 
     /**
      * User sends a message to the server that he has arrived
+     *
      * @param server the server
      */
     private void userArrivedNotification(Server server) {
@@ -587,6 +616,9 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
@@ -597,6 +629,9 @@ public class HomeViewController {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 

@@ -24,10 +24,10 @@ public class ConnectionController extends SubSetting {
     private final Button steamToggleButton = new Button();
     private final Rectangle backgroundSpotifyButton = new Rectangle(30, 10, Color.RED);
     private final Rectangle backgroundSteamButton = new Rectangle(30, 10, Color.RED);
-    private SteamLoginController steamLoginController;
-    private VBox steamVbox;
     StackPane spotifyToggleStackPane;
     StackPane steamToggleStackPane;
+    private SteamLoginController steamLoginController;
+    private VBox steamVbox;
     private boolean spotifyShow;
     private boolean steamShow;
 
@@ -70,12 +70,14 @@ public class ConnectionController extends SubSetting {
 
     private void onSpotifyChange(MouseEvent mouseEvent) {
         builder.getSpotifyConnection().init(this);
+        builder.getSpotifyConnection().setTheme();
     }
 
     private void onSteamChange(MouseEvent mouseEvent) {
         steamLoginController = new SteamLoginController(builder);
         steamLoginController.refresh(this::refreshSteam);
         steamLoginController.init();
+        steamLoginController.setTheme();
         init();
     }
 

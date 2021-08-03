@@ -2,12 +2,16 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,14 +33,30 @@ public class SettingsController {
     private Button blockedButton;
 
     private SubSetting subController;
+    private TitleBarController titleBarController;
 
     public SettingsController(ModelBuilder builder, Parent view) {
         this.builder = builder;
         this.view = view;
     }
 
-    public void init() {
+    public void init(Stage stage) {
         //init view
+        // create titleBar
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
+
         root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");
         this.settingsItems.getChildren().clear();
@@ -178,6 +198,8 @@ public class SettingsController {
         ResourceBundle lang = StageManager.getLangBundle();
         generalButton.setText(lang.getString("button.settings_general"));
         audioButton.setText(lang.getString("button.settings_audio"));
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
+
         if (connectionButton != null) {
             connectionButton.setText(lang.getString("button.settings_connection"));
         }
@@ -209,11 +231,17 @@ public class SettingsController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/SettingsView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/SettingsView.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 }
 

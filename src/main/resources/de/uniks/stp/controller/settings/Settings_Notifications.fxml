@@ -4,8 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="360.0"
-      minWidth="580.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+      minHeight="360.0" minWidth="580.0" xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <VBox id="dndRoot" alignment="TOP_RIGHT" prefHeight="360.0" prefWidth="305.0" spacing="5.0">
             <children>

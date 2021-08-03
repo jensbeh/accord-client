@@ -17,16 +17,21 @@ import java.util.*;
 public class GeneralController extends SubSetting {
 
     private final Parent view;
+    private final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
+    private final ModelBuilder builder;
+    Map<String, String> languages = new HashMap<>();
+    Map<String, Locale> locales = new HashMap<>();
     private ComboBox<String> languageSelector;
     private Label selectLanguageLabel;
     private Label selectThemeLabel;
-    private final String PATH_FILE_SETTINGS = Constants.APPDIR_ACCORD_PATH + Constants.CONFIG_PATH + Constants.SETTINGS_FILE;
     private Locale currentLocale;
-    private final ModelBuilder builder;
     private VBox darkModeBox;
     private VBox brightModeBox;
-    Map<String, String> languages = new HashMap<>();
-    Map<String, Locale> locales = new HashMap<>();
+
+    public GeneralController(Parent view, ModelBuilder builder) {
+        this.view = view;
+        this.builder = builder;
+    }
 
     public void setup() {
         // load language from Settings
@@ -42,12 +47,6 @@ public class GeneralController extends SubSetting {
             e.printStackTrace();
         }
     }
-
-    public GeneralController(Parent view, ModelBuilder builder) {
-        this.view = view;
-        this.builder = builder;
-    }
-
 
     @SuppressWarnings("unchecked")
     public void init() {

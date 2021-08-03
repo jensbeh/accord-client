@@ -1,7 +1,5 @@
 package de.uniks.stp.controller.homeview;
 
-import com.wrapper.spotify.model_objects.IPlaylistItem;
-import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlayingContext;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.HomeViewController;
@@ -44,23 +42,18 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)           // TODO important
 public class HomeViewControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
     // main user
     private final String userKey = "c3a981d1-d0a2-47fd-ad60-46c7754d9271";
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
-
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
 
@@ -99,6 +92,11 @@ public class HomeViewControllerTest extends ApplicationTest {
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(HomeViewController.class);
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -112,7 +110,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -120,13 +118,6 @@ public class HomeViewControllerTest extends ApplicationTest {
         app.start(stage);
         this.stage.centerOnScreen();
     }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
-    }
-
-
 
     public void mockLogout() {
         JSONObject jsonString = new JSONObject()
@@ -188,7 +179,7 @@ public class HomeViewControllerTest extends ApplicationTest {
         doCallRealMethod().when(spotifyConnection).init(any());
         doCallRealMethod().when(spotifyConnection).stopDescriptionScheduler();
         doCallRealMethod().when(spotifyConnection).updateUserDescriptionScheduler();
-        doCallRealMethod().when(spotifyConnection).personalUserListener(any(), any(), any(), any(),any());
+        doCallRealMethod().when(spotifyConnection).personalUserListener(any(), any(), any(), any(), any());
         doCallRealMethod().when(spotifyConnection).showSpotifyPopupView(any(), any(), any());
         doCallRealMethod().when(spotifyConnection).updateValuesUser(any());
         when(spotifyConnection.getCurrentlyPlayingSongAlbumID()).thenReturn("resources/de/uniks/stp/icons/Spotify_Icon_RGB_Green.png");
@@ -367,13 +358,14 @@ public class HomeViewControllerTest extends ApplicationTest {
         loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Main", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
+
         // Clicking logout...
         mockLogout();
         clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
     @Test
@@ -386,7 +378,7 @@ public class HomeViewControllerTest extends ApplicationTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
         mockLogout();
         restClient.logout(userKey, response -> {
         });

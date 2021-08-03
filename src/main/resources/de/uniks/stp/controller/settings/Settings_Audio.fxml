@@ -4,8 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0"
-      prefWidth="580.0" spacing="30.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="360.0" prefWidth="580.0" spacing="30.0" xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
             <children>

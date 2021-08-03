@@ -7,8 +7,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0"
+      xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <VBox alignment="CENTER" prefHeight="108.0" prefWidth="580.0">
             <children>

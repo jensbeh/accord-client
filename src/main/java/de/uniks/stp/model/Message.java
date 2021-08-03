@@ -10,9 +10,9 @@ public class Message {
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_SERVER_CHANNEL = "serverChannel";
     public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
+    protected PropertyChangeSupport listeners;
     private String from;
     private String message;
-    protected PropertyChangeSupport listeners;
     private long timestamp;
     private String id;
     private ServerChannel serverChannel;

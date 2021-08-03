@@ -16,22 +16,20 @@ import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.ConnectionController;
+import de.uniks.stp.controller.titlebar.TitleBarController;
+import de.uniks.stp.util.ResizeHelper;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Cell;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -51,13 +49,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SpotifyConnection {
+    private final ModelBuilder builder;
     private String clientID = "f2557b7362074d3b93537b2803ef48b1";
     private String codeVerifier = "";
     private String codeChallenge = "";
     private String code = "";
-    private final ModelBuilder builder;
     private WebView webView;
-    private Stage popUp;
+    private Stage loginStage;
     private HttpServer server;
     private SpotifyApi spotifyApi;
     private AuthorizationCodePKCERequest authorizationCodePKCERequest;
@@ -84,6 +82,17 @@ public class SpotifyConnection {
     private ScheduledFuture<?> handle;
     private ScheduledExecutorService schedulerDescription;
     private GetTrackRequest getTrackRequest;
+    Runnable updatePersonalUserViewRunnable = new Runnable() {
+        public void run() {
+            currentSong = getCurrentlyPlayingSong();
+            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
+        }
+    };
+    private Parent spotifyLoginView;
+    private TitleBarController titleBarController;
 
     public SpotifyConnection(ModelBuilder builder) {
         this.builder = builder;
@@ -104,19 +113,51 @@ public class SpotifyConnection {
         this.getInformationAboutUsersCurrentPlaybackRequest = getInformationAboutUsersCurrentPlaybackRequest;
     }
 
-
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
-        webView = new WebView();
-        popUp = new Stage();
+
+        try {
+            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        loginStage = new Stage();
+        loginStage.initStyle(StageStyle.TRANSPARENT);
+        Scene scene = new Scene(Objects.requireNonNull(spotifyLoginView));
+
+        webView = (WebView) spotifyLoginView.lookup("#loginWebView");
+
+        // create titleBar
+        HBox titleBarBox = (HBox) spotifyLoginView.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(loginStage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Spotify Login");
+
         createHttpServer();
         createCodeVerifier();
         createCodeChallenge();
         webView.getEngine().load(createSpotifyAuthenticationURLPKCE());
         webView.getEngine().getLoadWorker().stateProperty().addListener(this::getSpotifyCode);
-        popUp.setScene(new Scene(webView));
-        popUp.setTitle(StageManager.getLangBundle().getString("window_title_spotify"));
-        popUp.show();
+
+        webView.prefHeightProperty().bind(loginStage.heightProperty());
+        webView.prefWidthProperty().bind(loginStage.widthProperty());
+
+        loginStage.setScene(scene);
+        loginStage.setResizable(true);
+        loginStage.setMinWidth(660);
+        loginStage.setMinHeight(710);
+        loginStage.show();
+        ResizeHelper.addResizeListener(loginStage);
     }
 
     private void createHttpServer() {
@@ -362,16 +403,6 @@ public class SpotifyConnection {
         }
     }
 
-    Runnable updatePersonalUserViewRunnable = new Runnable() {
-        public void run() {
-            currentSong = getCurrentlyPlayingSong();
-            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
-        }
-    };
-
     private void updatePersonalUserView(double elapsed, double duration) {
         bandAndSong.setText(builder.getPersonalUser().getDescription().split("#")[1]);
         javafx.scene.image.Image image = new javafx.scene.image.Image(artwork.getUrl());
@@ -413,7 +444,7 @@ public class SpotifyConnection {
             server.stop(0);
         }
         server = null;
-        popUp.close();
+        loginStage.close();
     }
 
     public void stopPersonalScheduler() {
@@ -426,6 +457,34 @@ public class SpotifyConnection {
     public void stopDescriptionScheduler() {
         if (schedulerDescription != null) {
             schedulerDescription.shutdownNow();
+        }
+    }
+
+    public void setTheme() {
+        if (builder.getTheme().equals("Bright")) {
+            setWhiteMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    private void setWhiteMode() {
+        if (spotifyLoginView != null) {
+            spotifyLoginView.getStylesheets().clear();
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/LoginWebView.css")).toExternalForm());
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
+    }
+
+    private void setDarkMode() {
+        if (spotifyLoginView != null) {
+            spotifyLoginView.getStylesheets().clear();
+            spotifyLoginView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/LoginWebView.css")).toExternalForm());
+        }
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 }

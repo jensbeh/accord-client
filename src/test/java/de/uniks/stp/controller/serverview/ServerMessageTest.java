@@ -43,91 +43,64 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerMessageTest extends ApplicationTest {
-    private Stage stage;
-    private StageManager app;
     private final String testServerName = "TestServer Team Bit Shift";
     private final String testServerId = "5e2fbd8770dd077d03df505";
     private final String testUserMainName = "Hendry Bracken";
     private final String testUserMainPw = "stp2021pw";
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
-
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
-    private HttpResponse<JsonNode> response2;
-
-    @Mock
-    private HttpResponse<JsonNode> response3;
-
-    @Mock
-    private HttpResponse<JsonNode> response4;
-
-    @Mock
-    private HttpResponse<JsonNode> response5;
-
-    @Mock
-    private HttpResponse<JsonNode> response6;
-
-    @Mock
-    private HttpResponse<JsonNode> response7;
-
-    @Mock
-    private HttpResponse<JsonNode> response8;
-
-    @Mock
-    private HttpResponse<JsonNode> response9;
-
-    @Mock
-    private HttpResponse<JsonNode> response10;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Mock
+    private HttpResponse<JsonNode> response2;
+    @Mock
+    private HttpResponse<JsonNode> response3;
+    @Mock
+    private HttpResponse<JsonNode> response4;
+    @Mock
+    private HttpResponse<JsonNode> response5;
+    @Mock
+    private HttpResponse<JsonNode> response6;
+    @Mock
+    private HttpResponse<JsonNode> response7;
+    @Mock
+    private HttpResponse<JsonNode> response8;
+    @Mock
+    private HttpResponse<JsonNode> response9;
+    @Mock
+    private HttpResponse<JsonNode> response10;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
     private ModelBuilder builder;
 
     @BeforeClass
@@ -135,6 +108,11 @@ public class ServerMessageTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(ServerMessageTest.class);
     }
 
     @Override
@@ -150,18 +128,13 @@ public class ServerMessageTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(ServerMessageTest.class);
     }
 
     public void mockLogin() {
@@ -215,7 +188,7 @@ public class ServerMessageTest extends ApplicationTest {
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
-                .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner+"I_AM_NOT_OWNER").put("categories", categories).put("members", members));
+                .put("data", new JSONObject().put("id", testServerId).put("name", testServerName).put("owner", testServerOwner + "I_AM_NOT_OWNER").put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -324,7 +297,7 @@ public class ServerMessageTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
-    @Test
+    //@Test
     public void testSendAllMessage() throws InterruptedException {
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
@@ -344,7 +317,7 @@ public class ServerMessageTest extends ApplicationTest {
         loginInit(true);
         WaitForAsyncUtils.waitForFxEvents();
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -537,7 +510,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -578,7 +551,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));
@@ -610,7 +583,7 @@ public class ServerMessageTest extends ApplicationTest {
         String messageIdA = "5e2fbd8770dd077d03dr458A";
         loginInit(true);
 
-        Platform.runLater(() -> Assert.assertEquals("Accord - Main", stage.getTitle()));
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
 
         ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
         clickOn(serverListView.lookup("#serverName_" + testServerId));

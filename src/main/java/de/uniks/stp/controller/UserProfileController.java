@@ -17,10 +17,10 @@ import java.beans.PropertyChangeEvent;
 public class UserProfileController {
 
     private final ModelBuilder builder;
+    private final Parent view;
     public VBox root;
     public Label userName;
     private Circle onlineStatus;
-    private final Parent view;
     private VBox descriptionBox;
 
 

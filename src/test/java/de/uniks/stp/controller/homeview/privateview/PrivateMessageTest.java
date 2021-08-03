@@ -37,48 +37,36 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PrivateMessageTest extends ApplicationTest {
 
+    @InjectMocks
+    StageManager mockApp = new StageManager();
     @Mock
     private RestClient restClient;
-
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
     @Mock
     private PrivateChatWebSocket privateChatWebSocket;
-
     @Mock
     private ServerSystemWebSocket serverSystemWebSocket;
-
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
-
     @Mock
     private HttpResponse<JsonNode> response;
-
     @Mock
     private HttpResponse<JsonNode> response2;
-
     @Mock
     private HttpResponse<JsonNode> response3;
-
     @Mock
     private HttpResponse<JsonNode> response4;
-
     @Mock
     private HttpResponse<JsonNode> response5;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
 
@@ -87,6 +75,11 @@ public class PrivateMessageTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 
     @Override
@@ -101,21 +94,13 @@ public class PrivateMessageTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @InjectMocks
-    StageManager mockApp = new StageManager();
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 
     public void mockGetServers() {

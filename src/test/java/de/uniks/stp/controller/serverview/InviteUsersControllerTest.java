@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -41,102 +42,72 @@ public class InviteUsersControllerTest extends ApplicationTest {
     private final String testServerId = "5e2fbd8770dd077d03df505";
 
     private final String inviteLinkIds = "5e2fbd8770dd077d445qs900";
+    @InjectMocks
+    StageManager mockApp = new StageManager();
     private int inviteLinksCount = 0;
     private int inviteLinksCountDelete = 0;
-
     @Mock
     private RestClient restClient;
-
     @Mock
     private HttpResponse<JsonNode> response;
-
     @Mock
     private HttpResponse<JsonNode> response2;
-
     @Mock
     private HttpResponse<JsonNode> response3;
-
     @Mock
     private HttpResponse<JsonNode> response4;
-
     @Mock
     private HttpResponse<JsonNode> response5;
-
     @Mock
     private HttpResponse<JsonNode> response6;
-
     @Mock
     private HttpResponse<JsonNode> response7;
-
     @Mock
     private HttpResponse<JsonNode> response8;
-
     @Mock
     private HttpResponse<JsonNode> response9;
-
     @Mock
     private HttpResponse<JsonNode> response10;
-
     @Mock
     private HttpResponse<JsonNode> response11;
-
     @Mock
     private HttpResponse<JsonNode> response12;
-
     @Mock
     private HttpResponse<JsonNode> response13;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor10;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor11;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor12;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor13;
-
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
     @Mock
     private PrivateChatWebSocket privateChatWebSocket;
-
     @Mock
     private ServerSystemWebSocket serverSystemWebSocket;
-
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
-
 
     @BeforeClass
     public static void setupHeadlessMode() {
@@ -144,9 +115,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
-
-    @InjectMocks
-    StageManager mockApp = new StageManager();
 
     @BeforeAll
     static void setup() {
@@ -165,7 +133,7 @@ public class InviteUsersControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
@@ -518,12 +486,13 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals("", checkDel);
 
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#serverMenuButton");
         moveBy(0, 50);
         write("\n");
@@ -548,13 +517,15 @@ public class InviteUsersControllerTest extends ApplicationTest {
         }
         Assert.assertEquals("", checkDelete);
 
-        for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                Platform.runLater(((Stage) object)::close);
+        for (Window window : this.listTargetWindows()) {
+            Stage s = (Stage) window;
+            if (!(((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Accord"))) {
+                Platform.runLater(((Stage) s)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#logoutButton");
     }
 
@@ -599,12 +570,13 @@ public class InviteUsersControllerTest extends ApplicationTest {
         Assert.assertEquals("", checkDel);
 
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
                 break;
             }
         }
+
         clickOn("#logoutButton");
     }
 
@@ -628,9 +600,10 @@ public class InviteUsersControllerTest extends ApplicationTest {
         String inviteLink = linkLabel.getText();
 
         String serverSettingsTitle;
+
         for (Object object : this.listTargetWindows()) {
-            if (!((Stage) object).getTitle().equals("Accord - Main")) {
-                serverSettingsTitle = ((Stage) object).getTitle();
+            if (!((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord")) {
+                serverSettingsTitle = ((Label) ((Stage) object).getScene().lookup("#Label_AccordTitleBar")).getText();
                 Assert.assertNotEquals("", serverSettingsTitle);
                 Platform.runLater(((Stage) object)::close);
                 WaitForAsyncUtils.waitForFxEvents();
@@ -671,8 +644,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("#joinServer");
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals(errorLabel.getText(), "Insert invite link first");
-
-        clickOn("#logoutButton");
     }
 
     @Test

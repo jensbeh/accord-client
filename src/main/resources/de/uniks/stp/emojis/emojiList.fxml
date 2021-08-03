@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
-<VBox id="emojiVbox" prefHeight="200.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="emojiVbox" prefHeight="200.0" xmlns="http://javafx.com/javafx/11">
     <children>
         <HBox spacing="5.0"/>
         <AnchorPane id="emojiAnchorpane" VBox.vgrow="ALWAYS">

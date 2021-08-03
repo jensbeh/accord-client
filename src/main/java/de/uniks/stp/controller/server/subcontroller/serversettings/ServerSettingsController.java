@@ -3,14 +3,17 @@ package de.uniks.stp.controller.server.subcontroller.serversettings;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.SubSetting;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -30,6 +33,7 @@ public class ServerSettingsController {
     private VBox settingsContainer;
     private String userId;
     private VBox settingsBox;
+    private TitleBarController titleBarController;
 
 
     public ServerSettingsController(Parent view, ModelBuilder modelBuilder, Server server) {
@@ -38,7 +42,22 @@ public class ServerSettingsController {
         this.server = server;
     }
 
-    public void init() {
+    public void init(Stage stage) {
+        // create titleBar
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_serverSettings"));
+
         //init of sideButtons
         root = (Pane) view.lookup("#root");
         overview = (Button) view.lookup("#overviewBtn");
@@ -200,10 +219,16 @@ public class ServerSettingsController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ServerSettings.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ServerSettings.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 }

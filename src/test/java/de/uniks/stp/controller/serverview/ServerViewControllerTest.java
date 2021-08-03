@@ -46,87 +46,62 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerViewControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
     private static final String testUserOneName = "Peter";
     private static final String testUserOnePw = "1234";
-
-
+    @InjectMocks
+    StageManager mockApp = new StageManager();
+    private Stage stage;
+    private StageManager app;
     @Mock
     private RestClient restClient;
-
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
     @Mock
     private PrivateChatWebSocket privateChatWebSocket;
-
     @Mock
     private ServerSystemWebSocket serverSystemWebSocket;
-
     @Mock
     private ServerChatWebSocket serverChatWebSocket;
-
     @Mock
     private HttpResponse<JsonNode> response;
-
     @Mock
     private HttpResponse<JsonNode> response2;
-
     @Mock
     private HttpResponse<JsonNode> response3;
-
     @Mock
     private HttpResponse<JsonNode> response4;
-
     @Mock
     private HttpResponse<JsonNode> response5;
-
     @Mock
     private HttpResponse<JsonNode> response6;
-
     @Mock
     private HttpResponse<JsonNode> response7;
-
     @Mock
     private HttpResponse<JsonNode> response8;
-
     @Mock
     private HttpResponse<JsonNode> response9;
-
     @Mock
     private DatagramSocket mockAudioSocket;
-
     @Mock
     private InetAddress inetAddress;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor6;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
     @Captor
     private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
-
     private ModelBuilder builder;
 
     @BeforeClass
@@ -134,6 +109,11 @@ public class ServerViewControllerTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(ServerViewControllerTest.class);
     }
 
     @Override
@@ -158,14 +138,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         builder.getAudioStreamClient();
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @InjectMocks
-    StageManager mockApp = new StageManager();
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(ServerViewControllerTest.class);
     }
 
     public void mockGetServers() {
@@ -574,7 +546,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         privateSystemWebSocketClient.handleMessage(jsonObject);
 
         WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Accord - Login", stage.getTitle());
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
     }
 
 

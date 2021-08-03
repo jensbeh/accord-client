@@ -2,21 +2,21 @@ package de.uniks.stp.controller.login;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Constants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -24,6 +24,9 @@ import java.util.Scanner;
 
 public class LoginViewController {
     private final Parent root;
+    private final RestClient restClient;
+    private final ModelBuilder builder;
+    public boolean noConnectionTest;
     private TextField usernameTextField;
     private PasswordField passwordTextField;
     private CheckBox rememberCheckBox;
@@ -33,12 +36,10 @@ public class LoginViewController {
     private Button settingsButton;
     private Label errorLabel;
     private String message;
-    private final RestClient restClient;
     private Label connectionLabel;
-    private final ModelBuilder builder;
     private String error;
     private String connectionError;
-    public boolean noConnectionTest;
+    private TitleBarController titleBarController;
 
     public LoginViewController(Parent root, ModelBuilder builder) {
         this.restClient = builder.getRestClient();
@@ -46,7 +47,22 @@ public class LoginViewController {
         this.builder = builder;
     }
 
-    public void init() {
+    public void init(Stage stage) {
+        // create titleBar
+        HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+        titleBarController.setTitle("Accord");
+
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");
         rememberCheckBox = (CheckBox) root.lookup("#rememberMeCheckbox");
@@ -368,11 +384,17 @@ public class LoginViewController {
     private void setWhiteMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Login.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         root.getStylesheets().clear();
         root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Login.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     public void setNoConnectionTest(boolean noConnectionTestState) {

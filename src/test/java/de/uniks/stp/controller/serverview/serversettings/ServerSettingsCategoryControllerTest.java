@@ -37,76 +37,52 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
-
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
-
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
-    private HttpResponse<JsonNode> response2;
-
-    @Mock
-    private HttpResponse<JsonNode> response3;
-
-    @Mock
-    private HttpResponse<JsonNode> response4;
-
-    @Mock
-    private HttpResponse<JsonNode> response5;
-
-    @Mock
-    private HttpResponse<JsonNode> response7;
-
-    @Mock
-    private HttpResponse<JsonNode> response8;
-
-    @Mock
-    private HttpResponse<JsonNode> response9;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Mock
+    private HttpResponse<JsonNode> response2;
+    @Mock
+    private HttpResponse<JsonNode> response3;
+    @Mock
+    private HttpResponse<JsonNode> response4;
+    @Mock
+    private HttpResponse<JsonNode> response5;
+    @Mock
+    private HttpResponse<JsonNode> response7;
+    @Mock
+    private HttpResponse<JsonNode> response8;
+    @Mock
+    private HttpResponse<JsonNode> response9;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor7;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor8;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor9;
     private ModelBuilder builder;
 
     @BeforeClass
@@ -114,6 +90,11 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(ServerSettingsCategoryControllerTest.class);
     }
 
     @Override
@@ -136,11 +117,6 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
 
         app.start(stage);
         this.stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(ServerSettingsCategoryControllerTest.class);
     }
 
     public void mockGetServers() {

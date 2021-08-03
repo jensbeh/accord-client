@@ -16,12 +16,12 @@ public class AudioStreamReceiver implements Runnable {
 
     private final ModelBuilder builder;
     private final DatagramSocket socket;
+    private final ArrayList<String> mutedUser = new ArrayList<>();
     private boolean receiverActive;
     private byte[] data;
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
     private volatile boolean stopped;
-    private final ArrayList<String> mutedUser = new ArrayList<>();
     private boolean currentlySetNewSpeaker;
 
     public AudioStreamReceiver(ModelBuilder builder, DatagramSocket socket) {
