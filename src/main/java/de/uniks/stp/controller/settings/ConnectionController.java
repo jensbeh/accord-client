@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -43,6 +44,10 @@ public class ConnectionController extends SubSetting {
         ImageView steamView = (ImageView) view.lookup("#steam");
         spotifyToggleStackPane = (StackPane) view.lookup("#spotifyToggleStackPane");
         steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
+
+        spotifyToggleButton.setMouseTransparent(true);
+        steamToggleButton.setMouseTransparent(true);
+
         spotifyToggleStackPane.setOnMouseClicked(this::spotifyToggle);
         steamToggleStackPane.setOnMouseClicked(this::steamToggle);
 
@@ -108,7 +113,7 @@ public class ConnectionController extends SubSetting {
     }
 
     private void spotifyToggle(MouseEvent mouseEvent) {
-        if (builder.isSpotifyShow() && spotifyToggleStackPane.getAlignment() == Pos.CENTER_RIGHT) {
+        if (builder.isSpotifyShow() && spotifyToggleStackPane.getAlignment(spotifyToggleButton) == Pos.CENTER_RIGHT) {
             spotifyToggleButton.getStyleClass().clear();
             spotifyToggleButton.getStyleClass().add("buttonOff");
             backgroundSpotifyButton.getStyleClass().clear();
@@ -134,14 +139,12 @@ public class ConnectionController extends SubSetting {
     }
 
     private void steamToggle(MouseEvent mouseEvent) {
-        if (builder.isSteamShow() && steamToggleStackPane.getAlignment() == Pos.CENTER_RIGHT) {
-            spotifyToggleButton.getStyleClass().clear();
-            spotifyToggleButton.getStyleClass().add("buttonOff");
-            backgroundSpotifyButton.getStyleClass().clear();
-            backgroundSpotifyButton.getStyleClass().add("backgroundOff");
-            spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
-
-
+        if (builder.isSteamShow() && steamToggleStackPane.getAlignment(steamToggleButton) == Pos.CENTER_RIGHT) {
+            steamToggleButton.getStyleClass().clear();
+            steamToggleButton.getStyleClass().add("buttonOff");
+            backgroundSteamButton.getStyleClass().clear();
+            backgroundSteamButton.getStyleClass().add("backgroundOff");
+            steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
         } else {
             steamToggleButton.getStyleClass().clear();
             steamToggleButton.getStyleClass().add("buttonOn");
@@ -177,8 +180,6 @@ public class ConnectionController extends SubSetting {
             backgroundToggle.getStyleClass().add("backgroundOff");
             StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
         }
-
-        toggleButton.setFocusTraversable(false);
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {

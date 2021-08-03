@@ -256,3 +256,19 @@
 .list-view .list-cell {
     -fx-padding: 0;
 }
+
+#disconnectSpotify {
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: BLACK;
+}
+
+#disconnectSpotify:hover {
+    -fx-background-color: #ffbdbd;
+}
+
+#disconnectSpotify:pressed {
+    -fx-background-color: #ff7d7d;
+}
