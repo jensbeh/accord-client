@@ -281,6 +281,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
                                 if (serverViewController.getMutedAudioMember().contains(user.getName())) {
                                     audioMemberName.setText("\uD83D\uDD07 " + user.getName());
+                                    checkBoxMute.setSelected(true);
                                 }
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
