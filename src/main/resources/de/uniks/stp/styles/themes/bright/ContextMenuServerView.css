@@ -1,9 +1,9 @@
 /* VARIABLES: */
 * {
-    -my-background-color: #e3e5e8;                  /* Change according to your needs */
-    -my-background-color-highlighted: #a0bade;      /* Change according to your needs */
-    -my-font-color: BLACK;             /* Change according to your needs */
-    -my-font-color-highlighted: WHITE; /* Change according to your needs */
+    -my-background-color: #e3e5e8;
+    -my-background-color-highlighted: #a0bade;
+    -my-font-color: BLACK;
+    -my-font-color-highlighted: WHITE;
 }
 
 /* CONTEXT MENU */
@@ -47,3 +47,43 @@
     -fx-text-fill: -my-font-color-highlighted;
 }
 
+
+/* CHECKBOX MUTE */
+#checkBoxMute:disabled {
+  -fx-opacity: 1.0 ;
+}
+#checkBoxMute .box {
+    -fx-background-color: transparent;
+    -fx-border-color: #7da6df;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+}
+
+#checkBoxMute:selected .mark {
+    -fx-background-color: white;
+}
+
+#checkBoxMute:selected .box {
+    -fx-background-color: #7da6df;
+}
+
+/* SLIDER USER VOLUME */
+#slider_userVolume .track {
+    -fx-background-color: #a3a3a3;
+}
+#slider_userVolume .thumb {
+    -fx-background-color: #7da6df;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 25px;
+    -fx-background-radius: 100;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+
+#slider_userVolume .thumb:hover {
+    -fx-background-color: #a0bade;
+}
+
+#slider_userVolume .thumb:pressed {
+    -fx-background-color: #6899de;
+}
