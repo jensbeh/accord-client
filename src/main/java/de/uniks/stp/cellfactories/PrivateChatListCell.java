@@ -41,52 +41,37 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
             super.updateItem(item, empty);
-
             if (!empty) {
                 float notificationCircleSize = 20;
                 HBox nameAndNotificationCell = new HBox();
                 HBox nameCell = new HBox();
                 HBox lastMessageCell = lastMessageCell();
-
                 HBox notificationCell = notificationCell(notificationCircleSize);
 
                 addMouseEvents(cell, item);
-
-                // init complete cell
                 cell.setId("cell_" + item.getId());
                 cell.setPrefHeight(USE_COMPUTED_SIZE);
                 cell.setPrefWidth(179);
-
                 // init name + notification cell
                 nameAndNotificationCell.setSpacing(5);
-
                 // init userName cell
                 nameCell.setPrefWidth(159);
                 nameCell.setAlignment(Pos.CENTER_LEFT);
-
                 nameCell.getChildren().add(name(item));
-
                 // set lastMessage
                 if (item.getMessage().size() > 0) {
                     lastMessageCell.getChildren().add(getLastMessage(item));
-                }
-
-                // set chatColor - if selected / else not selected
+                } // set chatColor - if selected / else not selected
                 if (builder.getCurrentPrivateChat() != null && builder.getCurrentPrivateChat().getName().equals(item.getName())) {
                     cell.getStyleClass().clear();
                     cell.getStyleClass().add("selectedChat");
-                } else {
-                    //Unselected Chat Color
+                } else { //Unselected Chat Color
                     cell.getStyleClass().clear();
                     cell.getStyleClass().add("unselectedChat");
-                }
-
-                // set notification color & count
+                } // set notification color & count
                 if (item.getUnreadMessagesCounter() > 0) {
                     notificationCell.getChildren().add(unreadMessageCounter(notificationCircleSize, item));
-                }
-
-                // set cells finally
+                } // set cells finally
                 nameAndNotificationCell.getChildren().addAll(nameCell, notificationCell);
                 cell.getChildren().addAll(nameAndNotificationCell, lastMessageCell);
             }
