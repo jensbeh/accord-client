@@ -44,56 +44,38 @@ import static org.mockito.Mockito.*;
 public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
 
     private final ArrayList<User> privileged = new ArrayList<>();
-
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
-
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
-    private HttpResponse<JsonNode> response2;
-
-    @Mock
-    private HttpResponse<JsonNode> response3;
-
-    @Mock
-    private HttpResponse<JsonNode> response4;
-
-    @Mock
-    private HttpResponse<JsonNode> response5;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Mock
+    private HttpResponse<JsonNode> response2;
+    @Mock
+    private HttpResponse<JsonNode> response3;
+    @Mock
+    private HttpResponse<JsonNode> response4;
+    @Mock
+    private HttpResponse<JsonNode> response5;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor3;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor4;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor5;
     private ModelBuilder builder;
 
     @BeforeClass
@@ -101,6 +83,11 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(ServerSettingsPrivilegeControllerTest.class);
     }
 
     @Override
@@ -115,18 +102,13 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(ServerSettingsPrivilegeControllerTest.class);
     }
 
     public void mockGetServers() {

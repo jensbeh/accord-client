@@ -20,12 +20,12 @@ public class ServerChannel {
     public static final String PROPERTY_PRIVILEGED_USERS = "privilegedUsers";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
     public static final String PROPERTY_MESSAGE = "message";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String id;
     private int unreadMessagesCounter;
     private boolean privilege;
     private String type;
-    protected PropertyChangeSupport listeners;
     private Categories categories;
     private List<AudioMember> audioMember;
     private List<User> privilegedUsers;

@@ -5,9 +5,11 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.snake.model.Food;
 import de.uniks.stp.controller.snake.model.Game;
 import de.uniks.stp.controller.snake.model.Snake;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.util.ResourceManager;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -26,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -36,8 +40,9 @@ import static de.uniks.stp.controller.snake.Constants.*;
 public class SnakeGameController {
 
     private final Parent view;
-    private ModelBuilder builder;
     private final Scene scene;
+    private final int snakeHead = 0;
+    private ModelBuilder builder;
     private Label scoreLabel;
     private Label highScoreLabel;
     private GraphicsContext brush;
@@ -45,7 +50,6 @@ public class SnakeGameController {
     private int speed = 300;
     private ArrayList<Snake> snake;
     private Food food;
-    private final int snakeHead = 0;
     private ArrayList<Snake> addNewBodyQueue;
     private Timeline gameTimeline;
     private boolean gameOver;
@@ -65,6 +69,7 @@ public class SnakeGameController {
     private MediaPlayer eatingSound;
     private MediaPlayer countDown321Sound;
     private MediaPlayer countDownGoSound;
+    private TitleBarController titleBarController;
 
     public SnakeGameController(Scene scene, Parent view, ModelBuilder builder) {
         this.scene = scene;
@@ -72,7 +77,22 @@ public class SnakeGameController {
         this.builder = builder;
     }
 
-    public void init() throws InterruptedException {
+    public void init(Stage stage) throws InterruptedException {
+        // create titleBar
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+        titleBarController.setTitle("Snake");
+
         loadAllSounds();
 
         gameBox = (VBox) view.lookup("#gameBox");
@@ -671,13 +691,18 @@ public class SnakeGameController {
     private void setWhiteMode() {
         view.getStylesheets().clear();
         view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/snake.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
 
     private void setDarkMode() {
         view.getStylesheets().clear();
         view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/snake.css")).toExternalForm());
+        if (titleBarController != null) {
+            titleBarController.setTheme();
+        }
     }
-
 
     ////////////////////////////////////////////////
     //// only for testing

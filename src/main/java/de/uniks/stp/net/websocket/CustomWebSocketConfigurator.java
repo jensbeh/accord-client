@@ -7,8 +7,8 @@ import java.util.Map;
 
 
 public class CustomWebSocketConfigurator extends ClientEndpointConfig.Configurator {
-    private final String name;
     public final String COM_NAME = "userKey";
+    private final String name;
 
     public CustomWebSocketConfigurator(String name) {
         this.name = name;

@@ -14,9 +14,9 @@ public class Categories {
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_CHANNEL = "channel";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String id;
-    protected PropertyChangeSupport listeners;
     private Server server;
     private List<ServerChannel> channel;
 

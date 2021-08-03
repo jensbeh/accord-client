@@ -23,9 +23,9 @@ public class CategorySubController {
     private final Parent view;
     private final ModelBuilder builder;
     private final Categories category;
+    private final int CHANNEL_HEIGHT = 30;
     private Label categoryName;
     private ListView<ServerChannel> channelList;
-    private final int CHANNEL_HEIGHT = 30;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {

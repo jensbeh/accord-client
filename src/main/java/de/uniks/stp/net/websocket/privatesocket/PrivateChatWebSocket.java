@@ -27,12 +27,26 @@ import java.util.TimerTask;
 
 public class PrivateChatWebSocket extends Endpoint {
 
-    private Session session;
-    private final Timer noopTimer;
-    private ModelBuilder builder;
     public final String COM_NOOP = "noop";
+    private final Timer noopTimer;
+    private Session session;
+    private ModelBuilder builder;
     private PrivateViewController privateViewController;
     private ChatViewController chatViewController;
+
+    public PrivateChatWebSocket(URI endpoint, String userKey) {
+        this.noopTimer = new Timer();
+        try {
+            ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
+                    .configurator(new CustomWebSocketConfigurator(userKey))
+                    .build();
+
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            container.connectToServer(this, clientConfig, endpoint);
+        } catch (Exception e) {
+            System.err.println("Error during establishing WebSocket connection:");
+        }
+    }
 
     public PrivateViewController getPrivateViewController() {
         return privateViewController;
@@ -48,20 +62,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public void setBuilder(ModelBuilder builder) {
         this.builder = builder;
-    }
-
-    public PrivateChatWebSocket(URI endpoint, String userKey) {
-        this.noopTimer = new Timer();
-        try {
-            ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
-                    .configurator(new CustomWebSocketConfigurator(userKey))
-                    .build();
-
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            container.connectToServer(this, clientConfig, endpoint);
-        } catch (Exception e) {
-            System.err.println("Error during establishing WebSocket connection:");
-        }
     }
 
     @Override

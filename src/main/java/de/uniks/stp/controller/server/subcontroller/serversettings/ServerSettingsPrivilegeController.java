@@ -30,6 +30,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
+    private final RestClient restClient;
     private ComboBox<Categories> categoryChoice;
     private ComboBox<ServerChannel> channelChoice;
     private RadioButton privilegeOnButton;
@@ -38,7 +39,6 @@ public class ServerSettingsPrivilegeController extends SubSetting {
     private ServerSubSettingsPrivilegeController serverSubSettingsPrivilegeController;
     private Button changePrivilege;
     private ToggleGroup group;
-    private final RestClient restClient;
     private Categories selectedCategory;
     private ServerChannel selectedChannel;
     private VBox root;

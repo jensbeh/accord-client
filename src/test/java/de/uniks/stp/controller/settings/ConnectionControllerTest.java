@@ -16,10 +16,10 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -47,39 +47,53 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ConnectionControllerTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Mock
-    private HttpResponse<JsonNode> response2;
-
-    @Mock
-    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
-
-    @Mock
-    private PrivateChatWebSocket privateChatWebSocket;
-
-    @Mock
-    private ServerSystemWebSocket serverSystemWebSocket;
-
-    @Mock
-    private ServerChatWebSocket serverChatWebSocket;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
-
-
+    private final AuthorizationCodePKCERequest authRequest = SPOTIFY_API.authorizationCodePKCE(AUTHORIZATION_CODE, CODE_VERIFIER)
+            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthCode.json")).build();
+    private final AuthorizationCodePKCERefreshRequest authRefresh = SPOTIFY_API.authorizationCodePKCERefresh()
+            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthorizationCodeRefresh.json")).build();
+    private final GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = SPOTIFY_API
+            .getInformationAboutUsersCurrentPlayback()
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetInformationAboutUsersCurrentPlaybackRequest.json"))
+            .market(MARKET)
+            .additionalTypes(ADDITIONAL_TYPES)
+            .build();
+    private final GetTrackRequest getTrackRequest = SPOTIFY_API
+            .getTrack(ID_TRACK)
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetTrackRequest.json"))
+            .market(MARKET)
+            .build();
+    private final GetAlbumRequest getAlbumRequest = SPOTIFY_API.getAlbum(ID_ALBUM)
+            .setHttpManager(
+                    TestUtil.MockedHttpManager.returningJson(
+                            "de/uniks/stp/spotifyJson/GetAlbumRequest.json"))
+            .market(MARKET)
+            .build();
     @InjectMocks
     StageManager mockApp = new StageManager();
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Mock
+    private HttpResponse<JsonNode> response2;
+    @Mock
+    private PrivateSystemWebSocketClient privateSystemWebSocketClient;
+    @Mock
+    private PrivateChatWebSocket privateChatWebSocket;
+    @Mock
+    private ServerSystemWebSocket serverSystemWebSocket;
+    @Mock
+    private ServerChatWebSocket serverChatWebSocket;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor2;
 
     public ConnectionControllerTest() throws Exception {
     }
@@ -89,6 +103,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
+    }
+
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(de.uniks.stp.controller.settings.SettingsControllerTest.class);
     }
 
     @Override
@@ -115,11 +134,6 @@ public class ConnectionControllerTest extends ApplicationTest {
 
         app.start(stage);
         stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(de.uniks.stp.controller.settings.SettingsControllerTest.class);
     }
 
     public void mockLogin() {
@@ -149,38 +163,6 @@ public class ConnectionControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
-
-    private final AuthorizationCodePKCERequest authRequest = SPOTIFY_API.authorizationCodePKCE(AUTHORIZATION_CODE, CODE_VERIFIER)
-            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthCode.json")).build();
-
-    private final AuthorizationCodePKCERefreshRequest authRefresh = SPOTIFY_API.authorizationCodePKCERefresh()
-            .setHttpManager(TestUtil.MockedHttpManager.returningJson("de/uniks/stp/spotifyJson/AuthorizationCodeRefresh.json")).build();
-
-    private final GetInformationAboutUsersCurrentPlaybackRequest getInformationAboutUsersCurrentPlaybackRequest = SPOTIFY_API
-            .getInformationAboutUsersCurrentPlayback()
-            .setHttpManager(
-                    TestUtil.MockedHttpManager.returningJson(
-                            "de/uniks/stp/spotifyJson/GetInformationAboutUsersCurrentPlaybackRequest.json"))
-            .market(MARKET)
-            .additionalTypes(ADDITIONAL_TYPES)
-            .build();
-
-    private final GetTrackRequest getTrackRequest = SPOTIFY_API
-            .getTrack(ID_TRACK)
-            .setHttpManager(
-                    TestUtil.MockedHttpManager.returningJson(
-                            "de/uniks/stp/spotifyJson/GetTrackRequest.json"))
-            .market(MARKET)
-            .build();
-
-    private final GetAlbumRequest getAlbumRequest = SPOTIFY_API.getAlbum(ID_ALBUM)
-            .setHttpManager(
-                    TestUtil.MockedHttpManager.returningJson(
-                            "de/uniks/stp/spotifyJson/GetAlbumRequest.json"))
-            .market(MARKET)
-            .build();
-
-
     @Test
     public void ToggleTest() throws InterruptedException {
         loginInit();
@@ -208,7 +190,7 @@ public class ConnectionControllerTest extends ApplicationTest {
         String message = "{\"action\":\"userJoined\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"name\":\"Gustav\",\"description\":\"i.scdn.co\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
-        
+
         message = "{\"action\":\"userDescriptionChanged\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"description\":\"#Against The Current - lullaby#https://i.scdn.co/image/ab67616d00004851186660bbf3b0dd9a5195e182\"}}";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
@@ -216,10 +198,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#spotify");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Spotify Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Spotify Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("http://localhost:8888/callback/code=testCode");
@@ -231,7 +214,7 @@ public class ConnectionControllerTest extends ApplicationTest {
 
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Accord - Settings")) {
+            if (((Label) s.getScene().lookup("#Label_AccordTitleBar")).getText().equals("Accord - Settings")) {
                 Platform.runLater(s::close);
                 break;
             }
@@ -260,10 +243,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#steam");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Steam Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/profiles/1234");
@@ -272,6 +256,7 @@ public class ConnectionControllerTest extends ApplicationTest {
                 break;
             }
         }
+
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
         mockApp.getBuilder().setSteamShow(false);
@@ -296,10 +281,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         clickOn("#button_Connection");
         clickOn("#steam");
         WaitForAsyncUtils.waitForFxEvents();
+
         for (Window window : this.listTargetWindows()) {
             Stage s = (Stage) window;
-            if (s.getTitle().equals("Steam Login")) {
-                WebView webview = (WebView) s.getScene().getRoot();
+            if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
+                WebView webview = (WebView) s.getScene().lookup("#loginWebView");
                 System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/id/Hungriger_Hugo");
@@ -308,6 +294,7 @@ public class ConnectionControllerTest extends ApplicationTest {
                 break;
             }
         }
+
         Assert.assertEquals("1234", mockApp.getBuilder().getSteamToken());
         mockApp.getBuilder().setSteamToken(backupSteamToken);
         mockApp.getBuilder().setSteamShow(false);

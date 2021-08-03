@@ -19,9 +19,9 @@ public class CurrentUser {
     public static final String PROPERTY_PRIVATE_CHAT = "privateChat";
     public static final String PROPERTY_CHANNEL = "channel";
     public static final String PROPERTY_DESCRIPTION = "description";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String userKey;
-    protected PropertyChangeSupport listeners;
     private String password;
     private String id;
     private List<User> user;

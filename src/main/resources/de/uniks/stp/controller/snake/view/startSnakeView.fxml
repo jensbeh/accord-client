@@ -5,29 +5,29 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="219.0" prefWidth="453.0" style="-fx-background-color: #292929;"
-      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="openSnakeBox" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1">
     <children>
-        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+        <HBox id="titleBarBox"/>
+        <VBox alignment="CENTER" prefHeight="89.0" prefWidth="453.0">
             <children>
-                <Label id="label_congrats" prefHeight="36.0" prefWidth="185.0" text="Congratulation!" textFill="WHITE">
+                <Label id="label_congrats" prefHeight="36.0" prefWidth="185.0" text="Congratulation!">
                     <font>
                         <Font size="25.0"/>
                     </font>
                 </Label>
-                <Label id="label_you-found" prefHeight="36.0" prefWidth="291.0" text="You found the easter egg!"
-                       textFill="WHITE">
+                <Label id="label_you-found" prefHeight="36.0" prefWidth="291.0" text="You found the easter egg!">
                     <font>
                         <Font size="25.0"/>
                     </font>
                 </Label>
             </children>
+            <VBox.margin>
+                <Insets top="10.0"/>
+            </VBox.margin>
         </VBox>
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="453.0">
             <children>
-                <Button id="button_start" mnemonicParsing="false" prefHeight="50.0" prefWidth="155.0"
-                        style="-fx-background-color: #454545;" text="Start" textFill="WHITE">
+                <Button id="button_start" mnemonicParsing="false" prefHeight="50.0" prefWidth="155.0" text="Start">
                     <font>
                         <Font size="23.0"/>
                     </font>
@@ -37,10 +37,9 @@
                 <Insets bottom="15.0"/>
             </VBox.margin>
         </HBox>
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="453.0">
             <children>
-                <Button id="button_exit" mnemonicParsing="false" prefHeight="50.0" prefWidth="155.0"
-                        style="-fx-background-color: #454545;" text="Exit" textFill="WHITE">
+                <Button id="button_exit" mnemonicParsing="false" prefHeight="50.0" prefWidth="155.0" text="Exit">
                     <font>
                         <Font size="23.0"/>
                     </font>

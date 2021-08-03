@@ -1,5 +1,11 @@
 @import url("accord_scrollbar.css");
 
+.root {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 24, 0, 0, 0);
+    -fx-background-insets: 24;
+    -fx-padding: 24;
+}
+
 /* View Style */
 #settingsContainer {
     -fx-background-color: #36393f;

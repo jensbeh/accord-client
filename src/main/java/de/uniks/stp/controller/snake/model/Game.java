@@ -5,13 +5,6 @@ public class Game {
     private int score;
     private int highScore;
 
-    public enum Direction {
-        RIGHT,
-        LEFT,
-        UP,
-        DOWN
-    }
-
     public Game(int score, int highScore) {
         this.score = score;
         this.highScore = highScore;
@@ -40,5 +33,12 @@ public class Game {
 
     public void setHighScore(int highScore) {
         this.highScore = highScore;
+    }
+
+    public enum Direction {
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN
     }
 }

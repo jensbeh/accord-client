@@ -3,13 +3,13 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
-import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.settings.AudioController;
+import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
+import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.udp.AudioStreamClient;
-import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.updateSteamGameController;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
@@ -17,12 +17,9 @@ import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import kong.unirest.JsonNode;
-import org.apache.commons.io.FileUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -76,11 +73,14 @@ public class ModelBuilder {
     private String steamToken;
     private LinePoolService linePoolService;
     private SpotifyConnection spotifyConnection;
+    private SteamLoginController steamLoginController;
 
 
     private Thread getSteamGame;
     private ObservableList<User> blockedUsers;
-
+    private boolean isSteamRun;
+    private Runnable handleMicrophoneHeadphone;
+    private AudioController audiocontroller;
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
         System.out.println("PropertyChange");
@@ -92,13 +92,6 @@ public class ModelBuilder {
             }
         });
     }
-
-    private boolean isSteamRun;
-    private Runnable handleMicrophoneHeadphone;
-    private AudioController audiocontroller;
-    /////////////////////////////////////////
-    //  Setter
-    /////////////////////////////////////////
 
     public void buildPersonalUser(String name, String password, String userKey) {
         personalUser = new CurrentUser().setName(name).setUserKey(userKey).setPassword(password).setDescription("#");
@@ -145,22 +138,6 @@ public class ModelBuilder {
         return newServer;
     }
 
-    public void setCurrentServer(Server currentServer) {
-        this.currentServer = currentServer;
-    }
-
-    public void setRestClient(RestClient restClient) {
-        this.restClient = restClient;
-    }
-
-    public void setSoundFile(URL soundFile) {
-        this.soundFile = soundFile;
-    }
-
-    /////////////////////////////////////////
-    //  Getter
-    /////////////////////////////////////////
-
     public List<Server> getServers() {
         return this.personalUser.getServer() != null ? Collections.unmodifiableList(this.personalUser.getServer()) : Collections.emptyList();
     }
@@ -173,6 +150,9 @@ public class ModelBuilder {
         return currentServer;
     }
 
+    public void setCurrentServer(Server currentServer) {
+        this.currentServer = currentServer;
+    }
 
     public ServerSystemWebSocket getServerSystemWebSocket() {
         return serverSystemWebSocket;
@@ -180,6 +160,10 @@ public class ModelBuilder {
 
     private URL getSoundFile() {
         return soundFile;
+    }
+
+    public void setSoundFile(URL soundFile) {
+        this.soundFile = soundFile;
     }
 
     public void setSERVER_USER(ServerSystemWebSocket serverSystemWebSocket) {
@@ -213,6 +197,10 @@ public class ModelBuilder {
 
     public RestClient getRestClient() {
         return this.restClient;
+    }
+
+    public void setRestClient(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     /**
@@ -285,12 +273,12 @@ public class ModelBuilder {
         this.channelSoundFile = resource;
     }
 
-    public void setVolume(Float number) {
-        ResourceManager.saveVolume(personalUser.getName(), number);
-    }
-
     private float getVolume() {
         return ResourceManager.getVolume(personalUser.getName());
+    }
+
+    public void setVolume(Float number) {
+        ResourceManager.saveVolume(personalUser.getName(), number);
     }
 
     public void saveSettings() {
@@ -371,32 +359,32 @@ public class ModelBuilder {
         return doNotDisturb;
     }
 
-    public boolean isPlaySound() {
-        return playSound;
-    }
-
-    public boolean isShowNotifications() {
-        return showNotifications;
-    }
-
     public void setDoNotDisturb(boolean doNotDisturb) {
         this.doNotDisturb = doNotDisturb;
+    }
+
+    public boolean isPlaySound() {
+        return playSound;
     }
 
     public void setPlaySound(boolean playSound) {
         this.playSound = playSound;
     }
 
+    public boolean isShowNotifications() {
+        return showNotifications;
+    }
+
     public void setShowNotifications(boolean showNotifications) {
         this.showNotifications = showNotifications;
     }
 
-    public void setAudioStreamClient(AudioStreamClient audioStreamClient) {
-        this.audioStreamClient = audioStreamClient;
-    }
-
     public AudioStreamClient getAudioStreamClient() {
         return this.audioStreamClient;
+    }
+
+    public void setAudioStreamClient(AudioStreamClient audioStreamClient) {
+        this.audioStreamClient = audioStreamClient;
     }
 
     public String getTheme() {
@@ -407,12 +395,12 @@ public class ModelBuilder {
         this.theme = theme;
     }
 
-    public void setCurrentAudioChannel(ServerChannel currentAudioChannel) {
-        this.currentAudioChannel = currentAudioChannel;
-    }
-
     public ServerChannel getCurrentAudioChannel() {
         return this.currentAudioChannel;
+    }
+
+    public void setCurrentAudioChannel(ServerChannel currentAudioChannel) {
+        this.currentAudioChannel = currentAudioChannel;
     }
 
     public void muteMicrophone(boolean muteMicrophone) {
@@ -431,38 +419,37 @@ public class ModelBuilder {
         return muteHeadphones;
     }
 
-    public void setLoadUserData(boolean loadUserData) {
-        this.loadUserData = loadUserData;
-    }
-
     public boolean getLoadUserData() {
         return loadUserData;
     }
 
-    public void setInServerState(boolean state) {
-        this.inServerState = state;
+    public void setLoadUserData(boolean loadUserData) {
+        this.loadUserData = loadUserData;
     }
 
     public boolean getInServerState() {
         return this.inServerState;
     }
 
-    public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {
-        this.currentPrivateChat = currentPrivateChat;
+    public void setInServerState(boolean state) {
+        this.inServerState = state;
     }
 
     public PrivateChat getCurrentPrivateChat() {
         return this.currentPrivateChat;
     }
 
-    public void setMicrophoneFirstMuted(boolean muted) {
-        this.firstMuted = muted;
+    public void setCurrentPrivateChat(PrivateChat currentPrivateChat) {
+        this.currentPrivateChat = currentPrivateChat;
     }
 
     public boolean getMicrophoneFirstMuted() {
         return firstMuted;
     }
 
+    public void setMicrophoneFirstMuted(boolean muted) {
+        this.firstMuted = muted;
+    }
 
     public ChatViewController getCurrentChatViewController() {
         return currentChatViewController;
@@ -512,6 +499,14 @@ public class ModelBuilder {
         this.spotifyConnection = spotifyConnection;
     }
 
+    public SteamLoginController getSteamLoginController() {
+        return steamLoginController;
+    }
+
+    public void setSteamLoginController(SteamLoginController steamLoginController) {
+        this.steamLoginController = steamLoginController;
+    }
+
     public String getSteamToken() {
         return steamToken;
     }
@@ -520,12 +515,12 @@ public class ModelBuilder {
         this.steamToken = steamToken;
     }
 
-    public void setLinePoolService(LinePoolService linePoolService) {
-        this.linePoolService = linePoolService;
-    }
-
     public LinePoolService getLinePoolService() {
         return this.linePoolService;
+    }
+
+    public void setLinePoolService(LinePoolService linePoolService) {
+        this.linePoolService = linePoolService;
     }
 
     public ObservableList<User> getBlockedUsers() {
@@ -569,30 +564,31 @@ public class ModelBuilder {
         }
     }
 
-    public void setHomeViewController(HomeViewController homeViewController) {
-        this.homeViewController = homeViewController;
-    }
-
     public HomeViewController getHomeViewController() {
         return homeViewController;
+    }
+
+    public void setHomeViewController(HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
     }
 
     public boolean isSteamRun() {
         return isSteamRun;
     }
 
-    public void setHandleMicrophoneHeadphone(Runnable handleMicrophoneHeadphone) {
-        this.handleMicrophoneHeadphone = handleMicrophoneHeadphone;
-    }
-
     public Runnable getHandleMicrophoneHeadphone() {
         return this.handleMicrophoneHeadphone;
     }
 
-    public void setAudioController(AudioController audiocontroller) {
-        this.audiocontroller = audiocontroller;
+    public void setHandleMicrophoneHeadphone(Runnable handleMicrophoneHeadphone) {
+        this.handleMicrophoneHeadphone = handleMicrophoneHeadphone;
     }
+
     public AudioController getAudioController() {
         return this.audiocontroller;
+    }
+
+    public void setAudioController(AudioController audiocontroller) {
+        this.audiocontroller = audiocontroller;
     }
 }

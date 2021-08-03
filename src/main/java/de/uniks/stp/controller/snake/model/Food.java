@@ -7,9 +7,9 @@ import javafx.scene.image.Image;
 import java.util.Random;
 
 public class Food {
+    private final Image foodPic;
     private int posX;
     private int posY;
-    private final Image foodPic;
 
     public Food() {
         Random rand = new Random();
@@ -25,13 +25,13 @@ public class Food {
         return this.posX;
     }
 
-    public int getPosY() {
-        return this.posY;
-    }
-
     public Food setPosX(int posX) {
         this.posX = posX;
         return this;
+    }
+
+    public int getPosY() {
+        return this.posY;
     }
 
     public Food setPosY(int posY) {

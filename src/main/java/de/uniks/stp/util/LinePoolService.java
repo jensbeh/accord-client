@@ -159,6 +159,27 @@ public class LinePoolService {
     }
 
     /**
+     * sets a new selected microphone from comboBox - if no one is saved at start the first mic will set to selected
+     */
+    public void setSelectedMicrophone(String newMicrophoneName) {
+        if (microphones.containsKey(newMicrophoneName)) {
+            this.selectedMicrophone = microphones.get(newMicrophoneName);
+            this.selectedMicrophoneName = newMicrophoneName;
+            System.out.println("Microphone: " + newMicrophoneName);
+        } else {
+            System.err.println("No microphone found! Set microphone to the default one...");
+            // set first microphone in list to selected
+            for (var microphone : microphones.entrySet()) {
+                this.selectedMicrophoneName = microphone.getKey();
+                this.selectedMicrophone = microphone.getValue();
+                break;
+            }
+        }
+
+        setMicVolumeToPort();
+    }
+
+    /**
      * returns the selected microphone name
      */
     public String getSelectedMicrophoneName() {
@@ -201,34 +222,6 @@ public class LinePoolService {
     }
 
     /**
-     * returns the selected speaker name
-     */
-    public String getSelectedSpeakerName() {
-        return this.selectedSpeakerName;
-    }
-
-    /**
-     * sets a new selected microphone from comboBox - if no one is saved at start the first mic will set to selected
-     */
-    public void setSelectedMicrophone(String newMicrophoneName) {
-        if (microphones.containsKey(newMicrophoneName)) {
-            this.selectedMicrophone = microphones.get(newMicrophoneName);
-            this.selectedMicrophoneName = newMicrophoneName;
-            System.out.println("Microphone: " + newMicrophoneName);
-        } else {
-            System.err.println("No microphone found! Set microphone to the default one...");
-            // set first microphone in list to selected
-            for (var microphone : microphones.entrySet()) {
-                this.selectedMicrophoneName = microphone.getKey();
-                this.selectedMicrophone = microphone.getValue();
-                break;
-            }
-        }
-
-        setMicVolumeToPort();
-    }
-
-    /**
      * sets a new selected speaker from comboBox - if no one is saved at start the first speaker will set to selected
      */
     public void setSelectedSpeaker(String newSpeakerName) {
@@ -247,6 +240,13 @@ public class LinePoolService {
         }
 
         setSpeakerVolumeToPort();
+    }
+
+    /**
+     * returns the selected speaker name
+     */
+    public String getSelectedSpeakerName() {
+        return this.selectedSpeakerName;
     }
 
     /**

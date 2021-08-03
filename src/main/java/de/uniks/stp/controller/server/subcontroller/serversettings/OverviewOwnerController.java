@@ -18,9 +18,9 @@ import java.util.ResourceBundle;
 public class OverviewOwnerController {
     private final Parent view;
     private final ModelBuilder builder;
+    private final RestClient restClient;
     private Label serverName;
     private TextField nameText;
-    private final RestClient restClient;
 
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;

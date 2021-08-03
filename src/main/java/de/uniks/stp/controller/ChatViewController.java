@@ -6,6 +6,7 @@ import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
@@ -36,6 +37,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
@@ -50,10 +52,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
-    private ContextMenu contextMenu;
     private final ModelBuilder builder;
-    private ServerChannel currentChannel;
     private final Parent view;
+    private ContextMenu contextMenu;
+    private ServerChannel currentChannel;
     private VBox root;
     private Button sendButton;
     private TextField messageTextField;
@@ -307,11 +309,32 @@ public class ChatViewController {
     private void delete(ActionEvent actionEvent) {
         try {
             ResourceBundle lang = StageManager.getLangBundle();
+
             Parent subview = FXMLLoader.load(Objects.requireNonNull(
                     StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
-            stage.setTitle(lang.getString("window_title_delete_message"));
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("window_title_delete_message"));
+
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
             ScrollPane pane = (ScrollPane) subview.lookup("#deleteMsgScroll");
@@ -450,12 +473,33 @@ public class ChatViewController {
                         StageManager.class.getResource("alert/EditWarningMessage.fxml")), StageManager.getLangBundle());
                 Scene scene = new Scene(subview);
                 stage = new Stage();
+                stage.initStyle(StageStyle.TRANSPARENT);
+
+                // DropShadow of Scene
+                scene.setFill(Color.TRANSPARENT);
+                scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+                lang = StageManager.getLangBundle();
+
+                // create titleBar
+                HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
+                Parent titleBarView = null;
+                try {
+                    titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                titleBarBox.getChildren().add(titleBarView);
+                TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                titleBarController.init();
+                titleBarController.setTheme();
+                titleBarController.setMaximizable(false);
+                titleBarController.setTitle(lang.getString("title.edit_warning"));
+
+
                 Label msg = (Label) subview.lookup("#editWarningText");
                 Button yes = (Button) subview.lookup("#deleteEditMessage");
                 Button no = (Button) subview.lookup("#abortEditMessage");
                 //language
-                lang = StageManager.getLangBundle();
-                stage.setTitle(lang.getString("title.edit_warning"));
                 msg.setText(lang.getString("label.edit_warning"));
                 yes.setText(lang.getString("button.edit_delete"));
                 no.setText(lang.getString("button.abort_edit_delete"));

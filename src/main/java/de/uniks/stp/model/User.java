@@ -16,11 +16,11 @@ public class User {
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
     public static final String PROPERTY_DESCRIPTION = "description";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String id;
     private boolean status;
     private boolean tempUser;
-    protected PropertyChangeSupport listeners;
     private List<ServerChannel> privileged;
     private List<Server> server;
     private CurrentUser currentUser;

@@ -47,6 +47,7 @@ public class OverviewController {
 
     /**
      * User sends a message to the server that he has exited
+     *
      * @param server the server
      */
     private void userExitedNotification(Server server) {

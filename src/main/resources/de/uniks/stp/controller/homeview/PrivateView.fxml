@@ -4,8 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0" minWidth="900.0"
-      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns:fx="http://javafx.com/fxml/1" id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="600.0"
+      minWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1">
     <children>
         <ListView id="privateChatList" minWidth="190.0" HBox.hgrow="ALWAYS"/>
         <VBox id="chatBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" spacing="10.0" HBox.hgrow="ALWAYS">

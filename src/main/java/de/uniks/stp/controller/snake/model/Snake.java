@@ -8,22 +8,22 @@ public class Snake {
     public Snake() {
     }
 
+    public int getPosX() {
+        return this.posX;
+    }
+
     public Snake setPosX(int posX) {
         this.posX = posX;
         return this;
     }
 
+    public int getPosY() {
+        return this.posY;
+    }
+
     public Snake setPosY(int posY) {
         this.posY = posY;
         return this;
-    }
-
-    public int getPosX() {
-        return this.posX;
-    }
-
-    public int getPosY() {
-        return this.posY;
     }
 
     public void addPosY(int addY) {

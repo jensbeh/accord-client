@@ -4,8 +4,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox id="singleuser" prefHeight="42.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/11"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox xmlns:fx="http://javafx.com/fxml/1" id="singleuser" prefHeight="42.0" prefWidth="442.0"
+      xmlns="http://javafx.com/javafx/11">
     <children>
         <HBox id="singleuser" alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="338.0" spacing="10.0">
             <children>

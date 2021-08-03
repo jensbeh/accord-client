@@ -16,10 +16,10 @@ public class Server {
     public static final String PROPERTY_CATEGORIES = "categories";
     public static final String PROPERTY_USER = "user";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String id;
     private String owner;
-    protected PropertyChangeSupport listeners;
     private List<Categories> categories;
     private List<User> user;
     private CurrentUser currentUser;

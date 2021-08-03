@@ -39,21 +39,16 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class SteamGameTest extends ApplicationTest {
 
-    private Stage stage;
-    private StageManager app;
-
-    @Mock
-    private RestClient restClient;
-
-    @Mock
-    private HttpResponse<JsonNode> response;
-
-    @Captor
-    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
-
     @InjectMocks
     StageManager mockApp = new StageManager();
-
+    private Stage stage;
+    private StageManager app;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private HttpResponse<JsonNode> response;
+    @Captor
+    private ArgumentCaptor<Callback<JsonNode>> callbackCaptor;
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
 
@@ -98,6 +93,11 @@ public class SteamGameTest extends ApplicationTest {
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
+    @BeforeAll
+    static void setup() {
+        MockitoAnnotations.openMocks(HomeViewController.class);
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -111,18 +111,13 @@ public class SteamGameTest extends ApplicationTest {
         StageManager.setBuilder(builder);
         StageManager.setRestClient(restClient);
 
-        builder.setLoadUserData(false);           
+        builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
         mockApp.getBuilder().setSpotifyToken(null);
         mockApp.getBuilder().setSpotifyRefresh(null);
 
         app.start(stage);
         this.stage.centerOnScreen();
-    }
-
-    @BeforeAll
-    static void setup() {
-        MockitoAnnotations.openMocks(HomeViewController.class);
     }
 
     public void mockGetUsers() {

@@ -17,10 +17,10 @@ import java.beans.PropertyChangeEvent;
 public class UserProfileController {
 
     private final ModelBuilder builder;
+    private final Parent view;
     public VBox root;
     public Label userName;
     private Circle onlineStatus;
-    private final Parent view;
     private VBox descriptionBox;
 
 
@@ -38,7 +38,7 @@ public class UserProfileController {
         if (builder.getPersonalUser().getDescription() != null && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
-        Platform.runLater(()->builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged));
+        Platform.runLater(() -> builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged));
     }
 
     private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {

@@ -15,15 +15,15 @@ import java.util.ArrayList;
 
 public class ServerSubSettingsPrivilegeController {
 
-    private ComboBox<String> addUserMenu;
-    private ComboBox<String> removeUserMenu;
-    private Button addUser;
-    private Button removeUser;
     private final Parent view;
     private final ModelBuilder builder;
     private final Server server;
     private final ServerChannel channel;
     private final RestClient restClient;
+    private ComboBox<String> addUserMenu;
+    private ComboBox<String> removeUserMenu;
+    private Button addUser;
+    private Button removeUser;
     private User selectedRemoveUser;
     private User selectedAddUser;
     private VBox root;

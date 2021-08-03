@@ -15,10 +15,10 @@ public class PrivateChat {
     public static final String PROPERTY_UNREAD_MESSAGES_COUNTER = "unreadMessagesCounter";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
     public static final String PROPERTY_MESSAGE = "message";
+    protected PropertyChangeSupport listeners;
     private String name;
     private String id;
     private int unreadMessagesCounter;
-    protected PropertyChangeSupport listeners;
     private CurrentUser currentUser;
     private List<Message> message;
 

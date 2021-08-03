@@ -26,30 +26,13 @@ import java.util.TimerTask;
 
 public class ServerSystemWebSocket extends Endpoint {
 
-    private Session session;
+    public final String COM_NOOP = "noop";
     private final Timer noopTimer;
+    private Session session;
     private ModelBuilder builder;
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
     private String name;
-    public final String COM_NOOP = "noop";
-
-    public void setServerViewController(ServerViewController serverViewController) {
-        this.serverViewController = serverViewController;
-    }
-
-    public ServerViewController getServerViewController() {
-        return this.serverViewController;
-    }
-
-    public ModelBuilder getBuilder() {
-        return builder;
-    }
-
-    public void setBuilder(ModelBuilder builder) {
-        this.builder = builder;
-    }
-
 
     public ServerSystemWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -63,6 +46,22 @@ public class ServerSystemWebSocket extends Endpoint {
         } catch (Exception e) {
             System.err.println("Error during establishing WebSocket connection:");
         }
+    }
+
+    public ServerViewController getServerViewController() {
+        return this.serverViewController;
+    }
+
+    public void setServerViewController(ServerViewController serverViewController) {
+        this.serverViewController = serverViewController;
+    }
+
+    public ModelBuilder getBuilder() {
+        return builder;
+    }
+
+    public void setBuilder(ModelBuilder builder) {
+        this.builder = builder;
     }
 
     @Override
@@ -662,8 +661,8 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     private String getUserDescription(String id) {
-        for (User u: builder.getPersonalUser().getUser()){
-            if(u.getId().equals(id)){
+        for (User u : builder.getPersonalUser().getUser()) {
+            if (u.getId().equals(id)) {
                 return u.getDescription();
             }
         }
