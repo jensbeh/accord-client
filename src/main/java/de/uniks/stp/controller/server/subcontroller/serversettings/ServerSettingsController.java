@@ -32,7 +32,6 @@ public class ServerSettingsController {
     private SubSetting subController;
     private VBox settingsContainer;
     private String userId;
-    private VBox settingsBox;
     private TitleBarController titleBarController;
 
 
@@ -65,7 +64,6 @@ public class ServerSettingsController {
         category = (Button) view.lookup("#categoryBtn");
         privilege = (Button) view.lookup("#privilegeBtn");
         settingsContainer = (VBox) view.lookup("#serverSettingsContainer");
-        settingsBox = (VBox) view.lookup("#settingsBox");
 
         // userId from currentUser
         userId = "";
@@ -79,10 +77,6 @@ public class ServerSettingsController {
             category.setVisible(false);
             privilege.setVisible(false);
         }
-
-        //Highlight the OverviewButton
-        newSelectedButton(overview);
-
         //container
         this.serverSettingsContainer = (VBox) view.lookup("#serverSettingsContainer");
         this.serverSettingsContainer.getChildren().clear();
@@ -94,6 +88,7 @@ public class ServerSettingsController {
         privilege.setOnAction(this::onPrivilegeClicked);
         ActionEvent actionEvent = new ActionEvent();
         onOverViewClicked(actionEvent);
+        selectedButton(overview);
     }
 
 
@@ -101,40 +96,38 @@ public class ServerSettingsController {
      * Show Overview settings decide between owner and not owner
      */
     private void onOverViewClicked(ActionEvent actionEvent) {
-        System.out.println("builder: " + builder.getCurrentServer().getOwner());
-        System.out.println("userid: " + userId);
         if (selectedButton != overview) {
-            newSelectedButton(overview);
-        }
-        try {
-            Parent root;
-            if (builder.getCurrentServer().getOwner().equals(userId)) {
-                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/OverviewOwner.fxml")), StageManager.getLangBundle());
-                OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
-                overviewOwnerController.init();
-            } else {
-                root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/Overview.fxml")), StageManager.getLangBundle());
-                OverviewController overviewController = new OverviewController(root, builder);
-                overviewController.init();
+            try {
+                Parent root;
+                if (builder.getCurrentServer().getOwner().equals(userId)) {
+                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/OverviewOwner.fxml")), StageManager.getLangBundle());
+                    OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
+                    overviewOwnerController.init();
+                } else {
+                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/Overview.fxml")), StageManager.getLangBundle());
+                    OverviewController overviewController = new OverviewController(root, builder);
+                    overviewController.init();
+                }
+                this.settingsContainer.getChildren().clear();
+                this.settingsContainer.getChildren().add(root);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            this.settingsContainer.getChildren().clear();
-            this.settingsContainer.getChildren().add(root);
-        } catch (IOException e) {
-            e.printStackTrace();
+            selectedButton(overview);
         }
     }
 
     private void onChannelClicked(ActionEvent actionEvent) {
         if (selectedButton != channel) {
-            newSelectedButton(channel);
             openSettings("Channel");
+            selectedButton(channel);
         }
     }
 
     private void onCategoryClicked(ActionEvent actionEvent) {
         if (selectedButton != category) {
-            newSelectedButton(category);
             openSettings("Category");
+            selectedButton(category);
         }
     }
 
@@ -143,8 +136,8 @@ public class ServerSettingsController {
      */
     private void onPrivilegeClicked(ActionEvent actionEvent) {
         if (selectedButton != privilege) {
-            newSelectedButton(privilege);
             openSettings("Privilege");
+            selectedButton(privilege);
         }
     }
 
@@ -159,10 +152,6 @@ public class ServerSettingsController {
             subController.stop();
             subController = null;
         }
-    }
-
-    private void newSelectedButton(Button button) {
-        selectedButton = button;
     }
 
     /**
@@ -230,5 +219,13 @@ public class ServerSettingsController {
         if (titleBarController != null) {
             titleBarController.setTheme();
         }
+    }
+
+    private void selectedButton(Button b) {
+        if (selectedButton != null) {
+            selectedButton.setStyle("");
+        }
+        selectedButton = b;
+        selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
     }
 }
