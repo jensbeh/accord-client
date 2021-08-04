@@ -104,7 +104,7 @@ public class ModelBuilder {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description);
+        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description).setUserVolume(100.0);
         personalUser.withUser(newUser);
         return newUser;
     }
