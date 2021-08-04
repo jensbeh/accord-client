@@ -23,20 +23,20 @@ public class updateSteamGameController implements Runnable {
      */
     @Override
     public void run() {
-        while (builder.isSteamShow() && builder.isSteamRun()) {
-            builder.getRestClient().getCurrentGame(builder.getSteamToken(), response -> {
-                JsonNode body = response.getBody();
-                if (body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo")) {
-                    builder.getPersonalUser().setDescription("?" + body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).getString("gameextrainfo"));
-                } else {
-                    builder.getPersonalUser().setDescription("?");
-                }
-            });
-            try {
+        try {
+            while (builder.isSteamShow() && builder.isSteamRun()) {
+                builder.getRestClient().getCurrentGame(builder.getSteamToken(), response -> {
+                    JsonNode body = response.getBody();
+                    System.out.println(body);
+                    if (body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).has("gameextrainfo")) {
+                        builder.getPersonalUser().setDescription("?" + body.getObject().getJSONObject("response").getJSONArray("players").getJSONObject(0).getString("gameextrainfo"));
+                    } else {
+                        builder.getPersonalUser().setDescription("?");
+                    }
+                });
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        } catch (InterruptedException ignored) {
         }
     }
 }
