@@ -29,7 +29,6 @@ public class LinePoolService {
         microphones = new HashMap<>();
         speakers = new HashMap<>();
         portMixer = new HashMap<>();
-
         mixerMap = new HashMap<>();
 
         for (Mixer.Info thisMixerInfo : AudioSystem.getMixerInfo()) {
@@ -37,52 +36,61 @@ public class LinePoolService {
 
             // get Port Mixer
             if (thisMixerInfo.getDescription().equals("Port Mixer")) {
-                // sourceLineInfo
-                for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
-                    try {
-                        Line thisLine = thisMixer.getLine(thisLineInfo);
-                        portMixer.put(thisMixerInfo.getName(), thisLine);
-                    } catch (LineUnavailableException lineUnavailableException) {
-                        lineUnavailableException.printStackTrace();
-                    }
-                }
-
-                // targetLineInfo
-                for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
-                    try {
-                        Line thisLine = thisMixer.getLine(thisLineInfo);
-                        portMixer.put(thisMixerInfo.getName(), thisLine);
-                    } catch (LineUnavailableException lineUnavailableException) {
-                        lineUnavailableException.printStackTrace();
-                    }
-                }
+                sourceLineInfo(thisMixer, thisMixerInfo);
+                targetLineInfo(thisMixer, thisMixerInfo);
                 // get Devices
             } else if (thisMixerInfo.getDescription().contains("Direct Audio Device: DirectSound")) {
-                mixerMap.put(thisMixerInfo.getName(), thisMixer);
-                Line.Info[] targetLineInfo = thisMixer.getTargetLineInfo();
-                Line.Info[] sourceLineInfo = thisMixer.getSourceLineInfo();
-                //Gets Microphones
-                if (targetLineInfo.length >= 1 && targetLineInfo[0].getLineClass() == TargetDataLine.class) {
-                    try {
-                        TargetDataLine targetDataLine = (TargetDataLine) thisMixer.getLine(targetLineInfo[0]);
-                        microphones.put(thisMixerInfo.getName(), targetDataLine);
-                    } catch (LineUnavailableException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //Gets Speakers
-                if (sourceLineInfo.length >= 1 && sourceLineInfo[0].getLineClass() == SourceDataLine.class) {
-                    try {
-                        SourceDataLine speakerDataLine = (SourceDataLine) thisMixer.getLine(sourceLineInfo[0]);
-                        speakers.put(thisMixerInfo.getName(), speakerDataLine);
-                    } catch (LineUnavailableException e) {
-                        e.printStackTrace();
-                    }
-                }
+                detDevices(thisMixer, thisMixerInfo);
             }
         }
 
         removeDefaultMicAndSpeaker();
+    }
+
+    private void detDevices(Mixer thisMixer, Mixer.Info thisMixerInfo) {
+        mixerMap.put(thisMixerInfo.getName(), thisMixer);
+        Line.Info[] targetLineInfo = thisMixer.getTargetLineInfo();
+        Line.Info[] sourceLineInfo = thisMixer.getSourceLineInfo();
+        //Gets Microphones
+        if (targetLineInfo.length >= 1 && targetLineInfo[0].getLineClass() == TargetDataLine.class) {
+            try {
+                TargetDataLine targetDataLine = (TargetDataLine) thisMixer.getLine(targetLineInfo[0]);
+                microphones.put(thisMixerInfo.getName(), targetDataLine);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        }
+        //Gets Speakers
+        if (sourceLineInfo.length >= 1 && sourceLineInfo[0].getLineClass() == SourceDataLine.class) {
+            try {
+                SourceDataLine speakerDataLine = (SourceDataLine) thisMixer.getLine(sourceLineInfo[0]);
+                speakers.put(thisMixerInfo.getName(), speakerDataLine);
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void targetLineInfo(Mixer thisMixer, Mixer.Info thisMixerInfo) {
+        for (Line.Info thisLineInfo : thisMixer.getTargetLineInfo()) {
+            try {
+                Line thisLine = thisMixer.getLine(thisLineInfo);
+                portMixer.put(thisMixerInfo.getName(), thisLine);
+            } catch (LineUnavailableException lineUnavailableException) {
+                lineUnavailableException.printStackTrace();
+            }
+        }
+    }
+
+    private void sourceLineInfo(Mixer thisMixer, Mixer.Info thisMixerInfo) {
+        for (Line.Info thisLineInfo : thisMixer.getSourceLineInfo()) {
+            try {
+                Line thisLine = thisMixer.getLine(thisLineInfo);
+                portMixer.put(thisMixerInfo.getName(), thisLine);
+            } catch (LineUnavailableException lineUnavailableException) {
+                lineUnavailableException.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -90,44 +98,34 @@ public class LinePoolService {
      */
     private void removeDefaultMicAndSpeaker() {
         // remove default mics because there is no port mixer
-        List<String> toRemove = new ArrayList<>();
-        for (String micName : microphones.keySet()) {
-            boolean found = false;
-            for (String portName : portMixer.keySet()) {
-                if (portName.contains(micName.substring(0, 20))) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                toRemove.add(micName);
-            }
-        }
-        if (toRemove.size() > 0) {
-            for (String nameToRemove : toRemove) {
-                microphones.remove(nameToRemove);
-            }
-            toRemove.clear();
-        }
+        removeDefaultDevice(microphones);
         // remove default speaker because there is no port mixer
-        for (String micName : speakers.keySet()) {
-            boolean found = false;
-            for (String portName : portMixer.keySet()) {
-                if (portName.contains(micName.substring(0, 20))) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                toRemove.add(micName);
+        removeDefaultDevice(speakers);
+    }
+
+    private void removeDefaultDevice(HashMap<String, ?> devices) {
+        List<String> toRemove = new ArrayList<>();
+        for (String devName : devices.keySet()) {
+            boolean foundDevice = foundDevice(devName);
+            if (!foundDevice) {
+                toRemove.add(devName);
             }
         }
         if (toRemove.size() > 0) {
             for (String nameToRemove : toRemove) {
-                speakers.remove(nameToRemove);
+                devices.remove(nameToRemove);
             }
             toRemove.clear();
         }
+    }
+
+    private boolean foundDevice(String devName) {
+        for (String portName : portMixer.keySet()) {
+            if (portName.contains(devName.substring(0, 20))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
