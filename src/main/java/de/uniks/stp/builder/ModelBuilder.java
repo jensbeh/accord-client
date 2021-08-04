@@ -593,7 +593,9 @@ public class ModelBuilder {
 
     public void clear() {
         personalUser.removeYou();
-        getPersonalUser();
+        serverSystemWebSocket = null;
+        serverChatWebSocketClient=null;
+        currentServer = null;
         personalUser=null;
         USER_CLIENT=null;
         loadSettings();
