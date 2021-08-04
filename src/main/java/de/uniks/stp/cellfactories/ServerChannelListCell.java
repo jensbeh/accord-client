@@ -273,10 +273,6 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                 }
                                 if (!currentUserAudio) {
                                     audioMemberName.setContextMenu(null);
-                                    if (serverViewController.getMutedAudioMember().contains(user.getName())) {
-                                        audioMemberName.setText(user.getName());
-                                        serverViewController.setUnMutedAudioMember(user.getName());
-                                    }
                                 }
 
                                 if (serverViewController.getMutedAudioMember().contains(user.getName())) {
