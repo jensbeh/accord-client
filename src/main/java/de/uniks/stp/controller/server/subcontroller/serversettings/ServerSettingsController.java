@@ -226,6 +226,10 @@ public class ServerSettingsController {
             selectedButton.setStyle("");
         }
         selectedButton = b;
-        selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
+        if (!builder.getTheme().equals("Bright")) {
+            selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
+        } else {
+            selectedButton.setStyle("-fx-background-color: #7da6df;-fx-text-fill: Black;");
+        }
     }
 }

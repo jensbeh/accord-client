@@ -186,19 +186,23 @@ public class SettingsController {
                     this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
             }
-            selectedButton(fxmlName);
+            selectedButton((Button) view.lookup("#button_" + fxmlName));
         } catch (Exception e) {
             System.err.println("Error on showing Settings Field Screen");
             e.printStackTrace();
         }
     }
 
-    private void selectedButton(String fxmlName) {
+    private void selectedButton(Button b) {
         if (selectedButton != null) {
             selectedButton.setStyle("");
         }
-        selectedButton = (Button) view.lookup("#button_" + fxmlName);
-        selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
+        selectedButton = b;
+        if (!builder.getTheme().equals("Bright")) {
+            selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
+        } else {
+            selectedButton.setStyle("-fx-background-color: #7da6df;-fx-text-fill: Black;");
+        }
     }
 
     /**
@@ -235,6 +239,9 @@ public class SettingsController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if(selectedButton!=null){
+            selectedButton(selectedButton);
         }
     }
 
