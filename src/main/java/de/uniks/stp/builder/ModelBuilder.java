@@ -355,6 +355,62 @@ public class ModelBuilder {
         }
     }
 
+    public void saveUserVolume(String userName, double value) {
+        try {
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            JsonObject volumeSettings = new JsonObject();
+            if (reader.read() != -1) {
+                reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+                volumeSettings.put(userName, value);
+                for (var name : parsedSettings.keySet()) {
+                    if (!userName.equals(name)) {
+                        volumeSettings.put(name, parsedSettings.get(name));
+                    }
+                }
+            }
+
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            Jsoner.serialize(volumeSettings, writer);
+            writer.close();
+
+            for (User user : personalUser.getUser()) {
+                if (user.getName().equals(userName)) {
+                    user.setUserVolume(value);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveUserVolume");
+            e.printStackTrace();
+        }
+    }
+
+    public void loadUserVolumes() {
+        try {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            } else {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                if (reader.read() != -1) {
+                    reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                    JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+                    for (var userName : parsedSettings.keySet()) {
+                        for (User user : personalUser.getUser()) {
+                            if (user.getName().equals(userName)) {
+                                user.setUserVolume(((BigDecimal) parsedSettings.get(userName)).doubleValue());
+                            }
+                        }
+                    }
+                }
+                reader.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in loadUserVolumes");
+            e.printStackTrace();
+        }
+    }
+
     public boolean isDoNotDisturb() {
         return doNotDisturb;
     }

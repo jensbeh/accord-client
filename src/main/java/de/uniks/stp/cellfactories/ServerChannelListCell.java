@@ -50,7 +50,6 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
         private boolean isScrollBarVisible;
         private int audioMemberCount = 0;
-        private Text valueTextInputSlider;
 
         protected void updateItem(ServerChannel item, boolean empty) {
             // creates a HBox for each cell of the listView
@@ -189,56 +188,6 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 channelNameCell.getChildren().add(name);
 
 
-                // initialize ContextMenu
-                ContextMenu contextMenu = new ContextMenu();
-
-                // initialize muteItem
-                HBox muteBox = new HBox();
-                Label muteLabel = new Label("Mute");
-                muteLabel.setFont(new Font(14));
-                CheckBox checkBoxMute = new CheckBox();
-                checkBoxMute.setId("checkBoxMute");
-                checkBoxMute.setDisable(true);
-                muteBox.getChildren().addAll(muteLabel, checkBoxMute);
-                muteBox.setSpacing(100);
-                muteBox.prefWidthProperty().bind(contextMenu.widthProperty());
-                CustomMenuItem muteItem = new CustomMenuItem(muteBox);
-                muteItem.setHideOnClick(false);
-
-                // initialize sliderItem - with slider and custom thumb on showing contextMenu
-                Slider slider = new Slider(0, 100, 50);
-                slider.setPrefWidth(155);
-                slider.setId("slider_userVolume");
-                valueTextInputSlider = new Text();
-                contextMenu.setOnShowing(event -> {
-                    Pane thumbInputSlider = (Pane) slider.lookup(".thumb");
-                    if (serverViewController.getTheme().equals("Dark")) {
-                        valueTextInputSlider.setFill(Color.BLACK);
-                    } else {
-                        valueTextInputSlider.setFill(Color.WHITE);
-                    }
-                    valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
-                    thumbInputSlider.getChildren().clear();
-                    thumbInputSlider.getChildren().add(valueTextInputSlider);
-                });
-                VBox sliderBox = new VBox();
-                sliderBox.setSpacing(10);
-                Label volumeLabel = new Label();
-                volumeLabel.setFont(new Font(14));
-                volumeLabel.setText("User Volume");
-                sliderBox.getChildren().addAll(volumeLabel, slider);
-                CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
-                sliderItem.setHideOnClick(false);
-
-                // set item id's
-                contextMenu.setId("AudioMemberControlContextMenu");
-                muteItem.setId("muteAudioMemberMenuItem");
-                sliderItem.setId("sliderAudioMemberMenuItem");
-                SeparatorMenuItem sep = new SeparatorMenuItem();
-
-                // set contextMenuItems
-                contextMenu.getItems().addAll(muteItem, sep, sliderItem);
-
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
                     channelAudioUserCell.setStyle("-fx-padding: 0 10 0 45;");
@@ -247,6 +196,47 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                     for (AudioMember audioMember : item.getAudioMember()) {
                         for (User user : item.getCategories().getServer().getUser()) {
                             if (audioMember.getId().equals(user.getId())) {
+
+                                // initialize ContextMenu
+                                ContextMenu contextMenu = new ContextMenu();
+
+                                // initialize muteItem
+                                HBox muteBox = new HBox();
+                                Label muteLabel = new Label("Mute");
+                                muteLabel.setFont(new Font(14));
+                                CheckBox checkBoxMute = new CheckBox();
+                                checkBoxMute.setId("checkBoxMute");
+                                checkBoxMute.setDisable(true);
+                                muteBox.getChildren().addAll(muteLabel, checkBoxMute);
+                                muteBox.setSpacing(100);
+                                muteBox.prefWidthProperty().bind(contextMenu.widthProperty());
+                                CustomMenuItem muteItem = new CustomMenuItem(muteBox);
+                                muteItem.setHideOnClick(false);
+
+                                // initialize sliderItem - with slider and custom thumb on showing contextMenu
+                                Slider slider = new Slider(0, 100, 50);
+                                slider.setPrefWidth(155);
+                                slider.setId("slider_userVolume");
+                                Text valueTextInputSlider = new Text();
+
+                                VBox sliderBox = new VBox();
+                                sliderBox.setSpacing(10);
+                                Label volumeLabel = new Label();
+                                volumeLabel.setFont(new Font(14));
+                                volumeLabel.setText("User Volume");
+                                sliderBox.getChildren().addAll(volumeLabel, slider);
+                                CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
+                                sliderItem.setHideOnClick(false);
+
+                                // set item id's
+                                contextMenu.setId("AudioMemberControlContextMenu");
+                                muteItem.setId("muteAudioMemberMenuItem");
+                                sliderItem.setId("sliderAudioMemberMenuItem");
+                                SeparatorMenuItem sep = new SeparatorMenuItem();
+
+                                // set contextMenuItems
+                                contextMenu.getItems().addAll(muteItem, sep, sliderItem);
+
                                 Label audioMemberName = new Label();
                                 audioMemberName.setId("audioMember");
                                 audioMemberName.getStyleClass().clear();
@@ -258,10 +248,11 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                 audioMemberCell.getChildren().add(audioMemberName);
                                 channelAudioUserCell.getChildren().add(audioMemberCell);
 
+
                                 //set ContextMenu when user is not personal user
-//                                if (!user.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
-                                audioMemberName.setContextMenu(contextMenu);
-//                                }
+                                if (!user.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
+                                    audioMemberName.setContextMenu(contextMenu);
+                                }
 
                                 //set mute option only when currentUser in the same AudioChannel
                                 boolean currentUserAudio = false;
@@ -281,8 +272,21 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                 }
 
                                 //set on action from contextMenu in action from audioMemberCell to get the selected user
-                                audioMemberCell.setOnMouseClicked((ae) -> {
-                                    muteItem.setOnAction(event -> {
+                                contextMenu.setOnShowing(event -> {
+                                    for (User user1 : builder.getPersonalUser().getUser()) {
+                                        if (audioMember.getName().equals(user1.getName())) {
+                                            slider.setValue(user1.getUserVolume());
+                                            break;
+                                        }
+                                    }
+                                    // set current User Volume
+                                    Pane thumbInputSlider = (Pane) slider.lookup(".thumb");
+                                    valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                                    thumbInputSlider.getChildren().clear();
+                                    thumbInputSlider.getChildren().add(valueTextInputSlider);
+
+
+                                    muteItem.setOnAction(event2 -> {
                                         if (checkBoxMute.isSelected()) {
                                             audioMemberName.setText(user.getName());
                                             serverViewController.setUnMutedAudioMember(user.getName());
@@ -295,11 +299,11 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                     });
                                     // get new Value
                                     slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-//                                        builder.getLinePoolService().setMicrophoneVolume(newValue.floatValue());
-//                                        valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
-//                                        builder.saveSettings();
-                                        builder.getAudioStreamClient().setNewVolumeToUser(user.getName(), slider.getValue());
-                                        valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                                        if (audioMember.getName().equals(user.getName())) {
+                                            builder.getAudioStreamClient().setNewVolumeToUser(user.getName(), slider.getValue());
+                                            valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                                            builder.saveUserVolume(user.getName(), slider.getValue());
+                                        }
                                     });
                                 });
                                 audioMemberCount++;
