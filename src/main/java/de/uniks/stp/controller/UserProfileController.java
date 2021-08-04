@@ -45,10 +45,9 @@ public class UserProfileController {
         Label oldLabel = (Label) view.lookup("#currentGame");
         if (oldLabel != null) {
             Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
-        } else {
-            if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
-                addGame();
-            }
+        }
+        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
+            addGame();
         }
     }
 
