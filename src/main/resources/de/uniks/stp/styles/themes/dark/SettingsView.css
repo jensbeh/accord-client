@@ -247,12 +247,9 @@
 .combo-box-popup .list-view .list-cell {
     -fx-background-color: WHITE;
     -fx-text-fill: BLACK;
+    -fx-font-size: 13;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #AAAAAA;
-}
-
-.list-view .list-cell {
-    -fx-padding: 0;
 }
