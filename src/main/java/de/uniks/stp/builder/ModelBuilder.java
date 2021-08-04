@@ -615,7 +615,9 @@ public class ModelBuilder {
 
     public void stopGame() {
         isSteamRun = false;
-        getSteamGame.interrupt();
+        if (getSteamGame != null) {
+            getSteamGame.interrupt();
+        }
         getSteamGame = null;
     }
 
@@ -629,6 +631,10 @@ public class ModelBuilder {
 
     public boolean isSteamRun() {
         return isSteamRun;
+    }
+
+    public void setSteamRun(boolean steamRun) {
+        isSteamRun = steamRun;
     }
 
     public Runnable getHandleMicrophoneHeadphone() {
