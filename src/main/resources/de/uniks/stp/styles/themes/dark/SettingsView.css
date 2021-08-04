@@ -168,6 +168,7 @@
     -fx-opacity: 0;
     -fx-border-color: #2f3136;
 }
+
 .progress-bar {
     -fx-background-color: #ff9999;
     -fx-background-radius: 5;
@@ -252,4 +253,8 @@
 
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #AAAAAA;
+}
+
+#blockedUsersLV .list-cell {
+    -fx-padding: 0;
 }
