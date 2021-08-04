@@ -247,7 +247,7 @@
 .combo-box-popup .list-view .list-cell {
     -fx-background-color: WHITE;
     -fx-text-fill: BLACK;
-    -fx-font-size: 13;
+    -fx-font-size: 12.5;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
