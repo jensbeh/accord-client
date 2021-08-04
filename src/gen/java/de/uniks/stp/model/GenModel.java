@@ -44,6 +44,7 @@ public class GenModel implements ClassModelDecorator {
         mm.haveAttribute(user, "id", Type.STRING);
         mm.haveAttribute(user, "status", Type.BOOLEAN);
         mm.haveAttribute(user, "description", Type.STRING);
+        mm.haveAttribute(user, "userVolume", Type.DOUBLE);
 
         mm.associate(channel, "privilegedUsers", 3, user, "privileged", 3);
         mm.associate(server, "user", 3, user, "server", 3);

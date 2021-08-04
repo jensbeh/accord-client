@@ -1,5 +1,6 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.AudioMember;
 import de.uniks.stp.model.ServerChannel;
@@ -9,19 +10,24 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.lang.reflect.Field;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private final ServerViewController serverViewController;
+    private final ModelBuilder builder;
     private ListView<ServerChannel> channelListView;
 
-    public ServerChannelListCell(ServerViewController serverViewController) {
+    public ServerChannelListCell(ServerViewController serverViewController, ModelBuilder builder) {
         this.serverViewController = serverViewController;
+        this.builder = builder;
     }
 
 
@@ -84,11 +90,10 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 channelNameCell.setStyle("-fx-padding: 0 10 0 20;");
                 // set channelName
                 channelNameCell.getChildren().add(name);
-                //initialize ContextMenu
-                ContextMenu menu = menu();
+
                 // channel is audioChannel
                 if (item.getType().equals("audio")) {
-                    channelAudioUserCell = audioChannel(item, menu);
+                    channelAudioUserCell = audioChannel(item);
                 }
                 channelCell.getChildren().addAll(channelNameCell, channelAudioUserCell);
                 // set notification color & count
@@ -203,31 +208,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             return notificationCell;
         }
 
-        private ContextMenu menu() {
-            ContextMenu menu = new ContextMenu();
-            MenuItem mute = new MenuItem("mute");
-            MenuItem unMute = new MenuItem("unmute");
-            menu.setId("AudioMemberControl");
-            mute.setId("muteAudioMember");
-            mute.setId("unMuteAudioMember");
-            menu.getItems().addAll(mute, unMute);
-            unMute.setVisible(false);
-            mute.setVisible(false);
-            if (serverViewController.getTheme().equals("Dark")) {
-                menu.setStyle("-fx-background-color: #23272a");
-                mute.setStyle("-fx-text-fill: #FFFFFF");
-                unMute.setStyle("-fx-text-fill: #FFFFFF");
-            } else {
-                menu.setStyle("-fx-background-color: White");
-                mute.setStyle("-fx-text-fill: #000000");
-                unMute.setStyle("-fx-text-fill: #000000");
-            }
-            return menu;
-        }
-
-        private VBox audioChannel(ServerChannel item, ContextMenu menu) {
-            MenuItem mute = menu.getItems().get(0);
-            MenuItem unMute = menu.getItems().get(1);
+        private VBox audioChannel(ServerChannel item) {
             VBox channelAudioUserCell = new VBox();
             channelAudioUserCell.setStyle("-fx-padding: 0 10 0 45;");
             audioMemberCount = 0;
@@ -235,6 +216,9 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             for (AudioMember audioMember : item.getAudioMember()) {
                 for (User user : item.getCategories().getServer().getUser()) {
                     if (audioMember.getId().equals(user.getId())) {
+
+                        CustomContextMenu customContextMenu = new CustomContextMenu(audioMember);
+
                         Label audioMemberName = new Label();
                         audioMemberName.setId("audioMember");
                         audioMemberName.getStyleClass().clear();
@@ -242,13 +226,14 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                         audioMemberName.setStyle("-fx-font-size: 14");
                         HBox audioMemberCell = new HBox();
                         audioMemberCell.setPrefHeight(25);
-                        audioMemberName.setText(user.getName());
+                        audioMemberName.setText(audioMember.getName());
                         audioMemberCell.getChildren().add(audioMemberName);
                         channelAudioUserCell.getChildren().add(audioMemberCell);
 
+
                         //set ContextMenu when user is not personal user
-                        if (!user.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
-                            audioMemberName.setContextMenu(menu);
+                        if (!audioMember.getId().equals(serverViewController.getServer().getCurrentUser().getId())) {
+                            audioMemberName.setContextMenu(customContextMenu.getContextMenu());
                         }
 
                         //set mute option only when currentUser in the same AudioChannel
@@ -259,38 +244,17 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                                 break;
                             }
                         }
-                        if (currentUserAudio) {
-                            mute.setVisible(true);
-                            unMute.setVisible(false);
-                        } else {
+                        if (!currentUserAudio) {
                             audioMemberName.setContextMenu(null);
-                            if (serverViewController.getMutedAudioMember().contains(user.getName())) {
-                                audioMemberName.setText(user.getName());
-                                serverViewController.setUnMutedAudioMember(user.getName());
-                            }
                         }
 
-                        if (serverViewController.getMutedAudioMember().contains(user.getName())) {
-                            unMute.setVisible(true);
-                            mute.setVisible(false);
-                            audioMemberName.setText("\uD83D\uDD07 " + user.getName());
+                        if (serverViewController.getMutedAudioMember().contains(audioMember.getName())) {
+                            audioMemberName.setText("\uD83D\uDD07 " + audioMember.getName());
+                            customContextMenu.getCheckBoxMute().setSelected(true);
                         }
 
                         //set on action from contextMenu in action from audioMemberCell to get the selected user
-                        audioMemberCell.setOnMouseClicked((ae) -> {
-                            mute.setOnAction((act) -> {
-                                audioMemberName.setText("\uD83D\uDD07 " + user.getName());
-                                serverViewController.setMutedAudioMember(user.getName());
-                                unMute.setVisible(true);
-                                mute.setVisible(false);
-                            });
-                            unMute.setOnAction((act) -> {
-                                audioMemberName.setText(user.getName());
-                                serverViewController.setUnMutedAudioMember(user.getName());
-                                unMute.setVisible(false);
-                                mute.setVisible(true);
-                            });
-                        });
+                        customContextMenu.setListener(audioMemberName);
                         audioMemberCount++;
                     }
                 }
@@ -315,30 +279,125 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             name.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
             return name;
         }
+
+        private Node unreadMessageCounter(float notificationCircleSize, ServerChannel item) {
+            Circle background = new Circle(notificationCircleSize / 2);
+            Circle foreground = new Circle(notificationCircleSize / 2 - 1);
+            //IDs to use CSS styling
+            background.getStyleClass().clear();
+            foreground.getStyleClass().clear();
+            background.getStyleClass().add("notificationCounterBackground");
+            foreground.getStyleClass().add("notificationCounterForeground");
+            background.setId("notificationCounterBackground_" + item.getId());
+            foreground.setId("notificationCounterForeground_" + item.getId());
+
+            Label numberText = new Label();
+            numberText.setId("notificationCounter_" + item.getId());
+            numberText.getStyleClass().clear();
+            numberText.getStyleClass().add("notificationCounter");
+            numberText.setAlignment(Pos.CENTER);
+            numberText.setTextFill(Color.BLACK);
+            numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
+
+            StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
+            stackPaneUnreadMessages.setAlignment(Pos.CENTER);
+            return stackPaneUnreadMessages;
+        }
+
+
+        private class CustomContextMenu {
+            private final CustomMenuItem muteItem;
+            private final AudioMember audioMember;
+            private final ContextMenu contextMenu;
+            private final CheckBox checkBoxMute;
+            private final Slider slider;
+            private final Text valueTextInputSlider;
+
+            public CustomContextMenu(AudioMember audioMember) {
+                this.audioMember = audioMember;
+                // initialize ContextMenu
+                contextMenu = new ContextMenu();
+
+                // initialize muteItem
+                HBox muteBox = new HBox();
+                Label muteLabel = new Label("Mute");
+                muteLabel.setFont(new Font(14));
+                checkBoxMute = new CheckBox();
+                checkBoxMute.setId("checkBoxMute");
+                checkBoxMute.setDisable(true);
+                muteBox.getChildren().addAll(muteLabel, checkBoxMute);
+                muteBox.setSpacing(100);
+                muteBox.prefWidthProperty().bind(contextMenu.widthProperty());
+                muteItem = new CustomMenuItem(muteBox);
+                muteItem.setHideOnClick(false);
+
+                // initialize sliderItem - with slider and custom thumb on showing contextMenu
+                slider = new Slider(0, 100, 50);
+                slider.setPrefWidth(155);
+                slider.setId("slider_userVolume");
+                valueTextInputSlider = new Text();
+
+                VBox sliderBox = new VBox();
+                sliderBox.setSpacing(10);
+                Label volumeLabel = new Label();
+                volumeLabel.setFont(new Font(14));
+                volumeLabel.setText("User Volume");
+                sliderBox.getChildren().addAll(volumeLabel, slider);
+                CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
+                sliderItem.setHideOnClick(false);
+
+                // set item id's
+                contextMenu.setId("AudioMemberControlContextMenu");
+                muteItem.setId("muteAudioMemberMenuItem");
+                sliderItem.setId("sliderAudioMemberMenuItem");
+                SeparatorMenuItem sep = new SeparatorMenuItem();
+
+                // set contextMenuItems
+                contextMenu.getItems().addAll(muteItem, sep, sliderItem);
+            }
+
+            public ContextMenu getContextMenu() {
+                return contextMenu;
+            }
+
+            public CheckBox getCheckBoxMute() {
+                return checkBoxMute;
+            }
+
+            public void setListener(Label audioMemberName) {
+                contextMenu.setOnShowing(event -> {
+                    for (User user1 : builder.getPersonalUser().getUser()) {
+                        if (audioMember.getName().equals(user1.getName())) {
+                            slider.setValue(user1.getUserVolume());
+                            break;
+                        }
+                    }
+                    // set current User Volume
+                    Pane thumbInputSlider = (Pane) slider.lookup(".thumb");
+                    valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                    thumbInputSlider.getChildren().clear();
+                    thumbInputSlider.getChildren().add(valueTextInputSlider);
+
+                    muteItem.setOnAction(event2 -> {
+                        if (checkBoxMute.isSelected()) {
+                            audioMemberName.setText(audioMember.getName());
+                            serverViewController.setUnMutedAudioMember(audioMember.getName());
+                        } else {
+                            audioMemberName.setText("\uD83D\uDD07 " + audioMember.getName());
+                            serverViewController.setMutedAudioMember(audioMember.getName());
+                        }
+
+                        checkBoxMute.setSelected(!checkBoxMute.isSelected());
+                    });
+                    // get new Value
+                    slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                        builder.getAudioStreamClient().setNewVolumeToUser(audioMember.getName(), slider.getValue());
+                        valueTextInputSlider.setText(String.valueOf((int) (slider.getValue())));
+                        builder.saveUserVolume(audioMember.getName(), slider.getValue());
+
+                    });
+                });
+            }
+        }
     }
-
-    private Node unreadMessageCounter(float notificationCircleSize, ServerChannel item) {
-        Circle background = new Circle(notificationCircleSize / 2);
-        Circle foreground = new Circle(notificationCircleSize / 2 - 1);
-        //IDs to use CSS styling
-        background.getStyleClass().clear();
-        foreground.getStyleClass().clear();
-        background.getStyleClass().add("notificationCounterBackground");
-        foreground.getStyleClass().add("notificationCounterForeground");
-        background.setId("notificationCounterBackground_" + item.getId());
-        foreground.setId("notificationCounterForeground_" + item.getId());
-
-        Label numberText = new Label();
-        numberText.setId("notificationCounter_" + item.getId());
-        numberText.getStyleClass().clear();
-        numberText.getStyleClass().add("notificationCounter");
-        numberText.setAlignment(Pos.CENTER);
-        numberText.setTextFill(Color.BLACK);
-        numberText.setText(String.valueOf(item.getUnreadMessagesCounter()));
-
-        StackPane stackPaneUnreadMessages = new StackPane(background, foreground, numberText);
-        stackPaneUnreadMessages.setAlignment(Pos.CENTER);
-        return stackPaneUnreadMessages;
-    }
-
 }
