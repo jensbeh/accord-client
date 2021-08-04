@@ -590,4 +590,12 @@ public class ModelBuilder {
     public void setAudioController(AudioController audiocontroller) {
         this.audiocontroller = audiocontroller;
     }
+
+    public void clear() {
+        personalUser.removeYou();
+        getPersonalUser();
+        personalUser=null;
+        USER_CLIENT=null;
+        loadSettings();
+    }
 }
