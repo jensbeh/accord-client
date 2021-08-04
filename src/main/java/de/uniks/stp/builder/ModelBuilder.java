@@ -596,6 +596,9 @@ public class ModelBuilder {
         serverSystemWebSocket = null;
         serverChatWebSocketClient=null;
         currentServer = null;
+        audioStreamClient=null;
+        audiocontroller=null;
+        currentAudioChannel=null;
         personalUser=null;
         USER_CLIENT=null;
         loadSettings();
