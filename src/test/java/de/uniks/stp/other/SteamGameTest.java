@@ -253,11 +253,13 @@ public class SteamGameTest extends ApplicationTest {
             }
         }
         Assert.assertEquals("?", desc);
+        mockApp.getBuilder().setSteamToken("test");
+        mockApp.getBuilder().saveSettings();
     }
 
     @Test
     public void RestTest1() throws InterruptedException {
-        JSONObject jsonString = new JSONObject().put("response", new JSONObject().put("players", new JSONArray().put(new JSONObject().put("gameextrainfo", "BigBoi"))));
+        JSONObject jsonString = new JSONObject().put("response", new JSONObject().put("players", new JSONArray().put(new JSONObject().put("gameextrainfo", "?BigBoi"))));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
@@ -267,10 +269,11 @@ public class SteamGameTest extends ApplicationTest {
         }).when(restClient).getCurrentGame(anyString(), callbackCaptor4.capture());
 
         loginInit(true);
+        mockApp.getBuilder().setSteamToken("test");
         mockApp.getBuilder().setSteamShow(true);
+        mockApp.getBuilder().setSteamRun(true);
         mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
-        mockApp.getBuilder().setSteamShow(false);
     }
 
     @Test
@@ -284,10 +287,22 @@ public class SteamGameTest extends ApplicationTest {
             return null;
         }).when(restClient).getCurrentGame(anyString(), callbackCaptor5.capture());
         loginInit(true);
+        mockApp.getBuilder().setSteamToken("test");
         mockApp.getBuilder().setSteamShow(true);
+        mockApp.getBuilder().setSteamRun(true);
         mockApp.getBuilder().getGame();
         WaitForAsyncUtils.waitForFxEvents();
-        mockApp.getBuilder().setSteamShow(false);
+    }
+
+    @Test
+    public void DisconnectSteamTest() throws InterruptedException {
+        loginInit(false);
+
+        clickOn("#settingsButton");
+        clickOn("#button_Connection");
+        clickOn("#disconnectSteam");
+        WaitForAsyncUtils.waitForFxEvents();
+        Assert.assertEquals("",mockApp.getBuilder().getSteamToken());
     }
 
 }
