@@ -162,6 +162,12 @@ public class AudioStreamReceiver implements Runnable {
     }
 
     public void setNewVolumeToUser(String userName, double newVolume) {
+        for (AudioMember audioMember : connectedUser) {
+            if (audioMember.getName().equals(userName)) {
+                receiverSpeakerMap.get(userName).setNewVolume(newVolume);
+                break;
+            }
+        }
         System.out.println("Set new Volume " + newVolume + " to user " + userName);
     }
 }
