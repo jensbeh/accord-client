@@ -951,7 +951,7 @@ public class ServerViewControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void changeMicAawdndSpeakerTest() throws InterruptedException {
+    public void muteUserAndChangeUserVolumeTest() throws InterruptedException {
         doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
         doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
