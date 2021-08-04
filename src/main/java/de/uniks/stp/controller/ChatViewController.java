@@ -432,18 +432,18 @@ public class ChatViewController {
      */
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
+            ResourceBundle lang = StageManager.getLangBundle();
             editButton = new Button();
-            editButton.setText("edit");
+            editButton.setText(lang.getString("button.edit"));
             editButton.setId("editButton");
             abortButton = new Button();
-            abortButton.setText("abort");
+            abortButton.setText(lang.getString("button.abort"));
             abortButton.setId("abortButton");
             messageBox.getChildren().remove(sendButton);
             messageBox.getChildren().add(editButton);
             messageBox.getChildren().add(abortButton);
             textWrote = messageTextField.getText();
             setTheme();
-            onLanguageChanged();
         }
         messageBox.setPadding(new Insets(0, 20, 0, 0));
         messageTextField.setText(text);
@@ -643,7 +643,7 @@ public class ChatViewController {
         Text textToCalculateWidth = new Text(msg.getMessage());
         textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
 
-        EmojiTextFlow emojiTextFlow = ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0))).getChildren().get(0))));
+        EmojiTextFlow emojiTextFlow = ((EmojiTextFlow) ((((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(1))).getChildren().get(0))));
 
         if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
             emojiTextFlow.setMaxWidth(320);
