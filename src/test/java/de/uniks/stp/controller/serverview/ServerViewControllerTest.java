@@ -716,16 +716,9 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         Assert.assertEquals(audioChannel.getAudioMember().size(), 3);
 
-        rightClickOn("#audioMember");
-        WaitForAsyncUtils.waitForFxEvents();
-        ContextMenu contextMenu = lookup("#audioMember").queryLabeled().getContextMenu();
-        interact(() -> contextMenu.getItems().get(0).fire());
-        //write("\n");
         doubleClickOn("#60b77ba0026423ad521awd2");
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#serverName_5e2fbd8770dd077d03df505");
-        WaitForAsyncUtils.waitForFxEvents();
-        interact(() -> contextMenu.getItems().get(1).fire());
         WaitForAsyncUtils.waitForFxEvents();
 
         message = new JSONObject().put("action", "audioLeft").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
@@ -955,5 +948,88 @@ public class ServerViewControllerTest extends ApplicationTest {
         // Clicking logout...
         clickOn("#logoutButton");
         WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void changeMicAawdndSpeakerTest() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        try {
+            doAnswer((Answer<Void>) invocation -> null).when(mockAudioSocket).send(any());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            doAnswer((Answer<Void>) invocation -> {
+                DatagramPacket mockPacket = invocation.getArgument(0);
+
+                byte[] data = new byte[1024];
+                JSONObject obj1 = new JSONObject().put("channel", "60b77ba0026b3534ca5a61dd")
+                        .put("name", builder.getPersonalUser().getName());
+
+
+                // set 255 with jsonObject - sendData is automatically init with zeros
+                byte[] jsonData = new byte[255];
+                byte[] objData = new byte[0];
+                objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
+
+                // set every byte new which is from jsonObject and let the rest be still 0
+                for (int i = 0; i < objData.length; i++) {
+                    Arrays.fill(jsonData, i, i + 1, objData[i]);
+                }
+
+                // put both byteArrays in one
+                byte[] sendData = new byte[1279];
+                System.arraycopy(jsonData, 0, sendData, 0, jsonData.length);
+                System.arraycopy(data, 0, sendData, jsonData.length, data.length);
+
+                mockPacket.setData(sendData);
+                return null;
+            }).when(mockAudioSocket).receive(any());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // join channel
+        doubleClickOn("#60b77ba0026b3534ca5a61dd");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988b275a").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        User newUser = new User().setName("Hans").setId("60ace8f1c77d3f78988bawdw");
+        builder.getPersonalUser().withUser(newUser);
+        builder.getCurrentServer().withUser(newUser);
+
+        message = new JSONObject().put("action", "audioJoined").put("data", new JSONObject().put("id", "60ace8f1c77d3f78988bawdw").put("category", "60b77ba0026b3534ca5a61ae").put("channel", "60b77ba0026b3534ca5a61dd")).toString();
+        jsonObject = (JsonObject) JsonUtil.toJson(message);
+        serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        rightClickOn("#audioMember");
+        WaitForAsyncUtils.waitForFxEvents();
+        ContextMenu contextMenu = lookup("#audioMember").queryLabeled().getContextMenu();
+        interact(() -> contextMenu.getItems().get(0).fire());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        CustomMenuItem customMenuItem = (CustomMenuItem) contextMenu.getItems().get(2);
+        Slider slider = (Slider) customMenuItem.getContent().lookup("#slider_userVolume");
+        slider.setValue(50.0);
+        WaitForAsyncUtils.waitForFxEvents();
+
+
+        builder.saveUserVolume("Peter", 50.0);
     }
 }
