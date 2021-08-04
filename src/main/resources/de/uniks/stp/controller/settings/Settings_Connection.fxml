@@ -68,9 +68,9 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
         </VBox>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox id="steamHBox" prefHeight="100.0" prefWidth="200.0">
          <children>
-              <VBox id="steamVbox" prefHeight="100.0" prefWidth="270.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
+              <VBox prefHeight="100.0" prefWidth="270.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
                   <children>
                       <HBox alignment="CENTER_LEFT" spacing="20.0">
                           <children>
