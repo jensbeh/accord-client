@@ -544,6 +544,7 @@ public class HomeViewController {
                 if (builder.getCurrentPrivateChat() != null) {
                     builder.setCurrentPrivateChat(null);
                 }
+                builder.clear();
                 Platform.runLater(StageManager::showLoginScreen);
             }
         });

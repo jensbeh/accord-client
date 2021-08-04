@@ -652,4 +652,17 @@ public class ModelBuilder {
     public void setAudioController(AudioController audiocontroller) {
         this.audiocontroller = audiocontroller;
     }
+
+    public void clear() {
+        homeViewController=null;
+        currentPrivateChat=null;
+        currentChatViewController=null;
+        currentAudioChannel=null;
+        currentServer = null;
+        serverSystemWebSocket = null;
+        serverChatWebSocketClient=null;
+        audioStreamClient=null;
+        audiocontroller=null;
+        USER_CLIENT=null;
+    }
 }
