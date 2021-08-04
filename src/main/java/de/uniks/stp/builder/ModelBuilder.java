@@ -558,10 +558,9 @@ public class ModelBuilder {
     }
 
     public void stopGame() {
-        if (getSteamGame != null) {
-            isSteamRun = false;
-            getSteamGame = null;
-        }
+        isSteamRun = false;
+        getSteamGame.interrupt();
+        getSteamGame = null;
     }
 
     public HomeViewController getHomeViewController() {
