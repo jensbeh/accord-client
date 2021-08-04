@@ -593,6 +593,8 @@ public class ModelBuilder {
 
     public void clear() {
         personalUser.removeYou();
+        homeViewController=null;
+        currentChatViewController=null;
         serverSystemWebSocket = null;
         serverChatWebSocketClient=null;
         currentServer = null;
