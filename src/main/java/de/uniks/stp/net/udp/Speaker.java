@@ -3,6 +3,7 @@ package de.uniks.stp.net.udp;
 import de.uniks.stp.builder.ModelBuilder;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
@@ -54,5 +55,10 @@ public class Speaker {
         speaker.drain();
         speaker.stop();
         speaker.close();
+    }
+
+    public void setNewVolume(double newVolume) {
+        FloatControl volumeControl = (FloatControl) speaker.getControl((FloatControl.Type.MASTER_GAIN));
+        volumeControl.setValue((float) (-80.0 + (newVolume * 0.860206))); // range: -80.0 to 6.0206
     }
 }

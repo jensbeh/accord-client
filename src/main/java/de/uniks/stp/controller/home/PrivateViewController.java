@@ -138,6 +138,7 @@ public class PrivateViewController {
                     builder.getPersonalUser().setId(userId);
                 }
             }
+            builder.loadUserVolumes();
             Platform.runLater(() -> onlineUsersList.setItems(FXCollections.observableList(builder.getPersonalUser().
                     getUser()).sorted(new SortUser())));
         });

@@ -48,7 +48,7 @@
   roles: 	privateChat_currentUser 	privateChat_message
 
 - user: 	org.fulib.classmodel.Clazz
-  attributes: 	user_name 	user_id 	user_status 	user_description
+  attributes: 	user_name 	user_id 	user_status 	user_description 	user_userVolume
   model: 	c
   modified: 	false
   name: 	User
@@ -392,6 +392,15 @@
   propertyStyle: 	Bean
   type: 	String
   typeSignature: 	String
+
+- user_userVolume: 	org.fulib.classmodel.Attribute
+  clazz: 	user
+  id: 	User_userVolume
+  modified: 	false
+  name: 	userVolume
+  propertyStyle: 	Bean
+  type: 	double
+  typeSignature: 	double
 
 - user_privileged: 	org.fulib.classmodel.AssocRole
   aggregation: 	false

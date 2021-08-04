@@ -1,0 +1,89 @@
+/* VARIABLES: */
+* {
+    -my-background-color: #202225;
+    -my-background-color-highlighted: #ffbdbd;
+    -my-font-color: #FFFFFF;
+    -my-font-color-highlighted: BLACK;
+}
+
+/* CONTEXT MENU */
+#AudioMemberControlContextMenu {
+    -fx-pref-width: 180;
+    -fx-background-color: -my-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-padding: 10 8 10 8;
+}
+
+/* SEPARATOR */
+#AudioMemberControlContextMenu .separator:horizontal .line {
+    -fx-border-color: transparent;
+    -fx-padding: 10 0 0 0;
+}
+
+/* MENU ITEM */
+/*** The item itself (not hovered / focused) ***/
+#muteAudioMemberMenuItem, #sliderAudioMemberMenuItem {
+    -fx-background-color: -my-background-color;
+    -fx-background-radius: 5 5 5 5;
+}
+
+/*** The item's label (not hovered / focused) ***/
+#muteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label {
+    -fx-text-fill: -my-font-color;
+}
+
+/*** The item's label (disabled) ***/
+#muteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled {
+    -fx-opacity: 1.0;
+}
+
+/*** The item itself (hovered / focused) ***/
+#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered {
+    -fx-background-color: -my-background-color-highlighted;
+}
+
+/*** The item's label (hovered / focused) ***/
+#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label {
+    -fx-text-fill: -my-font-color-highlighted;
+}
+
+
+/* CHECKBOX MUTE */
+#checkBoxMute:disabled {
+  -fx-opacity: 1.0 ;
+}
+#checkBoxMute .box {
+    -fx-background-color: transparent;
+    -fx-border-color: #ff7d7d;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+}
+
+#checkBoxMute:selected .mark {
+    -fx-background-color: white;
+}
+
+#checkBoxMute:selected .box {
+    -fx-background-color: #ff7d7d;
+}
+
+/* SLIDER USER VOLUME */
+#slider_userVolume .track {
+    -fx-background-color: #a3a3a3;
+}
+#slider_userVolume .thumb {
+    -fx-background-color: #ff9999;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 25px;
+    -fx-background-radius: 100;
+    -fx-font-size: 14px;
+    -fx-text-fill: Black;
+}
+
+#slider_userVolume .thumb:hover {
+    -fx-background-color: #ffbdbd;
+}
+
+#slider_userVolume .thumb:pressed {
+    -fx-background-color: #ff7d7d;
+}

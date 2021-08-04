@@ -16,6 +16,7 @@ public class User {
     public static final String PROPERTY_SERVER = "server";
     public static final String PROPERTY_CURRENT_USER = "currentUser";
     public static final String PROPERTY_DESCRIPTION = "description";
+   public static final String PROPERTY_USER_VOLUME = "userVolume";
     protected PropertyChangeSupport listeners;
     private String name;
     private String id;
@@ -25,6 +26,7 @@ public class User {
     private List<Server> server;
     private CurrentUser currentUser;
     private String description;
+   private double userVolume;
 
     public String getName()
    {
@@ -254,6 +256,24 @@ public class User {
       final String oldValue = this.description;
       this.description = value;
       this.firePropertyChange(PROPERTY_DESCRIPTION, oldValue, value);
+      return this;
+   }
+
+   public double getUserVolume()
+   {
+      return this.userVolume;
+   }
+
+   public User setUserVolume(double value)
+   {
+      if (value == this.userVolume)
+      {
+         return this;
+      }
+
+      final double oldValue = this.userVolume;
+      this.userVolume = value;
+      this.firePropertyChange(PROPERTY_USER_VOLUME, oldValue, value);
       return this;
    }
 

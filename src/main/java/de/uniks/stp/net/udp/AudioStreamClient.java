@@ -141,4 +141,8 @@ public class AudioStreamClient {
     public void setNewSpeaker() {
         receiver.setNewSpeaker();
     }
+
+    public void setNewVolumeToUser(String userName, double newVolume) {
+        receiver.setNewVolumeToUser(userName, newVolume);
+    }
 }
