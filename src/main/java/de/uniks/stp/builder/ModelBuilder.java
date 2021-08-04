@@ -592,7 +592,6 @@ public class ModelBuilder {
     }
 
     public void clear() {
-        personalUser.removeYou();
         homeViewController=null;
         currentPrivateChat=null;
         currentChatViewController=null;
@@ -602,7 +601,6 @@ public class ModelBuilder {
         serverChatWebSocketClient=null;
         audioStreamClient=null;
         audiocontroller=null;
-        personalUser=null;
         USER_CLIENT=null;
     }
 }
