@@ -190,25 +190,10 @@ public class ServerSystemWebSocket extends Endpoint {
         if (userAction.equals("messageDeleted")) {
             deleteMessage(jsonData);
         }
-        if (userAction.equals("userDescriptionChanged")) {
-            updateUser(jsonData);
-        }
 
         if (builder.getCurrentServer() == serverViewController.getServer()) {
             serverViewController.showOnlineOfflineUsers();
         }
-    }
-
-    private void updateUser(JsonObject jsonData) {
-        jsonData = jsonData.getJsonObject("data");
-        for (User u : serverViewController.getServer().getUser()) {
-            if (u.getId().equals(jsonData.getString("id"))) {
-                System.out.println(jsonData.getString("description"));
-                u.setDescription(jsonData.getString("description"));
-                break;
-            }
-        }
-        serverViewController.showOnlineOfflineUsers();
     }
 
 

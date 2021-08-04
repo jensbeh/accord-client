@@ -22,11 +22,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
      * The <code>call</code> method is called when required, and is given a
      * single argument of type P, with a requirement that an object of type R
      * is returned.
-     *
-     * @param param The single argument upon which the returned value should be
-     * determined.
-     * @return An object of type R that may be determined based on the provided
-     * parameter value.
      */
     private HBox root;
 
@@ -44,8 +39,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
     @Override
     public ListCell<User> call(ListView<User> param) {
-        UserCell userCell = new UserCell();
-        return userCell;
+        return new UserCell();
     }
 
     private class UserCell extends ListCell<User> {
@@ -54,36 +48,21 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             this.user = item;
-            VBox vBox = new VBox();
-            HBox cell = new HBox();
-
-            Region hoverBg = new Region();
-            hoverBg.setPrefSize(175, 30);
-            hoverBg.setOpacity(0.3);
-            setOnMouseEffects(hoverBg, cell);
-
-            Circle circle = new Circle(15);
-            Label name = new Label();
-            Label game = new Label();
-            StackPane stackPane = new StackPane();
             super.updateItem(item, empty);
             if (!empty) {
-                cell.setId("user");
-                cell.setAlignment(Pos.CENTER_LEFT);
-                cell.setStyle("-fx-padding: 5 5 5 5;");
-                name.setId(item.getId());
-                name.setText("   " + item.getName());
-                name.setStyle("-fx-font-size: 18");
-                name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                name.setPrefWidth(135);
+                HBox cell = cell();
+                Region hoverBg = hoverBackround(cell);
+                Circle circle = new Circle(15);
+                Label name = name(item);
+
+                StackPane stackPane = new StackPane();
                 addContextMenu(item, name);
                 if (item.isStatus()) {
                     circle.setFill(Paint.valueOf("#13d86b"));
                     if (item.getDescription() != null && (!item.getDescription().equals("") && !item.getDescription().equals("?") && Character.toString(item.getDescription().charAt(0)).equals("?"))) {
-                        game.setText(item.getDescription());
-                        game.setText("   " + StageManager.getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
-                        game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                        game.setPrefWidth(135);
+                        VBox vBox = new VBox();
+                        Label game = game(item);
+
                         vBox.getChildren().addAll(name, game);
                         cell.getChildren().addAll(circle, vBox);
                         stackPane.getChildren().addAll(hoverBg, cell);
@@ -101,6 +80,41 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             } else {
                 this.setGraphic(null);
             }
+        }
+
+        private Label game(User item) {
+            Label game = new Label();
+            game.setText(item.getDescription());
+            game.setText("   " + StageManager.getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
+            game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+            game.setPrefWidth(135);
+            return game;
+        }
+
+        private Label name(User item) {
+            Label name = new Label();
+            name.setId(item.getId());
+            name.setText("   " + item.getName());
+            name.setStyle("-fx-font-size: 18");
+            name.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+            name.setPrefWidth(135);
+            return name;
+        }
+
+        private HBox cell() {
+            HBox cell = new HBox();
+            cell.setId("user");
+            cell.setAlignment(Pos.CENTER_LEFT);
+            cell.setStyle("-fx-padding: 5 5 5 5;");
+            return cell;
+        }
+
+        private Region hoverBackround(HBox cell) {
+            Region hoverBg = new Region();
+            hoverBg.setPrefSize(175, 30);
+            hoverBg.setOpacity(0.3);
+            setOnMouseEffects(hoverBg, cell);
+            return hoverBg;
         }
 
         /**

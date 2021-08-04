@@ -162,7 +162,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             if (u.getId().equals(jsonData.getString("id"))) {
                 u.setDescription(jsonData.getString("description"));
                 builder.getHomeViewController().getServerCtrls().get(server).getOnlineUsersList().refresh();
-                builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
                 if (!builder.getPersonalUser().getId().equals(u.getId())) {
                     Platform.runLater(() -> builder.getSpotifyConnection().updateValuesUser(u.getDescription()));
                 }
