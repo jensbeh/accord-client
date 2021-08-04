@@ -185,22 +185,27 @@ public class ResourceManager {
      * load privateChat from file
      */
     public static ArrayList<Message> loadPrivatChat(String currentUserName, String chatPartnerName, PrivateChat privateChat) throws IOException, JsonException {
-        JsonArray parser;
         ArrayList<Message> messageList = new ArrayList<>();
 
         File f = new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json");
         if (f.exists()) {
             Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH + "/chat_" + currentUserName + "_" + chatPartnerName + ".json"));
-            parser = (JsonArray) Jsoner.deserialize(reader);
-            for (Object jsonObject : parser) {
-                Message message = new Message();
-                JsonObject jsonObject1 = (JsonObject) jsonObject;
-                message.setMessage((String) jsonObject1.get("message"));
-                message.setFrom((String) jsonObject1.get("currentUserName"));
-                message.setPrivateChat(privateChat);
-                message.setTimestamp(((BigDecimal) jsonObject1.get("timestamp")).longValue());
-                messageList.add(message);
-            }
+            messageList = loadPrivateMessages(reader, privateChat);
+        }
+        return messageList;
+    }
+
+    private static ArrayList<Message> loadPrivateMessages(Reader reader, PrivateChat privateChat) throws JsonException {
+        ArrayList<Message> messageList = new ArrayList<>();
+        JsonArray parser = (JsonArray) Jsoner.deserialize(reader);
+        for (Object jsonObject : parser) {
+            Message message = new Message();
+            JsonObject jsonObject1 = (JsonObject) jsonObject;
+            message.setMessage((String) jsonObject1.get("message"));
+            message.setFrom((String) jsonObject1.get("currentUserName"));
+            message.setPrivateChat(privateChat);
+            message.setTimestamp(((BigDecimal) jsonObject1.get("timestamp")).longValue());
+            messageList.add(message);
         }
         return messageList;
     }
@@ -226,11 +231,11 @@ public class ResourceManager {
             JsonObject obj = new JsonObject();
             obj.put("id", user.getId());
             obj.put("name", user.getName());
-            if (blocking)
+            if (blocking) {
                 parser.add(obj);
-            else
+            } else {
                 parser.remove(obj);
-
+            }
             System.out.println("saveBlockedUser: " + user.getName());
             Jsoner.serialize(parser, writer);
             writer.close();
@@ -298,10 +303,8 @@ public class ResourceManager {
 
     public static void copyDefaultSound(InputStream inputStream) {
         try {
-            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav"))) {
-                if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
-                    Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
-                }
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav")) && !Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH));
             }
             OutputStream outputStream = new FileOutputStream(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH + "/default.wav");
             inputStream.transferTo(outputStream);
@@ -341,19 +344,25 @@ public class ResourceManager {
      * delete sound
      */
     public static void deleteNotificationSound(String name) {
-        File deleteFile = null;
         if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
             File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
             for (File file : Objects.requireNonNull(folder.listFiles())) {
-                String fileName = file.getName().substring(0, file.getName().length() - 4);
-                if (fileName.equals(name)) {
-                    deleteFile = file;
-                    if (file.exists()) {
-                        deleteFile.delete();
-                    } else {
-                        System.out.println("File does not exist!");
-                    }
+                checkforFileToDelete(file, name);
+            }
+        }
+    }
+
+    private static void checkforFileToDelete(File file, String name) {
+        File deleteFile;
+        String fileName = file.getName().substring(0, file.getName().length() - 4);
+        if (fileName.equals(name)) {
+            deleteFile = file;
+            if (file.exists()) {
+                if (!deleteFile.delete()) {
+                    System.err.println("File can't be deleted");
                 }
+            } else {
+                System.out.println("File does not exist!");
             }
         }
     }
@@ -387,15 +396,18 @@ public class ResourceManager {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/"));
             }
             if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/CurrentNotification/" + comboValue + ".wav"))) {
-                for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH
-                        + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
-                    if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
-                        saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
-                    }
-                }
+                checkFiles(userName);
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        }
+    }
+
+    private static void checkFiles(String userName) {
+        for (File file : Objects.requireNonNull(new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH).listFiles())) {
+            if (file.getName().substring(0, file.getName().length() - 4).equals(comboValue)) {
+                saveUserNameAndSound(userName, file.getName().substring(0, file.getName().length() - 4));
+            }
         }
     }
 
