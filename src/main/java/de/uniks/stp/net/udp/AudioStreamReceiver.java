@@ -105,8 +105,11 @@ public class AudioStreamReceiver implements Runnable {
 
         receiverSpeakerMap.get(newMember.getName()).startPlayback();
 
-        for (User user : builder.getCurrentAudioChannel().getCategories().getServer().getUser()) {
-            setNewVolumeToUser(newMember.getName(), user.getUserVolume());
+        for (User user : builder.getPersonalUser().getUser()) {
+            if (newMember.getName().equals(user.getName())) {
+                setNewVolumeToUser(newMember.getName(), user.getUserVolume());
+                break;
+            }
         }
     }
 
