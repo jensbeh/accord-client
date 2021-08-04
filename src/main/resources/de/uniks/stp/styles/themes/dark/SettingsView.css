@@ -101,6 +101,11 @@
     -fx-border-color: #36393f;
 }
 
+#disconnectSteam {
+    -fx-background-color: #ffbdbd;
+    -fx-text-fill: BLACK;
+}
+
 .buttonOn {
     -fx-background-color: #ff9999;
 }
