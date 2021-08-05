@@ -3,14 +3,11 @@ package de.uniks.stp.controller.settings;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -28,7 +25,9 @@ public class ConnectionController extends SubSetting {
     StackPane spotifyToggleStackPane;
     StackPane steamToggleStackPane;
     private SteamLoginController steamLoginController;
-    private HBox steamHBox;
+    private VBox steamVBox;
+    private Button spotifyDisconnect;
+    private VBox spotifyVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -43,10 +42,19 @@ public class ConnectionController extends SubSetting {
         Button steamDisconnectButton = (Button) view.lookup("#disconnectSteam");
         steamDisconnectButton.setOnAction(this::disconnectSteam);
 
-        VBox spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        steamHBox = (HBox) view.lookup("#steamHBox");
+        spotifyToggleButton.setMouseTransparent(true);
+        steamToggleButton.setMouseTransparent(true);
+
+        spotifyToggleStackPane.setOnMouseClicked(this::spotifyToggle);
+        steamToggleStackPane.setOnMouseClicked(this::steamToggle);
+
+        spotifyDisconnect = (Button) view.lookup("#disconnectSpotify");
+        spotifyDisconnect.setOnMouseClicked(this::disconnectSpotify);
+
+        spotifyVbox = (VBox) view.lookup("#spotifyVbox");
+        steamVBox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
-        steamHBox.setVisible(false);
+        steamVBox.setVisible(false);
 
         spotifyView.setOnMouseClicked(this::onSpotifyChange);
         steamView.setOnMouseClicked(this::onSteamChange);
@@ -58,7 +66,7 @@ public class ConnectionController extends SubSetting {
         if (!builder.getSteamToken().equals("")) {
             boolean steamShow = builder.isSteamShow();
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, steamShow);
-            steamHBox.setVisible(true);
+            steamVBox.setVisible(true);
         }
         steamToggleButton.setOnAction(this::startGame);
     }
@@ -89,13 +97,76 @@ public class ConnectionController extends SubSetting {
     }
 
     private void refreshSteam() {
-        if (!steamHBox.isVisible()) {
-            steamHBox.setVisible(true);
+        if (!steamVBox.isVisible()) {
+            steamVBox.setVisible(true);
         }
         steamLoginController = null;
         init();
     }
 
+    private void disconnectSpotify(MouseEvent mouseEvent) {
+        builder.setSpotifyRefresh(null);
+        builder.setSpotifyToken(null);
+        builder.setSpotifyShow(false);
+        if (builder.getSpotifyConnection() != null) {
+            builder.getSpotifyConnection().stopDescriptionScheduler();
+        }
+        builder.saveSettings();
+        spotifyVbox.setVisible(false);
+    }
+
+    private void spotifyToggle(MouseEvent mouseEvent) {
+        if (builder.isSpotifyShow() && spotifyToggleStackPane.getAlignment(spotifyToggleButton) == Pos.CENTER_RIGHT) {
+            spotifyToggleButton.getStyleClass().clear();
+            spotifyToggleButton.getStyleClass().add("buttonOff");
+            backgroundSpotifyButton.getStyleClass().clear();
+            backgroundSpotifyButton.getStyleClass().add("backgroundOff");
+            spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
+        } else {
+            spotifyToggleButton.getStyleClass().clear();
+            spotifyToggleButton.getStyleClass().add("buttonOn");
+            backgroundSpotifyButton.getStyleClass().clear();
+            backgroundSpotifyButton.getStyleClass().add("backgroundOn");
+            spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_RIGHT);
+
+            steamToggleButton.getStyleClass().clear();
+            steamToggleButton.getStyleClass().add("buttonOff");
+            backgroundSteamButton.getStyleClass().clear();
+            backgroundSteamButton.getStyleClass().add("backgroundOff");
+            steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
+
+            builder.setSpotifyShow(true);
+            builder.setSteamShow(false);
+            builder.getPersonalUser().setDescription("#");
+        }
+    }
+
+    private void steamToggle(MouseEvent mouseEvent) {
+        if (builder.isSteamShow() && steamToggleStackPane.getAlignment(steamToggleButton) == Pos.CENTER_RIGHT) {
+            steamToggleButton.getStyleClass().clear();
+            steamToggleButton.getStyleClass().add("buttonOff");
+            backgroundSteamButton.getStyleClass().clear();
+            backgroundSteamButton.getStyleClass().add("backgroundOff");
+            steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
+        } else {
+            steamToggleButton.getStyleClass().clear();
+            steamToggleButton.getStyleClass().add("buttonOn");
+            backgroundSteamButton.getStyleClass().clear();
+            backgroundSteamButton.getStyleClass().add("backgroundOn");
+            steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_RIGHT);
+
+            spotifyToggleButton.getStyleClass().clear();
+            spotifyToggleButton.getStyleClass().add("buttonOff");
+            backgroundSpotifyButton.getStyleClass().clear();
+            backgroundSpotifyButton.getStyleClass().add("backgroundOff");
+            spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
+
+            builder.setSpotifyShow(false);
+            builder.setSteamShow(true);
+            builder.getGame();
+            builder.getPersonalUser().setDescription("?");
+        }
+    }
 
     private void toggleInit(StackPane stackPane, Rectangle backgroundToggle, Button toggleButton, Boolean toggleShow) {
         setBackgroundToggleButton(stackPane, backgroundToggle, toggleButton);
@@ -112,52 +183,6 @@ public class ConnectionController extends SubSetting {
             backgroundToggle.getStyleClass().add("backgroundOff");
             StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
         }
-
-        final boolean[] toggleShowFinal = {toggleShow};
-        EventHandler<Event> click = e -> {
-            toggleButton.getStyleClass().clear();
-            backgroundToggle.getStyleClass().clear();
-            if (toggleShowFinal[0]) {
-                //Button off
-                toggleButton.getStyleClass().add("buttonOff");
-                backgroundToggle.getStyleClass().add("backgroundOff");
-                StackPane.setAlignment(toggleButton, Pos.CENTER_LEFT);
-                toggleShowFinal[0] = false;
-                if (stackPane.getId().contains("spotifyToggleStackPane")) {
-                    builder.setSpotifyShow(false);
-                    builder.getPersonalUser().setDescription("#");
-                } else {
-                    builder.setSteamShow(false);
-                    builder.getPersonalUser().setDescription("?");
-                }
-            } else {
-                //Button on
-                toggleButton.getStyleClass().add("buttonOn");
-                backgroundToggle.getStyleClass().add("backgroundOn");
-                StackPane.setAlignment(toggleButton, Pos.CENTER_RIGHT);
-                toggleShowFinal[0] = true;
-                if (stackPane.getId().contains("spotifyToggleStackPane")) {
-                    StackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
-                    backgroundSteamButton.getStyleClass().clear();
-                    backgroundSteamButton.getStyleClass().add("backgroundOff");
-                    builder.getPersonalUser().setDescription("#");
-                    builder.setSpotifyShow(true);
-                    builder.setSteamShow(false);
-                } else {
-                    StackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
-                    backgroundSpotifyButton.getStyleClass().clear();
-                    backgroundSpotifyButton.getStyleClass().add("backgroundOff");
-                    builder.getPersonalUser().setDescription("?");
-                    builder.setSteamShow(true);
-                    builder.setSpotifyShow(false);
-                    builder.getGame();
-                }
-            }
-            builder.saveSettings();
-        };
-        toggleButton.setFocusTraversable(false);
-        stackPane.setOnMouseClicked(click);
-        toggleButton.setOnMouseClicked(click);
     }
 
     private void setBackgroundToggleButton(StackPane toggleStackPane, Rectangle backgroundToggleButton, Button toggleButton) {

@@ -255,3 +255,28 @@
 #blockedUsersLV .list-cell {
     -fx-padding: 0;
 }
+
+/* Notification */
+#disconnectSteam {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#disconnectSpotify {
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+#disconnectSpotify:hover, #disconnectSteam:hover {
+    -fx-background-color: #a0bade;
+}
+
+#disconnectSpotify:pressed, #disconnectSteam:pressed {
+    -fx-background-color: #6899de;
+}
