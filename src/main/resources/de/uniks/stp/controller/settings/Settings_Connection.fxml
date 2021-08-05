@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label id="label_themeSelect" layoutX="22.0" style="-fx-font-size: 16;" text="%label.select_connection">
             <font>
