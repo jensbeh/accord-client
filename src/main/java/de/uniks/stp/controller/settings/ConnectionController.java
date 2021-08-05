@@ -2,7 +2,6 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -70,8 +69,8 @@ public class ConnectionController extends SubSetting {
 
     private void disconnectSteam(ActionEvent actionEvent) {
         builder.setSteamToken("");
+        builder.getPersonalUser().setDescription("?");
         builder.stopGame();
-        builder.setSteamRun(false);
         builder.setSteamShow(false);
         builder.saveSettings();
         init();
@@ -97,7 +96,6 @@ public class ConnectionController extends SubSetting {
 
     private void refreshSteam() {
         steamLoginController = null;
-        builder.getGame();
         init();
     }
 

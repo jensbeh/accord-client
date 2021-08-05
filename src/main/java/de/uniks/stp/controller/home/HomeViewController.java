@@ -168,7 +168,7 @@ public class HomeViewController {
             builder.getSpotifyConnection().updateUserDescriptionScheduler();
         }
 
-        if (builder.getSteamToken() != null) {
+        if (!builder.getSteamToken().equals("")) {
             builder.getGame();
         }
     }
