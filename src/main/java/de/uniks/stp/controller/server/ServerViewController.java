@@ -510,7 +510,7 @@ public class ServerViewController {
 //        for (int i = 0; i < 5; i++) {
 //            onlineUsers.add(new User().setName("Test").setId("1234").setStatus(true));
 //        }
-//
+
 //        for (int i = 0; i < 20; i++) {
 //            offlineUsers.add(new User().setName("Test").setId("1234").setStatus(false));
 //        }
@@ -521,13 +521,12 @@ public class ServerViewController {
                 onlineUsersList.setPrefHeight(0);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
+                offlineUsersList.setPrefHeight(3450);
                 userBox.setSpacing(0);
             } else {
-                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (46)));
-                onlineUsersList.setMouseTransparent(true);
-                onlineUsersList.setFocusTraversable(false);
+                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (46)) + 2);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
-                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (46)));
+                offlineUsersList.setPrefHeight(3450);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
             }
         });
