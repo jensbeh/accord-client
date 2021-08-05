@@ -1032,4 +1032,35 @@ public class ServerViewControllerTest extends ApplicationTest {
 
         builder.saveUserVolume("Peter", 50.0);
     }
+
+    @Test
+    public void changeLanguageServerView() throws InterruptedException {
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        loginInit(testUserOneName, testUserOnePw);
+        builder.getPersonalUser().setId("60ace8f1c77d3f78988b275a");
+
+        clickOn("#serverName_5e2fbd8770dd077d03df505");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Button settingsButton = lookup("#settingsButton").query();
+        clickOn(settingsButton);
+        Button languageButton = lookup("#button_General").query();
+        clickOn(languageButton);
+        Label label_langSelect = lookup("#label_langSelect").query();
+        ComboBox<String> comboBox_langSelect = lookup("#comboBox_langSelect").query();
+
+        clickOn(comboBox_langSelect);
+        clickOn("Deutsch");
+        Assert.assertEquals("Allgemein", languageButton.getText());
+        Assert.assertEquals("Sprache ausw\u00e4hlen:", label_langSelect.getText());
+
+        clickOn(comboBox_langSelect);
+        clickOn("English");
+        Assert.assertEquals("General", languageButton.getText());
+        Assert.assertEquals("Select Language:", label_langSelect.getText());
+    }
 }

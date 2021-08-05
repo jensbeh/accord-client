@@ -724,6 +724,12 @@ public class ServerViewController {
 
         if (userProfileController != null)
             userProfileController.onLanguageChanged();
+
+        if (categorySubControllerList != null) {
+            for (var categorySubController : categorySubControllerList.values()) {
+                categorySubController.onLanguageChanged();
+            }
+        }
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
