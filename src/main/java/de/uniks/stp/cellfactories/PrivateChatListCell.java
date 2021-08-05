@@ -167,7 +167,8 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             int messageLength = 0;
             for (Node T : message.getChildren()) {
                 if (T instanceof ImageView) {
-                    messageLength++;
+                    // an emoji represents one character
+                    messageLength += 2;
                 } else if (T instanceof Text) {
                     messageLength += ((Text) T).getText().length();
                 }
@@ -184,14 +185,13 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 Node T = message.getChildren().get(x);
                 // child is emoji
                 if (T instanceof ImageView) {
-                    if (counter < length) {
+                    if ((counter + 2) <= length) {
                         ImageView image = new ImageView();
                         image.setImage(((ImageView) T).getImage());
                         image.setFitHeight(((ImageView) T).getFitHeight());
                         image.setFitWidth(((ImageView) T).getFitWidth());
                         newMessage.getChildren().add(image);
-                        // an emoji represents one character
-                        counter++;
+                        counter += 2;
                     }
                 } else if (T instanceof Text) {
                     Text text = new Text("");
@@ -212,11 +212,14 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 }
             }
 
-            /*if (shorted) {
-                Text t = new Text();
-                t.setText("..");
+            // if message is shorted, show that by appending ".."
+            if (shorted) {
+                Text t = new Text("..");
+                t.setTextAlignment(TextAlignment.LEFT);
+                t.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                t.setFill(Color.WHITE);
                 newMessage.getChildren().add(t);
-            }*/
+            }
             return newMessage;
         }
 
