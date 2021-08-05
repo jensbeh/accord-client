@@ -250,7 +250,7 @@ public class ChatViewController {
     /**
      * build menu with chat options
      */
-    public void chatClicked(MouseEvent mouseEvent) {
+    public void chatClicked(MouseEvent mouseEvent, boolean messageIsLink) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
 
@@ -295,6 +295,10 @@ public class ChatViewController {
             } else {
                 contextMenu.getItems().get(1).setVisible(true);
                 contextMenu.getItems().get(2).setVisible(true);
+            }
+            // not editable if message is a link
+            if (messageIsLink) {
+                contextMenu.getItems().get(1).setVisible(false);
             }
             selectedMsg = messagesHashMap.get(selected);
         }

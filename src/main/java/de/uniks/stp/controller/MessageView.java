@@ -195,7 +195,10 @@ public class MessageView {
         cell.setAlignment(Pos.CENTER_RIGHT);
         cell.getChildren().addAll(vbox);
         if (!messageIsInfo) {
-            cell.setOnMouseClicked(chatViewController::chatClicked);
+            boolean messageIsLink = loadImage || loadVideo;
+            cell.setOnMouseClicked(event -> {
+                chatViewController.chatClicked(event, messageIsLink);
+            });
         }
         chatViewController.getContainer().getChildren().add(cell);
         chatViewController.getMessagesHashMap().put(cell, item);
