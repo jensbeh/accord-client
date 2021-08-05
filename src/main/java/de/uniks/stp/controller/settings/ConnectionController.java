@@ -2,6 +2,7 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -76,12 +77,15 @@ public class ConnectionController extends SubSetting {
     }
 
     private void disconnectSteam(ActionEvent actionEvent) {
-        builder.setSteamToken("");
         builder.getPersonalUser().setDescription("?");
-        builder.stopGame();
+        builder.setSteamToken("");
         builder.setSteamShow(false);
         builder.saveSettings();
         init();
+        Platform.runLater(() -> {
+            builder.stopGame();
+            builder.setSteamToken("");
+        });
     }
 
     private void startGame(ActionEvent actionEvent) {
