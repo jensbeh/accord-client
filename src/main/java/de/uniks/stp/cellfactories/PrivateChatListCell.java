@@ -1,5 +1,7 @@
 package de.uniks.stp.cellfactories;
 
+import com.pavlobu.emojitextflow.EmojiTextFlow;
+import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
 import javafx.geometry.Pos;
@@ -7,10 +9,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
     private final ModelBuilder builder;
@@ -117,18 +123,101 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             lastMessageCell.setPrefWidth(179);
             lastMessageCell.setAlignment(Pos.CENTER_LEFT);
             lastMessageCell.setStyle("-fx-padding: 5 0 0 0");
+
             return lastMessageCell;
         }
 
-        private Label getLastMessage(PrivateChat item) {
-            Label message = new Label();
+        private HBox getLastMessage(PrivateChat item) {
+            HBox textBox = new HBox();
+            textBox.setPrefWidth(179);
+            textBox.setStyle("-fx-padding: 0 10 0 10;");
+
+            EmojiTextFlow message = handleEmojis();
             message.setId("msg_" + item.getId());
-            message.getStyleClass().clear();
-            message.getStyleClass().add("msg");
-            message.setPrefWidth(USE_COMPUTED_SIZE);
-            message.setStyle("-fx-font-size: 15;  -fx-padding: 0 10 0 10; -fx-text-fill: white;");
-            message.setText(item.getMessage().get(item.getMessage().size() - 1).getMessage());
-            return message;
+            String textMessage = item.getMessage().get(item.getMessage().size() - 1).getMessage();
+            message.setId("messageLabel");
+            message.parseAndAppend(textMessage);
+            message = setMaxChar(message);
+
+            textBox.getChildren().add(message);
+            return textBox;
+        }
+
+        private EmojiTextFlow handleEmojis() {
+            EmojiTextFlowParameters emojiTextFlowParameters;
+            {
+                emojiTextFlowParameters = new EmojiTextFlowParameters();
+                emojiTextFlowParameters.setEmojiScaleFactor(1D);
+                emojiTextFlowParameters.setTextAlignment(TextAlignment.LEFT);
+                emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+                emojiTextFlowParameters.setTextColor(Color.WHITE);
+            }
+            return new EmojiTextFlow(emojiTextFlowParameters);
+        }
+
+        /**
+         * This method cuts the EmojiTextFlow by a length
+         * @param message the message to be shorten
+         * @return the shorten message
+         */
+        private EmojiTextFlow setMaxChar(EmojiTextFlow message) {
+            int length = 17;
+            EmojiTextFlow newMessage = new EmojiTextFlow();
+
+            int messageLength = 0;
+            for (Node T : message.getChildren()) {
+                if (T instanceof ImageView) {
+                    messageLength++;
+                } else if (T instanceof Text) {
+                    messageLength += ((Text) T).getText().length();
+                }
+            }
+
+            boolean shorted = false;
+            if (messageLength > length) {
+                length -= 2;
+                shorted = true;
+            }
+
+            int counter = 0;
+            for (int x = 0; x < message.getChildren().size(); x++) {
+                Node T = message.getChildren().get(x);
+                // child is emoji
+                if (T instanceof ImageView) {
+                    if (counter < length) {
+                        ImageView image = new ImageView();
+                        image.setImage(((ImageView) T).getImage());
+                        image.setFitHeight(((ImageView) T).getFitHeight());
+                        image.setFitWidth(((ImageView) T).getFitWidth());
+                        newMessage.getChildren().add(image);
+                        // an emoji represents one character
+                        counter++;
+                    }
+                } else if (T instanceof Text) {
+                    Text text = new Text("");
+                    text.setTextAlignment(((Text) T).getTextAlignment());
+                    text.setFont(((Text) T).getFont());
+                    text.setFill(((Text) T).getFill());
+                    String oldText = ((Text) T).getText();
+
+                    for (int i = 0; i < oldText.length(); i++) {
+                        if (counter < length) {
+                            text.setText(text.getText() + oldText.charAt(i));
+                            counter++;
+                        } else {
+                            break;
+                        }
+                    }
+                    newMessage.getChildren().add(text);
+                }
+            }
+
+            /*if (shorted) {
+                Text t = new Text();
+                t.setText("..");
+                newMessage.getChildren().add(t);
+            }*/
+            return newMessage;
         }
 
         private HBox notificationCell(float notificationCircleSize) {
