@@ -27,6 +27,7 @@ public class CategorySubController {
     private Label categoryName;
     private ListView<ServerChannel> channelList;
     private final PropertyChangeListener channelListPCL = this::onChannelNameChanged;
+    private ServerChannelListCell channelListCellFactory;
 
     public CategorySubController(Parent view, ModelBuilder builder, ServerViewController serverViewController, Categories category) {
         this.view = view;
@@ -40,7 +41,7 @@ public class CategorySubController {
         categoryName = (Label) view.lookup("#categoryName");
         categoryName.setText(category.getName());
         channelList = (ListView<ServerChannel>) view.lookup("#channelList");
-        ServerChannelListCell channelListCellFactory = new ServerChannelListCell(serverViewController, builder);
+        channelListCellFactory = new ServerChannelListCell(serverViewController, builder);
         channelList.setCellFactory(channelListCellFactory);
         channelList.setOnMouseClicked(this::onChannelListClicked);
         channelList.getSelectionModel().select(builder.getCurrentAudioChannel());
@@ -172,5 +173,10 @@ public class CategorySubController {
     private void setDarkMode() {
         view.getStylesheets().clear();
         view.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/CategorySubView.css")).toExternalForm());
+    }
+
+    public void onLanguageChanged() {
+        if (channelListCellFactory != null)
+            channelListCellFactory.onLanguageChanged();
     }
 }
