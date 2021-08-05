@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label id="label_themeSelect" layoutX="22.0" style="-fx-font-size: 16;" text="%label.select_connection">
             <font>
@@ -73,7 +73,9 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
         </VBox>
-        <VBox id="steamVbox" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
+      <HBox id="steamHBox" prefHeight="100.0" prefWidth="200.0">
+         <children>
+              <VBox prefHeight="100.0" prefWidth="270.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="20.0">
                     <children>
@@ -107,7 +109,13 @@
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
-        </VBox>
+        </VBox><VBox alignment="CENTER">
+               <children>
+                  <Button id="disconnectSteam" mnemonicParsing="false" text="Disconnect" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
     </children>
     <opaqueInsets>
         <Insets />

@@ -34,6 +34,7 @@ public class SettingsController {
 
     private SubSetting subController;
     private TitleBarController titleBarController;
+    private Button selectedButton;
 
     public SettingsController(ModelBuilder builder, Parent view) {
         this.builder = builder;
@@ -185,9 +186,22 @@ public class SettingsController {
                     this.settingsContainer.getChildren().add(settingsField);
                     subController.init();
             }
+            selectedButton((Button) view.lookup("#button_" + fxmlName));
         } catch (Exception e) {
             System.err.println("Error on showing Settings Field Screen");
             e.printStackTrace();
+        }
+    }
+
+    private void selectedButton(Button b) {
+        if (selectedButton != null) {
+            selectedButton.setStyle("");
+        }
+        selectedButton = b;
+        if (!builder.getTheme().equals("Bright")) {
+            selectedButton.setStyle("-fx-background-color: #ff9999;-fx-text-fill: Black;");
+        } else {
+            selectedButton.setStyle("-fx-background-color: #7da6df;-fx-text-fill: Black;");
         }
     }
 
@@ -225,6 +239,9 @@ public class SettingsController {
             setWhiteMode();
         } else {
             setDarkMode();
+        }
+        if(selectedButton!=null){
+            selectedButton(selectedButton);
         }
     }
 

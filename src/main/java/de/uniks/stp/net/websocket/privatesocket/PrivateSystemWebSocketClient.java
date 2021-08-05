@@ -121,9 +121,11 @@ public class PrivateSystemWebSocketClient extends Endpoint {
 
             if (userAction.equals("userJoined")) {
                 builder.buildUser(userName, userId, "");
+                builder.loadUserVolumes();
             }
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
+                    builder.clear();
                     Platform.runLater(StageManager::showLoginScreen);
                 }
                 List<User> userList = builder.getPersonalUser().getUser();
@@ -161,7 +163,6 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             if (u.getId().equals(jsonData.getString("id"))) {
                 u.setDescription(jsonData.getString("description"));
                 builder.getHomeViewController().getServerCtrls().get(server).getOnlineUsersList().refresh();
-                builder.getHomeViewController().getPrivateViewController().getOnlineUsersList().refresh();
                 if (!builder.getPersonalUser().getId().equals(u.getId())) {
                     Platform.runLater(() -> builder.getSpotifyConnection().updateValuesUser(u.getDescription()));
                 }

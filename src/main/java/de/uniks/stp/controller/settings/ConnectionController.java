@@ -28,9 +28,7 @@ public class ConnectionController extends SubSetting {
     StackPane spotifyToggleStackPane;
     StackPane steamToggleStackPane;
     private SteamLoginController steamLoginController;
-    private VBox steamVbox;
-    private boolean spotifyShow;
-    private boolean steamShow;
+    private HBox steamHBox;
     private Button spotifyDisconnect;
     private VBox spotifyVbox;
 
@@ -44,6 +42,8 @@ public class ConnectionController extends SubSetting {
         ImageView steamView = (ImageView) view.lookup("#steam");
         spotifyToggleStackPane = (StackPane) view.lookup("#spotifyToggleStackPane");
         steamToggleStackPane = (StackPane) view.lookup("#steamToggleStackPane");
+        Button steamDisconnectButton = (Button) view.lookup("#disconnectSteam");
+        steamDisconnectButton.setOnAction(this::disconnectSteam);
 
         spotifyToggleButton.setMouseTransparent(true);
         steamToggleButton.setMouseTransparent(true);
@@ -55,23 +55,29 @@ public class ConnectionController extends SubSetting {
         spotifyDisconnect.setOnMouseClicked(this::disconnectSpotify);
 
         spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        steamVbox = (VBox) view.lookup("#steamVbox");
+        steamHBox = (HBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
-        steamVbox.setVisible(false);
+        steamHBox.setVisible(false);
 
         spotifyView.setOnMouseClicked(this::onSpotifyChange);
         steamView.setOnMouseClicked(this::onSteamChange);
         if (builder.getSpotifyToken() != null) {
-            spotifyShow = builder.isSpotifyShow();
+            boolean spotifyShow = builder.isSpotifyShow();
             toggleInit(spotifyToggleStackPane, backgroundSpotifyButton, spotifyToggleButton, spotifyShow);
             spotifyVbox.setVisible(true);
         }
         if (!builder.getSteamToken().equals("")) {
-            steamShow = builder.isSteamShow();
+            boolean steamShow = builder.isSteamShow();
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, steamShow);
-            steamVbox.setVisible(true);
+            steamHBox.setVisible(true);
         }
         steamToggleButton.setOnAction(this::startGame);
+    }
+
+    private void disconnectSteam(ActionEvent actionEvent) {
+        builder.setSteamToken("");
+        builder.stopGame();
+        init();
     }
 
     private void startGame(ActionEvent actionEvent) {
@@ -94,8 +100,8 @@ public class ConnectionController extends SubSetting {
     }
 
     private void refreshSteam() {
-        if (!steamVbox.isVisible()) {
-            steamVbox.setVisible(true);
+        if (!steamHBox.isVisible()) {
+            steamHBox.setVisible(true);
         }
         steamLoginController = null;
         init();
