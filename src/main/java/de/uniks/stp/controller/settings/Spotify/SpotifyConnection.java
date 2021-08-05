@@ -435,7 +435,7 @@ public class SpotifyConnection {
         }
     }
 
-    private void stop() {
+    public void stop() {
         if (webView != null) {
             webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
             webView.getEngine().load(null);
