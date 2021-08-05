@@ -507,19 +507,27 @@ public class ServerViewController {
             }
         }
 
+//        for (int i = 0; i < 5; i++) {
+//            onlineUsers.add(new User().setName("Test").setId("1234").setStatus(true));
+//        }
+//
+//        for (int i = 0; i < 20; i++) {
+//            offlineUsers.add(new User().setName("Test").setId("1234").setStatus(false));
+//        }
+
         Platform.runLater(() -> {
             this.dividerLineUser.setVisible(onlineUsers.size() > 0 && offlineUsers.size() > 0);
             if (onlineUsers.size() == 0) {
-                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(0));
-                offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+                onlineUsersList.setPrefHeight(0);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
                 userBox.setSpacing(0);
             } else {
-                userBox.setSpacing(8);
-                onlineUsersList.prefHeightProperty().bind(onlineUsersList.fixedCellSizeProperty().multiply(onlineUsers.size()));
-                offlineUsersList.prefHeightProperty().bind(offlineUsersList.fixedCellSizeProperty().multiply(offlineUsers.size()));
+                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (46)));
+                onlineUsersList.setMouseTransparent(true);
+                onlineUsersList.setFocusTraversable(false);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (46)));
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
             }
         });

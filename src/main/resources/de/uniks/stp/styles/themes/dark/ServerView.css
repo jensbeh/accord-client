@@ -65,6 +65,17 @@
     -fx-border-color: #2f3136;
 }
 
+#scrollPaneOnlineUser {
+    -fx-background-color: #2f3136;
+    -fx-background: #2f3136;
+    -fx-border-color: #2f3136;
+}
+#scrollPaneOfflineUser {
+    -fx-background-color: #2f3136;
+    -fx-background: #2f3136;
+    -fx-border-color: #2f3136;
+}
+
 #currentUserBox {
     -fx-background-color: #2f3136;
 }
@@ -79,6 +90,10 @@
 
 #onlineUsers .list-cell {
     -fx-background-color: #2f3136;
+}
+
+#onlineUsers .list-cell:empty {
+    -fx-opacity: 0;
 }
 
 #onlineUsers .cell {
