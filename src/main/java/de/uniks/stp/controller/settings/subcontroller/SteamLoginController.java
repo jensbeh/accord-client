@@ -103,12 +103,13 @@ public class SteamLoginController {
         Platform.runLater(loginStage::close);
         builder.setSteamToken(steam64ID);
         builder.saveSettings();
-        webView.getEngine().getLoadWorker().cancel();
         webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
         webView = null;
         loginStage = null;
-        refreshConnectionView.run();
-        Platform.runLater(builder::getGame);
+        builder.setSteamShow(true);
+        builder.setSteamRun(true);
+        builder.saveSettings();
+        Platform.runLater(()-> refreshConnectionView.run());
     }
 
     public void refresh(Runnable refresh) {
