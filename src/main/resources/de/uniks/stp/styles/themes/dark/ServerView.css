@@ -35,6 +35,11 @@
     -fx-background-color: #2f3136;
 }
 
+#currentGame{
+    -fx-text-fill: WHITE;
+    -fx-background-color: #2f3136;
+}
+
 #userBox {
     -fx-background-color: #2f3136;
 }
