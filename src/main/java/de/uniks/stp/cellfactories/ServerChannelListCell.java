@@ -1,5 +1,6 @@
 package de.uniks.stp.cellfactories;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.AudioMember;
@@ -19,15 +20,20 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class ServerChannelListCell implements javafx.util.Callback<ListView<ServerChannel>, ListCell<ServerChannel>> {
     private final ServerViewController serverViewController;
     private final ModelBuilder builder;
     private ListView<ServerChannel> channelListView;
+    private final List<ChannelListCell.CustomContextMenu> customContextMenuList;
 
     public ServerChannelListCell(ServerViewController serverViewController, ModelBuilder builder) {
         this.serverViewController = serverViewController;
         this.builder = builder;
+        this.customContextMenuList = new ArrayList<>();
     }
 
 
@@ -45,6 +51,12 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
     public ListCell<ServerChannel> call(ListView<ServerChannel> param) {
         this.channelListView = param;
         return new ChannelListCell();
+    }
+
+    public void onLanguageChanged() {
+        for (ChannelListCell.CustomContextMenu customMenuItem : customContextMenuList) {
+            customMenuItem.onLanguageChanged();
+        }
     }
 
     private class ChannelListCell extends ListCell<ServerChannel> {
@@ -218,6 +230,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                     if (audioMember.getId().equals(user.getId())) {
 
                         CustomContextMenu customContextMenu = new CustomContextMenu(audioMember);
+                        customContextMenuList.add(customContextMenu);
 
                         Label audioMemberName = new Label();
                         audioMemberName.setId("audioMember");
@@ -312,21 +325,26 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
             private final CheckBox checkBoxMute;
             private final Slider slider;
             private final Text valueTextInputSlider;
+            private final Label muteLabel;
+            private final Label volumeLabel;
 
-            public CustomContextMenu(AudioMember audioMember) {
+            private CustomContextMenu(AudioMember audioMember) {
                 this.audioMember = audioMember;
                 // initialize ContextMenu
                 contextMenu = new ContextMenu();
 
                 // initialize muteItem
                 HBox muteBox = new HBox();
-                Label muteLabel = new Label("Mute");
+                muteLabel = new Label();
+                muteLabel.setId("labelMuteContextMenu");
+                muteLabel.setText(StageManager.getLangBundle().getString("label.labelMuteContextMenu"));
                 muteLabel.setFont(new Font(14));
+                muteLabel.setPrefWidth(60);
                 checkBoxMute = new CheckBox();
                 checkBoxMute.setId("checkBoxMute");
                 checkBoxMute.setDisable(true);
                 muteBox.getChildren().addAll(muteLabel, checkBoxMute);
-                muteBox.setSpacing(100);
+                muteBox.setSpacing(74);
                 muteBox.prefWidthProperty().bind(contextMenu.widthProperty());
                 muteItem = new CustomMenuItem(muteBox);
                 muteItem.setHideOnClick(false);
@@ -339,9 +357,10 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
                 VBox sliderBox = new VBox();
                 sliderBox.setSpacing(10);
-                Label volumeLabel = new Label();
+                volumeLabel = new Label();
+                volumeLabel.setId("labelUserVolumeContextMenu");
                 volumeLabel.setFont(new Font(14));
-                volumeLabel.setText("User Volume");
+                volumeLabel.setText(StageManager.getLangBundle().getString("label.labelUserVolumeContextMenu"));
                 sliderBox.getChildren().addAll(volumeLabel, slider);
                 CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
                 sliderItem.setHideOnClick(false);
@@ -397,6 +416,17 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
 
                     });
                 });
+            }
+
+            /**
+             * when language changed reset labels and texts of the ContextMenu with correct language
+             */
+            public void onLanguageChanged() {
+                ResourceBundle lang = StageManager.getLangBundle();
+                if (muteLabel != null)
+                    muteLabel.setText(lang.getString("label.labelMuteContextMenu"));
+                if (volumeLabel != null)
+                    volumeLabel.setText(lang.getString("label.labelUserVolumeContextMenu"));
             }
         }
     }
