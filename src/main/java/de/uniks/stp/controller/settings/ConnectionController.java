@@ -3,8 +3,6 @@ package de.uniks.stp.controller.settings;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -28,7 +26,7 @@ public class ConnectionController extends SubSetting {
     StackPane spotifyToggleStackPane;
     StackPane steamToggleStackPane;
     private SteamLoginController steamLoginController;
-    private HBox steamHBox;
+    private VBox steamVBox;
     private Button spotifyDisconnect;
     private VBox spotifyVbox;
 
@@ -55,9 +53,9 @@ public class ConnectionController extends SubSetting {
         spotifyDisconnect.setOnMouseClicked(this::disconnectSpotify);
 
         spotifyVbox = (VBox) view.lookup("#spotifyVbox");
-        steamHBox = (HBox) view.lookup("#steamVbox");
+        steamVBox = (VBox) view.lookup("#steamVbox");
         spotifyVbox.setVisible(false);
-        steamHBox.setVisible(false);
+        steamVBox.setVisible(false);
 
         spotifyView.setOnMouseClicked(this::onSpotifyChange);
         steamView.setOnMouseClicked(this::onSteamChange);
@@ -69,7 +67,7 @@ public class ConnectionController extends SubSetting {
         if (!builder.getSteamToken().equals("")) {
             boolean steamShow = builder.isSteamShow();
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, steamShow);
-            steamHBox.setVisible(true);
+            steamVBox.setVisible(true);
         }
         steamToggleButton.setOnAction(this::startGame);
     }
@@ -100,8 +98,8 @@ public class ConnectionController extends SubSetting {
     }
 
     private void refreshSteam() {
-        if (!steamHBox.isVisible()) {
-            steamHBox.setVisible(true);
+        if (!steamVBox.isVisible()) {
+            steamVBox.setVisible(true);
         }
         steamLoginController = null;
         init();

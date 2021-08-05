@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="root" alignment="TOP_CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label id="label_themeSelect" layoutX="22.0" style="-fx-font-size: 16;" text="%label.select_connection">
             <font>
@@ -63,7 +63,7 @@
                         <Button id="disconnectSpotify" mnemonicParsing="false" text="Disconnect" HBox.hgrow="ALWAYS" />
                             </children>
                             <VBox.margin>
-                                <Insets left="50.0" right="20.0" />
+                                <Insets bottom="4.0" left="50.0" right="10.0" />
                             </VBox.margin>
                         </HBox>
                     </children>
@@ -73,49 +73,41 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
         </VBox>
-      <HBox id="steamHBox" prefHeight="100.0" prefWidth="200.0">
-         <children>
-              <VBox prefHeight="100.0" prefWidth="270.0" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
-            <children>
-                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                    <children>
-                        <ImageView id="steam" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../../icons/Steam_icon_logo.svg.png" />
-                            </image>
-                        </ImageView>
-                        <Label id="accountNameSteam" text="AccountName" />
-                    </children>
-                </HBox>
-                <HBox alignment="CENTER_LEFT" spacing="20.0">
-                    <children>
-                        <Label text="%label.showOnServer" HBox.hgrow="ALWAYS">
-                            <HBox.margin>
-                                <Insets />
-                            </HBox.margin>
-                        </Label>
-                  <HBox id="steamHbox" HBox.hgrow="ALWAYS">
-                     <children>
-                              <StackPane id="steamToggleStackPane" />
-                     </children>
-                  </HBox>
-                  <Button id="disconnectSteam" mnemonicParsing="false" text="Disconnect" HBox.hgrow="ALWAYS" />
-                    </children>
-                    <VBox.margin>
-                        <Insets left="50.0" right="20.0" />
-                    </VBox.margin>
-                </HBox>
-            </children>
-            <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-            </padding>
-        </VBox><VBox alignment="CENTER">
+        <VBox id="steamVbox" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2;">
+      <children>
+          <HBox alignment="CENTER_LEFT" spacing="20.0">
+              <children>
+                  <ImageView id="steam" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../../icons/Steam_icon_logo.svg.png" />
+                      </image>
+                  </ImageView>
+                  <Label id="accountNameSteam" text="AccountName" />
+              </children>
+          </HBox>
+          <HBox alignment="CENTER_LEFT" spacing="20.0">
+              <children>
+                  <Label text="%label.showOnServer" HBox.hgrow="ALWAYS">
+                      <HBox.margin>
+                          <Insets />
+                      </HBox.margin>
+                  </Label>
+            <HBox id="steamHbox" HBox.hgrow="ALWAYS">
                <children>
-                  <Button id="disconnectSteam" mnemonicParsing="false" text="Disconnect" />
+                        <StackPane id="steamToggleStackPane" />
                </children>
-            </VBox>
-         </children>
-      </HBox>
+            </HBox>
+            <Button id="disconnectSteam" mnemonicParsing="false" text="Disconnect" HBox.hgrow="ALWAYS" />
+              </children>
+              <VBox.margin>
+                  <Insets bottom="4.0" left="50.0" right="10.0" />
+              </VBox.margin>
+          </HBox>
+      </children>
+      <padding>
+          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+  </VBox>
     </children>
     <opaqueInsets>
         <Insets />
