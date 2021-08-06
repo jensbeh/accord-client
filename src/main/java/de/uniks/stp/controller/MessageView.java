@@ -126,27 +126,20 @@ public class MessageView {
                 message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
             }
             String str = null;
-            int linkIndexFirst = -1;
-            int linkIndexLast = -1;
             if (messageIsInfo) {
                 ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
-                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived"));
+                    str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
                 } else if (item.getMessage().endsWith("#exit")) {
-                    str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
+                    str = ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
                 }
             } else {
-//                str = handleSpacing(textMessage);
+                str = textMessage;
             }
             if (urlType.equals("link")) {
-                if (str != null) {
-                    System.out.println(url);
-                    linkIndexFirst = textMessage.indexOf(url);
-                    linkIndexLast = linkIndexFirst + textMessage.length();
-                }
-                message.addTextLinkNode(textMessage, linkIndexFirst, linkIndexLast);
+                message.addTextLinkNode(str, url);
             } else {
-                message.parseAndAppend(textMessage);
+                message.parseAndAppend(str);
             }
 
         }
@@ -238,35 +231,6 @@ public class MessageView {
             emojiTextFlowParameters.setTextColor(Color.BLACK);
         }
         return new EmojiTextFlowExtended(emojiTextFlowParameters);
-    }
-
-    private String handleSpacing(String str) {
-        //new Line after 50 Characters
-        int point = 0;
-        int counter = 25;
-        boolean found = false;
-        int endPoint;
-        int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
-            while (counter != 0 && !found) {
-                counter--;
-                if (str.charAt(endPoint - (25 - counter)) == ' ') {
-                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
-                    length += 2;
-                    found = true;
-                    point = endPoint - (25 - counter) + 2;
-                }
-            }
-            if (counter == 0) {
-                str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                length += 2;
-                point = endPoint + 2;
-            }
-            found = false;
-            counter = 25;
-        }
-        return str;
     }
 
     private String searchUrl(String msg) {
