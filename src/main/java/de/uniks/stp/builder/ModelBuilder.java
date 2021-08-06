@@ -104,7 +104,7 @@ public class ModelBuilder {
                 return user;
             }
         }
-        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description);
+        User newUser = new User().setName(name).setId(id).setStatus(true).setDescription(description).setUserVolume(100.0);
         personalUser.withUser(newUser);
         return newUser;
     }
@@ -355,6 +355,62 @@ public class ModelBuilder {
         }
     }
 
+    public void saveUserVolume(String userName, double value) {
+        try {
+            Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            JsonObject volumeSettings = new JsonObject();
+            if (reader.read() != -1) {
+                reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+                volumeSettings.put(userName, value);
+                for (var name : parsedSettings.keySet()) {
+                    if (!userName.equals(name)) {
+                        volumeSettings.put(name, parsedSettings.get(name));
+                    }
+                }
+            }
+
+            BufferedWriter writer = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            Jsoner.serialize(volumeSettings, writer);
+            writer.close();
+
+            for (User user : personalUser.getUser()) {
+                if (user.getName().equals(userName)) {
+                    user.setUserVolume(value);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error in saveUserVolume");
+            e.printStackTrace();
+        }
+    }
+
+    public void loadUserVolumes() {
+        try {
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+            } else {
+                Reader reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                if (reader.read() != -1) {
+                    reader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/userVolumes.json"));
+                    JsonObject parsedSettings = (JsonObject) Jsoner.deserialize(reader);
+                    for (var userName : parsedSettings.keySet()) {
+                        for (User user : personalUser.getUser()) {
+                            if (user.getName().equals(userName)) {
+                                user.setUserVolume(((BigDecimal) parsedSettings.get(userName)).doubleValue());
+                            }
+                        }
+                    }
+                }
+                reader.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error in loadUserVolumes");
+            e.printStackTrace();
+        }
+    }
+
     public boolean isDoNotDisturb() {
         return doNotDisturb;
     }
@@ -550,16 +606,20 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        if (getSteamGame == null) {
-            isSteamRun = true;
-            getSteamGame = new Thread(new updateSteamGameController(this));
-            getSteamGame.start();
+        if (getSteamGame != null) {
+            isSteamRun = false;
+            stopGame();
         }
+        isSteamRun = true;
+        getSteamGame = new Thread(new updateSteamGameController(this));
+        getSteamGame.start();
     }
 
     public void stopGame() {
         isSteamRun = false;
-        getSteamGame.interrupt();
+        if (getSteamGame != null) {
+            getSteamGame.interrupt();
+        }
         getSteamGame = null;
     }
 
@@ -573,6 +633,10 @@ public class ModelBuilder {
 
     public boolean isSteamRun() {
         return isSteamRun;
+    }
+
+    public void setSteamRun(boolean steamRun) {
+        isSteamRun = steamRun;
     }
 
     public Runnable getHandleMicrophoneHeadphone() {
@@ -589,5 +653,18 @@ public class ModelBuilder {
 
     public void setAudioController(AudioController audiocontroller) {
         this.audiocontroller = audiocontroller;
+    }
+
+    public void clear() {
+        homeViewController = null;
+        currentPrivateChat = null;
+        currentChatViewController = null;
+        currentAudioChannel = null;
+        currentServer = null;
+        serverSystemWebSocket = null;
+        serverChatWebSocketClient = null;
+        audioStreamClient = null;
+        audiocontroller = null;
+        USER_CLIENT = null;
     }
 }

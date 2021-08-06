@@ -121,9 +121,11 @@ public class PrivateSystemWebSocketClient extends Endpoint {
 
             if (userAction.equals("userJoined")) {
                 builder.buildUser(userName, userId, "");
+                builder.loadUserVolumes();
             }
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
+                    builder.clear();
                     Platform.runLater(StageManager::showLoginScreen);
                 }
                 List<User> userList = builder.getPersonalUser().getUser();

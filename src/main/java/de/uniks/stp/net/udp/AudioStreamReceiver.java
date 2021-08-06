@@ -2,6 +2,7 @@ package de.uniks.stp.net.udp;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.AudioMember;
+import de.uniks.stp.model.User;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -101,7 +102,15 @@ public class AudioStreamReceiver implements Runnable {
 
         receiverSpeakerMap.put(newMember.getName(), new Speaker(builder));
         receiverSpeakerMap.get(newMember.getName()).init();
+
         receiverSpeakerMap.get(newMember.getName()).startPlayback();
+
+        for (User user : builder.getPersonalUser().getUser()) {
+            if (newMember.getName().equals(user.getName())) {
+                setNewVolumeToUser(newMember.getName(), user.getUserVolume());
+                break;
+            }
+        }
     }
 
     /**
@@ -159,5 +168,14 @@ public class AudioStreamReceiver implements Runnable {
             receiverSpeaker.getValue().startPlayback();
         }
         currentlySetNewSpeaker = false;
+    }
+
+    public void setNewVolumeToUser(String userName, double newVolume) {
+        for (AudioMember audioMember : connectedUser) {
+            if (audioMember.getName().equals(userName)) {
+                receiverSpeakerMap.get(userName).setNewVolume(newVolume);
+                break;
+            }
+        }
     }
 }

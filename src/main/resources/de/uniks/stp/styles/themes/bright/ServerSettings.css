@@ -346,7 +346,7 @@
 
 .combo-box-popup .list-view .list-cell {
     -fx-background-color: #c8c8c8;
-    -fx-font-weight: bold;
+    -fx-font-size: 12.5;
     -fx-text-fill: BLACK;
     -fx-alignment: center;
 }

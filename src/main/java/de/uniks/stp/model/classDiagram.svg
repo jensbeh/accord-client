@@ -1,8 +1,8 @@
-<svg width="460px" height="684px"
- viewBox="0.00 0.00 460.06 684.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1.0 1.0) rotate(0) translate(4 680)">
+<svg width="460px" height="701px"
+ viewBox="0.00 0.00 460.06 701.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1.0 1.0) rotate(0) translate(4 697)">
 <title>de.uniks.stp.model</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-680 456.06,-680 456.06,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-697 456.06,-697 456.06,4 -4,4"/>
 <!-- AudioMember -->
 <g id="node1" class="node">
 <title>AudioMember</title>
@@ -103,20 +103,21 @@
 <!-- User -->
 <g id="node8" class="node">
 <title>User</title>
-<polygon fill="none" stroke="black" points="220.5,-649.5 220.5,-671.5 329.5,-671.5 329.5,-649.5 220.5,-649.5"/>
-<text text-anchor="start" x="261.79" y="-655.9" font-family="Times,serif" font-size="14.00">User</text>
-<polygon fill="none" stroke="black" points="220.5,-576.5 220.5,-649.5 329.5,-649.5 329.5,-576.5 220.5,-576.5"/>
-<text text-anchor="start" x="223.5" y="-633.9" font-family="Times,serif" font-size="14.00">name :String</text>
-<text text-anchor="start" x="223.5" y="-617.1" font-family="Times,serif" font-size="14.00">id :String</text>
-<text text-anchor="start" x="223.5" y="-600.3" font-family="Times,serif" font-size="14.00">status :boolean</text>
-<text text-anchor="start" x="223.5" y="-583.5" font-family="Times,serif" font-size="14.00">description :String</text>
+<polygon fill="none" stroke="black" points="215.5,-667 215.5,-689 334.5,-689 334.5,-667 215.5,-667"/>
+<text text-anchor="start" x="261.79" y="-673.4" font-family="Times,serif" font-size="14.00">User</text>
+<polygon fill="none" stroke="black" points="215.5,-577 215.5,-667 334.5,-667 334.5,-577 215.5,-577"/>
+<text text-anchor="start" x="218.5" y="-651.4" font-family="Times,serif" font-size="14.00">name :String</text>
+<text text-anchor="start" x="218.5" y="-634.6" font-family="Times,serif" font-size="14.00">id :String</text>
+<text text-anchor="start" x="218.5" y="-617.8" font-family="Times,serif" font-size="14.00">status :boolean</text>
+<text text-anchor="start" x="218.5" y="-601" font-family="Times,serif" font-size="14.00">description :String</text>
+<text text-anchor="start" x="218.5" y="-584.2" font-family="Times,serif" font-size="14.00">userVolume :double</text>
 </g>
 <!-- CurrentUser&#45;&gt;User -->
 <g id="edge7" class="edge">
 <title>CurrentUser&#45;&gt;User</title>
-<path fill="none" stroke="black" d="M294.76,-415.04C290.17,-462.27 283.8,-527.81 279.44,-572.72"/>
-<text text-anchor="middle" x="262.53" y="-560.12" font-family="Times,serif" font-size="14.00">user *</text>
-<text text-anchor="middle" x="327.8" y="-419.24" font-family="Times,serif" font-size="14.00">currentUser</text>
+<path fill="none" stroke="black" d="M294.92,-415.21C290.54,-461.78 284.45,-526.35 280.07,-572.89"/>
+<text text-anchor="middle" x="263.16" y="-560.29" font-family="Times,serif" font-size="14.00">user *</text>
+<text text-anchor="middle" x="327.96" y="-419.41" font-family="Times,serif" font-size="14.00">currentUser</text>
 </g>
 <!-- Message -->
 <g id="node4" class="node">
@@ -146,9 +147,9 @@
 <!-- Server&#45;&gt;User -->
 <g id="edge11" class="edge">
 <title>Server&#45;&gt;User</title>
-<path fill="none" stroke="black" d="M326.29,-537.08C319.45,-548.49 311.96,-560.98 304.87,-572.82"/>
-<text text-anchor="middle" x="321.78" y="-560.22" font-family="Times,serif" font-size="14.00">user *</text>
-<text text-anchor="middle" x="303.94" y="-541.28" font-family="Times,serif" font-size="14.00">server *</text>
+<path fill="none" stroke="black" d="M327.77,-537.22C321.45,-548.47 314.51,-560.82 307.78,-572.79"/>
+<text text-anchor="middle" x="324.69" y="-560.19" font-family="Times,serif" font-size="14.00">user *</text>
+<text text-anchor="middle" x="305.42" y="-541.42" font-family="Times,serif" font-size="14.00">server *</text>
 </g>
 <!-- ServerChannel&#45;&gt;CurrentUser -->
 <g id="edge4" class="edge">
@@ -160,8 +161,8 @@
 <!-- ServerChannel&#45;&gt;User -->
 <g id="edge10" class="edge">
 <title>ServerChannel&#45;&gt;User</title>
-<path fill="none" stroke="black" d="M236.77,-259.14C233.34,-270.87 230.32,-283.21 228.5,-295 213.37,-393.18 239.51,-508.2 258.18,-572.79"/>
-<text text-anchor="middle" x="208.61" y="-560.19" font-family="Times,serif" font-size="14.00">privilegedUsers *</text>
+<path fill="none" stroke="black" d="M236.77,-259.14C233.34,-270.87 230.32,-283.21 228.5,-295 213.52,-392.17 237.49,-505.5 256.07,-572.86"/>
+<text text-anchor="middle" x="206.51" y="-560.26" font-family="Times,serif" font-size="14.00">privilegedUsers *</text>
 <text text-anchor="middle" x="203.14" y="-263.34" font-family="Times,serif" font-size="14.00">privileged *</text>
 </g>
 </g>
