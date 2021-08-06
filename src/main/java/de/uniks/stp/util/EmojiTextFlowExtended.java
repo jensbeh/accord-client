@@ -24,13 +24,13 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
         message = message.replace(url, "#&!link!&#");
 
         Queue obs = EmojiParser.getInstance().toEmojiAndText(message);
-        while(!obs.isEmpty()) {
+        while (!obs.isEmpty()) {
             Object ob = obs.poll();
             if (ob instanceof String) {
-                String str = handleSpacing(replaceLinkHolder((String)ob, url));
+                String str = handleSpacing(replaceLinkHolder((String) ob, url));
                 this.addTextNode(str);
             } else if (ob instanceof Emoji) {
-                Emoji emoji = (Emoji)ob;
+                Emoji emoji = (Emoji) ob;
                 try {
                     this.addEmojiImageNode(this.createEmojiImageNode(emoji));
                 } catch (NullPointerException var6) {
@@ -61,7 +61,7 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
 
     private String replaceLinkHolder(String text, String url) {
         String replacedString;
-        if (text.contains("#&!link!&#")){
+        if (text.contains("#&!link!&#")) {
             replacedString = text.replace("#&!link!&#", url);
         } else {
             replacedString = text;
