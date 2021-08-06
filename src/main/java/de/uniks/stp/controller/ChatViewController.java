@@ -672,7 +672,13 @@ public class ChatViewController {
         emojiTextFlow.getChildren().clear();
         emojiTextFlow.parseAndAppend(str);
 
-        HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
+        HBox box = (((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1))));
+        HBox messageBox;
+        if (box.getChildren().get(0) instanceof HBox) {
+            messageBox = ((HBox) box.getChildren().get(0));
+        } else {
+            messageBox = ((HBox) box.getChildren().get(1));
+        }
 
 
         // an independent EmojiTextFlow is needed to calculate the width
