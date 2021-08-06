@@ -159,6 +159,7 @@ public class ServerSystemWebSocket extends Endpoint {
 
         if (userAction.equals("userJoined")) {
             buildServerUser(userName, userId, true, "");
+            serverViewController.showOnlineOfflineUsers();
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
