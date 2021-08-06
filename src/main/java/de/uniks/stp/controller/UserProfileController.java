@@ -32,7 +32,6 @@ public class UserProfileController {
     }
 
     public void init() {
-        builder.setUserProfileController(this);
         root = (VBox) view.lookup("#root");
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
