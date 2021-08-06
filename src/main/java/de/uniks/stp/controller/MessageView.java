@@ -206,7 +206,7 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
+    public EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -228,6 +228,11 @@ public class MessageView {
         return new EmojiTextFlowExtended(emojiTextFlowParameters);
     }
 
+    /**
+     * Sums the width of each node, Text and ImageView
+     * @param message the given message
+     * @return the total width
+     */
     private double getLayoutBoundsGetWidth(EmojiTextFlow message) {
         double width = 0.0;
 

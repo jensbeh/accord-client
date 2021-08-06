@@ -1,9 +1,9 @@
 package de.uniks.stp.cellfactories;
 
-import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -132,7 +132,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             textBox.setPrefWidth(179);
             textBox.setStyle("-fx-padding: 0 10 0 10;");
 
-            EmojiTextFlow message = handleEmojis();
+            EmojiTextFlowExtended message = handleEmojis();
             message.setId("msg_" + item.getId());
             String textMessage = item.getMessage().get(item.getMessage().size() - 1).getMessage();
             message.setId("messageLabel");
@@ -143,7 +143,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             return textBox;
         }
 
-        private EmojiTextFlow handleEmojis() {
+        private EmojiTextFlowExtended handleEmojis() {
             EmojiTextFlowParameters emojiTextFlowParameters;
             {
                 emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -152,7 +152,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
                 emojiTextFlowParameters.setTextColor(Color.WHITE);
             }
-            return new EmojiTextFlow(emojiTextFlowParameters);
+            return new EmojiTextFlowExtended(emojiTextFlowParameters);
         }
 
         /**
@@ -160,9 +160,9 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
          * @param message the message to be shorten
          * @return the shorten message
          */
-        private EmojiTextFlow setMaxChar(EmojiTextFlow message) {
+        private EmojiTextFlowExtended setMaxChar(EmojiTextFlowExtended message) {
             int length = 13;
-            EmojiTextFlow newMessage = new EmojiTextFlow();
+            EmojiTextFlowExtended newMessage = handleEmojis();
 
             int messageLength = 0;
             for (Node T : message.getChildren()) {

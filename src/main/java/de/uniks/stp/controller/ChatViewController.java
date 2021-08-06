@@ -2,7 +2,6 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
-import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -33,7 +32,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
@@ -668,7 +666,7 @@ public class ChatViewController {
         } else {
             messageHBox = (HBox) hBox.getChildren().get(1);
         }
-        EmojiTextFlow emojiTextFlow = (EmojiTextFlow) messageHBox.getChildren().get(0);
+        EmojiTextFlowExtended emojiTextFlow = (EmojiTextFlowExtended) messageHBox.getChildren().get(0);
 
         String str = msg.getMessage();
         emojiTextFlow.getChildren().clear();
@@ -679,7 +677,7 @@ public class ChatViewController {
 
         // an independent EmojiTextFlow is needed to calculate the width
         MessageView messageView = new MessageView();
-        EmojiTextFlow promptETF;
+        EmojiTextFlowExtended promptETF;
         String type;
         if (builder.getPersonalUser().getName().equals(msg.getFrom())) {
             type = "self";
@@ -707,7 +705,12 @@ public class ChatViewController {
         ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().add(finalMessageBox); // add back
     }
 
-    private double getLayoutBoundsGetWidth(EmojiTextFlow message) {
+    /**
+     * Sums the width of each node, Text and ImageView
+     * @param message the given message
+     * @return the total width
+     */
+    private double getLayoutBoundsGetWidth(EmojiTextFlowExtended message) {
         double width = 0.0;
 
         for (int x = 0; x < message.getChildren().size(); x++) {
