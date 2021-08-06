@@ -435,7 +435,7 @@ public class SpotifyConnection {
         }
     }
 
-    private void stop() {
+    public void stop() {
         if (webView != null) {
             webView.getEngine().locationProperty().removeListener(this::getSpotifyCode);
             webView.getEngine().load(null);
@@ -444,7 +444,9 @@ public class SpotifyConnection {
             server.stop(0);
         }
         server = null;
-        loginStage.close();
+        if (loginStage != null) {
+            loginStage.close();
+        }
     }
 
     public void stopPersonalScheduler() {
