@@ -2,7 +2,6 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
-import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -33,7 +32,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
@@ -648,17 +646,16 @@ public class ChatViewController {
     }
 
     public void updateMessage(Message msg) {
-        recalculateSizeAndUpdateMessage(msg);
-        checkScrollToBottom();
+        Platform.runLater(() -> {
+            recalculateSizeAndUpdateMessage(msg);
+            checkScrollToBottom();
+        });
     }
 
     /**
      * method to resize the message width and boxes around the message
      */
     private void recalculateSizeAndUpdateMessage(Message msg) {
-        Text textToCalculateWidth = new Text(msg.getMessage());
-        textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-
         StackPane stackPane = stackPaneHashMap.get(msg);
         VBox vBox = (VBox) stackPane.getChildren().get(0);
         HBox hBox = (HBox) vBox.getChildren().get(1);
@@ -669,34 +666,64 @@ public class ChatViewController {
         } else {
             messageHBox = (HBox) hBox.getChildren().get(1);
         }
-        EmojiTextFlow emojiTextFlow = (EmojiTextFlow) messageHBox.getChildren().get(0);
+        EmojiTextFlowExtended emojiTextFlow = (EmojiTextFlowExtended) messageHBox.getChildren().get(0);
 
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
-            emojiTextFlow.setMaxWidth(320);
-            emojiTextFlow.setPrefWidth(320);
-            emojiTextFlow.setMinWidth(320);
+        String str = msg.getMessage();
+        emojiTextFlow.getChildren().clear();
+        emojiTextFlow.parseAndAppend(str);
+
+        HBox box = (((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1))));
+        HBox messageBox;
+        if (box.getChildren().get(0) instanceof HBox) {
+            messageBox = ((HBox) box.getChildren().get(0));
         } else {
-            emojiTextFlow.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            emojiTextFlow.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            emojiTextFlow.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox = ((HBox) box.getChildren().get(1));
         }
-        String str = formattedText(msg.getMessage());
-        ((Text) (emojiTextFlow.getChildren().get(0))).setText(str);
 
-        HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
 
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        // an independent EmojiTextFlow is needed to calculate the width
+        MessageView messageView = new MessageView();
+        EmojiTextFlowExtended promptETF;
+        String type;
+        if (builder.getPersonalUser().getName().equals(msg.getFrom())) {
+            type = "self";
+        } else {
+            type = "other";
+        }
+        promptETF = messageView.handleEmojis(builder, type);
+        promptETF.parseAndAppend(str);
+
+
+        double lyw = getLayoutBoundsGetWidth(promptETF) + 10;
+        if (lyw > 320) {
             messageBox.setMaxWidth(320);
         } else {
-            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox.setMaxWidth(lyw);
         }
 
         HBox finalMessageBox = ((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)));
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().remove(1); // remove for realignment
+        if (lyw > 320) {
             finalMessageBox.setMaxWidth(320 + 10);
         } else {
-            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+            finalMessageBox.setMaxWidth(lyw + 10);
         }
+        ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().add(finalMessageBox); // add back
+    }
+
+    /**
+     * Sums the width of each node, Text and ImageView
+     * @param message the given message
+     * @return the total width
+     */
+    private double getLayoutBoundsGetWidth(EmojiTextFlowExtended message) {
+        double width = 0.0;
+
+        for (int x = 0; x < message.getChildren().size(); x++) {
+            Node T = message.getChildren().get(x);
+            width += T.getLayoutBounds().getWidth();
+        }
+        return width;
     }
 
     public void checkScrollToBottom() {

@@ -267,7 +267,7 @@ public class PrivateMessageTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         privateChatWebSocket.handleMessage(jsonObject);
 
-        String msg2 = "Moin Peter lange nix mehr gehoert von dir";
+        String msg2 = ":wave:Moin Peter lange nix mehr gehoert von dir";
         message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg2).put("to", "Peter").put("from", "Gustav");
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         privateChatWebSocket.handleMessage(jsonObject);
