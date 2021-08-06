@@ -161,14 +161,14 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
          * @return the shorten message
          */
         private EmojiTextFlow setMaxChar(EmojiTextFlow message) {
-            int length = 17;
+            int length = 13;
             EmojiTextFlow newMessage = new EmojiTextFlow();
 
             int messageLength = 0;
             for (Node T : message.getChildren()) {
                 if (T instanceof ImageView) {
                     // an emoji represents one character
-                    messageLength += 2;
+                    messageLength++;
                 } else if (T instanceof Text) {
                     messageLength += ((Text) T).getText().length();
                 }
@@ -176,7 +176,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
             boolean shorted = false;
             if (messageLength > length) {
-                length -= 2;
+                length -= 1;
                 shorted = true;
             }
 
@@ -185,13 +185,13 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
                 Node T = message.getChildren().get(x);
                 // child is emoji
                 if (T instanceof ImageView) {
-                    if ((counter + 2) <= length) {
+                    if (counter < length) {
                         ImageView image = new ImageView();
                         image.setImage(((ImageView) T).getImage());
                         image.setFitHeight(((ImageView) T).getFitHeight());
                         image.setFitWidth(((ImageView) T).getFitWidth());
                         newMessage.getChildren().add(image);
-                        counter += 2;
+                        counter++;
                     }
                 } else if (T instanceof Text) {
                     Text text = new Text("");
