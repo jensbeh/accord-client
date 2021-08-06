@@ -11,6 +11,7 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -48,6 +49,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -343,14 +346,26 @@ public class ChatViewController {
             } else {
                 emojiTextFlowParameters.setTextColor(Color.WHITE);
             }
-            EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
+            EmojiTextFlowExtended deleteMsg = new EmojiTextFlowExtended(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
             String msgText;
             if (text == null) {
                 text = selectedMsg.getMessage();
             }
             msgText = formattedText(text);
-            deleteMsg.parseAndAppend(msgText);
+            String urlRegex = "\\b(https?|ftp|file|src)(://|/)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            Pattern pattern = Pattern.compile(urlRegex);
+            Matcher matcher = pattern.matcher(text);
+            String url = "";
+            if (matcher.find()) {
+                url = matcher.toMatchResult().group();
+            }
+            if (!url.equals("")) {
+                deleteMsg.addTextLinkNode(text, url);
+            } else {
+                deleteMsg.parseAndAppend(msgText);
+            }
+
             deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
@@ -379,13 +394,14 @@ public class ChatViewController {
      */
     private String formattedText(String text) {
         String str = text;
+        int maxLen = 41;
         int point = 0;
         int counter = 25;
         boolean found = false;
         int endPoint;
         int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
+        while ((point + maxLen) < length) {
+            endPoint = point + maxLen;
             while (counter != 0 && !found) {
                 counter--;
                 if (str.charAt(endPoint - (25 - counter)) == ' ') {
