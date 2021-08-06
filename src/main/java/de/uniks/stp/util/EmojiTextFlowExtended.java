@@ -45,29 +45,16 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
 
     private String handleSpacing(String str) {
         //new Line after 50 Characters
+        int maxLen = 41;
         int point = 0;
-        int counter = 25;
-        boolean found = false;
         int endPoint;
         int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
-            while (counter != 0 && !found) {
-                counter--;
-                if (str.charAt(endPoint - (25 - counter)) == ' ') {
-                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
-                    length += 2;
-                    found = true;
-                    point = endPoint - (25 - counter) + 2;
-                }
-            }
-            if (counter == 0) {
-                str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                length += 2;
-                point = endPoint + 2;
-            }
-            found = false;
-            counter = 25;
+        while ((point + maxLen) < length) {
+            endPoint = point + maxLen;
+
+            str = new StringBuilder(str).insert(endPoint, "\n").toString();
+            length += 2;
+            point = endPoint + 2;
         }
         return str;
     }
