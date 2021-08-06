@@ -245,7 +245,7 @@ public class MessageView {
             urlType = "picture";
         } else if (url.contains(".gif")) {
             urlType = "gif";
-        } else if (url.contains("youtube")) {
+        } else if (url.contains("youtube") || url.contains("youtu.be")) {
             urlType = "youtube";
         } else if ((url.contains("src/") || url.contains("file://")) && url.contains(".mp4")) {
             urlType = "localVideo";
