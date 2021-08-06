@@ -5,6 +5,7 @@ import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -70,7 +71,7 @@ public class MessageView {
         } else {
             userName.setTextFill(Color.WHITE);
         }
-        EmojiTextFlow message;
+        EmojiTextFlowExtended message;
 
         //right alignment if User is currentUser else left
         Date date = new Date(item.getTimestamp());
@@ -85,7 +86,7 @@ public class MessageView {
             loadVideo = true;
             setVideo(url, mediaView);
             textMessage = textMessage.replace(url, "");
-        } else if (!urlType.equals("None")) {
+        } else if (!urlType.equals("None") && !urlType.equals("link")) {
             loadImage = true;
             setMedia(url, webView.getEngine());
             textMessage = textMessage.replace(url, "");
@@ -125,6 +126,8 @@ public class MessageView {
                 message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
             }
             String str = null;
+            int linkIndexFirst = -1;
+            int linkIndexLast = -1;
             if (messageIsInfo) {
                 ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
@@ -133,9 +136,19 @@ public class MessageView {
                     str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
                 }
             } else {
-                str = handleSpacing(textMessage);
+//                str = handleSpacing(textMessage);
             }
-            message.parseAndAppend(str);
+            if (urlType.equals("link")) {
+                if (str != null) {
+                    System.out.println(url);
+                    linkIndexFirst = textMessage.indexOf(url);
+                    linkIndexLast = linkIndexFirst + textMessage.length();
+                }
+                message.addTextLinkNode(textMessage, linkIndexFirst, linkIndexLast);
+            } else {
+                message.parseAndAppend(textMessage);
+            }
+
         }
 
         HBox messageBox = new HBox();
@@ -205,7 +218,7 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlow handleEmojis(String type) {
+    private EmojiTextFlowExtended handleEmojis(String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -224,7 +237,7 @@ public class MessageView {
         } else {
             emojiTextFlowParameters.setTextColor(Color.BLACK);
         }
-        return new EmojiTextFlow(emojiTextFlowParameters);
+        return new EmojiTextFlowExtended(emojiTextFlowParameters);
     }
 
     private String handleSpacing(String str) {
@@ -274,6 +287,8 @@ public class MessageView {
             urlType = "localVideo";
         } else if (url.contains(".mp4")) {
             urlType = "video";
+        } else if (!url.equals("")) {
+            urlType = "link";
         } else {
             urlType = "None";
         }
