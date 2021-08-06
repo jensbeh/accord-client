@@ -6,6 +6,7 @@ import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,6 +23,7 @@ public class UserProfileController {
     public Label userName;
     private Circle onlineStatus;
     private VBox descriptionBox;
+    private ImageView doNotDisturbIcon;
 
 
     public UserProfileController(Parent view, ModelBuilder builder) {
@@ -30,15 +32,22 @@ public class UserProfileController {
     }
 
     public void init() {
+        builder.setUserProfileController(this);
         root = (VBox) view.lookup("#root");
         userName = (Label) view.lookup("#userName");
         onlineStatus = (Circle) view.lookup("#onlineStatus");
         descriptionBox = (VBox) view.lookup("#descriptionbox");
+        doNotDisturbIcon = (ImageView) view.lookup("#doNotDisturbIcon");
+        showHideDoNotDisturb();
         descriptionBox.setOnMouseClicked(this::spotifyPopup);
         if (builder.getPersonalUser().getDescription() != null && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
         Platform.runLater(() -> builder.getPersonalUser().addPropertyChangeListener(CurrentUser.PROPERTY_DESCRIPTION, this::onDescriptionChanged));
+    }
+
+    public void showHideDoNotDisturb() {
+        doNotDisturbIcon.setVisible(builder.isDoNotDisturb());
     }
 
     private void onDescriptionChanged(PropertyChangeEvent propertyChangeEvent) {
