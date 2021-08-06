@@ -101,20 +101,20 @@ public class MessageView {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText((formatterTime.format(date)));
 
-            message = handleEmojis("system");
+            message = handleEmojis(this.builder, "system");
         } else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis("self");
+            message = handleEmojis(this.builder,"self");
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis("other");
+            message = handleEmojis(this.builder,"other");
         }
 
-        float lyw = 0.0f;
+        double lyw = 0.0f;
         if (!textMessage.equals("")) {
             message.setId("messageLabel");
 
@@ -200,7 +200,7 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlow handleEmojis(String type) {
+    public EmojiTextFlow handleEmojis(ModelBuilder builder, String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -222,37 +222,8 @@ public class MessageView {
         return new EmojiTextFlow(emojiTextFlowParameters);
     }
 
-    private String handleSpacing(String str) {
-        //new Line after 50 Characters
-        int point = 0;
-        int counter = 25;
-        boolean found = false;
-        int endPoint;
-        int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
-            while (counter != 0 && !found) {
-                counter--;
-                if (str.charAt(endPoint - (25 - counter)) == ' ') {
-                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
-                    length += 2;
-                    found = true;
-                    point = endPoint - (25 - counter) + 2;
-                }
-            }
-            if (counter == 0) {
-                str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                length += 2;
-                point = endPoint + 2;
-            }
-            found = false;
-            counter = 25;
-        }
-        return str;
-    }
-
-    private float getLayoutBoundsGetWidth(EmojiTextFlow message) {
-        float width = 0.0f;
+    private double getLayoutBoundsGetWidth(EmojiTextFlow message) {
+        double width = 0.0;
 
         for (int x = 0; x < message.getChildren().size(); x++) {
             Node T = message.getChildren().get(x);
