@@ -45,19 +45,13 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
     private class UserCell extends ListCell<User> {
         private User user;
 
-//        UserCell(ListView<User> param) {
-//            // If you want to use as a separate class you can use the getListView() instead of listView.
-//            prefWidthProperty().bind(param.heightProperty()
-//                    .divide(param.getItems().size()));
-//        }
-
         protected void updateItem(User item, boolean empty) {
             // creates a HBox for each cell of the listView
             this.user = item;
             super.updateItem(item, empty);
             if (!empty) {
                 HBox cell = cell();
-                Region hoverBg = hoverBackround(cell);
+                Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
                 Label name = name(item);
 
@@ -116,7 +110,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             return cell;
         }
 
-        private Region hoverBackround(HBox cell) {
+        private Region hoverBackground(HBox cell) {
             Region hoverBg = new Region();
             hoverBg.setPrefSize(175, 30);
             hoverBg.setOpacity(0.3);

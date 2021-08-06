@@ -507,35 +507,19 @@ public class ServerViewController {
             }
         }
 
-//        for (int i = 0; i < 3; i++) {
-//            if (i % 5 == 0) {
-//                onlineUsers.add(new User().setName("Test" + i).setId("1234").setStatus(true));
-//            } else {
-//                onlineUsers.add(new User().setName("Test" + i).setId("1234").setStatus(true).setDescription("?TestBlabLA"));
-//            }
-//        }
-
-//        for (int i = 0; i < 20; i++) {
-//            offlineUsers.add(new User().setName("Test").setId("1234").setStatus(false));
-//        }
-
         Platform.runLater(() -> {
             this.dividerLineUser.setVisible(onlineUsers.size() > 0 && offlineUsers.size() > 0);
             if (onlineUsers.size() == 0) {
-                onlineUsersList.setPrefHeight(0);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
+                onlineUsersList.setPrefHeight(0);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
                 offlineUsersList.setPrefHeight(((offlineUsers.size()) * (54)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
-
                 userBox.setSpacing(0);
             } else {
-
-                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (54)) + (onlineUsers.size() * 5) + onlineUsers.size() + 2);
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
-
-                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (54)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
+                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (54)) + (onlineUsers.size() * 5) + onlineUsers.size() + 2);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
-
+                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (54)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
             }
         });
     }
