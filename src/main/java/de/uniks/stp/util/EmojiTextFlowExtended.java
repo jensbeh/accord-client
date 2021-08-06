@@ -6,11 +6,15 @@ import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Queue;
 
 public class EmojiTextFlowExtended extends EmojiTextFlow {
+    /**
+     *   This class extends the already existing EmojiTextFlow. Its purpose is to handle links so it is not shown as an emoji.
+     */
     private static final Logger logger = LoggerFactory.getLogger(EmojiTextFlow.class);
-    private EmojiTextFlowParameters parameters;
+    private final EmojiTextFlowParameters parameters;
 
     public EmojiTextFlowExtended(EmojiTextFlowParameters parameters) {
         super(parameters);
@@ -23,7 +27,7 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
     public void addTextLinkNode(String message, String url) {
         message = message.replace(url, "#&!link!&#");
 
-        Queue obs = EmojiParser.getInstance().toEmojiAndText(message);
+        Queue<Object> obs = EmojiParser.getInstance().toEmojiAndText(message);
         while (!obs.isEmpty()) {
             Object ob = obs.poll();
             if (ob instanceof String) {
@@ -93,6 +97,6 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
     }
 
     private String getEmojiImagePath(String hexStr) throws NullPointerException {
-        return this.getClass().getClassLoader().getResource("emoji_images/" + hexStr + ".png").toExternalForm();
+        return Objects.requireNonNull(this.getClass().getClassLoader().getResource("emoji_images/" + hexStr + ".png")).toExternalForm();
     }
 }
