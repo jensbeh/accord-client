@@ -261,6 +261,11 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
+        ResourceBundle lang = StageManager.getLangBundle();
+        contextMenu.getItems().get(0).setText(lang.getString("menuItem.copy"));
+        contextMenu.getItems().get(1).setText(lang.getString("menuItem.edit"));
+        contextMenu.getItems().get(2).setText(lang.getString("menuItem.delete"));
+
         if (!messageBox.getChildren().contains(sendButton)) {
             abortButton.fire();
         }
