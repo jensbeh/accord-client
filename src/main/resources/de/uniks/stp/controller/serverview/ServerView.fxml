@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="root" maxHeight="2160.0" maxWidth="3840.0" minHeight="300.0" minWidth="500.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <VBox id="channelBox" minWidth="190.0" HBox.hgrow="ALWAYS">
             <children>
@@ -39,18 +39,18 @@
                     </children>
                 </VBox>
                 <Line id="line" startX="-185.0" stroke="#9e9e9e" />
-            <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" vbarPolicy="NEVER">
+            <ScrollPane id="scrollPaneUserBox" hbarPolicy="NEVER" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                <content>
                         <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
                             <children>
-                                <ListView id="onlineUsers" prefWidth="185.0" />
+                                <ListView id="onlineUsers" prefWidth="185.0" VBox.vgrow="ALWAYS" />
                                 <Line id="dividerline_online_offline_user" startX="-185.0" stroke="#9e9e9e" />
                                 <ListView id="offlineUsers" prefWidth="185.0" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                </content>
             </ScrollPane>
-                <VBox id="audioConnectionBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0" />
+                <VBox id="audioConnectionBox" prefWidth="100.0" spacing="8.0" />
             </children>
         </VBox>
     </children>
