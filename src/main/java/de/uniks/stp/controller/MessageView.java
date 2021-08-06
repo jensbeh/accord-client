@@ -7,8 +7,10 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -111,45 +113,38 @@ public class MessageView {
 
             message = handleEmojis("other");
         }
-        Text textToCalculateWidth = new Text(textMessage);
+
+        float lyw = 0.0f;
         if (!textMessage.equals("")) {
-            textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
             message.setId("messageLabel");
-            if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
-                message.setMaxWidth(320);
-                message.setPrefWidth(320);
-                message.setMinWidth(320);
-            } else {
-                message.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-                message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-                message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            }
+
             String str = null;
             if (messageIsInfo) {
                 ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
-                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived"));
+                    str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
                 } else if (item.getMessage().endsWith("#exit")) {
-                    str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
+                    str = ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
                 }
             } else {
-                str = handleSpacing(textMessage);
+                str = textMessage;
             }
             message.parseAndAppend(str);
-        }
 
+            lyw = getLayoutBoundsGetWidth(message) + 10;
+        }
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        if (lyw > 320) {
             messageBox.setMaxWidth(320);
         } else {
-            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox.setMaxWidth(lyw);
         }
         HBox finalMessageBox = new HBox();
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        if (lyw > 320) {
             finalMessageBox.setMaxWidth(320 + 10);
         } else {
-            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+            finalMessageBox.setMaxWidth(lyw + 10);
         }
 
         //Message background
@@ -254,6 +249,16 @@ public class MessageView {
             counter = 25;
         }
         return str;
+    }
+
+    private float getLayoutBoundsGetWidth(EmojiTextFlow message) {
+        float width = 0.0f;
+
+        for (int x = 0; x < message.getChildren().size(); x++) {
+            Node T = message.getChildren().get(x);
+            width += T.getLayoutBounds().getWidth();
+        }
+        return width;
     }
 
     private String searchUrl(String msg) {
