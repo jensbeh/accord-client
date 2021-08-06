@@ -2,6 +2,7 @@ package de.uniks.stp.controller.settings;
 
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.subcontroller.SteamLoginController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -63,18 +64,28 @@ public class ConnectionController extends SubSetting {
             toggleInit(spotifyToggleStackPane, backgroundSpotifyButton, spotifyToggleButton, spotifyShow);
             spotifyVbox.setVisible(true);
         }
+        showSteam();
+        steamToggleButton.setOnAction(this::startGame);
+    }
+
+    private void showSteam() {
         if (!builder.getSteamToken().equals("")) {
             boolean steamShow = builder.isSteamShow();
             toggleInit(steamToggleStackPane, backgroundSteamButton, steamToggleButton, steamShow);
             steamVBox.setVisible(true);
         }
-        steamToggleButton.setOnAction(this::startGame);
     }
 
     private void disconnectSteam(ActionEvent actionEvent) {
+        builder.getPersonalUser().setDescription("?");
         builder.setSteamToken("");
-        builder.stopGame();
+        builder.setSteamShow(false);
+        builder.saveSettings();
         init();
+        Platform.runLater(() -> {
+            builder.stopGame();
+            builder.setSteamToken("");
+        });
     }
 
     private void startGame(ActionEvent actionEvent) {
@@ -93,7 +104,6 @@ public class ConnectionController extends SubSetting {
         steamLoginController.refresh(this::refreshSteam);
         steamLoginController.init();
         steamLoginController.setTheme();
-        init();
     }
 
     private void refreshSteam() {

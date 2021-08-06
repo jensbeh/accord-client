@@ -6,6 +6,10 @@
     -fx-text-fill: BLACK;
 }
 
+#currentGame{
+    -fx-text-fill: BLACK;
+}
+
 #scrollPaneUserBox {
     -fx-background-color: #f2f3f5;
 }
