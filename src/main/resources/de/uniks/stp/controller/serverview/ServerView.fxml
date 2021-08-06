@@ -43,7 +43,7 @@
                <content>
                         <VBox id="userBox" alignment="TOP_CENTER" minWidth="185.0" prefWidth="185.0" spacing="8.0">
                             <children>
-                                <ListView id="onlineUsers" prefWidth="185.0" VBox.vgrow="ALWAYS" />
+                                <ListView id="onlineUsers" prefWidth="185.0" />
                                 <Line id="dividerline_online_offline_user" startX="-185.0" stroke="#9e9e9e" />
                                 <ListView id="offlineUsers" prefWidth="185.0" VBox.vgrow="ALWAYS" />
                             </children>
