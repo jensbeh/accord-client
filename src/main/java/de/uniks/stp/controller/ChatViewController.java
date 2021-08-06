@@ -2,7 +2,6 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.Emoji;
 import com.pavlobu.emojitextflow.EmojiParser;
-import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -11,6 +10,7 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -32,7 +32,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
@@ -48,6 +47,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -352,14 +353,26 @@ public class ChatViewController {
             } else {
                 emojiTextFlowParameters.setTextColor(Color.WHITE);
             }
-            EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
+            EmojiTextFlowExtended deleteMsg = new EmojiTextFlowExtended(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
             String msgText;
             if (text == null) {
                 text = selectedMsg.getMessage();
             }
             msgText = formattedText(text);
-            deleteMsg.parseAndAppend(msgText);
+            String urlRegex = "\\b(https?|ftp|file|src)(://|/)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            Pattern pattern = Pattern.compile(urlRegex);
+            Matcher matcher = pattern.matcher(text);
+            String url = "";
+            if (matcher.find()) {
+                url = matcher.toMatchResult().group();
+            }
+            if (!url.equals("")) {
+                deleteMsg.addTextLinkNode(text, url);
+            } else {
+                deleteMsg.parseAndAppend(msgText);
+            }
+
             deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
@@ -388,13 +401,14 @@ public class ChatViewController {
      */
     private String formattedText(String text) {
         String str = text;
+        int maxLen = 41;
         int point = 0;
         int counter = 25;
         boolean found = false;
         int endPoint;
         int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
+        while ((point + maxLen) < length) {
+            endPoint = point + maxLen;
             while (counter != 0 && !found) {
                 counter--;
                 if (str.charAt(endPoint - (25 - counter)) == ' ') {
@@ -641,17 +655,16 @@ public class ChatViewController {
     }
 
     public void updateMessage(Message msg) {
-        recalculateSizeAndUpdateMessage(msg);
-        checkScrollToBottom();
+        Platform.runLater(() -> {
+            recalculateSizeAndUpdateMessage(msg);
+            checkScrollToBottom();
+        });
     }
 
     /**
      * method to resize the message width and boxes around the message
      */
     private void recalculateSizeAndUpdateMessage(Message msg) {
-        Text textToCalculateWidth = new Text(msg.getMessage());
-        textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-
         StackPane stackPane = stackPaneHashMap.get(msg);
         VBox vBox = (VBox) stackPane.getChildren().get(0);
         HBox hBox = (HBox) vBox.getChildren().get(1);
@@ -662,34 +675,64 @@ public class ChatViewController {
         } else {
             messageHBox = (HBox) hBox.getChildren().get(1);
         }
-        EmojiTextFlow emojiTextFlow = (EmojiTextFlow) messageHBox.getChildren().get(0);
+        EmojiTextFlowExtended emojiTextFlow = (EmojiTextFlowExtended) messageHBox.getChildren().get(0);
 
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
-            emojiTextFlow.setMaxWidth(320);
-            emojiTextFlow.setPrefWidth(320);
-            emojiTextFlow.setMinWidth(320);
+        String str = msg.getMessage();
+        emojiTextFlow.getChildren().clear();
+        emojiTextFlow.parseAndAppend(str);
+
+        HBox box = (((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1))));
+        HBox messageBox;
+        if (box.getChildren().get(0) instanceof HBox) {
+            messageBox = ((HBox) box.getChildren().get(0));
         } else {
-            emojiTextFlow.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            emojiTextFlow.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            emojiTextFlow.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox = ((HBox) box.getChildren().get(1));
         }
-        String str = formattedText(msg.getMessage());
-        ((Text) (emojiTextFlow.getChildren().get(0))).setText(str);
 
-        HBox messageBox = ((HBox) ((((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)))).getChildren().get(0)));
 
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        // an independent EmojiTextFlow is needed to calculate the width
+        MessageView messageView = new MessageView();
+        EmojiTextFlowExtended promptETF;
+        String type;
+        if (builder.getPersonalUser().getName().equals(msg.getFrom())) {
+            type = "self";
+        } else {
+            type = "other";
+        }
+        promptETF = messageView.handleEmojis(builder, type);
+        promptETF.parseAndAppend(str);
+
+
+        double lyw = getLayoutBoundsGetWidth(promptETF) + 10;
+        if (lyw > 320) {
             messageBox.setMaxWidth(320);
         } else {
-            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox.setMaxWidth(lyw);
         }
 
         HBox finalMessageBox = ((HBox) (((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().get(1)));
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().remove(1); // remove for realignment
+        if (lyw > 320) {
             finalMessageBox.setMaxWidth(320 + 10);
         } else {
-            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+            finalMessageBox.setMaxWidth(lyw + 10);
         }
+        ((VBox) stackPaneHashMap.get(msg).getChildren().get(0)).getChildren().add(finalMessageBox); // add back
+    }
+
+    /**
+     * Sums the width of each node, Text and ImageView
+     * @param message the given message
+     * @return the total width
+     */
+    private double getLayoutBoundsGetWidth(EmojiTextFlowExtended message) {
+        double width = 0.0;
+
+        for (int x = 0; x < message.getChildren().size(); x++) {
+            Node T = message.getChildren().get(x);
+            width += T.getLayoutBounds().getWidth();
+        }
+        return width;
     }
 
     public void checkScrollToBottom() {
