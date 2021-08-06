@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.uniks.stp.util.Constants.*;
 
@@ -351,7 +353,19 @@ public class ChatViewController {
                 text = selectedMsg.getMessage();
             }
             msgText = formattedText(text);
-            deleteMsg.parseAndAppend(msgText);
+            String urlRegex = "\\b(https?|ftp|file|src)(://|/)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            Pattern pattern = Pattern.compile(urlRegex);
+            Matcher matcher = pattern.matcher(text);
+            String url = "";
+            if (matcher.find()) {
+                url = matcher.toMatchResult().group();
+            }
+            if (!url.equals("")) {
+                deleteMsg.addTextLinkNode(text, url);
+            } else {
+                deleteMsg.parseAndAppend(msgText);
+            }
+
             deleteMsg.setMinWidth(530);
             pane.setContent(deleteMsg);
             Button no = (Button) subview.lookup("#chooseCancel");
