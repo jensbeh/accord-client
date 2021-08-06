@@ -606,11 +606,13 @@ public class ModelBuilder {
     }
 
     public void getGame() {
-        if (getSteamGame == null) {
-            isSteamRun = true;
-            getSteamGame = new Thread(new updateSteamGameController(this));
-            getSteamGame.start();
+        if (getSteamGame != null) {
+            isSteamRun = false;
+            stopGame();
         }
+        isSteamRun = true;
+        getSteamGame = new Thread(new updateSteamGameController(this));
+        getSteamGame.start();
     }
 
     public void stopGame() {
@@ -654,15 +656,15 @@ public class ModelBuilder {
     }
 
     public void clear() {
-        homeViewController=null;
-        currentPrivateChat=null;
-        currentChatViewController=null;
-        currentAudioChannel=null;
+        homeViewController = null;
+        currentPrivateChat = null;
+        currentChatViewController = null;
+        currentAudioChannel = null;
         currentServer = null;
         serverSystemWebSocket = null;
-        serverChatWebSocketClient=null;
-        audioStreamClient=null;
-        audiocontroller=null;
-        USER_CLIENT=null;
+        serverChatWebSocketClient = null;
+        audioStreamClient = null;
+        audiocontroller = null;
+        USER_CLIENT = null;
     }
 }
