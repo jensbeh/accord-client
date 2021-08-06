@@ -75,8 +75,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     cell.getChildren().addAll(circle, name);
                     stackPane.getChildren().addAll(hoverBg, cell);
                 }
-                stackPane.setPrefWidth(165);
-                stackPane.setPrefHeight(54);
                 this.setGraphic(stackPane);
             } else {
                 this.setGraphic(null);

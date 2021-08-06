@@ -513,13 +513,24 @@ public class ServerViewController {
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 onlineUsersList.setPrefHeight(0);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
-                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (54)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
+                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (40)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
                 userBox.setSpacing(0);
             } else {
+                int heightOnlineUser = 0;
+                for (User user : onlineUsers) {
+                    if (user.getDescription() != null && (user.getDescription().contains("?") && user.getDescription().length() >= 2)) {
+                        //54 cell size and 5 for padding
+                        heightOnlineUser += 54 + 5;
+                    } else {
+                        //40 cell size and 5 for padding
+                        heightOnlineUser += 40 + 5;
+                    }
+                }
+                heightOnlineUser += onlineUsers.size() + 2;
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
-                onlineUsersList.setPrefHeight(((onlineUsers.size()) * (54)) + (onlineUsers.size() * 5) + onlineUsers.size() + 2);
+                onlineUsersList.setPrefHeight(heightOnlineUser);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
-                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (54)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
+                offlineUsersList.setPrefHeight(((offlineUsers.size()) * (40)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
             }
         });
     }
