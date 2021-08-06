@@ -11,6 +11,7 @@ import de.uniks.stp.model.Message;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -343,7 +344,7 @@ public class ChatViewController {
             } else {
                 emojiTextFlowParameters.setTextColor(Color.WHITE);
             }
-            EmojiTextFlow deleteMsg = new EmojiTextFlow(emojiTextFlowParameters);
+            EmojiTextFlowExtended deleteMsg = new EmojiTextFlowExtended(emojiTextFlowParameters);
             deleteMsg.setId("deleteMsg");
             String msgText;
             if (text == null) {
@@ -379,13 +380,14 @@ public class ChatViewController {
      */
     private String formattedText(String text) {
         String str = text;
+        int maxLen = 41;
         int point = 0;
         int counter = 25;
         boolean found = false;
         int endPoint;
         int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
+        while ((point + maxLen) < length) {
+            endPoint = point + maxLen;
             while (counter != 0 && !found) {
                 counter--;
                 if (str.charAt(endPoint - (25 - counter)) == ' ') {

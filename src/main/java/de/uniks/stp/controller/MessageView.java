@@ -81,6 +81,7 @@ public class MessageView {
         loadImage = false;
         loadVideo = false;
         WebView webView = new WebView();
+        webView.setOnScroll(chatViewController.getMessageScrollPane().getContent().getOnScroll());
         MediaView mediaView = new MediaView();
         if (urlType.equals("video") || urlType.equals("localVideo")) {
             loadVideo = true;
