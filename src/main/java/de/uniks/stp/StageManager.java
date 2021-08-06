@@ -110,6 +110,7 @@ public class StageManager extends Application {
         if (builder.getSpotifyConnection() != null) {
             builder.getSpotifyConnection().stopPersonalScheduler();
             builder.getSpotifyConnection().stopDescriptionScheduler();
+            builder.getSpotifyConnection().stop();
         }
     }
 

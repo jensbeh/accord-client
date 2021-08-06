@@ -51,7 +51,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             super.updateItem(item, empty);
             if (!empty) {
                 HBox cell = cell();
-                Region hoverBg = hoverBackround(cell);
+                Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
                 Label name = name(item);
 
@@ -69,7 +69,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                     } else {
                         cell.getChildren().addAll(circle, name);
                         stackPane.getChildren().addAll(hoverBg, cell);
-                        this.setGraphic(stackPane);
                     }
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
@@ -109,7 +108,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             return cell;
         }
 
-        private Region hoverBackround(HBox cell) {
+        private Region hoverBackground(HBox cell) {
             Region hoverBg = new Region();
             hoverBg.setPrefSize(175, 30);
             hoverBg.setOpacity(0.3);

@@ -5,6 +5,7 @@ import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -72,7 +73,7 @@ public class MessageView {
         } else {
             userName.setTextFill(Color.WHITE);
         }
-        EmojiTextFlow message;
+        EmojiTextFlowExtended message;
 
         //right alignment if User is currentUser else left
         Date date = new Date(item.getTimestamp());
@@ -82,12 +83,13 @@ public class MessageView {
         loadImage = false;
         loadVideo = false;
         WebView webView = new WebView();
+        webView.setOnScroll(chatViewController.getMessageScrollPane().getContent().getOnScroll());
         MediaView mediaView = new MediaView();
         if (urlType.equals("video") || urlType.equals("localVideo")) {
             loadVideo = true;
             setVideo(url, mediaView);
             textMessage = textMessage.replace(url, "");
-        } else if (!urlType.equals("None")) {
+        } else if (!urlType.equals("None") && !urlType.equals("link")) {
             loadImage = true;
             setMedia(url, webView.getEngine());
             textMessage = textMessage.replace(url, "");
@@ -129,7 +131,11 @@ public class MessageView {
             } else {
                 str = textMessage;
             }
-            message.parseAndAppend(str);
+            if (urlType.equals("link")) {
+                message.addTextLinkNode(str, url);
+            } else {
+                message.parseAndAppend(str);
+            }
 
             lyw = getLayoutBoundsGetWidth(message) + 10;
         }
@@ -200,7 +206,7 @@ public class MessageView {
         }
     }
 
-    public EmojiTextFlow handleEmojis(ModelBuilder builder, String type) {
+    private EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -219,7 +225,7 @@ public class MessageView {
         } else {
             emojiTextFlowParameters.setTextColor(Color.BLACK);
         }
-        return new EmojiTextFlow(emojiTextFlowParameters);
+        return new EmojiTextFlowExtended(emojiTextFlowParameters);
     }
 
     private double getLayoutBoundsGetWidth(EmojiTextFlow message) {
@@ -244,12 +250,14 @@ public class MessageView {
             urlType = "picture";
         } else if (url.contains(".gif")) {
             urlType = "gif";
-        } else if (url.contains("youtube")) {
+        } else if (url.contains("youtube") || url.contains("youtu.be")) {
             urlType = "youtube";
         } else if ((url.contains("src/") || url.contains("file://")) && url.contains(".mp4")) {
             urlType = "localVideo";
         } else if (url.contains(".mp4")) {
             urlType = "video";
+        } else if (!url.equals("")) {
+            urlType = "link";
         } else {
             urlType = "None";
         }
