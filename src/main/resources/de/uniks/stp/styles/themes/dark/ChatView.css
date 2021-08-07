@@ -195,19 +195,6 @@
     -fx-text-fill: WHITE;
 }
 
-.menu-item .label {
-    -fx-text-fill: white;
-}
-
-.menu-item:focused {
-    -fx-background-color: #ffc7c7;
-}
-
-.context-menu {
-    -fx-background-color: #202225;
-    -fx-background-radius: 6;
-}
-
 .slider .thumb {
     -fx-background-color: #ff9999;
     -fx-pref-height: 16px;

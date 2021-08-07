@@ -13,7 +13,7 @@
     -fx-background-radius: 5 5 5 5;
     -fx-padding: 10 8 10 8;
 }
-#UserBlockControl {
+#UserBlockControl, #messageContextMenu {
     -fx-pref-width: 100;
     -fx-background-color: -my-background-color;
     -fx-background-radius: 5 5 5 5;
@@ -21,35 +21,35 @@
 }
 
 /* SEPARATOR */
-#AudioMemberControlContextMenu, #UserBlockControl .separator:horizontal .line {
+#AudioMemberControlContextMenu .separator:horizontal .line, #UserBlockControl .separator:horizontal .line, #messageContextMenu .separator:horizontal .line {
     -fx-border-color: transparent;
     -fx-padding: 10 0 0 0;
 }
 
 /* MENU ITEM */
 /*** The item itself (not hovered / focused) ***/
-#muteAudioMemberMenuItem, #sliderAudioMemberMenuItem, #blockUser, #unblockUser {
+#muteAudioMemberMenuItem, #sliderAudioMemberMenuItem, #blockUser, #unblockUser, #messageCopy, #messageEdit, #messageDelete {
     -fx-background-color: -my-background-color;
     -fx-background-radius: 5 5 5 5;
 }
 
 /*** The item's label (not hovered / focused) ***/
-#muteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label, #blockUser .label, #unblockUser .label {
+#muteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label, #blockUser .label, #unblockUser .label, #messageCopy .label, #messageEdit .label, #messageDelete .label {
     -fx-text-fill: -my-font-color;
 }
 
 /*** The item's label (disabled) ***/
-#muteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled, #blockUser .label:disabled, #unblockUser .label:disabled {
+#muteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled, #blockUser .label:disabled, #unblockUser .label:disabled, #messageCopy.label:disabled, #messageEdit.label:disabled, #messageDelete .label:disabled {
     -fx-opacity: 1.0;
 }
 
 /*** The item itself (hovered / focused) ***/
-#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered, #blockUser:focused, #blockUser:hovered, #unblockUser:focused, #unblockUser:hovered {
+#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered, #blockUser:focused, #blockUser:hovered, #unblockUser:focused, #unblockUser:hovered, #messageCopy:focused, #messageCopy:hovered, #messageEdit:focused, #messageEdit:hovered, #messageDelete:focused, #messageDelete:hovered {
     -fx-background-color: -my-background-color-highlighted;
 }
 
 /*** The item's label (hovered / focused) ***/
-#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label, #blockUser:focused .label, #blockUser:hovered .label, #unblockUser:focused .label, #unblockUser:hovered .label {
+#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label, #blockUser:focused .label, #blockUser:hovered .label, #unblockUser:focused .label, #unblockUser:hovered .label, #messageCopy:focused .label, #messageCopy:hovered .label, #messageEdit:focused .label, #messageEdit:hovered .label, #messageDelete:focused .label, #messageDelete:hovered .label {
     -fx-text-fill: -my-font-color-highlighted;
 }
 

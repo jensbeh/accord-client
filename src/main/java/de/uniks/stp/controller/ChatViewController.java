@@ -259,6 +259,11 @@ public class ChatViewController {
             MenuItem item2 = new MenuItem("edit");
             MenuItem item3 = new MenuItem("delete");
 
+            contextMenu.setId("messageContextMenu");
+            item1.setId("messageCopy");
+            item2.setId("messageEdit");
+            item3.setId("messageDelete");
+
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
