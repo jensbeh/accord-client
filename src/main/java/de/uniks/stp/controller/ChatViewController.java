@@ -625,7 +625,7 @@ public class ChatViewController {
                 messageView.updateItem(msg);
             }
         } else {
-            if (currentChannel.getId().equals(msg.getServerChannel().getId())) {
+            if (currentChannel != null && currentChannel.getId().equals(msg.getServerChannel().getId())) {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
@@ -727,6 +727,7 @@ public class ChatViewController {
 
     /**
      * Sums the width of each node, Text and ImageView
+     *
      * @param message the given message
      * @return the total width
      */
