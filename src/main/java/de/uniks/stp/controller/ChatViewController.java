@@ -251,7 +251,7 @@ public class ChatViewController {
     /**
      * build menu with chat options
      */
-    public void chatClicked(MouseEvent mouseEvent) {
+    public void chatClicked(MouseEvent mouseEvent, boolean messageIsLink) {
         if (contextMenu == null) {
             contextMenu = new ContextMenu();
 
@@ -259,8 +259,18 @@ public class ChatViewController {
             MenuItem item2 = new MenuItem("edit");
             MenuItem item3 = new MenuItem("delete");
 
+            contextMenu.setId("messageContextMenu");
+            item1.setId("messageCopy");
+            item2.setId("messageEdit");
+            item3.setId("messageDelete");
+
             contextMenu.getItems().addAll(item1, item2, item3);
         }
+
+        ResourceBundle lang = StageManager.getLangBundle();
+        contextMenu.getItems().get(0).setText(lang.getString("menuItem.copy"));
+        contextMenu.getItems().get(1).setText(lang.getString("menuItem.edit"));
+        contextMenu.getItems().get(2).setText(lang.getString("menuItem.delete"));
 
         if (!messageBox.getChildren().contains(sendButton)) {
             abortButton.fire();
@@ -296,6 +306,10 @@ public class ChatViewController {
             } else {
                 contextMenu.getItems().get(1).setVisible(true);
                 contextMenu.getItems().get(2).setVisible(true);
+            }
+            // not editable if message is a link
+            if (messageIsLink) {
+                contextMenu.getItems().get(1).setVisible(false);
             }
             selectedMsg = messagesHashMap.get(selected);
         }

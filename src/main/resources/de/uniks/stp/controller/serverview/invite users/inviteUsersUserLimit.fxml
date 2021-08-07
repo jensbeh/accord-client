@@ -25,7 +25,7 @@
                         textFill="WHITE"/>
                 <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="429.0">
                     <children>
-                        <Label id="copiedLabel" prefHeight="17.0" prefWidth="61.0" text="copied">
+                        <Label id="copiedLabel" prefHeight="17.0" prefWidth="61.0" text="%label.copied">
                             <graphic>
                                 <ImageView id="copiedLabel" fitHeight="15.0" fitWidth="26.0" pickOnBounds="true"
                                            preserveRatio="true">
