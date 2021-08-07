@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -65,6 +66,8 @@ public class HomeViewController {
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
     private TitleBarController titleBarController;
+    private ImageView settingsIcon;
+    private ImageView helpIcon;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -79,6 +82,8 @@ public class HomeViewController {
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
+        settingsIcon = (ImageView) view.lookup("#settingsIcon");
+        helpIcon = (ImageView) view.lookup("#helpIcon");
 
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
@@ -616,6 +621,8 @@ public class HomeViewController {
         view.getScene().getStylesheets().clear();
         view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
+        settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-bright.png"))));
+        helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-bright.png"))));
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();
@@ -632,6 +639,8 @@ public class HomeViewController {
         view.getScene().getStylesheets().clear();
         view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
+        settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-dark.png"))));
+        helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-dark.png"))));
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();
