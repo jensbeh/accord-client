@@ -17,6 +17,9 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven {
+        url "https://sandec.jfrog.io/artifactory/repo"
+    }
 }
 
 javafx {
@@ -82,6 +85,8 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+    compile "com.sandec:mdfx:0.2.4"
 }
 
 mainClassName = 'de.uniks.stp.Launcher'

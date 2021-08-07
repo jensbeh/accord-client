@@ -61,7 +61,7 @@
                                         <Circle id="addServer" fill="#a4a4a4" opacity="0.0" radius="34.0" stroke="#fffdfd" strokeType="INSIDE" strokeWidth="0.0" />
                                     </children>
                                 </StackPane>
-                        <HBox alignment="CENTER" prefHeight="52.0" prefWidth="101.0" spacing="5.0">
+                        <HBox alignment="CENTER" prefHeight="52.0" prefWidth="101.0" spacing="10.0">
                            <children>
                               <StackPane>
                                  <children>
@@ -70,17 +70,17 @@
                                           <Font name="System Bold" size="1.0" />
                                        </font>
                                     </Button>
-                                    <ImageView id="settingsIcon" disable="true" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
+                                    <ImageView id="settingsIcon" disable="true" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </StackPane>
                               <StackPane>
                                  <children>
-                                            <Button id="settingsButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" style="-fx-background-radius: 100;" textFill="WHITE" textOverrun="CLIP" wrapText="true">
+                                            <Button id="helpButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="35.0" style="-fx-background-radius: 100;" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                                                 <font>
                                                     <Font name="System Bold" size="1.0" />
                                                 </font>
                                             </Button>
-                                    <ImageView id="helpIcon" disable="true" fitHeight="25.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />
+                                    <ImageView id="helpIcon" disable="true" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </StackPane>
                            </children>

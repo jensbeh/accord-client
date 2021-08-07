@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.home;
 
 import com.github.cliftonlabs.json_simple.JsonException;
+import com.sandec.mdfx.MarkdownView;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
@@ -15,37 +16,40 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+
 public class HomeViewController {
     private final RestClient restClient;
     private final Parent view;
     public boolean inServerChat;
-    private HBox root;
+    private HBox helpView;
     private HBox homeView;
     private ScrollPane scrollPaneServerBox;
     private ListView<Server> serverList;
@@ -54,6 +58,7 @@ public class HomeViewController {
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
+    private Button helpButton;
     private Label homeLabel;
     private Button logoutButton;
     private Stage stage;
@@ -81,7 +86,7 @@ public class HomeViewController {
         builder.setInServerState(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
-        root = (HBox) view.lookup("#root");
+        helpView = (HBox) view.lookup("#root");
         settingsIcon = (ImageView) view.lookup("#settingsIcon");
         helpIcon = (ImageView) view.lookup("#helpIcon");
 
@@ -104,6 +109,7 @@ public class HomeViewController {
         homeCircle = (Circle) view.lookup("#homeCircle");
         homeButton = (Circle) view.lookup("#homeButton");
         settingsButton = (Button) view.lookup("#settingsButton");
+        helpButton = (Button) view.lookup("#helpButton");
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
 
@@ -120,6 +126,7 @@ public class HomeViewController {
         serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+        this.helpButton.setOnAction(this::helpButtonClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
         this.homeButton.setOnMouseEntered(event -> {
@@ -175,6 +182,60 @@ public class HomeViewController {
 
         if (!builder.getSteamToken().equals("")) {
             builder.getGame();
+        }
+    }
+
+    private void helpButtonClicked(ActionEvent actionEvent) {
+        try {
+            VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), StageManager.getLangBundle());
+            helpView.getStylesheets().clear();
+            helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            ResourceBundle lang = StageManager.getLangBundle();
+            final Stage dialog = new Stage();
+            dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    dialog.close();
+                }
+            });
+
+            String mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README.md")), StandardCharsets.UTF_8);
+
+
+            MarkdownView markdownView = new MarkdownView(mdfxTxt) {
+                @Override
+                public void setLink(Node node, String link, String description) {
+                    System.out.println("setLink: " + link);
+                    node.setCursor(Cursor.HAND);
+                    node.setOnMouseClicked(e -> {
+                        System.out.println("link: " + link);
+                    });
+                }
+
+                @Override
+                public Node generateImage(String url) {
+                    if(url.equals("node://colorpicker")) {
+                        return new ColorPicker();
+                    } else {
+                        return super.generateImage(url);
+                    }
+                }
+            };
+
+            markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/mdfx.css")).toExternalForm());
+
+            ScrollPane content = new ScrollPane(markdownView);
+            content.setStyle("-fx-background-radius: 10 10 10 10;");
+
+            content.setFitToWidth(true);
+
+            helpView.getChildren().add(content);
+            Scene scene = new Scene(helpView, 900,800);
+            scene.setFill(Color.TRANSPARENT);
+            dialog.initStyle(StageStyle.TRANSPARENT);
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -235,16 +296,16 @@ public class HomeViewController {
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 privateViewController.setTheme();
-                this.root.getChildren().clear();
-                this.root.getChildren().add(privateView);
+                this.helpView.getChildren().clear();
+                this.helpView.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
                 this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
                 this.privateViewController.getUserProfileController().showHideDoNotDisturb();
                 this.privateViewController.addUserProfileController();
-                this.root.getChildren().clear();
-                this.root.getChildren().add(privateView);
+                this.helpView.getChildren().clear();
+                this.helpView.getChildren().add(privateView);
                 if (builder.getCurrentPrivateChat() != null) {
                     this.privateViewController.MessageViews();
                 }
@@ -261,8 +322,8 @@ public class HomeViewController {
     public void showServerView() {
         builder.setInServerState(true);
         try {
-            this.root.getChildren().clear();
-            this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
+            this.helpView.getChildren().clear();
+            this.helpView.getChildren().add(serverViews.get(builder.getCurrentServer()));
             this.serverController.get(builder.getCurrentServer()).startShowServer();
             builder.getUserProfileController().showHideDoNotDisturb();
         } catch (InterruptedException e) {
@@ -472,6 +533,7 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
 
         this.settingsButton.setOnAction(null);
+        this.helpButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
         builder.stopGame();
