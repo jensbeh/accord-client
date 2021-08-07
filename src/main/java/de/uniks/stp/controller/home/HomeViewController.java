@@ -612,7 +612,7 @@ public class HomeViewController {
         homeView.getStylesheets().clear();
         homeView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HomeView.css")).toExternalForm());
         view.getScene().getStylesheets().clear();
-        view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ContextMenuServerView.css")).toExternalForm());
+        view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
@@ -628,7 +628,7 @@ public class HomeViewController {
         homeView.getStylesheets().clear();
         homeView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
         view.getScene().getStylesheets().clear();
-        view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ContextMenuServerView.css")).toExternalForm());
+        view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
