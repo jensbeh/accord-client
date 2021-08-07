@@ -13,37 +13,43 @@
     -fx-background-radius: 5 5 5 5;
     -fx-padding: 10 8 10 8;
 }
+#UserBlockControl {
+    -fx-pref-width: 100;
+    -fx-background-color: -my-background-color;
+    -fx-background-radius: 5 5 5 5;
+    -fx-padding: 10 8 10 8;
+}
 
 /* SEPARATOR */
-#AudioMemberControlContextMenu .separator:horizontal .line {
+#AudioMemberControlContextMenu, #UserBlockControl .separator:horizontal .line {
     -fx-border-color: transparent;
     -fx-padding: 10 0 0 0;
 }
 
 /* MENU ITEM */
 /*** The item itself (not hovered / focused) ***/
-#muteAudioMemberMenuItem, #sliderAudioMemberMenuItem {
+#muteAudioMemberMenuItem, #sliderAudioMemberMenuItem, #blockUser, #unblockUser {
     -fx-background-color: -my-background-color;
     -fx-background-radius: 5 5 5 5;
 }
 
 /*** The item's label (not hovered / focused) ***/
-#muteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label {
+#muteAudioMemberMenuItem .label, #sliderAudioMemberMenuItem .label, #blockUser .label, #unblockUser .label {
     -fx-text-fill: -my-font-color;
 }
 
 /*** The item's label (disabled) ***/
-#muteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled {
+#muteAudioMemberMenuItem .label:disabled, #sliderAudioMemberMenuItem .label:disabled, #blockUser .label:disabled, #unblockUser .label:disabled {
     -fx-opacity: 1.0;
 }
 
 /*** The item itself (hovered / focused) ***/
-#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered {
+#muteAudioMemberMenuItem:focused, #muteAudioMemberMenuItem:hovered, #sliderAudioMemberMenuItem:focused, #sliderAudioMemberMenuItem:hovered, #blockUser:focused, #blockUser:hovered, #unblockUser:focused, #unblockUser:hovered {
     -fx-background-color: -my-background-color-highlighted;
 }
 
 /*** The item's label (hovered / focused) ***/
-#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label {
+#muteAudioMemberMenuItem:focused .label, #muteAudioMemberMenuItem:hovered .label, #sliderAudioMemberMenuItem:focused .label, #sliderAudioMemberMenuItem:hovered .label, #blockUser:focused .label, #blockUser:hovered .label, #unblockUser:focused .label, #unblockUser:hovered .label {
     -fx-text-fill: -my-font-color-highlighted;
 }
 
