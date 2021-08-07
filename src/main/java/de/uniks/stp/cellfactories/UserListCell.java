@@ -167,15 +167,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             menu.getItems().addAll(block, unblock);
             block.setVisible(false);
             unblock.setVisible(false);
-            if (builder.getTheme().equals("Dark")) {
-                menu.setStyle("-fx-background-color: #23272a");
-                block.setStyle("-fx-text-fill: #FFFFFF");
-                unblock.setStyle("-fx-text-fill: #FFFFFF");
-            } else {
-                menu.setStyle("-fx-background-color: White");
-                block.setStyle("-fx-text-fill: #000000");
-                unblock.setStyle("-fx-text-fill: #000000");
-            }
 
             name.setContextMenu(menu);
 
@@ -185,7 +176,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             unblock.setOnAction(event -> unblockUser(item, block, unblock));
 
             // keep refreshing in case user has been unblocked from settings
-            name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
+            name.setOnContextMenuRequested(event -> {
+                updateContextMenuItems(item, block, unblock);
+            });
         }
 
         private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {

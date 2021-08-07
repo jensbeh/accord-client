@@ -5,10 +5,13 @@ import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
+import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -70,7 +73,7 @@ public class MessageView {
         } else {
             userName.setTextFill(Color.WHITE);
         }
-        EmojiTextFlow message;
+        EmojiTextFlowExtended message;
 
         //right alignment if User is currentUser else left
         Date date = new Date(item.getTimestamp());
@@ -80,12 +83,13 @@ public class MessageView {
         loadImage = false;
         loadVideo = false;
         WebView webView = new WebView();
+        webView.setOnScroll(chatViewController.getMessageScrollPane().getContent().getOnScroll());
         MediaView mediaView = new MediaView();
         if (urlType.equals("video") || urlType.equals("localVideo")) {
             loadVideo = true;
             setVideo(url, mediaView);
             textMessage = textMessage.replace(url, "");
-        } else if (!urlType.equals("None")) {
+        } else if (!urlType.equals("None") && !urlType.equals("link")) {
             loadImage = true;
             setMedia(url, webView.getEngine());
             textMessage = textMessage.replace(url, "");
@@ -99,57 +103,54 @@ public class MessageView {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText((formatterTime.format(date)));
 
-            message = handleEmojis("system");
+            message = handleEmojis(this.builder, "system");
         } else if (builder.getPersonalUser().getName().equals(item.getFrom())) {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis("self");
+            message = handleEmojis(this.builder,"self");
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis("other");
+            message = handleEmojis(this.builder,"other");
         }
-        Text textToCalculateWidth = new Text(textMessage);
+
+        double lyw = 0.0f;
         if (!textMessage.equals("")) {
-            textToCalculateWidth.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
             message.setId("messageLabel");
-            if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
-                message.setMaxWidth(320);
-                message.setPrefWidth(320);
-                message.setMinWidth(320);
-            } else {
-                message.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-                message.setPrefWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-                message.setMinWidth(textToCalculateWidth.getLayoutBounds().getWidth());
-            }
+
             String str = null;
             if (messageIsInfo) {
                 ResourceBundle lang = StageManager.getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
-                    str = handleSpacing(":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived"));
+                    str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
                 } else if (item.getMessage().endsWith("#exit")) {
-                    str = handleSpacing(":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited"));
+                    str = ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
                 }
             } else {
-                str = handleSpacing(textMessage);
+                str = textMessage;
             }
-            message.parseAndAppend(str);
-        }
+            if (urlType.equals("link")) {
+                message.addTextLinkNode(str, url);
+            } else {
+                message.parseAndAppend(str);
+            }
 
+            lyw = getLayoutBoundsGetWidth(message) + 10;
+        }
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        if (lyw > 320) {
             messageBox.setMaxWidth(320);
         } else {
-            messageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth());
+            messageBox.setMaxWidth(lyw);
         }
         HBox finalMessageBox = new HBox();
-        if (textToCalculateWidth.getLayoutBounds().getWidth() > 320) {
+        if (lyw > 320) {
             finalMessageBox.setMaxWidth(320 + 10);
         } else {
-            finalMessageBox.setMaxWidth(textToCalculateWidth.getLayoutBounds().getWidth() + 10);
+            finalMessageBox.setMaxWidth(lyw + 10);
         }
 
         //Message background
@@ -195,7 +196,10 @@ public class MessageView {
         cell.setAlignment(Pos.CENTER_RIGHT);
         cell.getChildren().addAll(vbox);
         if (!messageIsInfo) {
-            cell.setOnMouseClicked(chatViewController::chatClicked);
+            boolean messageIsLink = loadImage || loadVideo;
+            cell.setOnMouseClicked(event -> {
+                chatViewController.chatClicked(event, messageIsLink);
+            });
         }
         chatViewController.getContainer().getChildren().add(cell);
         chatViewController.getMessagesHashMap().put(cell, item);
@@ -205,7 +209,7 @@ public class MessageView {
         }
     }
 
-    private EmojiTextFlow handleEmojis(String type) {
+    public EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
             emojiTextFlowParameters = new EmojiTextFlowParameters();
@@ -224,36 +228,22 @@ public class MessageView {
         } else {
             emojiTextFlowParameters.setTextColor(Color.BLACK);
         }
-        return new EmojiTextFlow(emojiTextFlowParameters);
+        return new EmojiTextFlowExtended(emojiTextFlowParameters);
     }
 
-    private String handleSpacing(String str) {
-        //new Line after 50 Characters
-        int point = 0;
-        int counter = 25;
-        boolean found = false;
-        int endPoint;
-        int length = str.length();
-        while ((point + 50) < length) {
-            endPoint = point + 50;
-            while (counter != 0 && !found) {
-                counter--;
-                if (str.charAt(endPoint - (25 - counter)) == ' ') {
-                    str = new StringBuilder(str).insert(endPoint - (25 - counter), "\n").toString();
-                    length += 2;
-                    found = true;
-                    point = endPoint - (25 - counter) + 2;
-                }
-            }
-            if (counter == 0) {
-                str = new StringBuilder(str).insert(endPoint, "\n").toString();
-                length += 2;
-                point = endPoint + 2;
-            }
-            found = false;
-            counter = 25;
+    /**
+     * Sums the width of each node, Text and ImageView
+     * @param message the given message
+     * @return the total width
+     */
+    private double getLayoutBoundsGetWidth(EmojiTextFlow message) {
+        double width = 0.0;
+
+        for (int x = 0; x < message.getChildren().size(); x++) {
+            Node T = message.getChildren().get(x);
+            width += T.getLayoutBounds().getWidth();
         }
-        return str;
+        return width;
     }
 
     private String searchUrl(String msg) {
@@ -268,12 +258,14 @@ public class MessageView {
             urlType = "picture";
         } else if (url.contains(".gif")) {
             urlType = "gif";
-        } else if (url.contains("youtube")) {
+        } else if (url.contains("youtube") || url.contains("youtu.be")) {
             urlType = "youtube";
         } else if ((url.contains("src/") || url.contains("file://")) && url.contains(".mp4")) {
             urlType = "localVideo";
         } else if (url.contains(".mp4")) {
             urlType = "video";
+        } else if (!url.equals("")) {
+            urlType = "link";
         } else {
             urlType = "None";
         }

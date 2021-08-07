@@ -600,6 +600,38 @@ public class ServerMessageTest extends ApplicationTest {
     }
 
     @Test
+    public void linkAndEmojiTest() throws InterruptedException {
+        doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).setBuilder(any());
+        doCallRealMethod().when(serverChatWebSocket).setChatViewController(any());
+        serverChatWebSocket.setBuilder(builder);
+        doCallRealMethod().when(serverSystemWebSocket).setChatViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).setServerViewController(any());
+        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());
+        doCallRealMethod().when(serverSystemWebSocket).setBuilder(any());
+        serverSystemWebSocket.setBuilder(builder);
+
+        String messageIdA = "5e2fbd8770dd077d03dr458A";
+        loginInit(true);
+
+        Assert.assertEquals("Accord", ((Label) stage.getScene().lookup("#Label_AccordTitleBar")).getText());
+
+        ListView<Server> serverListView = lookup("#scrollPaneServerBox").lookup("#serverList").query();
+        clickOn(serverListView.lookup("#serverName_" + testServerId));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ServerChannel channel = app.getBuilder().getCurrentServer().getCategories().get(0).getChannel().get(0);
+        ListView<User> channelList = lookup("#scrollPaneCategories").lookup("#categoryVbox").lookup("#channelList").query();
+        doubleClickOn(channelList.lookup("#" + channel.getId()));
+        int messageSize = app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size();
+        JSONObject message = new JSONObject().put("channel", channel.getId()).put("timestamp", 9257980).put("text", ":/asd https://www.scrumpoker-online.org/en/room/212087/scrum-poker :/ asd").put("from", testUserMainName).put("id", messageIdA);
+        JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        serverChatWebSocket.handleMessage(jsonObject);
+        Assert.assertNotEquals(messageSize, app.getHomeViewController().getServerController().getCurrentChannel().getMessage().size());
+    }
+
+    @Test
     public void arrivalExitMessage() throws InterruptedException {
         doCallRealMethod().when(serverChatWebSocket).setServerViewController(any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());

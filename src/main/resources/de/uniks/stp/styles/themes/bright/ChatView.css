@@ -176,19 +176,6 @@
     -fx-text-fill: BLACK;
 }
 
-.menu-item .label {
-    -fx-text-fill: BLACK;
-}
-
-.menu-item:focused {
-    -fx-background-color: #d9e8fb;
-}
-
-.context-menu {
-    -fx-background-color: WHITE;
-    -fx-background-radius: 6
-}
-
 .slider .thumb {
     -fx-background-color: #7da6df;
     -fx-pref-height: 16px;
