@@ -336,19 +336,7 @@ public class ChatViewController {
             scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // create titleBar
-            HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
-            Parent titleBarView = null;
-            try {
-                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            titleBarBox.getChildren().add(titleBarView);
-            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setTheme();
-            titleBarController.setMaximizable(false);
-            titleBarController.setTitle(lang.getString("window_title_delete_message"));
+            createTitleBar(subview,"window_title_delete_message");
 
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
@@ -399,6 +387,22 @@ public class ChatViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void createTitleBar(Parent subview, String title) {
+        HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(false);
+        titleBarController.setTitle(lang.getString(title));
     }
 
     /**
@@ -509,19 +513,7 @@ public class ChatViewController {
                 lang = StageManager.getLangBundle();
 
                 // create titleBar
-                HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
-                Parent titleBarView = null;
-                try {
-                    titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                titleBarBox.getChildren().add(titleBarView);
-                TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-                titleBarController.init();
-                titleBarController.setTheme();
-                titleBarController.setMaximizable(false);
-                titleBarController.setTitle(lang.getString("title.edit_warning"));
+                createTitleBar(subview,"title.edit_warning");
 
 
                 Label msg = (Label) subview.lookup("#editWarningText");
