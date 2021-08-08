@@ -82,10 +82,7 @@ public class ConnectionController extends SubSetting {
         builder.setSteamShow(false);
         builder.saveSettings();
         init();
-        Platform.runLater(() -> {
-            builder.stopGame();
-            builder.setSteamToken("");
-        });
+        Platform.runLater(builder::stopGame);
     }
 
     private void startGame(ActionEvent actionEvent) {
