@@ -22,6 +22,10 @@ Supported file types wav, jpeg, png, gif and mp4.
 
 2. Double click on a user.
 
+## Block a user
+1. Click on his name on the userlist.
+2. Right click the user and click "block"
+
 ## Create a server
 
 1. Click on the button with the green plus sign.

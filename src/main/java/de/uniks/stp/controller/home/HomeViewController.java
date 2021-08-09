@@ -49,7 +49,7 @@ public class HomeViewController {
     private final RestClient restClient;
     private final Parent view;
     public boolean inServerChat;
-    private HBox helpView;
+    private HBox root;
     private HBox homeView;
     private ScrollPane scrollPaneServerBox;
     private ListView<Server> serverList;
@@ -87,7 +87,7 @@ public class HomeViewController {
         builder.setInServerState(false);
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
-        helpView = (HBox) view.lookup("#root");
+        root = (HBox) view.lookup("#root");
         settingsIcon = (ImageView) view.lookup("#settingsIcon");
         helpIcon = (ImageView) view.lookup("#helpIcon");
 
@@ -239,6 +239,7 @@ public class HomeViewController {
             scene.setFill(Color.TRANSPARENT);
             dialog.initStyle(StageStyle.TRANSPARENT);
             dialog.setScene(scene);
+            dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -302,16 +303,16 @@ public class HomeViewController {
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 privateViewController.setTheme();
-                this.helpView.getChildren().clear();
-                this.helpView.getChildren().add(privateView);
+                this.root.getChildren().clear();
+                this.root.getChildren().add(privateView);
             } else {
                 this.privateViewController.showUsers();
                 this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
                 this.privateViewController.getUserProfileController().showHideDoNotDisturb();
                 this.privateViewController.addUserProfileController();
-                this.helpView.getChildren().clear();
-                this.helpView.getChildren().add(privateView);
+                this.root.getChildren().clear();
+                this.root.getChildren().add(privateView);
                 if (builder.getCurrentPrivateChat() != null) {
                     this.privateViewController.MessageViews();
                 }
@@ -328,8 +329,8 @@ public class HomeViewController {
     public void showServerView() {
         builder.setInServerState(true);
         try {
-            this.helpView.getChildren().clear();
-            this.helpView.getChildren().add(serverViews.get(builder.getCurrentServer()));
+            this.root.getChildren().clear();
+            this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
             this.serverController.get(builder.getCurrentServer()).startShowServer();
             builder.getUserProfileController().showHideDoNotDisturb();
         } catch (InterruptedException e) {
