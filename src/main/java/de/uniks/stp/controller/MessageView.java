@@ -267,7 +267,7 @@ public class MessageView {
             }
 
             if (escapeRegex.find()) {
-                return textMessage.substring(2);
+                return textMessage.substring(1);
             }
         }
         return textMessage;
