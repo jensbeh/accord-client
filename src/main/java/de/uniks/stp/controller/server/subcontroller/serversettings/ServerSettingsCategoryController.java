@@ -69,6 +69,8 @@ public class ServerSettingsCategoryController extends SubSetting {
         deleteCategoryButton.setOnAction(this::deleteCategory);
         createCategoryButton.setOnAction(this::createCategory);
 
+        deleteCategoryButton.setDisable(true);
+
         ResourceBundle lang = StageManager.getLangBundle();
         this.categoriesSelector.setPromptText(lang.getString("comboBox.selectCategory"));
         this.categoriesSelector.getItems().clear();
@@ -94,6 +96,7 @@ public class ServerSettingsCategoryController extends SubSetting {
      * Sets the selected category when clicked on it in comboBox
      */
     private void onCategoryClicked(Event event) {
+        deleteCategoryButton.setDisable(false);
         selectedCategory = this.categoriesSelector.getValue();
         System.out.println("Selected Category: " + selectedCategory);
     }
@@ -192,6 +195,7 @@ public class ServerSettingsCategoryController extends SubSetting {
                     if (status.equals("success")) {
                         Platform.runLater(() -> categoriesSelector.getItems().remove(selectedCategory));
                         Platform.runLater(() -> categoriesSelector.getSelectionModel().clearSelection());
+                        Platform.runLater(() -> deleteCategoryButton.setDisable(true));
                     }
                 });
             }
