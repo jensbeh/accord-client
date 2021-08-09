@@ -139,6 +139,10 @@ public class MessageView {
 
             lyw = getLayoutBoundsGetWidth(message) + 10;
         }
+
+        textMessage = parseTeamEncoding(textMessage);
+
+
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
         if (lyw > 320) {
@@ -207,6 +211,16 @@ public class MessageView {
         if (scroll != null) {
             scroll.run();
         }
+    }
+
+    private String parseTeamEncoding(String textMessage) {
+        Pattern replyRegex = Pattern.compile("[a-z]");
+        Matcher matcher = replyRegex.matcher(textMessage);
+        if (matcher.find()) {
+            String[] splitString = textMessage.split("###");
+            return splitString[3];
+        }
+        return textMessage;
     }
 
     public EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
