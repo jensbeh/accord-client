@@ -54,7 +54,7 @@ public class UserProfileController {
         if (oldLabel != null) {
             Platform.runLater(() -> descriptionBox.getChildren().remove(oldLabel));
         }
-        if (!builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
+        if (builder.isSteamShow() && !builder.getPersonalUser().getDescription().equals("") && !builder.getPersonalUser().getDescription().equals("?") && Character.toString(builder.getPersonalUser().getDescription().charAt(0)).equals("?")) {
             addGame();
         }
     }
