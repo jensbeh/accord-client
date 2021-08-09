@@ -213,6 +213,7 @@ public class ServerSettingsChannelController extends SubSetting {
      */
     private void onCategoryChanged(ActionEvent actionEvent) {
         disableEditing(false);
+        channelDeleteButton.setDisable(true);
         Categories oldCategory = selectedCategory;
         selectedCategory = categorySelector.getValue();
 
@@ -237,6 +238,7 @@ public class ServerSettingsChannelController extends SubSetting {
      * @param actionEvent the mouse click event
      */
     private void onChannelChanged(ActionEvent actionEvent) {
+        channelDeleteButton.setDisable(false);
         selectedChannel = editChannelsSelector.getValue();
     }
 
@@ -377,6 +379,11 @@ public class ServerSettingsChannelController extends SubSetting {
                     builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
                 }
                 restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                    JsonNode body = response.getBody();
+                    String status = body.getObject().getString("status");
+                    if (status.equals("success")) {
+                        Platform.runLater(() -> channelDeleteButton.setDisable(true));
+                    }
                 });
             }
 
