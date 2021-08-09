@@ -71,6 +71,7 @@ public class HomeViewController {
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
     private TitleBarController titleBarControllerHelp;
+    private TitleBarController titleBarController;
     private ImageView settingsIcon;
     private ImageView helpIcon;
 
@@ -99,11 +100,11 @@ public class HomeViewController {
             e.printStackTrace();
         }
         titleBarBox.getChildren().add(titleBarView);
-        titleBarControllerHelp = new TitleBarController(stage, titleBarView, builder);
-        titleBarControllerHelp.init();
-        titleBarControllerHelp.setTheme();
-        titleBarControllerHelp.setMaximizable(true);
-        titleBarControllerHelp.setTitle("Accord");
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Accord");
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -698,8 +699,8 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
-        if (titleBarControllerHelp != null) {
-            titleBarControllerHelp.setTheme();
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 
@@ -716,8 +717,8 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
-        if (titleBarControllerHelp != null) {
-            titleBarControllerHelp.setTheme();
+        if (titleBarController != null) {
+            titleBarController.setTheme();
         }
     }
 
