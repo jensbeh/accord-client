@@ -70,7 +70,7 @@ public class HomeViewController {
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
-    private TitleBarController titleBarController;
+    private TitleBarController titleBarControllerHelp;
     private ImageView settingsIcon;
     private ImageView helpIcon;
 
@@ -99,11 +99,11 @@ public class HomeViewController {
             e.printStackTrace();
         }
         titleBarBox.getChildren().add(titleBarView);
-        titleBarController = new TitleBarController(stage, titleBarView, builder);
-        titleBarController.init();
-        titleBarController.setTheme();
-        titleBarController.setMaximizable(true);
-        titleBarController.setTitle("Accord");
+        titleBarControllerHelp = new TitleBarController(stage, titleBarView, builder);
+        titleBarControllerHelp.init();
+        titleBarControllerHelp.setTheme();
+        titleBarControllerHelp.setMaximizable(true);
+        titleBarControllerHelp.setTitle("Accord");
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -192,19 +192,26 @@ public class HomeViewController {
             helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
             ResourceBundle lang = StageManager.getLangBundle();
             final Stage dialog = new Stage();
-            dialog.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                if (!isNowFocused) {
-                    dialog.close();
-                }
-            });
+
+            HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
+            Parent titleBarViewHelp = null;
+            try {
+                titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBoxHelp.getChildren().add(titleBarViewHelp);
+            titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
+            titleBarControllerHelp.init();
+            titleBarControllerHelp.setTheme();
+            titleBarControllerHelp.setMaximizable(false);
+            titleBarControllerHelp.setTitle("Help");
 
             String mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README.md")), StandardCharsets.UTF_8);
-
 
             MarkdownView markdownView = new MarkdownView(mdfxTxt) {
                 @Override
                 public void setLink(Node node, String link, String description) {
-                    System.out.println("setLink: " + link);
                     node.setCursor(Cursor.HAND);
                     node.setOnMouseClicked(e -> {
                         System.out.println("link: " + link);
@@ -224,7 +231,6 @@ public class HomeViewController {
             markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/mdfx.css")).toExternalForm());
 
             ScrollPane content = new ScrollPane(markdownView);
-            content.setStyle("-fx-background-radius: 10 10 10 10;");
 
             content.setFitToWidth(true);
 
@@ -690,8 +696,8 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
-        if (titleBarController != null) {
-            titleBarController.setTheme();
+        if (titleBarControllerHelp != null) {
+            titleBarControllerHelp.setTheme();
         }
     }
 
@@ -708,8 +714,8 @@ public class HomeViewController {
                 serverController.get(builder.getCurrentServer()).setTheme();
             }
         }
-        if (titleBarController != null) {
-            titleBarController.setTheme();
+        if (titleBarControllerHelp != null) {
+            titleBarControllerHelp.setTheme();
         }
     }
 
