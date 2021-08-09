@@ -11,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -22,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -108,13 +106,15 @@ public class MessageView {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis(this.builder,"self");
+            message = handleEmojis(this.builder, "self");
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis(this.builder,"other");
+            message = handleEmojis(this.builder, "other");
         }
+
+        textMessage = parseTeamEncoding(textMessage);
 
         double lyw = 0.0f;
         if (!textMessage.equals("")) {
@@ -139,9 +139,6 @@ public class MessageView {
 
             lyw = getLayoutBoundsGetWidth(message) + 10;
         }
-
-        textMessage = parseTeamEncoding(textMessage);
-
 
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
@@ -214,11 +211,64 @@ public class MessageView {
     }
 
     private String parseTeamEncoding(String textMessage) {
-        Pattern replyRegex = Pattern.compile("[a-z]");
-        Matcher matcher = replyRegex.matcher(textMessage);
-        if (matcher.find()) {
-            String[] splitString = textMessage.split("###");
-            return splitString[3];
+        Matcher matchRegexTeamCommands = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###|%.+%|\\*.+\\*|<.+>|.+/.+/.+/.+/.+/.+|\\$.+\\$.+|!guess+.+|!choose +(scissor|paper|rock)|\\\\+(!|%|\\*).+$").matcher(textMessage);
+        if (matchRegexTeamCommands.find()) {
+            Matcher replyRegex = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###$").matcher(textMessage);
+            Matcher spoilerRegex = Pattern.compile("^%.+%$").matcher(textMessage);
+            Matcher boldRegex = Pattern.compile("^\\*.+\\*$").matcher(textMessage);
+            Matcher hideLinkRegex = Pattern.compile("^<.+>$").matcher(textMessage);
+            Matcher channelLinkRegex = Pattern.compile("^.+/.+/.+/.+$").matcher(textMessage);
+            Matcher messageLink = Pattern.compile("^.+/.+/.+/.+/.+/.+$").matcher(textMessage);
+            Matcher githubRegex = Pattern.compile("^\\$.+\\$.+$").matcher(textMessage);
+            Matcher guessRegex = Pattern.compile("^!guess+.+$").matcher(textMessage);
+            Matcher choseRegex = Pattern.compile("^!choose +(scissor|paper|rock)$").matcher(textMessage);
+            Matcher escapeRegex = Pattern.compile("^\\\\+(!|%|\\*).+$").matcher(textMessage);
+
+            if (replyRegex.find()) {
+                String[] splitString = textMessage.split("###");
+                return splitString[4].substring(0, splitString[4].length() - 1);
+            }
+
+            if (spoilerRegex.find()) {
+                String[] splitString = textMessage.split("%");
+                return splitString[1];
+            }
+
+            if (boldRegex.find()) {
+                String[] splitString = textMessage.split("\\*");
+                return splitString[1];
+            }
+
+            if (hideLinkRegex.find()) {
+                return textMessage.substring(1, textMessage.length() - 1);
+            }
+
+            if (channelLinkRegex.find()) {
+                return textMessage;
+            }
+
+            if (messageLink.find()) {
+                return textMessage;
+            }
+
+            if (githubRegex.find()) {
+                String[] splitString = textMessage.split("\\$");
+                return splitString[1] + " " + splitString[2];
+            }
+
+            if (guessRegex.find()) {
+                String[] splitString = textMessage.split("!guess ");
+                return splitString[1];
+            }
+
+            if (choseRegex.find()) {
+                String[] splitString = textMessage.split("!choose ");
+                return splitString[1];
+            }
+
+            if (escapeRegex.find()) {
+                return textMessage.substring(2);
+            }
         }
         return textMessage;
     }
@@ -247,6 +297,7 @@ public class MessageView {
 
     /**
      * Sums the width of each node, Text and ImageView
+     *
      * @param message the given message
      * @return the total width
      */
