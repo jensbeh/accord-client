@@ -214,9 +214,6 @@ public class HomeViewController {
                 @Override
                 public void setLink(Node node, String link, String description) {
                     node.setCursor(Cursor.HAND);
-                    node.setOnMouseClicked(e -> {
-                        System.out.println("link: " + link);
-                    });
                 }
 
                 @Override
