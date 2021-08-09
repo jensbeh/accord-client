@@ -220,7 +220,7 @@ public class HomeViewController {
 
                 @Override
                 public Node generateImage(String url) {
-                    if(url.equals("node://colorpicker")) {
+                    if (url.equals("node://colorpicker")) {
                         return new ColorPicker();
                     } else {
                         return super.generateImage(url);
@@ -228,14 +228,16 @@ public class HomeViewController {
                 }
             };
 
-            markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/mdfx.css")).toExternalForm());
+            if (builder.getTheme().equals("Dark")) {
+                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HelpView.css")).toExternalForm());
+            } else {
+                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HelpView.css")).toExternalForm());
+            }
 
             ScrollPane content = new ScrollPane(markdownView);
-
             content.setFitToWidth(true);
-
             helpView.getChildren().add(content);
-            Scene scene = new Scene(helpView, 900,800);
+            Scene scene = new Scene(helpView, 900, 800);
             scene.setFill(Color.TRANSPARENT);
             dialog.initStyle(StageStyle.TRANSPARENT);
             dialog.setScene(scene);
