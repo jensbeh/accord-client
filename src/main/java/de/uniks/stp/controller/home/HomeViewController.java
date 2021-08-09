@@ -236,7 +236,8 @@ public class HomeViewController {
                 this.privateViewController.showUsers();
                 this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
-
+                this.privateViewController.getUserProfileController().showHideDoNotDisturb();
+                this.privateViewController.addUserProfileController();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
                 if (builder.getCurrentPrivateChat() != null) {
@@ -258,6 +259,7 @@ public class HomeViewController {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
             this.serverController.get(builder.getCurrentServer()).startShowServer();
+            builder.getUserProfileController().showHideDoNotDisturb();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.UserProfileController;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.settings.AudioController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
@@ -81,6 +82,9 @@ public class ModelBuilder {
     private boolean isSteamRun;
     private Runnable handleMicrophoneHeadphone;
     private AudioController audiocontroller;
+
+    private UserProfileController userProfileController;
+
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
         System.out.println("PropertyChange");
@@ -666,5 +670,13 @@ public class ModelBuilder {
         audioStreamClient = null;
         audiocontroller = null;
         USER_CLIENT = null;
+    }
+
+    public UserProfileController getUserProfileController() {
+        return userProfileController;
+    }
+
+    public void setUserProfileController(UserProfileController userProfileController) {
+        this.userProfileController = userProfileController;
     }
 }
