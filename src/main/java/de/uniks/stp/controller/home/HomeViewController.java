@@ -187,7 +187,6 @@ public class HomeViewController {
             VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), StageManager.getLangBundle());
             helpView.getStylesheets().clear();
             helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
-            ResourceBundle lang = StageManager.getLangBundle();
             final Stage dialog = new Stage();
 
             HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
@@ -204,7 +203,12 @@ public class HomeViewController {
             titleBarControllerHelp.setMaximizable(false);
             titleBarControllerHelp.setTitle("Help");
 
-            String mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README.md")), StandardCharsets.UTF_8);
+            String mdfxTxt;
+            if (StageManager.getLangBundle().getLocale().getLanguage().equals("en")) {
+                mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_English.md")), StandardCharsets.UTF_8);
+            } else {
+                mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_German.md")), StandardCharsets.UTF_8);
+            }
 
             MarkdownView markdownView = new MarkdownView(mdfxTxt) {
                 @Override

@@ -7,6 +7,8 @@ Supported file types for media are wav, jpeg, png, gif and mp4.
 1. Be on the homeview.
 2. Double click on a user.
 
+### NOTE: If show Spotify is selected you have to click three times on the user!
+
 ### Block a user
 
 1. Click on his name on the userlist.
