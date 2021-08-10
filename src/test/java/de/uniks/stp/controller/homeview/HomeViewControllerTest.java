@@ -458,4 +458,11 @@ public class HomeViewControllerTest extends ApplicationTest {
         clickOn("#button_unblock");
         WaitForAsyncUtils.waitForFxEvents();
     }
+
+    @Test
+    public void helpViewTest() throws InterruptedException {
+        loginInit(false);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#helpButton");
+    }
 }
