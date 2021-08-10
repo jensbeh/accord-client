@@ -228,11 +228,10 @@ public class PrivateChatWebSocket extends Endpoint {
                 userId = user.getId();
             }
         }
-        PrivateChat channel = new PrivateChat().setId(userId).setName(channelName).withMessage(message);
+        PrivateChat channel = new PrivateChat().setId(userId).setName(channelName);
         try {
             // load messages for new channel
             channel.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), channelName, channel));
-            channel.withMessage(message);
             if (!builder.isDoNotDisturb()) {
                 playSound();
                 updateUnreadCounter(channel, 1);
@@ -243,6 +242,7 @@ public class PrivateChatWebSocket extends Endpoint {
         } catch (IOException | JsonException e) {
             e.printStackTrace();
         }
+        channel.withMessage(message);
     }
 
 
