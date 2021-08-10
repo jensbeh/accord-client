@@ -251,6 +251,8 @@ public class PrivateMessageTest extends ApplicationTest {
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
 
+        mockApp.getBuilder().setSpotifyShow(false);
+
         ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
         doubleClickOn(userList.lookup("#" + testUserOne.getId()));
@@ -314,5 +316,29 @@ public class PrivateMessageTest extends ApplicationTest {
         Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
         Assert.assertFalse(contextMenu.getItems().get(1).isVisible());
         Assert.assertFalse(contextMenu.getItems().get(2).isVisible());
+
+        String msg3 = "*Moin* %Peter% <lange> \\!nix mehr gehoert von dir";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg3).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg4 = "###quoteInit###repliedToText###quoteMessage###sendMessage[###messageId###repliedToId][###timestamp####repliedTimestamp]###quoteStop###";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg4).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg5 = "!guess akflsjdflka";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg5).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg6 = "!choose paper";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg6).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }

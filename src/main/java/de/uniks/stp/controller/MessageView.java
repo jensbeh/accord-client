@@ -219,9 +219,6 @@ public class MessageView {
             Matcher spoilerRegex = Pattern.compile("%([^ ]*?)%").matcher(textMessage);
             Matcher boldRegex = Pattern.compile("\\*([^ ]*?)\\*").matcher(textMessage);
             Matcher hideLinkRegex = Pattern.compile("<([^ ]*?)>").matcher(textMessage);
-            Matcher channelLinkRegex = Pattern.compile("^.+/.+/.+/.+$").matcher(textMessage);
-            Matcher messageLink = Pattern.compile("^.+/.+/.+/.+/.+/.+$").matcher(textMessage);
-            Matcher githubRegex = Pattern.compile("^\\$.+\\$.+$").matcher(textMessage);
             Matcher guessRegex = Pattern.compile("^!guess+.+$").matcher(textMessage);
             Matcher choseRegex = Pattern.compile("^!choose +(scissor|paper|rock)$").matcher(textMessage);
             Matcher escapeRegex = Pattern.compile("\\\\(%|!|\\*)([^ ]*)").matcher(textMessage);
@@ -273,19 +270,6 @@ public class MessageView {
                 for (String word : matchList) {
                     textMessage = textMessage.replace("\\" + word, word);
                 }
-            }
-
-            if (channelLinkRegex.find()) {
-                return textMessage;
-            }
-
-            if (messageLink.find()) {
-                return textMessage;
-            }
-
-            if (githubRegex.find()) {
-                String[] splitString = textMessage.split("\\$");
-                return splitString[1] + " " + splitString[2];
             }
 
             if (guessRegex.find()) {
