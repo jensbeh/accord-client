@@ -87,14 +87,15 @@ public class ModelBuilder {
 
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
-        System.out.println("PropertyChange");
-        getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            if (!body.getObject().getString("status").equals("success")) {
-                System.err.println("Error in updateDescription");
-                System.err.println(body);
-            }
-        });
+        if (isSteamShow() || isSpotifyShow()) {
+            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                if (!body.getObject().getString("status").equals("success")) {
+                    System.err.println("Error in updateDescription");
+                    System.err.println(body);
+                }
+            });
+        }
     }
 
     public void buildPersonalUser(String name, String password, String userKey) {
@@ -625,6 +626,7 @@ public class ModelBuilder {
             getSteamGame.interrupt();
         }
         getSteamGame = null;
+
     }
 
     public HomeViewController getHomeViewController() {
