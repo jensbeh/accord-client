@@ -32,6 +32,8 @@ import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -214,15 +216,15 @@ public class MessageView {
         Matcher matchRegexTeamCommands = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###|%.+%|\\*.+\\*|<.+>|.+/.+/.+/.+/.+/.+|\\$.+\\$.+|!guess+.+|!choose +(scissor|paper|rock)|\\\\+(!|%|\\*).+$").matcher(textMessage);
         if (matchRegexTeamCommands.find()) {
             Matcher replyRegex = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###$").matcher(textMessage);
-            Matcher spoilerRegex = Pattern.compile("^%.+%$").matcher(textMessage);
-            Matcher boldRegex = Pattern.compile("^\\*.+\\*$").matcher(textMessage);
-            Matcher hideLinkRegex = Pattern.compile("^<.+>$").matcher(textMessage);
+            Matcher spoilerRegex = Pattern.compile("%([^ ]*?)%").matcher(textMessage);
+            Matcher boldRegex = Pattern.compile("\\*([^ ]*?)\\*").matcher(textMessage);
+            Matcher hideLinkRegex = Pattern.compile("<([^ ]*?)>").matcher(textMessage);
             Matcher channelLinkRegex = Pattern.compile("^.+/.+/.+/.+$").matcher(textMessage);
             Matcher messageLink = Pattern.compile("^.+/.+/.+/.+/.+/.+$").matcher(textMessage);
             Matcher githubRegex = Pattern.compile("^\\$.+\\$.+$").matcher(textMessage);
             Matcher guessRegex = Pattern.compile("^!guess+.+$").matcher(textMessage);
             Matcher choseRegex = Pattern.compile("^!choose +(scissor|paper|rock)$").matcher(textMessage);
-            Matcher escapeRegex = Pattern.compile("^\\\\+(!|%|\\*).+$").matcher(textMessage);
+            Matcher escapeRegex = Pattern.compile("\\\\(%|!|\\*)([^ ]*)").matcher(textMessage);
 
             if (replyRegex.find()) {
                 String[] splitString = textMessage.split("###");
@@ -230,17 +232,47 @@ public class MessageView {
             }
 
             if (spoilerRegex.find()) {
-                String[] splitString = textMessage.split("%");
-                return splitString[1];
+                spoilerRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (spoilerRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(spoilerRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("%" + word + "%", word);
+                }
             }
 
             if (boldRegex.find()) {
-                String[] splitString = textMessage.split("\\*");
-                return splitString[1];
+                boldRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (boldRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(boldRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("*" + word + "*", word);
+                }
             }
 
             if (hideLinkRegex.find()) {
-                return textMessage.substring(1, textMessage.length() - 1);
+                hideLinkRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (hideLinkRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(hideLinkRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("<" + word + ">", word);
+                }
+            }
+
+            if (escapeRegex.find()) {
+                escapeRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (escapeRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(escapeRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("\\" + word, word);
+                }
             }
 
             if (channelLinkRegex.find()) {
@@ -264,10 +296,6 @@ public class MessageView {
             if (choseRegex.find()) {
                 String[] splitString = textMessage.split("!choose ");
                 return splitString[1];
-            }
-
-            if (escapeRegex.find()) {
-                return textMessage.substring(1);
             }
         }
         return textMessage;
