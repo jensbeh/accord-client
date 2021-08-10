@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -30,6 +31,10 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 
+import java.io.File;
+import java.io.IOException;
+
+import static de.uniks.stp.util.Constants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -73,7 +78,7 @@ public class PrivateMessageTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -195,7 +200,9 @@ public class PrivateMessageTest extends ApplicationTest {
     }
 
 
-    public void loginInit() throws InterruptedException {
+    public void loginInit() throws InterruptedException, IOException {
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
+
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
@@ -243,7 +250,7 @@ public class PrivateMessageTest extends ApplicationTest {
     }
 
     @Test
-    public void testMessageHandling() throws InterruptedException {
+    public void testMessageHandling() throws InterruptedException, IOException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
