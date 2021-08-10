@@ -482,6 +482,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 .put("name", "TestServer Team Bit Shift Renamed"));
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         //delete Server
         clickOn("#deleteServer");
@@ -510,6 +511,7 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 .put("name", "TestServer Team Bit Shift Renamed"));
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         serverSystemWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
 
         //check if server doesn't exist anymore
         String serverId = "";
