@@ -150,6 +150,7 @@ public class ConnectionController extends SubSetting {
 
     private void steamToggle(MouseEvent mouseEvent) {
         if (builder.isSteamShow() && steamToggleStackPane.getAlignment(steamToggleButton) == Pos.CENTER_RIGHT) {
+            builder.stopGame();
             steamToggleButton.getStyleClass().clear();
             steamToggleButton.getStyleClass().add("buttonOff");
             backgroundSteamButton.getStyleClass().clear();
