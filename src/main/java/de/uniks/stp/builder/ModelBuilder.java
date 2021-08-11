@@ -3,6 +3,7 @@ package de.uniks.stp.builder;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.controller.ChatViewController;
+import de.uniks.stp.controller.UserProfileController;
 import de.uniks.stp.controller.home.HomeViewController;
 import de.uniks.stp.controller.settings.AudioController;
 import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
@@ -82,15 +83,19 @@ public class ModelBuilder {
     private Runnable handleMicrophoneHeadphone;
     private AudioController audiocontroller;
 
+    private UserProfileController userProfileController;
+
+
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
-        System.out.println("PropertyChange");
-        getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            if (!body.getObject().getString("status").equals("success")) {
-                System.err.println("Error in updateDescription");
-                System.err.println(body);
-            }
-        });
+        if (isSteamShow() || isSpotifyShow()) {
+            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                if (!body.getObject().getString("status").equals("success")) {
+                    System.err.println("Error in updateDescription");
+                    System.err.println(body);
+                }
+            });
+        }
     }
 
     public void buildPersonalUser(String name, String password, String userKey) {
@@ -621,6 +626,7 @@ public class ModelBuilder {
             getSteamGame.interrupt();
         }
         getSteamGame = null;
+
     }
 
     public HomeViewController getHomeViewController() {
@@ -666,5 +672,13 @@ public class ModelBuilder {
         audioStreamClient = null;
         audiocontroller = null;
         USER_CLIENT = null;
+    }
+
+    public UserProfileController getUserProfileController() {
+        return userProfileController;
+    }
+
+    public void setUserProfileController(UserProfileController userProfileController) {
+        this.userProfileController = userProfileController;
     }
 }

@@ -23,18 +23,18 @@
     -fx-padding: 1;
 }
 
-#settingsButton, #logoutButton {
+#settingsButton, #logoutButton, #helpButton {
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-text-fill: BLACK;
 }
 
-#settingsButton:hover, #logoutButton:hover {
+#settingsButton:hover, #logoutButton:hover, #helpButton:hover {
     -fx-background-color: #ffbdbd;
     -fx-background-radius: 80;
 }
 
-#settingsButton:pressed, #logoutButton:pressed {
+#settingsButton:pressed, #logoutButton:pressed, #helpButton:pressed {
     -fx-background-color: #ff7d7d;
     -fx-background-radius: 80;
 }
@@ -46,4 +46,9 @@
 
 #homeViewVBox {
     -fx-background-color: #202225;
+}
+
+#helpView {
+    -fx-background-color: #36393f;
+    -fx-background-radius: 10 10 10 10
 }

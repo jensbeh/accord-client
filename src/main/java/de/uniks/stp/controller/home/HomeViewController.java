@@ -1,6 +1,7 @@
 package de.uniks.stp.controller.home;
 
 import com.github.cliftonlabs.json_simple.JsonException;
+import com.sandec.mdfx.MarkdownView;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.cellfactories.ServerListCell;
@@ -15,30 +16,34 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -53,6 +58,7 @@ public class HomeViewController {
     private Circle homeButton;
     private Circle homeCircle;
     private Button settingsButton;
+    private Button helpButton;
     private Label homeLabel;
     private Button logoutButton;
     private Stage stage;
@@ -64,7 +70,10 @@ public class HomeViewController {
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
     private SpotifyConnection spotifyConnection;
+    private TitleBarController titleBarControllerHelp;
     private TitleBarController titleBarController;
+    private ImageView settingsIcon;
+    private ImageView helpIcon;
 
     public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -79,6 +88,8 @@ public class HomeViewController {
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
+        settingsIcon = (ImageView) view.lookup("#settingsIcon");
+        helpIcon = (ImageView) view.lookup("#helpIcon");
 
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
@@ -99,6 +110,7 @@ public class HomeViewController {
         homeCircle = (Circle) view.lookup("#homeCircle");
         homeButton = (Circle) view.lookup("#homeButton");
         settingsButton = (Button) view.lookup("#settingsButton");
+        helpButton = (Button) view.lookup("#helpButton");
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
 
@@ -115,6 +127,7 @@ public class HomeViewController {
         serverList.setCellFactory(serverListCellFactory);
         this.serverList.setOnMouseReleased(this::onServerClicked);
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
+        this.helpButton.setOnAction(this::helpButtonClicked);
         logoutButton.setOnAction(this::logoutButtonOnClicked);
         this.homeButton.setOnMouseClicked(this::homeButtonClicked);
         this.homeButton.setOnMouseEntered(event -> {
@@ -167,9 +180,69 @@ public class HomeViewController {
         if (builder.getSpotifyToken() != null) {
             builder.getSpotifyConnection().updateUserDescriptionScheduler();
         }
+    }
 
-        if (!builder.getSteamToken().equals("")) {
-            builder.getGame();
+    private void helpButtonClicked(ActionEvent actionEvent) {
+        try {
+            VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), StageManager.getLangBundle());
+            helpView.getStylesheets().clear();
+            helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            final Stage dialog = new Stage();
+
+            HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
+            Parent titleBarViewHelp = null;
+            try {
+                titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBoxHelp.getChildren().add(titleBarViewHelp);
+            titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
+            titleBarControllerHelp.init();
+            titleBarControllerHelp.setTheme();
+            titleBarControllerHelp.setMaximizable(false);
+            titleBarControllerHelp.setTitle("Help");
+
+            String mdfxTxt;
+            if (StageManager.getLangBundle().getLocale().getLanguage().equals("en")) {
+                mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_English.md")), StandardCharsets.UTF_8);
+            } else {
+                mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_German.md")), StandardCharsets.UTF_8);
+            }
+
+            MarkdownView markdownView = new MarkdownView(mdfxTxt) {
+                @Override
+                public void setLink(Node node, String link, String description) {
+                    node.setCursor(Cursor.HAND);
+                }
+
+                @Override
+                public Node generateImage(String url) {
+                    if (url.equals("node://colorpicker")) {
+                        return new ColorPicker();
+                    } else {
+                        return super.generateImage(url);
+                    }
+                }
+            };
+
+            if (builder.getTheme().equals("Dark")) {
+                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HelpView.css")).toExternalForm());
+            } else {
+                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HelpView.css")).toExternalForm());
+            }
+
+            ScrollPane content = new ScrollPane(markdownView);
+            content.setFitToWidth(true);
+            helpView.getChildren().add(content);
+            Scene scene = new Scene(helpView, 900, 800);
+            scene.setFill(Color.TRANSPARENT);
+            dialog.initStyle(StageStyle.TRANSPARENT);
+            dialog.setScene(scene);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -236,7 +309,8 @@ public class HomeViewController {
                 this.privateViewController.showUsers();
                 this.privateViewController.headsetSettings();
                 this.privateViewController.showAudioConnectedBox();
-
+                this.privateViewController.getUserProfileController().showHideDoNotDisturb();
+                this.privateViewController.addUserProfileController();
                 this.root.getChildren().clear();
                 this.root.getChildren().add(privateView);
                 if (builder.getCurrentPrivateChat() != null) {
@@ -258,6 +332,7 @@ public class HomeViewController {
             this.root.getChildren().clear();
             this.root.getChildren().add(serverViews.get(builder.getCurrentServer()));
             this.serverController.get(builder.getCurrentServer()).startShowServer();
+            builder.getUserProfileController().showHideDoNotDisturb();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -465,6 +540,7 @@ public class HomeViewController {
         this.homeCircle.setOnMouseClicked(null);
 
         this.settingsButton.setOnAction(null);
+        this.helpButton.setOnAction(null);
         logoutButton.setOnAction(null);
         builder.saveSettings();
         builder.stopGame();
@@ -614,6 +690,8 @@ public class HomeViewController {
         view.getScene().getStylesheets().clear();
         view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
+        settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-bright.png"))));
+        helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-bright.png"))));
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();
@@ -630,6 +708,8 @@ public class HomeViewController {
         view.getScene().getStylesheets().clear();
         view.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ContextMenuStyle.css")).toExternalForm());
         privateViewController.setTheme();
+        settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-dark.png"))));
+        helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-dark.png"))));
         if (builder.getCurrentServer() != null) {
             if (serverController.size() != 0) {
                 serverController.get(builder.getCurrentServer()).setTheme();

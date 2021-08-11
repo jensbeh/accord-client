@@ -129,6 +129,7 @@ public class NotificationsController extends SubSetting {
         builder.setShowNotifications(showNotifications.isSelected());
         builder.setPlaySound(playSound.isSelected());
         builder.saveSettings();
+        builder.getUserProfileController().showHideDoNotDisturb();
     }
 
     private void delete(ActionEvent actionEvent) {

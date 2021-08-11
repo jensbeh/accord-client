@@ -74,6 +74,10 @@ public class PrivateViewController {
         return chatViewController;
     }
 
+    public UserProfileController getUserProfileController() {
+        return userProfileController;
+    }
+
     @SuppressWarnings("unchecked")
     public void init() {
         root = (HBox) view.lookup("#root");
@@ -156,6 +160,7 @@ public class PrivateViewController {
             CurrentUser currentUser = builder.getPersonalUser();
             userProfileController.setUserName(currentUser.getName());
             userProfileController.setOnline();
+            builder.setUserProfileController(userProfileController);
             this.currentUserBox.getChildren().clear();
             this.currentUserBox.getChildren().add(root);
             headsetSettings();
@@ -164,14 +169,21 @@ public class PrivateViewController {
         }
     }
 
+    public void addUserProfileController() {
+        this.currentUserBox.getChildren().clear();
+        this.currentUserBox.getChildren().add(builder.getUserProfileController().root);
+    }
+
     /**
      * set and synchronize headsetButtons
      */
     public void headsetSettings() {
-        headphoneButton = (Button) view.lookup("#mute_headphone");
-        microphoneButton = (Button) view.lookup("#mute_microphone");
-        headphoneLabel = (Label) view.lookup("#unmute_headphone");
-        microphoneLabel = (Label) view.lookup("#unmute_microphone");
+        if (headphoneButton == null) {
+            headphoneButton = (Button) view.lookup("#mute_headphone");
+            microphoneButton = (Button) view.lookup("#mute_microphone");
+            headphoneLabel = (Label) view.lookup("#unmute_headphone");
+            microphoneLabel = (Label) view.lookup("#unmute_microphone");
+        }
         //load headset settings
         microphoneLabel.setVisible(builder.getMuteMicrophone());
         headphoneLabel.setVisible(builder.getMuteHeadphones());

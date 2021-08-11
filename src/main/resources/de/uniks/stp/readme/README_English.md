@@ -1,19 +1,3 @@
-# STP ST21 Team Bit->Shift
-
-[![Build Status](https://www.travis-ci.com/sekassel/STPST21TeamB.svg?token=iv8L4W51ZozK2puhSbJk&branch=master)](https://www.travis-ci.com/sekassel/STPST21TeamB)
-[![codecov](https://codecov.io/gh/sekassel/STPST21TeamB/branch/master/graph/badge.svg?token=2Q6DF6VGCO)](https://codecov.io/gh/sekassel/STPST21TeamB)
-
-# Please read the manual carefully
-
-## ====Before starting Accord====
-
-Remove the old Accord folder in appdata, if there is an old accord folder from an older version.
-
-## Using the Accord client
-
-To start the Accord client, you can either compile and run the source code yourself or you use the provided jar file
-which can be executed like any other program with double click.
-
 Supported file types for media are wav, jpeg, png, gif and mp4.
 
 ## Privatechat
@@ -22,6 +6,8 @@ Supported file types for media are wav, jpeg, png, gif and mp4.
 
 1. Be on the homeview.
 2. Double click on a user.
+
+### NOTE: If show Spotify is selected you have to click three times on the user!
 
 ### Block a user
 

@@ -82,10 +82,7 @@ public class ConnectionController extends SubSetting {
         builder.setSteamShow(false);
         builder.saveSettings();
         init();
-        Platform.runLater(() -> {
-            builder.stopGame();
-            builder.setSteamToken("");
-        });
+        Platform.runLater(builder::stopGame);
     }
 
     private void startGame(ActionEvent actionEvent) {
@@ -153,6 +150,7 @@ public class ConnectionController extends SubSetting {
 
     private void steamToggle(MouseEvent mouseEvent) {
         if (builder.isSteamShow() && steamToggleStackPane.getAlignment(steamToggleButton) == Pos.CENTER_RIGHT) {
+            builder.stopGame();
             steamToggleButton.getStyleClass().clear();
             steamToggleButton.getStyleClass().add("buttonOff");
             backgroundSteamButton.getStyleClass().clear();

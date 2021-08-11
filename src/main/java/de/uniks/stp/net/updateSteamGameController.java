@@ -1,6 +1,7 @@
 package de.uniks.stp.net;
 
 import de.uniks.stp.builder.ModelBuilder;
+import javafx.application.Platform;
 import kong.unirest.JsonNode;
 
 public class updateSteamGameController implements Runnable {
@@ -34,9 +35,10 @@ public class updateSteamGameController implements Runnable {
                         builder.getPersonalUser().setDescription("?");
                     }
                 });
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             }
         } catch (InterruptedException ignored) {
+            builder.getPersonalUser().setDescription("?");
         }
     }
 }
