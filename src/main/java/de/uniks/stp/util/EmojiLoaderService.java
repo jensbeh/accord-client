@@ -268,6 +268,17 @@ public class EmojiLoaderService {
         return imageView;
     }
 
+    private void refreshTabColors() {
+        for (Tab tab : emojiTabPane.getTabs()) {
+            ScrollPane scrollPane = (ScrollPane) tab.getContent();
+            if (builder.getTheme().equals("Dark")) {
+                scrollPane.setStyle("-fx-background: #2f3136;");
+            } else {
+                scrollPane.setStyle("-fx-background: #f2f3f5;");
+            }
+        }
+    }
+
     public Parent getView() {
         return this.view;
     }
@@ -279,6 +290,7 @@ public class EmojiLoaderService {
         } else {
             setDarkMode();
         }
+        refreshTabColors();
     }
 
     private void setWhiteMode() {
