@@ -11,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -22,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -34,6 +32,8 @@ import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -108,13 +108,15 @@ public class MessageView {
             vbox.setAlignment(Pos.CENTER_RIGHT);
             userName.setText((formatterTime.format(date)) + " " + item.getFrom());
 
-            message = handleEmojis(this.builder,"self");
+            message = handleEmojis(this.builder, "self");
         } else {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText(item.getFrom() + " " + (formatterTime.format(date)));
 
-            message = handleEmojis(this.builder,"other");
+            message = handleEmojis(this.builder, "other");
         }
+
+        textMessage = parseTeamEncoding(textMessage);
 
         double lyw = 0.0f;
         if (!textMessage.equals("")) {
@@ -139,6 +141,7 @@ public class MessageView {
 
             lyw = getLayoutBoundsGetWidth(message) + 10;
         }
+
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
         if (lyw > 320) {
@@ -209,6 +212,79 @@ public class MessageView {
         }
     }
 
+    private String parseTeamEncoding(String textMessage) {
+        Matcher matchRegexTeamCommands = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###|%.+%|\\*.+\\*|<.+>|.+/.+/.+/.+/.+/.+|\\$.+\\$.+|!guess+.+|!choose +(scissor|paper|rock)|\\\\+(!|%|\\*).+$").matcher(textMessage);
+        if (matchRegexTeamCommands.find()) {
+            Matcher replyRegex = Pattern.compile("^###.+###.+###.+###.+\\[###.+###.+]\\[###.+####.+]###.+###$").matcher(textMessage);
+            Matcher spoilerRegex = Pattern.compile("%([^ ]*?)%").matcher(textMessage);
+            Matcher boldRegex = Pattern.compile("\\*([^ ]*?)\\*").matcher(textMessage);
+            Matcher hideLinkRegex = Pattern.compile("<([^ ]*?)>").matcher(textMessage);
+            Matcher guessRegex = Pattern.compile("^!guess+.+$").matcher(textMessage);
+            Matcher choseRegex = Pattern.compile("^!choose +(scissor|paper|rock)$").matcher(textMessage);
+            Matcher escapeRegex = Pattern.compile("\\\\(%|!|\\*)([^ ]*)").matcher(textMessage);
+
+            if (replyRegex.find()) {
+                String[] splitString = textMessage.split("###");
+                return splitString[4].substring(0, splitString[4].length() - 1);
+            }
+
+            if (spoilerRegex.find()) {
+                spoilerRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (spoilerRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(spoilerRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("%" + word + "%", word);
+                }
+            }
+
+            if (boldRegex.find()) {
+                boldRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (boldRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(boldRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("*" + word + "*", word);
+                }
+            }
+
+            if (hideLinkRegex.find()) {
+                hideLinkRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (hideLinkRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(hideLinkRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("<" + word + ">", word);
+                }
+            }
+
+            if (escapeRegex.find()) {
+                escapeRegex.reset();
+                List<String> matchList = new ArrayList<String>();
+                while (escapeRegex.find()) {//Finds Matching Pattern in String
+                    matchList.add(escapeRegex.group(1));//Fetching Group from String
+                }
+                for (String word : matchList) {
+                    textMessage = textMessage.replace("\\" + word, word);
+                }
+            }
+
+            if (guessRegex.find()) {
+                String[] splitString = textMessage.split("!guess ");
+                return splitString[1];
+            }
+
+            if (choseRegex.find()) {
+                String[] splitString = textMessage.split("!choose ");
+                return splitString[1];
+            }
+        }
+        return textMessage;
+    }
+
     public EmojiTextFlowExtended handleEmojis(ModelBuilder builder, String type) {
         EmojiTextFlowParameters emojiTextFlowParameters;
         {
@@ -233,6 +309,7 @@ public class MessageView {
 
     /**
      * Sums the width of each node, Text and ImageView
+     *
      * @param message the given message
      * @return the total width
      */

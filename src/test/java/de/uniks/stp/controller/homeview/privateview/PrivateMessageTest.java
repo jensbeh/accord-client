@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -30,6 +31,10 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
 
+import java.io.File;
+import java.io.IOException;
+
+import static de.uniks.stp.util.Constants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -195,7 +200,9 @@ public class PrivateMessageTest extends ApplicationTest {
     }
 
 
-    public void loginInit() throws InterruptedException {
+    public void loginInit() throws InterruptedException, IOException {
+        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
+
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
@@ -243,13 +250,15 @@ public class PrivateMessageTest extends ApplicationTest {
     }
 
     @Test
-    public void testMessageHandling() throws InterruptedException {
+    public void testMessageHandling() throws InterruptedException, IOException {
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
         doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
 
         loginInit();
         WaitForAsyncUtils.waitForFxEvents();
+
+        mockApp.getBuilder().setSpotifyShow(false);
 
         ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
@@ -314,5 +323,29 @@ public class PrivateMessageTest extends ApplicationTest {
         Assert.assertTrue(contextMenu.getItems().get(0).isVisible());
         Assert.assertFalse(contextMenu.getItems().get(1).isVisible());
         Assert.assertFalse(contextMenu.getItems().get(2).isVisible());
+
+        String msg3 = "*Moin* %Peter% <lange> \\!nix mehr gehoert von dir";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg3).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg4 = "###quoteInit###repliedToText###quoteMessage###sendMessage[###messageId###repliedToId][###timestamp####repliedTimestamp]###quoteStop###";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg4).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg5 = "!guess akflsjdflka";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg5).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        String msg6 = "!choose paper";
+        message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg6).put("to", "Peter").put("from", "Gustav");
+        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
+        privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }
