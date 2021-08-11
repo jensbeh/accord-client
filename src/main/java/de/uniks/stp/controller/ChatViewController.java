@@ -79,7 +79,7 @@ public class ChatViewController {
     private ListChangeListener<User> blockedUserListener;
     private TabPane emojiTabPane;
     private ComboBox<Image> skinColorComboBox;
-    private boolean emojiTabPaneOpened;
+    private boolean emojiViewOpened;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -101,7 +101,7 @@ public class ChatViewController {
         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         emojiTextFlowParameters.setTextColor(Color.WHITE);
 
-        emojiTabPaneOpened = false;
+        emojiViewOpened = false;
 
         // Load all view references
         root = (VBox) view.lookup("#root");
@@ -173,7 +173,7 @@ public class ChatViewController {
     }
 
     /**
-     * opens emojiList
+     * shows EmojiView
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
@@ -185,7 +185,7 @@ public class ChatViewController {
             topNode.toBack();
         }
 
-        emojiTabPaneOpened = !emojiTabPaneOpened;
+        emojiViewOpened = !emojiViewOpened;
     }
 
     /**
@@ -761,13 +761,13 @@ public class ChatViewController {
     }
 
     /**
-     * disables the view elements to disallow communicating with the user
+     * disables the view elements to disallow communicating with the user also close the emojiView if opened
      * additionally inform own user that he needs to unblock him to keep chatting with the user
      *
      * @param user the user who is blocked
      */
     public void disableView(User user) {
-        if (emojiTabPaneOpened) {
+        if (emojiViewOpened) {
             emojiButton.fire();
         }
         messageTextField.setDisable(true);
@@ -800,6 +800,9 @@ public class ChatViewController {
         return webEngines;
     }
 
+    /**
+     * insert the emoji to the textField
+     */
     public void onEmojiClicked(String emojiShortname) {
         messageTextField.setText(messageTextField.getText() + emojiShortname);
     }

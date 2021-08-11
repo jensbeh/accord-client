@@ -367,85 +367,6 @@ public class StageManager extends Application {
         }
     }
 
-
-//    public static Node getEmojis() {
-//        return emojiPane;
-//    }
-//
-//    public static Image getSingleEmojiImage(Emoji emoji) {
-//        Image toReturn = null;
-//        for (int i = 0; i < emojiPane.getChildren().size(); i++) {
-//            if (emoji.getHex().equals((((StackPane) emojiPane.getChildren().get(i)).getChildren().get(0)).getId())) {
-//                toReturn = (((ImageView) ((StackPane) emojiPane.getChildren().get(i)).getChildren().get(0))).getImage();
-//                break;
-//            }
-//        }
-//        return toReturn;
-//    }
-//
-//    public static void loadEmojis() {
-//        ArrayList<String> pngNames = new ArrayList<>();
-////        Map<String, List<Emoji>> map = EmojiParser.getInstance().getCategorizedEmojis(boxTone.getSelectionModel().getSelectedIndex() + 1); //hautfarbe
-//
-//
-//        File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-//        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-//            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-//            for (Emoji emoji : EmojiParser.getInstance().) {
-//                if (emoji.getHex().equals(name)) {
-//                    pngNames.add(name);
-//                }
-//            }
-//        }
-//
-//        emojiPane = new FlowPane();
-//        emojiPane.setPadding(new Insets(5));
-//        emojiPane.setHgap(5);
-//        emojiPane.setVgap(5);
-//        String[] pathnames = folder.list();
-//
-//        // For each pathname in the pathnames array
-//        for (String pathname : pathnames) {
-//            // Print the names of files and directories
-//            System.out.println(pathname);
-//        }
-//        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-//            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-//            if (pngNames.contains(name)) {
-//                StackPane emojiStackPane = ResourceManager.getImageStack(fileEntry);
-//                emojiStackPane.setOnMouseClicked(event -> {
-//                    for (Emoji emoji : EmojiParser.getInstance().search("")) {
-//                        if (emoji.getHex().equals(emojiStackPane.getChildren().get(0).getId())) {
-//                            builder.getCurrentChatViewController().onEmojiClicked(emoji.getShortname());
-//                        }
-//                    }
-//                });
-//
-//                ScaleTransition st = new ScaleTransition(Duration.millis(90), emojiStackPane.getChildren().get(0));
-//
-//
-//                emojiStackPane.setOnMouseEntered(e -> {
-//                    //stackPane.setStyle("-fx-background-color: #a6a6a6; -fx-background-radius: 3;");
-//                    emojiStackPane.getChildren().get(0).setEffect(new DropShadow());
-//                    st.setToX(1.2);
-//                    st.setToY(1.2);
-//                    st.playFromStart();
-//                });
-//                emojiStackPane.setOnMouseExited(e -> {
-//                    //stackPane.setStyle("");
-//                    emojiStackPane.getChildren().get(0).setEffect(null);
-//                    st.setToX(1.);
-//                    st.setToY(1.);
-//                    st.playFromStart();
-//                });
-//
-//
-//                emojiPane.getChildren().add(emojiStackPane);
-//            }
-//        }
-//    }
-
-
     @Override
     public void start(Stage primaryStage) {
         if (builder == null) {
@@ -477,6 +398,9 @@ public class StageManager extends Application {
         primaryStage.show();
     }
 
+    /**
+     * extract/loads all emojis and setups the emojiView
+     */
     private void setupEmojis() {
         try {
             ResourceManager.extractEmojis();

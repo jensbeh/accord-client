@@ -151,6 +151,9 @@ public class EmojiLoaderService {
         emojiTabPane.getSelectionModel().select(1);
     }
 
+    /**
+     * refreshes all tab with scroll- and flowPanes
+     */
     private void refreshTabs() {
         Map<String, List<Emoji>> map = EmojiParser.getInstance().getCategorizedEmojis(skinColorComboBox.getSelectionModel().getSelectedIndex() + 1);
         for (Tab tab : emojiTabPane.getTabs()) {
@@ -167,6 +170,9 @@ public class EmojiLoaderService {
         }
     }
 
+    /**
+     * CellFactory for the ComboBox with Emojis which represents the skinTone
+     */
     static class ToneCell extends ListCell<Image> {
         private final ImageView imageView;
 
@@ -239,7 +245,7 @@ public class EmojiLoaderService {
     }
 
     /**
-     * get correct image to the hexStr and sets the textField if emoji clicked
+     * get correct imageView to the emoji
      *
      * @param emoji is the emoji which should be load with image
      */
@@ -258,6 +264,9 @@ public class EmojiLoaderService {
         return imageView;
     }
 
+    /**
+     * returns the loaded view to insert into the chatView
+     */
     public Parent getView() {
         return this.view;
     }
