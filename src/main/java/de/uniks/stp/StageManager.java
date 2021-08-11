@@ -6,15 +6,13 @@ import de.uniks.stp.controller.login.LoginViewController;
 import de.uniks.stp.controller.server.subcontroller.InviteUsersController;
 import de.uniks.stp.controller.server.subcontroller.serversettings.ServerSettingsController;
 import de.uniks.stp.controller.settings.SettingsController;
-import de.uniks.stp.controller.settings.Spotify.SpotifyConnection;
 import de.uniks.stp.controller.snake.SnakeGameController;
 import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.net.RestClient;
-import de.uniks.stp.util.Constants;
-import de.uniks.stp.util.LinePoolService;
-import de.uniks.stp.util.ResizeHelper;
+import de.uniks.stp.util.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -35,7 +33,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-
 public class StageManager extends Application {
     private static RestClient restClient;
     private static ModelBuilder builder;
@@ -50,7 +47,6 @@ public class StageManager extends Application {
     private static InviteUsersController inviteUsersController;
     private static StartSnakeController startSnakeController;
     private static SnakeGameController snakeGameController;
-    private static SpotifyConnection spotifyConnection;
 
     public static void showLoginScreen() {
         cleanup();
@@ -371,6 +367,85 @@ public class StageManager extends Application {
         }
     }
 
+
+//    public static Node getEmojis() {
+//        return emojiPane;
+//    }
+//
+//    public static Image getSingleEmojiImage(Emoji emoji) {
+//        Image toReturn = null;
+//        for (int i = 0; i < emojiPane.getChildren().size(); i++) {
+//            if (emoji.getHex().equals((((StackPane) emojiPane.getChildren().get(i)).getChildren().get(0)).getId())) {
+//                toReturn = (((ImageView) ((StackPane) emojiPane.getChildren().get(i)).getChildren().get(0))).getImage();
+//                break;
+//            }
+//        }
+//        return toReturn;
+//    }
+//
+//    public static void loadEmojis() {
+//        ArrayList<String> pngNames = new ArrayList<>();
+////        Map<String, List<Emoji>> map = EmojiParser.getInstance().getCategorizedEmojis(boxTone.getSelectionModel().getSelectedIndex() + 1); //hautfarbe
+//
+//
+//        File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+//        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+//            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+//            for (Emoji emoji : EmojiParser.getInstance().) {
+//                if (emoji.getHex().equals(name)) {
+//                    pngNames.add(name);
+//                }
+//            }
+//        }
+//
+//        emojiPane = new FlowPane();
+//        emojiPane.setPadding(new Insets(5));
+//        emojiPane.setHgap(5);
+//        emojiPane.setVgap(5);
+//        String[] pathnames = folder.list();
+//
+//        // For each pathname in the pathnames array
+//        for (String pathname : pathnames) {
+//            // Print the names of files and directories
+//            System.out.println(pathname);
+//        }
+//        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+//            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+//            if (pngNames.contains(name)) {
+//                StackPane emojiStackPane = ResourceManager.getImageStack(fileEntry);
+//                emojiStackPane.setOnMouseClicked(event -> {
+//                    for (Emoji emoji : EmojiParser.getInstance().search("")) {
+//                        if (emoji.getHex().equals(emojiStackPane.getChildren().get(0).getId())) {
+//                            builder.getCurrentChatViewController().onEmojiClicked(emoji.getShortname());
+//                        }
+//                    }
+//                });
+//
+//                ScaleTransition st = new ScaleTransition(Duration.millis(90), emojiStackPane.getChildren().get(0));
+//
+//
+//                emojiStackPane.setOnMouseEntered(e -> {
+//                    //stackPane.setStyle("-fx-background-color: #a6a6a6; -fx-background-radius: 3;");
+//                    emojiStackPane.getChildren().get(0).setEffect(new DropShadow());
+//                    st.setToX(1.2);
+//                    st.setToY(1.2);
+//                    st.playFromStart();
+//                });
+//                emojiStackPane.setOnMouseExited(e -> {
+//                    //stackPane.setStyle("");
+//                    emojiStackPane.getChildren().get(0).setEffect(null);
+//                    st.setToX(1.);
+//                    st.setToY(1.);
+//                    st.playFromStart();
+//                });
+//
+//
+//                emojiPane.getChildren().add(emojiStackPane);
+//            }
+//        }
+//    }
+
+
     @Override
     public void start(Stage primaryStage) {
         if (builder == null) {
@@ -396,8 +471,26 @@ public class StageManager extends Application {
             stage.initStyle(StageStyle.TRANSPARENT);
         }
 
+        setupEmojis();
+
         showLoginScreen();
         primaryStage.show();
+    }
+
+    private void setupEmojis() {
+        try {
+            ResourceManager.extractEmojis();
+
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("emojis/emojiList.fxml")), getLangBundle());
+            view.setCache(true);
+            view.setCacheHint(CacheHint.SPEED);
+            EmojiLoaderService emojiLoader = new EmojiLoaderService(view, builder);
+            emojiLoader.init();
+            emojiLoader.setTheme();
+            builder.setEmojiLoader(emojiLoader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadAppDir() {

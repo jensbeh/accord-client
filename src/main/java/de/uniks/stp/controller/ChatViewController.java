@@ -22,12 +22,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -40,7 +42,6 @@ import javafx.stage.StageStyle;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private StackPane stack;
-    private ScrollPane scrollPane;
+    private ScrollPane emojiScrollPane;
     private String text;
     private ResourceBundle lang;
     private HBox messageBox;
@@ -81,6 +82,8 @@ public class ChatViewController {
     private ArrayList<MediaPlayer> mediaPlayers;
     private ArrayList<WebEngine> webEngines;
     private ListChangeListener<User> blockedUserListener;
+    private TabPane emojiTabPane;
+    private ComboBox<Image> skinColorComboBox;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -112,8 +115,11 @@ public class ChatViewController {
         messageBox = (HBox) view.lookup("#messageBox");
         HBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
-        scrollPane = (ScrollPane) view.lookup("#scroll");
         messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
+        VBox emojiBox = (VBox) view.lookup("#emojiBox");
+
+        Platform.runLater(() -> emojiBox.getChildren().add(builder.getEmojiLoaderService().getView()));
+
         // set scroll speed
         final double SPEED = 0.001;
         messageScrollPane.getContent().setOnScroll(scrollEvent -> {
@@ -181,72 +187,17 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
-        if (pngNames.isEmpty()) {
-            File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-            for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-                for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                    if (emoji.getHex().equals(name)) {
-                        pngNames.add(name);
-                    }
-                }
-            }
-        }
-        showEmojis();
+
+        setEmojis();
     }
 
     /**
      * sets emojis on FlowPane
      */
-    private void showEmojis() {
-        FlowPane flow = new FlowPane();
-        scrollPane.setContent(flow);
-        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            if (pngNames.contains(name)) {
-                flow.getChildren().add((getImageStack(fileEntry)));
-            }
-        }
+    private void setEmojis() {
+//        emojiScrollPane.setContent(StageManager.getEmojis());
     }
 
-    /**
-     * creates StackPane for each image
-     */
-    private StackPane getImageStack(File fileEntry) {
-        StackPane stackPane = new StackPane();
-        stackPane.setMaxSize(32, 32);
-        stackPane.setPrefSize(32, 32);
-        stackPane.setMinSize(32, 32);
-        stackPane.setPadding(new Insets(3));
-        stackPane.getChildren().add(getEmojiImage(fileEntry));
-        return stackPane;
-    }
-
-    /**
-     * get correct image to the hexStr and sets the textField if emoji clicked
-     */
-    private ImageView getEmojiImage(File fileEntry) {
-        ImageView imageView = new ImageView();
-        imageView.setId(fileEntry.getName().substring(0, fileEntry.getName().length() - 4));
-        imageView.setFitWidth(32);
-        imageView.setFitHeight(32);
-
-        String path = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + "/" + fileEntry.getName();
-        File newFile = new File(path);
-        Image image = new Image(newFile.toURI().toString());
-        imageView.setImage(image);
-        AtomicReference<String> url = new AtomicReference<>("");
-        imageView.setOnMouseClicked(event -> {
-            url.set(imageView.getImage().getUrl());
-            for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                if (emoji.getHex().equals(imageView.getId())) {
-                    messageTextField.setText(messageTextField.getText() + emoji.getShortname());
-                }
-            }
-        });
-        return imageView;
-    }
 
     /**
      * build menu with chat options
@@ -839,6 +790,8 @@ public class ChatViewController {
         } else {
             setDarkMode();
         }
+
+        builder.getEmojiLoaderService().setTheme();
     }
 
     private void setWhiteMode() {
@@ -853,5 +806,9 @@ public class ChatViewController {
 
     public ArrayList<WebEngine> getWebEngines() {
         return webEngines;
+    }
+
+    public void onEmojiClicked(String emojiShortname) {
+        messageTextField.setText(messageTextField.getText() + emojiShortname);
     }
 }

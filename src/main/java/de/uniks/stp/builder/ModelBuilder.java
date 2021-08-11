@@ -16,6 +16,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.EmojiLoaderService;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
@@ -82,6 +83,7 @@ public class ModelBuilder {
     private boolean isSteamRun;
     private Runnable handleMicrophoneHeadphone;
     private AudioController audiocontroller;
+    private EmojiLoaderService emojiLoaderService;
 
     private UserProfileController userProfileController;
 
@@ -626,7 +628,6 @@ public class ModelBuilder {
             getSteamGame.interrupt();
         }
         getSteamGame = null;
-
     }
 
     public HomeViewController getHomeViewController() {
@@ -672,6 +673,14 @@ public class ModelBuilder {
         audioStreamClient = null;
         audiocontroller = null;
         USER_CLIENT = null;
+    }
+
+    public void setEmojiLoader(EmojiLoaderService emojiLoaderService) {
+        this.emojiLoaderService = emojiLoaderService;
+    }
+
+    public EmojiLoaderService getEmojiLoaderService() {
+        return emojiLoaderService;
     }
 
     public UserProfileController getUserProfileController() {

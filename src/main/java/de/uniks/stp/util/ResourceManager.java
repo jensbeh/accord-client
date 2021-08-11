@@ -271,7 +271,7 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
 
-                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/emojis/twemoji.zip");
+                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/emojis/emojitwo.zip");
                 InputStream inputStream = zipFileURL.openStream();
                 ZipInputStream zipInputStream = new ZipInputStream(inputStream);
                 ZipEntry entry = zipInputStream.getNextEntry();
