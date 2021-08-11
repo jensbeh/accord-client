@@ -695,17 +695,24 @@ public class ServerSystemWebSocket extends Endpoint {
         boolean channelPrivileged = jsonData.getBoolean("privileged");
         JsonArray jsonArray = jsonData.getJsonArray("members");
 
+        Categories affectedCategory = new Categories();
         boolean hasChannel = false;
         ArrayList<User> member = getChannelMembers(jsonArray);
 
         for (Categories category : serverViewController.getServer().getCategories()) {
             if (category.getId().equals(categoryId)) {
+                affectedCategory = category;
                 hasChannel = findChannelToUpdate(jsonData, category);
             }
-            if (!hasChannel) {
-                category.withChannel(new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
-                        .setPrivilege(channelPrivileged).withPrivilegedUsers(member));
+            // no need to search more for the channel if found
+            if (hasChannel) {
+                break;
             }
+        }
+
+        if (!hasChannel) {
+            affectedCategory.withChannel(new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
+                    .setPrivilege(channelPrivileged).withPrivilegedUsers(member));
         }
     }
 
