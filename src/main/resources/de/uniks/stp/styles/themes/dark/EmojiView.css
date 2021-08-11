@@ -92,6 +92,10 @@
     -fx-background-color: #2f3136;
 }
 
+.emojiScrollPane > .viewport {
+   -fx-background-color: #2f3136;
+}
+
 .emojiScrollPane .scroll-bar:horizontal .track,
 .emojiScrollPane .scroll-bar:vertical .track {
     -fx-background-color: #2f3136;
