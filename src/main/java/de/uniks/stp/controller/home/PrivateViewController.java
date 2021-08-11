@@ -22,6 +22,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -342,11 +343,15 @@ public class PrivateViewController {
     public void MessageViews() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
+            root.setCache(true);
+            root.setCacheHint(CacheHint.SPEED);
             //stop videos from recent chatviewcontroller
             if (chatViewController != null) {
                 chatViewController.stopMediaPlayers();
             }
             chatViewController = new ChatViewController(root, builder);
+            this.chatBox.setCache(true);
+            this.chatBox.setCacheHint(CacheHint.SPEED);
             this.chatBox.getChildren().clear();
             chatViewController.init();
             chatViewController.setTheme();

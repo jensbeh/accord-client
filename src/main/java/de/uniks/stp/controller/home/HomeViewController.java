@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.CacheHint;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -43,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
 
 public class HomeViewController {
     private final RestClient restClient;
@@ -88,6 +88,8 @@ public class HomeViewController {
         // Load all view references
         homeView = (HBox) view.lookup("#homeView");
         root = (HBox) view.lookup("#root");
+        root.setCache(true);
+        root.setCacheHint(CacheHint.SPEED);
         settingsIcon = (ImageView) view.lookup("#settingsIcon");
         helpIcon = (ImageView) view.lookup("#helpIcon");
 
@@ -146,7 +148,6 @@ public class HomeViewController {
             builder.getGame();
         }
 
-        ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
         try {
             builder.setBlockedUsers(ResourceManager.loadBlockedUsers(builder.getPersonalUser().getName()));
@@ -160,6 +161,8 @@ public class HomeViewController {
             for (Server server : builder.getPersonalUser().getServer()) {
                 try {
                     Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
+                    serverView.setCache(true);
+                    serverView.setCacheHint(CacheHint.SPEED);
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                     serverController.get(server).startController(status -> {
@@ -300,6 +303,8 @@ public class HomeViewController {
         try {
             if (privateView == null) {
                 privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/PrivateView.fxml")), StageManager.getLangBundle());
+                privateView.setCache(true);
+                privateView.setCacheHint(CacheHint.SPEED);
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 privateViewController.setTheme();

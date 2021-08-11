@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.CacheHint;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -274,11 +275,15 @@ public class ServerViewController {
     public void showMessageView() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
+            root.setCache(true);
+            root.setCacheHint(CacheHint.SPEED);
             // stop videos from recent channel
             if (chatViewController != null) {
                 chatViewController.stopMediaPlayers();
             }
             this.chatViewController = new ChatViewController(root, builder, currentChannel);
+            this.chatBox.setCache(true);
+            this.chatBox.setCacheHint(CacheHint.SPEED);
             this.chatBox.getChildren().clear();
             this.chatViewController.init();
             this.chatBox.getChildren().add(root);

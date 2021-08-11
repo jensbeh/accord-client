@@ -5,6 +5,7 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -20,6 +21,7 @@ import javafx.scene.text.TextAlignment;
 
 public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
     private final ModelBuilder builder;
+    private ListView<PrivateChat> param;
 
     public PrivateChatListCell(ModelBuilder builder) {
         this.builder = builder;
@@ -38,14 +40,21 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
     @Override
     public ListCell<PrivateChat> call(ListView<PrivateChat> param) {
+        this.param = param;
         return new ChannelListCell();
     }
 
     private class ChannelListCell extends ListCell<PrivateChat> {
+        @Override
+        public void updateIndex(int i) {
+            super.updateIndex(i);
+        }
 
         protected void updateItem(PrivateChat item, boolean empty) {
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
+            cell.setCache(true);
+            cell.setCacheHint(CacheHint.SPEED);
             super.updateItem(item, empty);
             if (!empty) {
                 float notificationCircleSize = 20;
