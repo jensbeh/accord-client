@@ -1,7 +1,5 @@
 package de.uniks.stp.controller;
 
-import com.pavlobu.emojitextflow.Emoji;
-import com.pavlobu.emojitextflow.EmojiParser;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -47,11 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
     private final ModelBuilder builder;
@@ -84,6 +79,7 @@ public class ChatViewController {
     private ListChangeListener<User> blockedUserListener;
     private TabPane emojiTabPane;
     private ComboBox<Image> skinColorComboBox;
+    private boolean emojiTabPaneOpened;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -105,6 +101,7 @@ public class ChatViewController {
         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         emojiTextFlowParameters.setTextColor(Color.WHITE);
 
+        emojiTabPaneOpened = false;
 
         // Load all view references
         root = (VBox) view.lookup("#root");
@@ -188,16 +185,8 @@ public class ChatViewController {
             topNode.toBack();
         }
 
-        setEmojis();
+        emojiTabPaneOpened = !emojiTabPaneOpened;
     }
-
-    /**
-     * sets emojis on FlowPane
-     */
-    private void setEmojis() {
-//        emojiScrollPane.setContent(StageManager.getEmojis());
-    }
-
 
     /**
      * build menu with chat options
@@ -287,7 +276,7 @@ public class ChatViewController {
             scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // create titleBar
-            createTitleBar(subview,"window_title_delete_message");
+            createTitleBar(subview, "window_title_delete_message");
 
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
@@ -464,7 +453,7 @@ public class ChatViewController {
                 lang = StageManager.getLangBundle();
 
                 // create titleBar
-                createTitleBar(subview,"title.edit_warning");
+                createTitleBar(subview, "title.edit_warning");
 
 
                 Label msg = (Label) subview.lookup("#editWarningText");
@@ -778,6 +767,9 @@ public class ChatViewController {
      * @param user the user who is blocked
      */
     public void disableView(User user) {
+        if (emojiTabPaneOpened) {
+            emojiButton.fire();
+        }
         messageTextField.setDisable(true);
         emojiButton.setDisable(true);
         sendButton.setDisable(true);
