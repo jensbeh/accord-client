@@ -225,9 +225,7 @@ public class ServerSystemWebSocket extends Endpoint {
     }
 
     private void playJoinSound(JsonObject jsonData) {
-        if (builder.getPersonalUser().getId().equals(jsonData.getString("id"))
-                || (builder.getCurrentAudioChannel() != null &&
-                builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
+        if (builder.getPersonalUser().getId().equals(jsonData.getString("id")) || (builder.getCurrentAudioChannel() != null && builder.getCurrentAudioChannel().getId().equals(jsonData.getString("channel")))) {
             builder.playChannelSound("join");
         }
     }
@@ -387,7 +385,7 @@ public class ServerSystemWebSocket extends Endpoint {
         if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
             for (Categories categories : serverViewController.getServer().getCategories()) {
                 if (categories.getId().equals(builder.getCurrentAudioChannel().getCategories().getId())) {
-                    disconnectFromChannel(categories);
+                    disconnectFromAudioChannel(categories);
                 }
             }
         }
@@ -396,7 +394,7 @@ public class ServerSystemWebSocket extends Endpoint {
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }
 
-    private void disconnectFromChannel(Categories categories) {
+    private void disconnectFromAudioChannel(Categories categories) {
         for (ServerChannel channel : categories.getChannel()) {
             if (channel.getId().equals(builder.getCurrentAudioChannel().getId())) {
                 disconnectAudioChannelNotOwner(serverViewController.getServer().getId(), categories.getId(), builder.getCurrentAudioChannel().getId());
@@ -472,7 +470,7 @@ public class ServerSystemWebSocket extends Endpoint {
         if (deletedNode != null) {
             // thrown out from audioChannel
             if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel() != null) {
-                disconnectFromChannel(deletedCategory);
+                disconnectFromAudioChannel(deletedCategory);
             }
 
             currentServer.withoutCategories(deletedCategory);

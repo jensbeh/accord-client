@@ -125,10 +125,10 @@ public class ServerChatWebSocketTest extends ApplicationTest {
     @Test
     public void testServerChatWebSocketTest() throws InterruptedException, IOException {
         doCallRealMethod().when(serverChatWebSocket).getBuilder();
-        doCallRealMethod().when(serverChatWebSocket).onOpen(any(),any()); //TODO auch noch onMessage
-        doCallRealMethod().when(serverChatWebSocket).onClose(any(),any());
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any()); //TODO showServerChatAlert
         doCallRealMethod().when(serverChatWebSocket).sendMessage(any());
+        doCallRealMethod().when(serverChatWebSocket).onOpen(any(),any()); //TODO auch noch onMessage
+        doCallRealMethod().when(serverChatWebSocket).onClose(any(),any());
         doCallRealMethod().when(serverChatWebSocket).stop();
 //        mockLogin();
     }

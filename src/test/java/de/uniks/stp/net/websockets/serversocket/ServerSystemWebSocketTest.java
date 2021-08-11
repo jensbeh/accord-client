@@ -127,7 +127,7 @@ public class ServerSystemWebSocketTest extends ApplicationTest {
         doCallRealMethod().when(serverSystemWebSocket).onOpen(any(),any()); //TODO auch noch onMessage
         doCallRealMethod().when(serverSystemWebSocket).onClose(any(),any());
         doCallRealMethod().when(serverSystemWebSocket).stop();
-        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());//TODO userJoined userLeft und deleteServer(), deleteServer() (serverDeletedAlert, und saemtliche anderen methoden)
+//        doCallRealMethod().when(serverSystemWebSocket).handleMessage(any());//TODO userJoined userLeft und deleteServer(), deleteServer() (serverDeletedAlert, und saemtliche anderen methoden)
 //        mockLogin();
 
     }

@@ -130,8 +130,8 @@ public class PrivateChatWebSocketTest extends ApplicationTest {
         doCallRealMethod().when(privateChatWebSocket).onOpen(any(), any()); // TODO auch onMessage aufrufen
         doCallRealMethod().when(privateChatWebSocket).handleMessage(any()); // TODO isblocked aufrufen
         doCallRealMethod().when(privateChatWebSocket).getPrivateViewController();
-//        mockLogin();
-
+        mockLogin();
+//        clickOn(lookup(""))
 
     }
 }
