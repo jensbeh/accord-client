@@ -48,11 +48,8 @@ public class EmojiLoaderService {
         ScrollPane searchScrollPane = (ScrollPane) view.lookup("#scrollPane_search");
         searchTextField.setPromptText("Search...");
         searchScrollPane.setId("emojiScrollPane");
-        if (builder.getTheme().equals("Dark")) {
-            searchScrollPane.setStyle("-fx-background: #2f3136;");
-        } else {
-            searchScrollPane.setStyle("-fx-background: #f2f3f5;");
-        }
+        searchScrollPane.getStyleClass().add("emojiScrollPane");
+
         FlowPane searchFlowPane = (FlowPane) searchScrollPane.getContent();
         searchFlowPane.setPadding(new Insets(10, 0, 10, 25));
         searchScrollPane.setVisible(false);
@@ -60,6 +57,7 @@ public class EmojiLoaderService {
         searchScrollPane.setCacheHint(CacheHint.SPEED);
         searchFlowPane.setCache(true);
         searchFlowPane.setCacheHint(CacheHint.SPEED);
+        searchFlowPane.getStyleClass().add("emojiFlowPane");
 
         ObservableList<Image> tonesList = FXCollections.observableArrayList();
 
@@ -99,17 +97,14 @@ public class EmojiLoaderService {
 
         for (Tab tab : emojiTabPane.getTabs()) {
             ScrollPane scrollPane = (ScrollPane) tab.getContent();
-            if (builder.getTheme().equals("Dark")) {
-                scrollPane.setStyle("-fx-background: #2f3136;");
-            } else {
-                scrollPane.setStyle("-fx-background: #f2f3f5;");
-            }
+            scrollPane.getStyleClass().add("emojiScrollPane");
             FlowPane pane = (FlowPane) scrollPane.getContent();
             pane.setPadding(new Insets(10, 0, 10, 25));
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             pane.prefWidthProperty().bind(scrollPane.widthProperty().subtract(5));
             pane.setHgap(5);
             pane.setVgap(5);
+            pane.getStyleClass().add("emojiFlowPane");
 
             ImageView icon = new ImageView();
             icon.setCache(true);
@@ -160,11 +155,6 @@ public class EmojiLoaderService {
         Map<String, List<Emoji>> map = EmojiParser.getInstance().getCategorizedEmojis(skinColorComboBox.getSelectionModel().getSelectedIndex() + 1);
         for (Tab tab : emojiTabPane.getTabs()) {
             ScrollPane scrollPane = (ScrollPane) tab.getContent();
-            if (builder.getTheme().equals("Dark")) {
-                scrollPane.setStyle("-fx-background: #2f3136;");
-            } else {
-                scrollPane.setStyle("-fx-background: #f2f3f5;");
-            }
             FlowPane pane = (FlowPane) scrollPane.getContent();
             pane.setCache(true);
             pane.setCacheHint(CacheHint.SPEED);
@@ -268,17 +258,6 @@ public class EmojiLoaderService {
         return imageView;
     }
 
-    private void refreshTabColors() {
-        for (Tab tab : emojiTabPane.getTabs()) {
-            ScrollPane scrollPane = (ScrollPane) tab.getContent();
-            if (builder.getTheme().equals("Dark")) {
-                scrollPane.setStyle("-fx-background: #2f3136;");
-            } else {
-                scrollPane.setStyle("-fx-background: #f2f3f5;");
-            }
-        }
-    }
-
     public Parent getView() {
         return this.view;
     }
@@ -290,7 +269,6 @@ public class EmojiLoaderService {
         } else {
             setDarkMode();
         }
-        refreshTabColors();
     }
 
     private void setWhiteMode() {
