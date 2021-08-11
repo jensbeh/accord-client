@@ -51,7 +51,7 @@ public class EmojiLoaderService {
         searchScrollPane.getStyleClass().add("emojiScrollPane");
 
         FlowPane searchFlowPane = (FlowPane) searchScrollPane.getContent();
-        searchFlowPane.setPadding(new Insets(10, 0, 10, 25));
+        searchFlowPane.setPadding(new Insets(10, 0, 10, 10));
         searchScrollPane.setVisible(false);
         searchScrollPane.setCache(true);
         searchScrollPane.setCacheHint(CacheHint.SPEED);
@@ -99,7 +99,7 @@ public class EmojiLoaderService {
             ScrollPane scrollPane = (ScrollPane) tab.getContent();
             scrollPane.getStyleClass().add("emojiScrollPane");
             FlowPane pane = (FlowPane) scrollPane.getContent();
-            pane.setPadding(new Insets(10, 0, 10, 25));
+            pane.setPadding(new Insets(12, 0, 10, 14));
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             pane.prefWidthProperty().bind(scrollPane.widthProperty().subtract(5));
             pane.setHgap(5);

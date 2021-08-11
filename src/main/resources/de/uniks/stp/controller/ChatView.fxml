@@ -13,7 +13,7 @@
     <children>
         <StackPane id="stack" alignment="BOTTOM_RIGHT" prefHeight="2074.0" prefWidth="200.0">
             <children>
-                <VBox id="emojiBox" alignment="BOTTOM_RIGHT" maxHeight="400.0" maxWidth="400.0" minHeight="400.0" minWidth="400.0" prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: transparent;" />
+                <VBox id="emojiBox" alignment="BOTTOM_RIGHT" maxHeight="446.0" maxWidth="379.0" minHeight="446.0" minWidth="379.0" prefHeight="446.0" prefWidth="379.0" style="-fx-background-color: transparent;" />
                 <ScrollPane id="messageScrollPane" hbarPolicy="NEVER" vbarPolicy="NEVER">
                     <content>
                         <VBox id="messageVBox" alignment="TOP_CENTER" />

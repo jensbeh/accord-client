@@ -15,7 +15,7 @@
     <children>
         <HBox alignment="CENTER_LEFT" maxHeight="25.0" spacing="10.0">
             <children>
-                <TextField id="textField_search" prefWidth="313.0" />
+                <TextField id="textField_search" prefWidth="299.0" />
                 <ComboBox id="ComboBox_skinColor" prefWidth="50.0">
                <HBox.margin>
                   <Insets />
@@ -25,11 +25,11 @@
             <Insets left="15.0" />
          </VBox.margin>
         </HBox>
-        <HBox prefWidth="400.0">
+        <HBox>
             <children>
             <AnchorPane>
                <children>
-                      <TabPane id="emojiTabPane" maxHeight="400.0" minHeight="400.0" prefHeight="400.0" prefWidth="400.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+                      <TabPane id="emojiTabPane" maxHeight="400.0" minHeight="400.0" prefHeight="400.0" prefWidth="374.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                           <tabs>
                               <Tab id="frequently used">
                                   <content>
@@ -132,7 +132,7 @@
                               </Tab>
                           </tabs>
                       </TabPane>
-                  <ScrollPane id="scrollPane_search" layoutX="49.0" prefHeight="401.0" prefWidth="353.0">
+                  <ScrollPane id="scrollPane_search" layoutX="49.0" maxWidth="350.0" prefHeight="401.0" prefWidth="325.0">
                      <content>
                         <FlowPane prefHeight="200.0" prefWidth="200.0" />
                      </content>
