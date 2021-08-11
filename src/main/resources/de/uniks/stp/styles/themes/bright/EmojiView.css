@@ -1,0 +1,90 @@
+#emojiVbox {
+    -fx-background-color: #f2f3f5;
+    -fx-background-radius: 10 0 0 0;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #f2f3f5;
+}
+
+.tab-pane {
+    -fx-background-color: #f2f3f5;
+    -fx-tab-min-width:30px;
+    -fx-tab-min-height:45px;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #a4a4a4;
+    -fx-background-radius: 0;
+}
+.tab-pane .tab:hover {
+    -fx-background-color: #bfbfbf;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: #5a5c5e;
+    -fx-focus-color: transparent;
+}
+
+.tab .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #828282;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #96b946;
+}
+
+.tab-pane:left *.tab-header-area {
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: -0.1em -0.1em -0.1em 0em;
+}
+
+.combo-box-popup {
+    -fx-background-color: #acacac;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: BLACK;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 10 0;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #c8c8c8;
+    -fx-font-size: 12.5;
+    -fx-text-fill: BLACK;
+    -fx-alignment: center;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #9b9b9b;
+}
+
+.combo-box-base {
+    -fx-background-color: #d0d0d0;
+    -fx-text-fill: BLACK;
+}
+
+.combo-box-base .list-cell {
+    -fx-background-color: #d0d0d0;
+    -fx-text-fill: BLACK;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #d0d0d0;
+    -fx-pref-width: 40;
+}
+
+.combo-box {
+    -fx-background-color: #d0d0d0;
+}
+
+.text-input {
+    -fx-text-fill: BLACK;
+    -fx-background-radius: 0;
+    -fx-border-color: #222222;
+    -fx-background-color: #f2f3f5;
+}
