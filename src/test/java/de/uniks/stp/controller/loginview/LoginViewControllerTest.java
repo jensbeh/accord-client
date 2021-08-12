@@ -283,7 +283,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Label errorLabel = lookup("#errorLabel").query();
-        Assert.assertEquals("Name already taken", errorLabel.getText());
+        Assert.assertEquals("Field is empty!", errorLabel.getText());
     }
 
     @Test

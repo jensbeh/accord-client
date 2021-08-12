@@ -284,7 +284,9 @@ public class ServerSettingsChannelController extends SubSetting {
                 });
             }
         } else {
-            Alerts.invalidNameAlert(builder);
+            if (selectedChannel != null) {
+                Alerts.invalidNameAlert(builder);
+            }
         }
     }
 

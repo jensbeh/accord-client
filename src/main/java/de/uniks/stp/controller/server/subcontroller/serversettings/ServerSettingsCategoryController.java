@@ -133,7 +133,9 @@ public class ServerSettingsCategoryController extends SubSetting {
                 });
             }
         } else {
-            Alerts.invalidNameAlert(builder);
+            if (selectedCategory != null) {
+                Alerts.invalidNameAlert(builder);
+            }
         }
     }
 
@@ -213,7 +215,7 @@ public class ServerSettingsCategoryController extends SubSetting {
      * creates a new category when button create is clicked
      */
     private void createCategory(ActionEvent actionEvent) {
-        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(changeCategoryNameTextField.getText());
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(createCategoryNameTextField.getText());
         if (!whiteSpaceMatcher.find() && !createCategoryNameTextField.getText().isEmpty()) {
             String categoryName = createCategoryNameTextField.getText();
 

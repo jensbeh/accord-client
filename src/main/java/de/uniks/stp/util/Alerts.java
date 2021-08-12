@@ -1,6 +1,5 @@
 package de.uniks.stp.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import javafx.scene.control.Alert;
