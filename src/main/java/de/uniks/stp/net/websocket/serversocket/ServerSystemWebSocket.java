@@ -711,8 +711,11 @@ public class ServerSystemWebSocket extends Endpoint {
         }
 
         if (!hasChannel) {
-            affectedCategory.withChannel(new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
-                    .setPrivilege(channelPrivileged).withPrivilegedUsers(member));
+            // add the channel for the user who has not the channel and load the messages
+            ServerChannel serverChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
+                    .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
+            affectedCategory.withChannel(serverChannel);
+            serverViewController.loadChannelMessages(serverChannel, response1 -> {});
         }
     }
 

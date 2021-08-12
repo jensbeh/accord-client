@@ -642,7 +642,7 @@ public class ServerViewController {
 
     }
 
-    private void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
+    public void loadChannelMessages(ServerChannel channel, MessagesLoadedCallback messagesLoadedCallback) {
         restClient.getChannelMessages(new Date().getTime(), this.server.getId(), channel.getCategories().getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
