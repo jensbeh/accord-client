@@ -323,7 +323,7 @@ public class MessageView {
         return width;
     }
 
-    private String searchUrl(String msg) {
+    public String searchUrl(String msg) {
         String urlRegex = "\\b(https?|ftp|file|src)(://|/)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         Pattern pattern = Pattern.compile(urlRegex);
         Matcher matcher = pattern.matcher(msg);
@@ -461,5 +461,9 @@ public class MessageView {
 
     public void setScroll(Runnable scroll) {
         this.scroll = scroll;
+    }
+
+    public String getUrlType() {
+        return urlType;
     }
 }
