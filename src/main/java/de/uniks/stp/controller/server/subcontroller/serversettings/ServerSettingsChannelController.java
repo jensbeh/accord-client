@@ -357,9 +357,9 @@ public class ServerSettingsChannelController extends SubSetting {
 
     private void createChannelDeleteView() {
         try {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), lang);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
             Scene scene = new Scene(root);
@@ -373,7 +373,7 @@ public class ServerSettingsChannelController extends SubSetting {
             HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
             Parent titleBarView = null;
             try {
-                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), lang);
             } catch (IOException e) {
                 e.printStackTrace();
             }

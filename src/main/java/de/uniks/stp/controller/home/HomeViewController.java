@@ -141,7 +141,7 @@ public class HomeViewController {
 
     private void ThirdPartyClientConnect() {
         if (builder.getSpotifyConnection() == null) {
-            spotifyConnection = new SpotifyConnection(builder);
+            SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
         }
         builder.getSpotifyConnection().refreshToken();
         if (builder.getSpotifyToken() != null) {
@@ -235,7 +235,7 @@ public class HomeViewController {
     }
 
     private void titleBarControllerInit(Stage dialog, Parent titleBarViewHelp) {
-        titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
+        TitleBarController titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
         titleBarControllerHelp.init();
         titleBarControllerHelp.setTheme();
         titleBarControllerHelp.setMaximizable(false);
@@ -408,7 +408,7 @@ public class HomeViewController {
             try {
                 if (!serverController.containsKey(server)) {
                     builder.setCurrentServer(server);
-                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
+                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), builder.getStageManager().getLangBundle());
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                     serverController.get(server).startController(status -> Platform.runLater(() -> {

@@ -262,7 +262,7 @@ public class ChatViewController {
         try {
             ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-            Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
+            Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), lang);
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);

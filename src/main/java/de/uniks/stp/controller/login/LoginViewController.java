@@ -214,7 +214,7 @@ public class LoginViewController {
             //show message on screen
             this.message = body.getObject().getString("status");
             Platform.runLater(() -> setError("error.login_success"));
-            Platform.runLater(StageManager::showHome); //TODO load here server, then showHome
+            Platform.runLater(() -> builder.getStageManager().showHome()); //TODO load here server, then showHome
         } else if (status.equals("failure")) {
             //show message on screen
             this.message = body.getObject().getString("message");

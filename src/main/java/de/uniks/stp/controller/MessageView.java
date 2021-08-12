@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.util.EmojiTextFlowExtended;
@@ -224,7 +225,7 @@ public class MessageView {
     }
 
     private String showSystemMessage(Message item) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (item.getMessage().endsWith("#arrival")) {
             return ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
         } else if (item.getMessage().endsWith("#exit")) {
