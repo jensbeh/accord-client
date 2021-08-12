@@ -2,6 +2,7 @@ package de.uniks.stp.cellfactories;
 
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.MessageView;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Pos;
@@ -136,7 +137,16 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             message.setId("msg_" + item.getId());
             String textMessage = item.getMessage().get(item.getMessage().size() - 1).getMessage();
             message.setId("messageLabel");
-            message.parseAndAppend(textMessage);
+
+            MessageView messageView = new MessageView();
+            String url = messageView.searchUrl(textMessage);
+            String urlType = messageView.getUrlType();
+            if (!urlType.equals("None")) {
+                message.addTextLinkNode(textMessage, url);
+            } else {
+                message.parseAndAppend(textMessage);
+            }
+
             message = setMaxChar(message);
 
             textBox.getChildren().add(message);
