@@ -166,7 +166,7 @@ public class NotificationsController extends SubSetting {
     }
 
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         addButton.setText(lang.getString("button.CN_add"));
         deleteButton.setText(lang.getString("button.CN_delete"));
         selectedSound.setText(lang.getString("label.CN_selected_sound"));

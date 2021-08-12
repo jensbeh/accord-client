@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.settings;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.Constants;
 import javafx.event.ActionEvent;
@@ -41,7 +40,7 @@ public class GeneralController extends SubSetting {
             prop.load(ip);
             currentLocale = new Locale(prop.getProperty("LANGUAGE"));
             Locale.setDefault(currentLocale);
-            StageManager.resetLangBundle();
+            builder.getStageManager().resetLangBundle();
         } catch (Exception e) {
             System.err.println(e + "");
             e.printStackTrace();
@@ -90,7 +89,7 @@ public class GeneralController extends SubSetting {
             String selectedTheme = "Bright";
             builder.setTheme(selectedTheme);
             builder.saveSettings();
-            StageManager.setTheme();
+            builder.getStageManager().setTheme();
         }
     }
 
@@ -105,7 +104,7 @@ public class GeneralController extends SubSetting {
             String selectedTheme = "Dark";
             builder.setTheme(selectedTheme);
             builder.saveSettings();
-            StageManager.setTheme();
+            builder.getStageManager().setTheme();
         }
     }
 
@@ -129,7 +128,7 @@ public class GeneralController extends SubSetting {
         String language = getKey(languages, selectedLanguage);
         currentLocale = locales.get(language);
         Locale.setDefault(currentLocale);
-        StageManager.onLanguageChanged();
+        builder.getStageManager().onLanguageChanged();
         onLanguageChanged();
 
         // save in Settings
@@ -157,7 +156,7 @@ public class GeneralController extends SubSetting {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         selectLanguageLabel.setText(lang.getString("label.select_language"));
         selectThemeLabel.setText(lang.getString("label.select_theme"));
     }

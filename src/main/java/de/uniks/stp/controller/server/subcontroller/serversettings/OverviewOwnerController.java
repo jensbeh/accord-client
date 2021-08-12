@@ -53,7 +53,7 @@ public class OverviewOwnerController {
      * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         ButtonType button = new ButtonType(lang.getString("button.deleteServer"));
         ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);

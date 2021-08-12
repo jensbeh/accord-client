@@ -33,7 +33,7 @@ public class SteamLoginController {
 
     public void init() {
         try {
-            steamLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), StageManager.getLangBundle());
+            steamLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,7 +48,7 @@ public class SteamLoginController {
         HBox titleBarBox = (HBox) steamLoginView.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,7 +106,7 @@ public class SteamLoginController {
         webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
         webView = null;
         loginStage = null;
-        Platform.runLater(()-> refreshConnectionView.run());
+        Platform.runLater(() -> refreshConnectionView.run());
     }
 
     public void refresh(Runnable refresh) {

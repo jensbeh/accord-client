@@ -157,7 +157,7 @@ public class InviteUsersTempSubController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (createLink != null)
             createLink.setText(lang.getString("button.create"));
 

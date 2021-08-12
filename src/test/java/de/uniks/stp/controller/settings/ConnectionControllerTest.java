@@ -27,6 +27,7 @@ import kong.unirest.Callback;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -110,6 +111,11 @@ public class ConnectionControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(de.uniks.stp.controller.settings.SettingsControllerTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         this.stage = stage;
@@ -120,8 +126,8 @@ public class ConnectionControllerTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
         SpotifyConnection spotifyConnection = new SpotifyConnection(mockApp.getBuilder());
         mockApp.getBuilder().getSpotifyConnection().setSpotifyApi(SPOTIFY_API);
         mockApp.getBuilder().getSpotifyConnection().setAuthorizationCodePKCERequest(authRequest);

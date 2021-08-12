@@ -20,6 +20,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,6 +89,11 @@ public class PrivateViewControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(PrivateViewControllerTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -98,8 +104,8 @@ public class PrivateViewControllerTest extends ApplicationTest {
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         StageManager app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);

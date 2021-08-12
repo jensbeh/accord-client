@@ -62,7 +62,7 @@ public class UserProfileController {
     private void addGame() {
         if (!builder.getPersonalUser().getDescription().contains("i.scdn.co")) {
             Label currentGame = new Label();
-            currentGame.setText(StageManager.getLangBundle().getString("label.steam_playing") + " " + builder.getPersonalUser().getDescription().substring(1));
+            currentGame.setText(builder.getStageManager().getLangBundle().getString("label.steam_playing") + " " + builder.getPersonalUser().getDescription().substring(1));
             currentGame.setId("currentGame");
             Platform.runLater(() -> descriptionBox.getChildren().add(currentGame));
         }

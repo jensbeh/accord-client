@@ -20,6 +20,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -80,6 +81,11 @@ public class ResourceManagerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(SettingsControllerTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) throws InterruptedException {
         //start application
@@ -90,7 +96,7 @@ public class ResourceManagerTest extends ApplicationTest {
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
-        StageManager.setBuilder(builder);
+        app.setBuilder(builder);
         app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
@@ -197,14 +203,6 @@ public class ResourceManagerTest extends ApplicationTest {
         FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + SAVES_PATH + PRIVATE_CHAT_PATH));
         ResourceManager.savePrivatChat("GustavTest", "OttoTest", message);
         ResourceManager.savePrivatChat("/GustavTes/t", "/OttoTest/", message);
-    }
-
-    @Test
-    public void extractEmojisTest() throws InterruptedException, IOException {
-        loginInit();
-        FileUtils.deleteDirectory(new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
-        ResourceManager.extractEmojis();
-        Assert.assertTrue(Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH)));
     }
 
     @Test

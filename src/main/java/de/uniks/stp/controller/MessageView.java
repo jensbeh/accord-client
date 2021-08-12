@@ -124,7 +124,7 @@ public class MessageView {
 
             String str = null;
             if (messageIsInfo) {
-                ResourceBundle lang = StageManager.getLangBundle();
+                ResourceBundle lang = builder.getStageManager().getLangBundle();
                 if (item.getMessage().endsWith("#arrival")) {
                     str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
                 } else if (item.getMessage().endsWith("#exit")) {

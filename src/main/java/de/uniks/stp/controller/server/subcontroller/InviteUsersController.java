@@ -42,7 +42,7 @@ public class InviteUsersController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class InviteUsersController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
-        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_inviteUsers"));
+        titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_inviteUsers"));
 
         root = (VBox) view.lookup("#rootInvite");
         tempSelected = (RadioButton) view.lookup("#tempSelected");
@@ -74,7 +74,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersTemp.fxml")), StageManager.getLangBundle());
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersTemp.fxml")), builder.getStageManager().getLangBundle());
             //Controller
             inviteUsersTempSubController = new InviteUsersTempSubController(view, builder, server);
             inviteUsersTempSubController.init();
@@ -90,7 +90,7 @@ public class InviteUsersController {
         inviteBox.getChildren().clear();
         try {
             //view
-            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersUserLimit.fxml")), StageManager.getLangBundle());
+            Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsersUserLimit.fxml")), builder.getStageManager().getLangBundle());
             //Controller
             inviteUsersUserLimitSubController = new InviteUsersUserLimitSubController(view, builder, server);
             inviteUsersUserLimitSubController.init();
@@ -116,7 +116,7 @@ public class InviteUsersController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (tempLabel != null)
             tempLabel.setText(lang.getString("label.temp"));
 

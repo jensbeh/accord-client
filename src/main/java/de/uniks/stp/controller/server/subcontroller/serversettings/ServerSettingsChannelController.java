@@ -109,7 +109,7 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(Categories object) {
                 if (object == null) {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
                     return lang.getString("comboBox.selectCategory");
                 }
                 return object.getName();
@@ -125,7 +125,7 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(ServerChannel object) {
                 if (object == null) {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
                     return lang.getString("comboBox.selectChannel");
                 }
                 return object.getName();
@@ -329,9 +329,9 @@ public class ServerSettingsChannelController extends SubSetting {
         if (selectedChannel != null) {
             if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
                 try {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), builder.getStageManager().getLangBundle());
                     stage = new Stage();
                     stage.initStyle(StageStyle.TRANSPARENT);
                     Scene scene = new Scene(root);
@@ -345,7 +345,7 @@ public class ServerSettingsChannelController extends SubSetting {
                     HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
                     Parent titleBarView = null;
                     try {
-                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

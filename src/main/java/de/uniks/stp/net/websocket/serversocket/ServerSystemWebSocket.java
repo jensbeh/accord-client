@@ -1,6 +1,5 @@
 package de.uniks.stp.net.websocket.serversocket;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.server.ServerViewController;
@@ -163,7 +162,7 @@ public class ServerSystemWebSocket extends Endpoint {
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
-                Platform.runLater(StageManager::showLoginScreen);
+                Platform.runLater(() -> builder.getStageManager().showLoginScreen());
             }
             buildServerUser(userName, userId, false, "");
             serverViewController.showOnlineOfflineUsers();

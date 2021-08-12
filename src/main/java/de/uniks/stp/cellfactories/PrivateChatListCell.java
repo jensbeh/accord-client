@@ -5,13 +5,14 @@ import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Pos;
-import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -53,8 +54,6 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
         protected void updateItem(PrivateChat item, boolean empty) {
             // creates a HBox for each cell of the listView
             VBox cell = new VBox();
-            cell.setCache(true);
-            cell.setCacheHint(CacheHint.SPEED);
             super.updateItem(item, empty);
             if (!empty) {
                 float notificationCircleSize = 20;
@@ -166,6 +165,7 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
         /**
          * This method cuts the EmojiTextFlow by a length
+         *
          * @param message the message to be shorten
          * @return the shorten message
          */

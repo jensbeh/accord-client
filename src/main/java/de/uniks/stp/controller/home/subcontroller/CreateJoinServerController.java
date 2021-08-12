@@ -66,7 +66,7 @@ public class CreateJoinServerController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,8 +110,8 @@ public class CreateJoinServerController {
     }
 
     private void load_tab_content() throws IOException {
-        Parent createView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateServer.fxml")), StageManager.getLangBundle());
-        Parent joinView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/JoinServer.fxml")), StageManager.getLangBundle());
+        Parent createView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateServer.fxml")), builder.getStageManager().getLangBundle());
+        Parent joinView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/JoinServer.fxml")), builder.getStageManager().getLangBundle());
         create_tab.setContent(createView);
         join_tab.setContent(joinView);
         create_errorLabel = (Label) view.lookup("#create_errorLabel");
@@ -170,7 +170,7 @@ public class CreateJoinServerController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         titleBarController.setTitle(lang.getString("window_title_create"));
         createServer.setText(lang.getString("button.create_server"));
         joinServer.setText(lang.getString("button.join_server"));
@@ -263,7 +263,7 @@ public class CreateJoinServerController {
      */
     private void setError(String errorMsg, String selector) {
         last_error_type = selector;
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         error = errorMsg;
         if (last_error_type.equals("join")) {
             join_errorLabel.setText(lang.getString(error));

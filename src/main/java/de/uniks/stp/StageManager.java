@@ -11,8 +11,8 @@ import de.uniks.stp.controller.snake.StartSnakeController;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.CacheHint;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -34,21 +34,21 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class StageManager extends Application {
-    private static RestClient restClient;
-    private static ModelBuilder builder;
-    private static Stage stage;
-    private static Stage subStage;
-    private static HomeViewController homeViewController;
-    private static LoginViewController loginViewController;
-    private static SettingsController settingsController;
-    private static Scene scene;
-    private static ResourceBundle langBundle;
-    private static ServerSettingsController serverSettingsController;
-    private static InviteUsersController inviteUsersController;
-    private static StartSnakeController startSnakeController;
-    private static SnakeGameController snakeGameController;
+    private RestClient restClient;
+    private ModelBuilder builder;
+    private Stage stage;
+    private Stage subStage;
+    private HomeViewController homeViewController;
+    private LoginViewController loginViewController;
+    private SettingsController settingsController;
+    private Scene scene;
+    private ResourceBundle langBundle;
+    private ServerSettingsController serverSettingsController;
+    private InviteUsersController inviteUsersController;
+    private StartSnakeController startSnakeController;
+    private SnakeGameController snakeGameController;
 
-    public static void showLoginScreen() {
+    public void showLoginScreen() {
         cleanup();
         //show login screen
         try {
@@ -71,7 +71,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void showHome() {
+    public void showHome() {
         cleanup();
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HomeView.fxml")), getLangBundle());
@@ -93,7 +93,7 @@ public class StageManager extends Application {
         }
     }
 
-    private static void cleanup() {
+    public void cleanup() {
         // call cascading stop
         if (loginViewController != null) {
             loginViewController.stop();
@@ -103,6 +103,7 @@ public class StageManager extends Application {
             homeViewController.stop();
             homeViewController = null;
         }
+
         if (builder.getSpotifyConnection() != null) {
             builder.getSpotifyConnection().stopPersonalScheduler();
             builder.getSpotifyConnection().stopDescriptionScheduler();
@@ -110,7 +111,7 @@ public class StageManager extends Application {
         }
     }
 
-    private static void stopAll() {
+    private void stopAll() {
         //automatic logout if application is closed
         if (!Objects.isNull(builder.getPersonalUser())) {
             String userKey = builder.getPersonalUser().getUserKey();
@@ -123,7 +124,7 @@ public class StageManager extends Application {
         Unirest.shutDown();
     }
 
-    public static void showSettingsScreen() {
+    public void showSettingsScreen() {
         try {
             // load view
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings.fxml")), getLangBundle());
@@ -159,7 +160,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void showServerSettingsScreen() {
+    public void showServerSettingsScreen() {
         try {
             // load view
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings.fxml")), getLangBundle());
@@ -197,7 +198,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void showInviteUsersScreen() {
+    public void showInviteUsersScreen() {
         try {
             // load view
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/invite users/inviteUsers.fxml")), getLangBundle());
@@ -234,7 +235,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void showStartSnakeScreen() {
+    public void showStartSnakeScreen() {
         try {
             // load view
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/snake/view/startSnakeView.fxml")), getLangBundle());
@@ -273,7 +274,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void snakeScreen() {
+    public void snakeScreen() {
         try {
             subStage.close();
             if (startSnakeController != null) {
@@ -318,22 +319,22 @@ public class StageManager extends Application {
         }
     }
 
-    public static void setRestClient(RestClient rest) {
+    public void setRestClient(RestClient rest) {
         restClient = rest;
     }
 
-    public static ResourceBundle getLangBundle() {
+    public ResourceBundle getLangBundle() {
         return langBundle;
     }
 
-    public static void resetLangBundle() {
+    public void resetLangBundle() {
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
     }
 
     /**
      * when language changed call every controller with view onLanguageChanged
      */
-    public static void onLanguageChanged() {
+    public void onLanguageChanged() {
         resetLangBundle();
 
         settingsController.onLanguageChanged();
@@ -349,7 +350,7 @@ public class StageManager extends Application {
         }
     }
 
-    public static void setTheme() {
+    public void setTheme() {
         if (homeViewController != null) {
             homeViewController.setTheme();
         }
@@ -375,6 +376,7 @@ public class StageManager extends Application {
         if (restClient == null) {
             restClient = new RestClient();
         }
+        builder.setStageManager(this);
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
 
         loadAppDir();
@@ -406,14 +408,24 @@ public class StageManager extends Application {
             ResourceManager.extractEmojis();
 
             Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("emojis/emojiList.fxml")), getLangBundle());
-            view.setCache(true);
-            view.setCacheHint(CacheHint.SPEED);
             EmojiLoaderService emojiLoader = new EmojiLoaderService(view, builder);
             emojiLoader.init();
             emojiLoader.setTheme();
             builder.setEmojiLoader(emojiLoader);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * cleans all emojis to avoid memory leak
+     */
+    public void cleanEmojis() {
+        if (builder.getEmojiLoaderService() != null) {
+            Platform.runLater(() -> {
+                builder.getEmojiLoaderService().stop();
+                builder.setEmojiLoader(null);
+            });
         }
     }
 
@@ -479,7 +491,7 @@ public class StageManager extends Application {
         return builder;
     }
 
-    public static void setBuilder(ModelBuilder newBuilder) {
+    public void setBuilder(ModelBuilder newBuilder) {
         builder = newBuilder;
     }
 

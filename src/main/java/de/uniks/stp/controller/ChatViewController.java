@@ -129,7 +129,7 @@ public class ChatViewController {
         messagesBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
         messagesHashMap = new HashMap<>();
         stackPaneHashMap = new HashMap<>();
-        lang = StageManager.getLangBundle();
+        lang = builder.getStageManager().getLangBundle();
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 sendButton.fire();
@@ -207,7 +207,7 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         contextMenu.getItems().get(0).setText(lang.getString("menuItem.copy"));
         contextMenu.getItems().get(1).setText(lang.getString("menuItem.edit"));
         contextMenu.getItems().get(2).setText(lang.getString("menuItem.delete"));
@@ -263,10 +263,10 @@ public class ChatViewController {
      */
     private void delete(ActionEvent actionEvent) {
         try {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
 
             Parent subview = FXMLLoader.load(Objects.requireNonNull(
-                    StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
+                    StageManager.class.getResource("alert/DeleteMessage.fxml")), builder.getStageManager().getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
@@ -333,7 +333,7 @@ public class ChatViewController {
         HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -404,7 +404,7 @@ public class ChatViewController {
      */
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
             editButton = new Button();
             editButton.setText(lang.getString("button.edit"));
             editButton.setId("editButton");
@@ -442,7 +442,7 @@ public class ChatViewController {
             try {
                 //create pop-up
                 Parent subview = FXMLLoader.load(Objects.requireNonNull(
-                        StageManager.class.getResource("alert/EditWarningMessage.fxml")), StageManager.getLangBundle());
+                        StageManager.class.getResource("alert/EditWarningMessage.fxml")), builder.getStageManager().getLangBundle());
                 Scene scene = new Scene(subview);
                 stage = new Stage();
                 stage.initStyle(StageStyle.TRANSPARENT);
@@ -450,7 +450,7 @@ public class ChatViewController {
                 // DropShadow of Scene
                 scene.setFill(Color.TRANSPARENT);
                 scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
-                lang = StageManager.getLangBundle();
+                lang = builder.getStageManager().getLangBundle();
 
                 // create titleBar
                 createTitleBar(subview, "title.edit_warning");
@@ -690,7 +690,7 @@ public class ChatViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
         if (editButton != null)
@@ -702,7 +702,7 @@ public class ChatViewController {
         checkBlocked();
 
         // set theme to refresh chat view
-        StageManager.setTheme();
+        builder.getStageManager().setTheme();
     }
 
     public void stop() {
@@ -773,7 +773,7 @@ public class ChatViewController {
         messageTextField.setDisable(true);
         emojiButton.setDisable(true);
         sendButton.setDisable(true);
-        messageTextField.setText(StageManager.getLangBundle().getString("textField.unblock_info") + " " + user.getName());
+        messageTextField.setText(builder.getStageManager().getLangBundle().getString("textField.unblock_info") + " " + user.getName());
     }
 
     public void setTheme() {

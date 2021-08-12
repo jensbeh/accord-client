@@ -1,6 +1,5 @@
 package de.uniks.stp.net.websocket.privatesocket;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.home.PrivateViewController;
 import de.uniks.stp.model.Server;
@@ -126,7 +125,7 @@ public class PrivateSystemWebSocketClient extends Endpoint {
             if (userAction.equals("userLeft")) {
                 if (userName.equals(builder.getPersonalUser().getName())) {
                     builder.clear();
-                    Platform.runLater(StageManager::showLoginScreen);
+                    Platform.runLater(() -> builder.getStageManager().showLoginScreen());
                 }
                 List<User> userList = builder.getPersonalUser().getUser();
                 User removeUser = builder.buildUser(userName, userId, "");

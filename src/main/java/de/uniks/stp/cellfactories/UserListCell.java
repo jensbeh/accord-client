@@ -84,7 +84,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         private Label game(User item) {
             Label game = new Label();
             game.setText(item.getDescription());
-            game.setText("   " + StageManager.getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
+            game.setText("   " + builder.getStageManager().getLangBundle().getString("label.steam_playing") + " " + item.getDescription().substring(1));
             game.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
             game.setPrefWidth(135);
             return game;
@@ -182,7 +182,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
             block.setText(lang.getString("menuItem.block"));
             unblock.setText(lang.getString("menuItem.unblock"));
 

@@ -2,6 +2,7 @@ package de.uniks.stp.builder;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
 import de.uniks.stp.controller.home.HomeViewController;
@@ -86,6 +87,7 @@ public class ModelBuilder {
     private EmojiLoaderService emojiLoaderService;
 
     private UserProfileController userProfileController;
+    private StageManager stageManager;
 
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
@@ -689,5 +691,13 @@ public class ModelBuilder {
 
     public void setUserProfileController(UserProfileController userProfileController) {
         this.userProfileController = userProfileController;
+    }
+
+    public void setStageManager(StageManager stageManager) {
+        this.stageManager = stageManager;
+    }
+
+    public StageManager getStageManager() {
+        return stageManager;
     }
 }

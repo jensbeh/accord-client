@@ -117,7 +117,7 @@ public class SpotifyConnection {
         this.connectionController = connectionController;
 
         try {
-            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), StageManager.getLangBundle());
+            spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,7 +132,7 @@ public class SpotifyConnection {
         HBox titleBarBox = (HBox) spotifyLoginView.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -318,7 +318,7 @@ public class SpotifyConnection {
         this.isPersonalUser = isPersonalUser;
         Parent root;
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")), StageManager.getLangBundle());
+            root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/SpotifyView.fxml")), builder.getStageManager().getLangBundle());
             Label spotifyHeaderLabel = (Label) root.lookup("#spotifyHeaderLabel");
             spotifyArtwork = (ImageView) root.lookup("#spotifyArtwork");
             bandAndSong = (Label) root.lookup("#bandAndSong");
@@ -326,7 +326,7 @@ public class SpotifyConnection {
             timeTotal = (Label) root.lookup("#timeTotal");
             progressBar = (ProgressBar) root.lookup("#progressBar");
 
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
             spotifyHeaderLabel.setText(lang.getString("label.spotifyHeaderLabel"));
             bandAndSong.setText(lang.getString("label.no_song_playing"));
 
