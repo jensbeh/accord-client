@@ -23,7 +23,6 @@ import javafx.scene.text.TextAlignment;
 
 public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.control.ListView<de.uniks.stp.model.PrivateChat>, javafx.scene.control.ListCell<de.uniks.stp.model.PrivateChat>> {
     private final ModelBuilder builder;
-    private ListView<PrivateChat> param;
 
     public PrivateChatListCell(ModelBuilder builder) {
         this.builder = builder;
@@ -42,7 +41,6 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
     @Override
     public ListCell<PrivateChat> call(ListView<PrivateChat> param) {
-        this.param = param;
         return new ChannelListCell();
     }
 
@@ -176,8 +174,8 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
         /**
          * This method cuts the EmojiTextFlow by a length
          *
-         * @param message the message to be shorten
-         * @return the shorten message
+         * @param message the message to be shorted
+         * @return the shorted message
          */
         private EmojiTextFlowExtended setMaxChar(EmojiTextFlowExtended message) {
             int length = 13;

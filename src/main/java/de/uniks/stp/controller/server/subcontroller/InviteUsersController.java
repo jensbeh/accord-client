@@ -25,7 +25,7 @@ public class InviteUsersController {
     private VBox inviteBox;
     private Label tempLabel;
     private Label userLimitLabel;
-    private Parent view;
+    private final Parent view;
     private VBox root;
     private InviteUsersTempSubController inviteUsersTempSubController;
     private InviteUsersUserLimitSubController inviteUsersUserLimitSubController;

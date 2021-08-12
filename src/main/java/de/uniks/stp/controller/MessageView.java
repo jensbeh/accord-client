@@ -199,9 +199,7 @@ public class MessageView {
         cell.getChildren().addAll(vbox);
         if (!messageIsInfo) {
             boolean messageIsLink = loadImage || loadVideo;
-            cell.setOnMouseClicked(event -> {
-                chatViewController.chatClicked(event, messageIsLink);
-            });
+            cell.setOnMouseClicked(event -> chatViewController.chatClicked(event, messageIsLink));
         }
         chatViewController.getContainer().getChildren().add(cell);
         chatViewController.getMessagesHashMap().put(cell, item);
@@ -229,7 +227,7 @@ public class MessageView {
 
             if (spoilerRegex.find()) {
                 spoilerRegex.reset();
-                List<String> matchList = new ArrayList<String>();
+                List<String> matchList = new ArrayList<>();
                 while (spoilerRegex.find()) {//Finds Matching Pattern in String
                     matchList.add(spoilerRegex.group(1));//Fetching Group from String
                 }
@@ -240,7 +238,7 @@ public class MessageView {
 
             if (boldRegex.find()) {
                 boldRegex.reset();
-                List<String> matchList = new ArrayList<String>();
+                List<String> matchList = new ArrayList<>();
                 while (boldRegex.find()) {//Finds Matching Pattern in String
                     matchList.add(boldRegex.group(1));//Fetching Group from String
                 }
@@ -251,7 +249,7 @@ public class MessageView {
 
             if (hideLinkRegex.find()) {
                 hideLinkRegex.reset();
-                List<String> matchList = new ArrayList<String>();
+                List<String> matchList = new ArrayList<>();
                 while (hideLinkRegex.find()) {//Finds Matching Pattern in String
                     matchList.add(hideLinkRegex.group(1));//Fetching Group from String
                 }
@@ -262,7 +260,7 @@ public class MessageView {
 
             if (escapeRegex.find()) {
                 escapeRegex.reset();
-                List<String> matchList = new ArrayList<String>();
+                List<String> matchList = new ArrayList<>();
                 while (escapeRegex.find()) {//Finds Matching Pattern in String
                     matchList.add(escapeRegex.group(1));//Fetching Group from String
                 }
@@ -375,7 +373,7 @@ public class MessageView {
             case "youtube":
                 String videoIdPatternRegex = "(?<=watch\\?v=|/videos/|embed\\/|youtu.be\\/|\\/v\\/|\\/e\\/|watch\\?v%3D|watch\\?feature=player_embedded&v=|%2Fvideos%2F|embed%\u200C\u200B2F|youtu.be%2F|%2Fv%2F)[^#\\&\\?\\n]*";
                 Pattern videoIdPattern = Pattern.compile(videoIdPatternRegex);
-                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is youtube url for which you want to extract the id.
+                Matcher videoIdMatcher = videoIdPattern.matcher(url); //url is YouTube url for which you want to extract the id.
                 String youtube_url = "";
                 if (videoIdMatcher.find()) {
                     String videoId = videoIdMatcher.group();

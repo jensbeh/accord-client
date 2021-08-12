@@ -19,7 +19,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
@@ -57,7 +56,6 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private StackPane stack;
-    private ScrollPane emojiScrollPane;
     private String text;
     private ResourceBundle lang;
     private HBox messageBox;
@@ -69,7 +67,6 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private ArrayList<String> pngNames;
     private VBox messagesBox;
     private ScrollPane messageScrollPane;
     private HashMap<StackPane, Message> messagesHashMap;
@@ -77,8 +74,6 @@ public class ChatViewController {
     private ArrayList<MediaPlayer> mediaPlayers;
     private ArrayList<WebEngine> webEngines;
     private ListChangeListener<User> blockedUserListener;
-    private TabPane emojiTabPane;
-    private ComboBox<Image> skinColorComboBox;
     private boolean emojiViewOpened;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
@@ -137,7 +132,6 @@ public class ChatViewController {
         });
         mediaPlayers = new ArrayList<>();
         webEngines = new ArrayList<>();
-        pngNames = new ArrayList<>();
         emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
         builder.setCurrentChatViewController(this);

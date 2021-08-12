@@ -64,16 +64,14 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
 
                         vBox.getChildren().addAll(name, game);
                         cell.getChildren().addAll(circle, vBox);
-                        stackPane.getChildren().addAll(hoverBg, cell);
                     } else {
                         cell.getChildren().addAll(circle, name);
-                        stackPane.getChildren().addAll(hoverBg, cell);
                     }
                 } else {
                     circle.setFill(Paint.valueOf("#eb4034"));
                     cell.getChildren().addAll(circle, name);
-                    stackPane.getChildren().addAll(hoverBg, cell);
                 }
+                stackPane.getChildren().addAll(hoverBg, cell);
                 this.setGraphic(stackPane);
             } else {
                 this.setGraphic(null);
@@ -154,7 +152,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
          * adds a ContextMenu to the User Cell, where block/unblock can be clicked
          *
          * @param item the user
-         * @param name the user name as Label
+         * @param name the username as Label
          */
         private void addContextMenu(User item, Label name) {
             ContextMenu menu = new ContextMenu();
@@ -175,9 +173,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             unblock.setOnAction(event -> unblockUser(item, block, unblock));
 
             // keep refreshing in case user has been unblocked from settings
-            name.setOnContextMenuRequested(event -> {
-                updateContextMenuItems(item, block, unblock);
-            });
+            name.setOnContextMenuRequested(event -> updateContextMenuItems(item, block, unblock));
         }
 
         private void updateContextMenuItems(User item, MenuItem block, MenuItem unblock) {

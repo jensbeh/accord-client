@@ -49,7 +49,7 @@ public class CreateJoinServerController {
     private TitleBarController titleBarController;
 
     /**
-     * "The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
+     * The class CreateServerController takes the parameters Parent view, ModelBuilder builder.
      */
     public CreateJoinServerController(Parent view, ModelBuilder builder, Stage stage) {
         this.stage = stage;

@@ -42,7 +42,7 @@ public class SnakeGameController {
     private final Parent view;
     private final Scene scene;
     private final int snakeHead = 0;
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private Label scoreLabel;
     private Label highScoreLabel;
     private GraphicsContext brush;
@@ -286,7 +286,7 @@ public class SnakeGameController {
     }
 
     /**
-     * when a food was eaten then the new body is adding when tail is on the "eaten food"
+     * when food was eaten then the new body is adding when tail is on the "eaten food"
      */
     private void addNewBody() {
         if (addNewBodyQueue.size() > 0) {

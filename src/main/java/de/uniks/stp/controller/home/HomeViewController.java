@@ -68,8 +68,6 @@ public class HomeViewController {
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
-    private SpotifyConnection spotifyConnection;
-    private TitleBarController titleBarControllerHelp;
     private TitleBarController titleBarController;
     private ImageView settingsIcon;
     private ImageView helpIcon;
@@ -172,7 +170,7 @@ public class HomeViewController {
         });
 
         if (builder.getSpotifyConnection() == null) {
-            spotifyConnection = new SpotifyConnection(builder);
+            SpotifyConnection spotifyConnection = new SpotifyConnection(builder);
         }
         builder.getSpotifyConnection().refreshToken();
         if (builder.getSpotifyToken() != null) {
@@ -195,7 +193,7 @@ public class HomeViewController {
                 e.printStackTrace();
             }
             titleBarBoxHelp.getChildren().add(titleBarViewHelp);
-            titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
+            TitleBarController titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
             titleBarControllerHelp.init();
             titleBarControllerHelp.setTheme();
             titleBarControllerHelp.setMaximizable(false);

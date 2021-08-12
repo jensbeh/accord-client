@@ -31,7 +31,6 @@ public class ServerSystemWebSocket extends Endpoint {
     private ModelBuilder builder;
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
-    private String name;
 
     public ServerSystemWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -714,7 +713,8 @@ public class ServerSystemWebSocket extends Endpoint {
             ServerChannel serverChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                     .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
             affectedCategory.withChannel(serverChannel);
-            serverViewController.loadChannelMessages(serverChannel, response1 -> {});
+            serverViewController.loadChannelMessages(serverChannel, response1 -> {
+            });
         }
     }
 
@@ -759,11 +759,6 @@ public class ServerSystemWebSocket extends Endpoint {
             }
         }
         return member;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setChatViewController(ChatViewController chatViewController) {

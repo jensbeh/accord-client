@@ -37,7 +37,6 @@ public class ServerSettingsChannelController extends SubSetting {
     private final Server server;
     private final RestClient restClient;
 
-    private Label categoryLabel;
     private ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
     private ComboBox<ServerChannel> editChannelsSelector;
@@ -73,7 +72,6 @@ public class ServerSettingsChannelController extends SubSetting {
     public void init() {
         // init view
         root = (VBox) view.lookup("#rootChannel");
-        this.categoryLabel = (Label) view.lookup("#categoryLabel");
         categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
         editChannelsSelector = (ComboBox<ServerChannel>) view.lookup("#editChannelsSelector");
