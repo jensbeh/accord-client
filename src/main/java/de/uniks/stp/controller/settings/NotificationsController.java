@@ -94,23 +94,27 @@ public class NotificationsController extends SubSetting {
             deleteButton.setDisable(newValue.equals("default"));
             customSoundComboBox.setPromptText(newValue);
             ResourceManager.setComboValue(builder.getPersonalUser().getName(), newValue);
-            for (File file : files) {
-                String fileName = file.getName().substring(0, file.getName().length() - 4);
-                fileNames.add(fileName);
-                if (fileName.equals(newValue)) {
-                    try {
-                        stream = new FileInputStream(file);
-                        URL url = file.toURI().toURL();
-                        builder.setSoundFile(url);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            setSoundFile(newValue);
         });
 
 
         onLanguageChanged();
+    }
+
+    private void setSoundFile(String newValue) {
+        for (File file : files) {
+            String fileName = file.getName().substring(0, file.getName().length() - 4);
+            fileNames.add(fileName);
+            if (fileName.equals(newValue)) {
+                try {
+                    stream = new FileInputStream(file);
+                    URL url = file.toURI().toURL();
+                    builder.setSoundFile(url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void checkIfDoNotDisturbIsSelected(ActionEvent actionEvent) {
