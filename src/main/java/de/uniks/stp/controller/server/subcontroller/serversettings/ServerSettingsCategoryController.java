@@ -75,21 +75,19 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.categoriesSelector.setPromptText(lang.getString("comboBox.selectCategory"));
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);
+        this.categoriesSelector.getItems().addAll(currentServer.getCategories());
+        this.categoriesSelector.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Categories categoryToString) {
+                return categoryToString.getName();
+            }
 
-        for (Categories category : currentServer.getCategories()) {
-            this.categoriesSelector.getItems().add(category);
-            this.categoriesSelector.setConverter(new StringConverter<>() {
-                @Override
-                public String toString(Categories categoryToString) {
-                    return categoryToString.getName();
-                }
+            @Override
+            public Categories fromString(String string) {
+                return null;
+            }
+        });
 
-                @Override
-                public Categories fromString(String string) {
-                    return null;
-                }
-            });
-        }
     }
 
     /**
@@ -108,30 +106,33 @@ public class ServerSettingsCategoryController extends SubSetting {
         if (selectedCategory != null && !changeCategoryNameTextField.getText().isEmpty()) {
             String newCategoryName = changeCategoryNameTextField.getText();
             if (!selectedCategory.getName().equals(newCategoryName)) {
-
                 restClient.updateCategory(currentServer.getId(), selectedCategory.getId(), newCategoryName, builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-                        for (Categories category : currentServer.getCategories()) {
-                            if (category.getId().equals(selectedCategory.getId())) {
-                                selectedCategory = category;
-                            }
-                        }
-                        currentServer.withoutCategories(selectedCategory);
-                        selectedCategory.setName(newCategoryName);
-                        currentServer.withCategories(selectedCategory);
-
-                        Platform.runLater(() -> {
-                            categoriesSelector.getItems().clear();
-                            categoriesSelector.getItems().addAll(currentServer.getCategories());
-                        });
-
-                        Platform.runLater(() -> changeCategoryNameTextField.setText(""));
+                        updateCategoryName(newCategoryName);
                     }
                 });
             }
         }
+    }
+
+    private void updateCategoryName(String newCategoryName) {
+        for (Categories category : currentServer.getCategories()) {
+            if (category.getId().equals(selectedCategory.getId())) {
+                selectedCategory = category;
+            }
+        }
+        currentServer.withoutCategories(selectedCategory);
+        selectedCategory.setName(newCategoryName);
+        currentServer.withCategories(selectedCategory);
+
+        Platform.runLater(() -> {
+            categoriesSelector.getItems().clear();
+            categoriesSelector.getItems().addAll(currentServer.getCategories());
+        });
+
+        Platform.runLater(() -> changeCategoryNameTextField.setText(""));
     }
 
     /**
@@ -140,50 +141,7 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
             if (builder.getCurrentServer().getCategories().get(0) == selectedCategory) {
-                try {
-                    ResourceBundle lang = StageManager.getLangBundle();
-
-                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
-                    stage = new Stage();
-                    stage.initStyle(StageStyle.TRANSPARENT);
-                    Scene scene = new Scene(root);
-                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-
-                    // DropShadow of Scene
-                    scene.setFill(Color.TRANSPARENT);
-                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
-
-                    // create titleBar
-                    HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-                    Parent titleBarView = null;
-                    try {
-                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    titleBarBox.getChildren().add(titleBarView);
-                    TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-                    titleBarController.init();
-                    titleBarController.setTheme();
-                    titleBarController.setMaximizable(false);
-                    titleBarController.setTitle(lang.getString("label.error"));
-
-                    stage.setScene(scene);
-                    stage.show();
-
-                    okButton = (Button) root.lookup("#okButton");
-                    okButton.setText("OK");
-                    okButton.setOnAction(this::closeStage);
-                    if (builder.getTheme().equals("Bright")) {
-                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-                    } else {
-                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-                    }
-                    Label errorLabel = (Label) root.lookup("#errorLabel");
-                    errorLabel.setText(lang.getString("label.alertDefaultCat"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+               createCategoryDeleteView();
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
@@ -199,6 +157,53 @@ public class ServerSettingsCategoryController extends SubSetting {
                     }
                 });
             }
+        }
+    }
+
+    private void createCategoryDeleteView() {
+        try {
+            ResourceBundle lang = StageManager.getLangBundle();
+
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+            stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.error"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            okButton = (Button) root.lookup("#okButton");
+            okButton.setText("OK");
+            okButton.setOnAction(this::closeStage);
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+            Label errorLabel = (Label) root.lookup("#errorLabel");
+            errorLabel.setText(lang.getString("label.alertDefaultCat"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
