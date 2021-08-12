@@ -66,12 +66,12 @@ public class EmojiLoaderService {
 
         ObservableList<Image> tonesList = FXCollections.observableArrayList();
 
+        // set default emojis images to select the skin color
         for (int i = 1; i <= 5; i++) {
             Emoji emoji = EmojiParser.getInstance().getEmoji(":thumbsup_tone" + i + ":");
             Image image = getEmojiImage(emoji).getImage();
             tonesList.add(image);
         }
-
         skinColorComboBox.setItems(tonesList);
         skinColorComboBox.setCellFactory(e -> new ToneCell());
         skinColorComboBox.setButtonCell(new ToneCell());
@@ -81,6 +81,7 @@ public class EmojiLoaderService {
         searchFlowPane.setHgap(5);
         searchFlowPane.setVgap(5);
 
+        // listener to refresh the flowPane when searching emojis
         searchTextFieldListener = (observable, oldValue, newValue) -> {
             String text = searchTextField.getText();
             if (text.length() < 2) {
@@ -101,7 +102,7 @@ public class EmojiLoaderService {
         };
         searchTextField.textProperty().addListener(searchTextFieldListener);
 
-
+        // set tapPane tabs
         for (Tab tab : emojiTabPane.getTabs()) {
             ScrollPane scrollPane = (ScrollPane) tab.getContent();
             scrollPane.getStyleClass().add("emojiScrollPane");
