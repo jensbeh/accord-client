@@ -69,6 +69,8 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         privilegeOffButton.setOnAction(this::privilegeOffButton);
         changePrivilege.setOnAction(this::changePrivilege);
 
+        disableEditing(true);
+
         //load all categories
         for (Categories category : server.getCategories()) {
             categoryChoice.getItems().add(category);
@@ -122,7 +124,10 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         // update radiobutton and load correct subview for chosen channel
         channelChoice.setOnAction((event) -> {
             selectedChannel = channelChoice.getSelectionModel().getSelectedItem();
-            if (selectedChannel != null && selectedCategory != null) {
+            // default channel should not be editable
+            disableEditing(true);
+            if (selectedChannel != null && selectedCategory != null && selectedChannel != server.getCategories().get(0).getChannel().get(0)) {
+                disableEditing(false);
                 if (selectedChannel.isPrivilege()) {
                     privilegeOnButton.setSelected(true);
                 } else {
@@ -137,6 +142,17 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 channel.addPropertyChangeListener(ServerChannel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
             }
         }
+    }
+
+    /**
+     * Enable / Disable items in view
+     *
+     * @param disable true is disabling the items, false is enabling the items
+     */
+    private void disableEditing(boolean disable) {
+        privilegeOnButton.setDisable(disable);
+        privilegeOffButton.setDisable(disable);
+        changePrivilege.setDisable(disable);
     }
 
     /**
