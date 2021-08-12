@@ -97,7 +97,7 @@ generateScenarioSource {
 
 test {
     useJUnit()
-    maxHeapSize = "4096m"
+    maxHeapSize = "5120m"
     jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
 
     testLogging {

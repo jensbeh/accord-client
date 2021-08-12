@@ -19,7 +19,6 @@ public class AudioStreamReceiver implements Runnable {
     private final DatagramSocket socket;
     private final ArrayList<String> mutedUser = new ArrayList<>();
     private boolean receiverActive;
-    private byte[] data;
     private ArrayList<AudioMember> connectedUser;
     private HashMap<String, Speaker> receiverSpeakerMap;
     private volatile boolean stopped;
@@ -34,9 +33,7 @@ public class AudioStreamReceiver implements Runnable {
         connectedUser = new ArrayList<>();
         receiverSpeakerMap = new HashMap<>();
         currentlySetNewSpeaker = false;
-
-        data = new byte[1279];
-
+        
         try {
             this.socket.setSoTimeout(1000);
         } catch (SocketException e) {
@@ -51,7 +48,7 @@ public class AudioStreamReceiver implements Runnable {
 
         while (receiverActive) {
             if (!socket.isClosed()) {
-
+                byte[] data = new byte[1279];
                 DatagramPacket packet = new DatagramPacket(data, data.length);
 
                 try {
@@ -89,9 +86,10 @@ public class AudioStreamReceiver implements Runnable {
                 }
             }
         }
-
+        socket.disconnect();
         socket.close();
         stopped = true;
+        System.gc();
     }
 
     /**
