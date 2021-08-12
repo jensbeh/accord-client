@@ -68,6 +68,8 @@ public class ServerViewController {
     private Label headphoneLabel;
     private Label microphoneLabel;
     private UserProfileController userProfileController;
+    private ArrayList<User> onlineUsers;
+    private ArrayList<User> offlineUsers;
 
     /**
      * "ServerViewController takes Parent view, ModelBuilder modelBuilder, Server server.
@@ -484,23 +486,14 @@ public class ServerViewController {
      * Split Users into offline and online users then update the list
      */
     public void showOnlineOfflineUsers() {
-        ArrayList<User> onlineUsers = new ArrayList<>();
-        ArrayList<User> offlineUsers = new ArrayList<>();
         System.out.println("Server users: " + this.server.getUser());
         for (User user : this.server.getUser()) {
             if (user.isStatus()) {
                 System.out.println("User name: " + user.getName());
                 System.out.println("Currentuser name: " + builder.getPersonalUser().getName());
-                if (user.getName().equals(builder.getPersonalUser().getName())) {
-                    Platform.runLater(() -> checkForOwnership(user.getId()));
-                }
-                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
-                    onlineUsers.add(user);
-                }
+                handleOnlineUser(user);
             } else {
-                if (!this.server.getCurrentUser().getName().equals(user.getName())) {
-                    offlineUsers.add(user);
-                }
+                handleOfflineUser(user);
             }
         }
 
@@ -513,23 +506,42 @@ public class ServerViewController {
                 offlineUsersList.setPrefHeight(((offlineUsers.size()) * (40)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
                 userBox.setSpacing(0);
             } else {
-                int heightOnlineUser = 0;
-                for (User user : onlineUsers) {
-                    if (user.getDescription() != null && (user.getDescription().contains("?") && user.getDescription().length() >= 2)) {
-                        //54 cell size and 5 for padding
-                        heightOnlineUser += 54 + 5;
-                    } else {
-                        //40 cell size and 5 for padding
-                        heightOnlineUser += 40 + 5;
-                    }
-                }
-                heightOnlineUser += onlineUsers.size() + 2;
+                int heightOnlineUser = heightOnlineUsers();
                 onlineUsersList.setItems(FXCollections.observableList(onlineUsers).sorted(new SortUser()));
                 onlineUsersList.setPrefHeight(heightOnlineUser);
                 offlineUsersList.setItems(FXCollections.observableList(offlineUsers).sorted(new SortUser()));
                 offlineUsersList.setPrefHeight(((offlineUsers.size()) * (40)) + (offlineUsers.size() * 5) + offlineUsers.size() + 2);
             }
         });
+    }
+
+    private int heightOnlineUsers() {
+        int heightOnlineUser = 0;
+        for (User user : onlineUsers) {
+            if (user.getDescription() != null && (user.getDescription().contains("?") && user.getDescription().length() >= 2)) {
+                //54 cell size and 5 for padding
+                heightOnlineUser += 54 + 5;
+            } else {
+                //40 cell size and 5 for padding
+                heightOnlineUser += 40 + 5;
+            }
+        }
+        heightOnlineUser += onlineUsers.size() + 2;
+        return heightOnlineUser;
+    }
+
+    private void handleOfflineUser(User user) {
+        if (!this.server.getCurrentUser().getName().equals(user.getName())) {
+            offlineUsers.add(user);
+        }
+    }
+
+    private void handleOnlineUser(User user) {
+        if (user.getName().equals(builder.getPersonalUser().getName())) {
+            Platform.runLater(() -> checkForOwnership(user.getId()));
+        } else {
+            onlineUsers.add(user);
+        }
     }
 
     /**
@@ -554,14 +566,18 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    loadChannels(categories, status1 -> {
-                        loadedCategories++;
-                        if (loadedCategories == data.length()) {
-                            loadedCategories = 0;
-                            categoriesLoadedCallback.onSuccess(status1);
-                        }
-                    });
+                    loadChannelsCallback(categories,data,categoriesLoadedCallback);
                 }
+            }
+        });
+    }
+
+    private void loadChannelsCallback(Categories categories, JSONArray data, CategoriesLoadedCallback categoriesLoadedCallback) {
+        loadChannels(categories, status1 -> {
+            loadedCategories++;
+            if (loadedCategories == data.length()) {
+                loadedCategories = 0;
+                categoriesLoadedCallback.onSuccess(status1);
             }
         });
     }
@@ -586,56 +602,72 @@ public class ServerViewController {
                 JSONArray data = body.getObject().getJSONArray("data");
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject channelInfo = data.getJSONObject(i);
-                    ServerChannel channel = new ServerChannel();
-                    channel.setCurrentUser(builder.getPersonalUser());
-                    channel.setId(channelInfo.getString("id"));
-                    channel.setName(channelInfo.getString("name"));
-                    channel.setType(channelInfo.getString("type"));
-                    channel.setCategories(cat);
-                    boolean boolPrivilege = channelInfo.getBoolean("privileged");
-                    channel.setPrivilege(boolPrivilege);
+                    ServerChannel channel = createServerChannel(channelInfo,cat);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
-                    JSONArray jsonAudioMembers = json.getJSONArray("audioMembers");
-                    JSONArray jsonArray = json.getJSONArray("members");
 
-                    for (int j = 0; j < jsonAudioMembers.length(); j++) {
-                        String AudioMemberId = jsonAudioMembers.getString(j);
-                        for (User user : this.server.getUser()) {
-                            if (user.getId().equals(AudioMemberId)) {
-                                AudioMember audioMemberUser = new AudioMember().setId(AudioMemberId).setName(user.getName());
-                                channel.withAudioMember(audioMemberUser);
-                            }
-                        }
-                    }
+                    addAudioMemberToChannel(channel,json);
+                    channelAddPrivledUsers(channel,json);
 
-                    String memberId;
-                    for (int j = 0; j < jsonArray.length(); j++) {
-                        memberId = jsonArray.getString(j);
-                        for (User user : this.server.getUser()) {
-                            if (user.getId().equals(memberId)) {
-                                channel.withPrivilegedUsers(user);
-                            }
-                        }
-                    }
-                    if (channel.getType().equals("text")) {
-                        loadChannelMessages(channel, status1 -> {
-                            loadedChannel++;
-                            if (loadedChannel == data.length()) {
-                                loadedChannel = 0;
-                                channelLoadedCallback.onSuccess(status1);
-                            }
-                        });
-                    } else {
-                        loadedChannel++;
-                        if (loadedChannel == data.length()) {
-                            loadedChannel = 0;
-                            channelLoadedCallback.onSuccess("success");
-                        }
-                    }
+                    loadChannelData(channel,data,channelLoadedCallback);
                 }
             }
         });
+    }
+
+    private void loadChannelData(ServerChannel channel, JSONArray data, ChannelLoadedCallback channelLoadedCallback) {
+        if (channel.getType().equals("text")) {
+            loadChannelMessages(channel, status1 -> {
+                loadedChannel++;
+                if (loadedChannel == data.length()) {
+                    loadedChannel = 0;
+                    channelLoadedCallback.onSuccess(status1);
+                }
+            });
+        } else {
+            loadedChannel++;
+            if (loadedChannel == data.length()) {
+                loadedChannel = 0;
+                channelLoadedCallback.onSuccess("success");
+            }
+        }
+    }
+
+    private void channelAddPrivledUsers(ServerChannel channel, JSONObject json) {
+        JSONArray jsonArray = json.getJSONArray("members");
+        String memberId;
+        for (int j = 0; j < jsonArray.length(); j++) {
+            memberId = jsonArray.getString(j);
+            for (User user : this.server.getUser()) {
+                if (user.getId().equals(memberId)) {
+                    channel.withPrivilegedUsers(user);
+                }
+            }
+        }
+    }
+
+    private void addAudioMemberToChannel(ServerChannel channel, JSONObject json) {
+        JSONArray jsonAudioMembers = json.getJSONArray("audioMembers");
+        for (int j = 0; j < jsonAudioMembers.length(); j++) {
+            String AudioMemberId = jsonAudioMembers.getString(j);
+            for (User user : this.server.getUser()) {
+                if (user.getId().equals(AudioMemberId)) {
+                    AudioMember audioMemberUser = new AudioMember().setId(AudioMemberId).setName(user.getName());
+                    channel.withAudioMember(audioMemberUser);
+                }
+            }
+        }
+    }
+
+    private ServerChannel createServerChannel(JSONObject channelInfo, Categories cat) {
+        ServerChannel channel= new ServerChannel();
+        channel.setCurrentUser(builder.getPersonalUser());
+        channel.setId(channelInfo.getString("id"));
+        channel.setName(channelInfo.getString("name"));
+        channel.setType(channelInfo.getString("type"));
+        channel.setCategories(cat);
+        channel.setPrivilege(channelInfo.getBoolean("privileged"));
+        return channel;
     }
 
     /**
