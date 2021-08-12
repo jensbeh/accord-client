@@ -2,6 +2,7 @@ package de.uniks.stp.builder;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.UserProfileController;
 import de.uniks.stp.controller.home.HomeViewController;
@@ -16,6 +17,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import de.uniks.stp.util.EmojiLoaderService;
 import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
@@ -82,8 +84,10 @@ public class ModelBuilder {
     private boolean isSteamRun;
     private Runnable handleMicrophoneHeadphone;
     private AudioController audiocontroller;
+    private EmojiLoaderService emojiLoaderService;
 
     private UserProfileController userProfileController;
+    private StageManager stageManager;
 
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
@@ -626,7 +630,6 @@ public class ModelBuilder {
             getSteamGame.interrupt();
         }
         getSteamGame = null;
-
     }
 
     public HomeViewController getHomeViewController() {
@@ -674,11 +677,27 @@ public class ModelBuilder {
         USER_CLIENT = null;
     }
 
+    public void setEmojiLoader(EmojiLoaderService emojiLoaderService) {
+        this.emojiLoaderService = emojiLoaderService;
+    }
+
+    public EmojiLoaderService getEmojiLoaderService() {
+        return emojiLoaderService;
+    }
+
     public UserProfileController getUserProfileController() {
         return userProfileController;
     }
 
     public void setUserProfileController(UserProfileController userProfileController) {
         this.userProfileController = userProfileController;
+    }
+
+    public void setStageManager(StageManager stageManager) {
+        this.stageManager = stageManager;
+    }
+
+    public StageManager getStageManager() {
+        return stageManager;
     }
 }

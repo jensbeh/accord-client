@@ -5,7 +5,10 @@ import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.udp.Speaker;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -19,12 +22,6 @@ public class AudioController extends SubSetting {
     private boolean isMuted;
     private Runnable myRunnable;
     private Thread soundThread;
-
-    private Label inputLabel;
-    private Label outputLabel;
-    private Label volumeInputLabel;
-    private Label volumeOutputLabel;
-    private Label microphoneCheckLabel;
 
     private ComboBox<String> inputDeviceComboBox;
     private ComboBox<String> outputDeviceComboBox;
@@ -48,12 +45,6 @@ public class AudioController extends SubSetting {
 
     @SuppressWarnings("unchecked")
     public void init() {
-        inputLabel = (Label) view.lookup("#label_input");
-        outputLabel = (Label) view.lookup("#label_output");
-        volumeInputLabel = (Label) view.lookup("#label_volumeInput");
-        volumeOutputLabel = (Label) view.lookup("#label_volumeOutput");
-        microphoneCheckLabel = (Label) view.lookup("#label_microphoneCheck");
-
         inputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_input");
         outputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_output");
 

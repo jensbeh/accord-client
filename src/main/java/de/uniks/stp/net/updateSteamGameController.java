@@ -1,7 +1,6 @@
 package de.uniks.stp.net;
 
 import de.uniks.stp.builder.ModelBuilder;
-import javafx.application.Platform;
 import kong.unirest.JsonNode;
 
 public class updateSteamGameController implements Runnable {

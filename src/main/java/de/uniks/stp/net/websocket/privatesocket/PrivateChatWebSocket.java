@@ -1,7 +1,6 @@
 package de.uniks.stp.net.websocket.privatesocket;
 
 import com.github.cliftonlabs.json_simple.JsonException;
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.home.PrivateViewController;
@@ -105,12 +104,12 @@ public class PrivateChatWebSocket extends Endpoint {
     public void showNoConAlert() {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-            alert.setTitle(StageManager.getLangBundle().getString("error.no_connection"));
-            alert.setHeaderText(StageManager.getLangBundle().getString("error.no_connection_text"));
-            alert.setOnCloseRequest(e -> StageManager.showLoginScreen());
+            alert.setTitle(builder.getStageManager().getLangBundle().getString("error.no_connection"));
+            alert.setHeaderText(builder.getStageManager().getLangBundle().getString("error.no_connection_text"));
+            alert.setOnCloseRequest(e -> Platform.runLater(() -> builder.getStageManager().showLoginScreen()));
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                StageManager.showLoginScreen();
+                Platform.runLater(() -> builder.getStageManager().showLoginScreen());
             }
         });
     }
@@ -258,15 +257,15 @@ public class PrivateChatWebSocket extends Endpoint {
         String errorTitle;
         String serverMessage = jsonObject.getJsonObject("data").getString("message");
         if (serverMessage.equals("This is not your username.")) {
-            errorTitle = StageManager.getLangBundle().getString("error.username");
+            errorTitle = builder.getStageManager().getLangBundle().getString("error.username");
         } else {
-            errorTitle = StageManager.getLangBundle().getString("error.chat");
+            errorTitle = builder.getStageManager().getLangBundle().getString("error.chat");
         }
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
             alert.setTitle(errorTitle);
             if (serverMessage.equals("This is not your username.")) {
-                alert.setHeaderText(StageManager.getLangBundle().getString("error.this_is_not_your_username"));
+                alert.setHeaderText(builder.getStageManager().getLangBundle().getString("error.this_is_not_your_username"));
             } else {
                 alert.setHeaderText(serverMessage);
             }

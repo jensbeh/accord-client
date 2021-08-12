@@ -9,6 +9,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
 import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -18,6 +19,7 @@ import kong.unirest.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +32,6 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
 import javax.json.JsonObject;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -87,6 +88,11 @@ public class PrivateMessageTest extends ApplicationTest {
         MockitoAnnotations.openMocks(PrivateMessageTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -96,8 +102,8 @@ public class PrivateMessageTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         StageManager app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
@@ -346,6 +352,45 @@ public class PrivateMessageTest extends ApplicationTest {
         message = new JSONObject().put("channel", "private").put("timestamp", 942351453).put("message", msg6).put("to", "Peter").put("from", "Gustav");
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message.toString());
         privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void testEmojiView() throws InterruptedException, IOException {
+        doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
+        doCallRealMethod().when(privateSystemWebSocketClient).setPrivateViewController(any());
+
+        loginInit();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        mockApp.getBuilder().setSpotifyShow(false);
+
+        ListView<User> userList = lookup("#onlineUsers").query();
+        User testUserOne = userList.getItems().get(0);
+        doubleClickOn(userList.lookup("#" + testUserOne.getId()));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        VBox privateChatCell = lookup("#cell_" + testUserOne.getId()).query();
+        doubleClickOn(privateChatCell);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#emojiButton");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        moveBy(0, -55);
+        clickOn();
+        WaitForAsyncUtils.waitForFxEvents();
+
+        TextField textField = lookup("#textField_search").query();
+        String msg1 = ":dog:";
+        String finalMsg = msg1;
+        Platform.runLater(() -> textField.setText(finalMsg));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        msg1 = "";
+        String finalMsg1 = msg1;
+        Platform.runLater(() -> textField.setText(finalMsg1));
         WaitForAsyncUtils.waitForFxEvents();
     }
 }

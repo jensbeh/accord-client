@@ -30,7 +30,6 @@ public class ServerChatWebSocket extends Endpoint {
     private ModelBuilder builder;
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
-    private String name;
 
     public ServerChatWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -192,11 +191,6 @@ public class ServerChatWebSocket extends Endpoint {
 
     public Session getSession() {
         return session;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setChatViewController(ChatViewController chatViewController) {

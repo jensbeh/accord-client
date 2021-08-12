@@ -78,7 +78,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 @Override
                 public String toString(Categories object) {
                     if (object == null) {
-                        ResourceBundle lang = StageManager.getLangBundle();
+                        ResourceBundle lang = builder.getStageManager().getLangBundle();
                         return lang.getString("comboBox.selectCategory");
                     }
                     return object.getName();
@@ -107,7 +107,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                     @Override
                     public String toString(ServerChannel object) {
                         if (object == null) {
-                            ResourceBundle lang = StageManager.getLangBundle();
+                            ResourceBundle lang = builder.getStageManager().getLangBundle();
                             return lang.getString("comboBox.selectChannel");
                         }
                         return object.getName();
@@ -224,7 +224,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             if (selectedChannel.isPrivilege()) {
                 try {
                     //view
-                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_Privilege_UserChange.fxml")), StageManager.getLangBundle());
+                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_Privilege_UserChange.fxml")), builder.getStageManager().getLangBundle());
                     //Controller
                     serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
                     serverSubSettingsPrivilegeController.init();

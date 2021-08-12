@@ -13,12 +13,6 @@ public class SubSetting {
 
     }
 
-    private void setWhiteMode() {
-    }
-
-    private void setDarkMode() {
-    }
-
     public void setup() {
 
     }

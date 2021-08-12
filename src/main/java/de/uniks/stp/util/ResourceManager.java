@@ -271,8 +271,8 @@ public class ResourceManager {
             if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH))) {
                 Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH));
 
-                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/emojis/twemoji.zip");
-                InputStream inputStream = zipFileURL.openStream();
+                URL zipFileURL = Thread.currentThread().getContextClassLoader().getResource("de/uniks/stp/emojis/emojitwo.zip");
+                InputStream inputStream = Objects.requireNonNull(zipFileURL).openStream();
                 ZipInputStream zipInputStream = new ZipInputStream(inputStream);
                 ZipEntry entry = zipInputStream.getNextEntry();
                 while (entry != null) {
@@ -347,12 +347,12 @@ public class ResourceManager {
         if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
             File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
             for (File file : Objects.requireNonNull(folder.listFiles())) {
-                checkforFileToDelete(file, name);
+                checkForFileToDelete(file, name);
             }
         }
     }
 
-    private static void checkforFileToDelete(File file, String name) {
+    private static void checkForFileToDelete(File file, String name) {
         File deleteFile;
         String fileName = file.getName().substring(0, file.getName().length() - 4);
         if (fileName.equals(name)) {
@@ -425,10 +425,10 @@ public class ResourceManager {
         } else {
             source = new FileInputStream(file).getChannel();
         }
-        FileChannel desti = new FileOutputStream(targetPath).getChannel();
-        desti.transferFrom(source, 0, source.size());
+        FileChannel destination = new FileOutputStream(targetPath).getChannel();
+        destination.transferFrom(source, 0, source.size());
         source.close();
-        desti.close();
+        destination.close();
     }
 
     /**

@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.settings;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
@@ -166,7 +165,7 @@ public class NotificationsController extends SubSetting {
     }
 
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         addButton.setText(lang.getString("button.CN_add"));
         deleteButton.setText(lang.getString("button.CN_delete"));
         selectedSound.setText(lang.getString("label.CN_selected_sound"));
