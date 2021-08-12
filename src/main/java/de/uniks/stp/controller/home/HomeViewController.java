@@ -82,7 +82,7 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init(Stage stage) throws IOException, URISyntaxException {
+    public void init() throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references
@@ -91,36 +91,21 @@ public class HomeViewController {
         settingsIcon = (ImageView) view.lookup("#settingsIcon");
         helpIcon = (ImageView) view.lookup("#helpIcon");
 
-        // create titleBar
-        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        Parent titleBarView = null;
-        try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        titleBarBox.getChildren().add(titleBarView);
-        titleBarController = new TitleBarController(stage, titleBarView, builder);
-        titleBarController.init();
-        titleBarController.setTheme();
-        titleBarController.setMaximizable(true);
-        titleBarController.setTitle("Accord");
+        titleBarInit(); // create titleBar
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
-        homeButton = (Circle) view.lookup("#homeButton");
+
+        homeButtonInit();
+
         settingsButton = (Button) view.lookup("#settingsButton");
         helpButton = (Button) view.lookup("#helpButton");
         homeLabel = (Label) view.lookup("#homeLabel");
-        logoutButton = (Button) view.lookup("#logoutButton");
 
-        addServer = (Circle) view.lookup("#addServer");
-        addServerBg = (Circle) view.lookup("#addServerBg");
-        addServer.setOnMouseClicked(this::onShowCreateServer);
-        addServer.setOnMouseEntered(event -> addServerBg.setFill(Paint.valueOf("#bababa")));
-        addServer.setOnMouseExited(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
-        addServer.setOnMousePressed(event -> addServerBg.setFill(Paint.valueOf("#828282")));
-        addServer.setOnMouseReleased(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+        logoutButton = (Button) view.lookup("#logoutButton");
+        logoutButton.setOnAction(this::logoutButtonOnClicked);
+
+        addServerInit();
 
         serverList = (ListView<Server>) scrollPaneServerBox.getContent().lookup("#serverList");
         serverListCellFactory = new ServerListCell();
@@ -128,18 +113,6 @@ public class HomeViewController {
         this.serverList.setOnMouseReleased(this::onServerClicked);
         this.settingsButton.setOnAction(this::settingsButtonOnClicked);
         this.helpButton.setOnAction(this::helpButtonClicked);
-        logoutButton.setOnAction(this::logoutButtonOnClicked);
-        this.homeButton.setOnMouseClicked(this::homeButtonClicked);
-        this.homeButton.setOnMouseEntered(event -> {
-            if (builder.getInServerState()) {
-                homeCircle.setFill(Paint.valueOf("#bababa"));
-            }
-        });
-        this.homeButton.setOnMouseExited(event -> {
-            if (builder.getInServerState()) {
-                homeCircle.setFill(Paint.valueOf("#a4a4a4"));
-            }
-        });
         serverViews = new HashMap<>();
         serverController = new HashMap<>();
         if (!builder.getSteamToken().equals("") && builder.isSteamShow()) {
@@ -154,8 +127,23 @@ public class HomeViewController {
             e.printStackTrace();
         }
 
-
         showPrivateView();
+        InitServers();
+
+        ThirdPartyClientConnect();
+    }
+
+    private void ThirdPartyClientConnect() {
+        if (builder.getSpotifyConnection() == null) {
+            spotifyConnection = new SpotifyConnection(builder);
+        }
+        builder.getSpotifyConnection().refreshToken();
+        if (builder.getSpotifyToken() != null) {
+            builder.getSpotifyConnection().updateUserDescriptionScheduler();
+        }
+    }
+
+    private void InitServers() {
         showServers(() -> {
             for (Server server : builder.getPersonalUser().getServer()) {
                 try {
@@ -172,14 +160,47 @@ public class HomeViewController {
                 }
             }
         });
+    }
 
-        if (builder.getSpotifyConnection() == null) {
-            spotifyConnection = new SpotifyConnection(builder);
+    private void homeButtonInit() {
+        homeButton = (Circle) view.lookup("#homeButton");
+        this.homeButton.setOnMouseClicked(this::homeButtonClicked);
+        this.homeButton.setOnMouseEntered(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#bababa"));
+            }
+        });
+        this.homeButton.setOnMouseExited(event -> {
+            if (builder.getInServerState()) {
+                homeCircle.setFill(Paint.valueOf("#a4a4a4"));
+            }
+        });
+    }
+
+    private void addServerInit() {
+        addServer = (Circle) view.lookup("#addServerInit");
+        addServerBg = (Circle) view.lookup("#addServerBg");
+        addServer.setOnMouseClicked(this::onShowCreateServer);
+        addServer.setOnMouseEntered(event -> addServerBg.setFill(Paint.valueOf("#bababa")));
+        addServer.setOnMouseExited(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+        addServer.setOnMousePressed(event -> addServerBg.setFill(Paint.valueOf("#828282")));
+        addServer.setOnMouseReleased(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
+    }
+
+    private void titleBarInit() {
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        builder.getSpotifyConnection().refreshToken();
-        if (builder.getSpotifyToken() != null) {
-            builder.getSpotifyConnection().updateUserDescriptionScheduler();
-        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Accord");
     }
 
     private void helpButtonClicked(ActionEvent actionEvent) {
@@ -190,18 +211,10 @@ public class HomeViewController {
             final Stage dialog = new Stage();
 
             HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
-            Parent titleBarViewHelp = null;
-            try {
-                titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Parent titleBarViewHelp;
+            titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
             titleBarBoxHelp.getChildren().add(titleBarViewHelp);
-            titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
-            titleBarControllerHelp.init();
-            titleBarControllerHelp.setTheme();
-            titleBarControllerHelp.setMaximizable(false);
-            titleBarControllerHelp.setTitle("Help");
+            titleBarControllerInit(dialog, titleBarViewHelp);
 
             String mdfxTxt;
             if (StageManager.getLangBundle().getLocale().getLanguage().equals("en")) {
@@ -210,27 +223,7 @@ public class HomeViewController {
                 mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_German.md")), StandardCharsets.UTF_8);
             }
 
-            MarkdownView markdownView = new MarkdownView(mdfxTxt) {
-                @Override
-                public void setLink(Node node, String link, String description) {
-                    node.setCursor(Cursor.HAND);
-                }
-
-                @Override
-                public Node generateImage(String url) {
-                    if (url.equals("node://colorpicker")) {
-                        return new ColorPicker();
-                    } else {
-                        return super.generateImage(url);
-                    }
-                }
-            };
-
-            if (builder.getTheme().equals("Dark")) {
-                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HelpView.css")).toExternalForm());
-            } else {
-                markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HelpView.css")).toExternalForm());
-            }
+            MarkdownView markdownView = markdownViewInit(mdfxTxt);
 
             ScrollPane content = new ScrollPane(markdownView);
             content.setFitToWidth(true);
@@ -244,6 +237,38 @@ public class HomeViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void titleBarControllerInit(Stage dialog, Parent titleBarViewHelp) {
+        titleBarControllerHelp = new TitleBarController(dialog, titleBarViewHelp, builder);
+        titleBarControllerHelp.init();
+        titleBarControllerHelp.setTheme();
+        titleBarControllerHelp.setMaximizable(false);
+        titleBarControllerHelp.setTitle("Help");
+    }
+
+    private MarkdownView markdownViewInit(String mdfxTxt) {
+        MarkdownView markdownView = new MarkdownView(mdfxTxt) {
+            @Override
+            public void setLink(Node node, String link, String description) {
+                node.setCursor(Cursor.HAND);
+            }
+
+            @Override
+            public Node generateImage(String url) {
+                if (url.equals("node://colorpicker")) {
+                    return new ColorPicker();
+                } else {
+                    return super.generateImage(url);
+                }
+            }
+        };
+        if (builder.getTheme().equals("Dark")) {
+            markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HelpView.css")).toExternalForm());
+        } else {
+            markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HelpView.css")).toExternalForm());
+        }
+        return markdownView;
     }
 
     /**
@@ -348,7 +373,6 @@ public class HomeViewController {
      * @param mouseEvent is called when clicked on the + Button.
      */
     private void onShowCreateServer(MouseEvent mouseEvent) {
-
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(root);
@@ -380,31 +404,35 @@ public class HomeViewController {
         builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
-            showServers(() -> {
-                for (Server server : builder.getPersonalUser().getServer()) {
-                    try {
-                        if (!serverController.containsKey(server)) {
-                            builder.setCurrentServer(server);
-                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
-                            serverViews.put(server, serverView);
-                            serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                            serverController.get(server).startController(status -> Platform.runLater(() -> {
-                                updateServerListColor();
-                                userArrivedNotification(server);
-                                showServerView();
-                            }));
-
-                            builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
-                            builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
-
-                            serverController.get(server).setTheme();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            showServers(() -> addNewServer(true));
         });
+    }
+
+    private void addNewServer(boolean isArrived) {
+        for (Server server : builder.getPersonalUser().getServer()) {
+            try {
+                if (!serverController.containsKey(server)) {
+                    builder.setCurrentServer(server);
+                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
+                    serverViews.put(server, serverView);
+                    serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
+                    serverController.get(server).startController(status -> Platform.runLater(() -> {
+                        updateServerListColor();
+                        showServerView();
+                        if (isArrived) {
+                            userArrivedNotification(server);
+                        }
+                    }));
+
+                    builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
+                    builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
+
+                    serverController.get(server).setTheme();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -419,31 +447,10 @@ public class HomeViewController {
         builder.setSERVER_USER(null);
         Platform.runLater(() -> {
             stage.close();
-            showServers(() -> {
-                for (Server server : builder.getPersonalUser().getServer()) {
-                    try {
-                        if (!serverController.containsKey(server)) {
-                            builder.setCurrentServer(server);
-                            Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
-                            serverViews.put(server, serverView);
-                            serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                            serverController.get(server).startController(status -> Platform.runLater(() -> {
-                                updateServerListColor();
-                                showServerView();
-                            }));
-
-                            builder.setSERVER_USER(this.serverController.get(builder.getCurrentServer()).getServerSystemWebSocket());
-                            builder.setServerChatWebSocketClient(this.serverController.get(builder.getCurrentServer()).getChatWebSocketClient());
-
-                            serverController.get(server).setTheme();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            showServers(() -> addNewServer(false));
         });
     }
+
 
     /**
      * User sends a message to the server that he has arrived
@@ -511,17 +518,21 @@ public class HomeViewController {
      */
     public void showServers(ServerLoadedCallback serverLoadedCallback) {
         if (!builder.getPersonalUser().getUserKey().equals("")) {
-            restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
-                JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
-                for (int i = 0; i < jsonResponse.length(); i++) {
-                    String serverName = jsonResponse.getJSONObject(i).get("name").toString();
-                    String serverId = jsonResponse.getJSONObject(i).get("id").toString();
-                    builder.buildServer(serverName, serverId);
-                }
-                Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
-                serverLoadedCallback.onSuccess();
-            });
+            getServerData(serverLoadedCallback);
         }
+    }
+
+    private void getServerData(ServerLoadedCallback serverLoadedCallback) {
+        restClient.getServers(builder.getPersonalUser().getUserKey(), response -> {
+            JSONArray jsonResponse = response.getBody().getObject().getJSONArray("data");
+            for (int i = 0; i < jsonResponse.length(); i++) {
+                String serverName = jsonResponse.getJSONObject(i).get("name").toString();
+                String serverId = jsonResponse.getJSONObject(i).get("id").toString();
+                builder.buildServer(serverName, serverId);
+            }
+            Platform.runLater(() -> serverList.setItems(FXCollections.observableList(builder.getPersonalUser().getServer())));
+            serverLoadedCallback.onSuccess();
+        });
     }
 
     /**
@@ -692,10 +703,8 @@ public class HomeViewController {
         privateViewController.setTheme();
         settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-bright.png"))));
         helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-bright.png"))));
-        if (builder.getCurrentServer() != null) {
-            if (serverController.size() != 0) {
-                serverController.get(builder.getCurrentServer()).setTheme();
-            }
+        if (builder.getCurrentServer() != null && serverController.size() != 0) {
+            serverController.get(builder.getCurrentServer()).setTheme();
         }
         if (titleBarController != null) {
             titleBarController.setTheme();
@@ -710,10 +719,8 @@ public class HomeViewController {
         privateViewController.setTheme();
         settingsIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/settings-dark.png"))));
         helpIcon.setImage(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/question-mark-dark.png"))));
-        if (builder.getCurrentServer() != null) {
-            if (serverController.size() != 0) {
-                serverController.get(builder.getCurrentServer()).setTheme();
-            }
+        if (builder.getCurrentServer() != null && serverController.size() != 0) {
+            serverController.get(builder.getCurrentServer()).setTheme();
         }
         if (titleBarController != null) {
             titleBarController.setTheme();
