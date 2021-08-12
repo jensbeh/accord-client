@@ -138,9 +138,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             });
             this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
             this.setOnMouseReleased(event -> {
-                if (builder.isSpotifyShow()) {
-                    builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
-                }
+                builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
                 if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
                     hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
                 } else if (builder.getTheme().equals("Dark")) {

@@ -48,6 +48,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SpotifyConnection {
     private final ModelBuilder builder;
@@ -296,8 +298,9 @@ public class SpotifyConnection {
 
     public void updateValuesUser(String userDescription) {
         //if contains spotify url
-        if (userDescription.contains("i.scdn.co") && !isPersonalUser) {
-            String cleanedDescription = builder.getPersonalUser().getDescription().split("#")[1];
+        Matcher spotifyMatcher = Pattern.compile("#\\{\"desc\"(.*)").matcher(userDescription);
+        if (spotifyMatcher.find() && !isPersonalUser) {
+            String cleanedDescription = userDescription.split("#")[1];
             JSONObject jsonObject = new JSONObject(cleanedDescription);
             String bandAndSongString = (String) jsonObject.get("desc");
             String artworkUrl = (String) jsonObject.get("data");
