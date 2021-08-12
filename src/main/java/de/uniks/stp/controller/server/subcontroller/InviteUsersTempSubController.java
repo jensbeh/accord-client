@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.server.subcontroller;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;

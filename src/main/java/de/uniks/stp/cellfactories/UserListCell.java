@@ -1,6 +1,5 @@
 package de.uniks.stp.cellfactories;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.User;
 import de.uniks.stp.util.ResourceManager;

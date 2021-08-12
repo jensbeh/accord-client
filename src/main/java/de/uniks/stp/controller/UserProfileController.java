@@ -1,6 +1,5 @@
 package de.uniks.stp.controller;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.CurrentUser;
 import javafx.application.Platform;

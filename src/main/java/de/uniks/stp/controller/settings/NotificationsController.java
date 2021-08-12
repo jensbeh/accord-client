@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.settings;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
