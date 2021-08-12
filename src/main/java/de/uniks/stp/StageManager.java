@@ -80,9 +80,9 @@ public class StageManager extends Application {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HomeView.fxml")), getLangBundle());
             scene.setRoot(root);
-            homeViewController = new HomeViewController(root, builder);
+            homeViewController = new HomeViewController(root, builder,stage);
             builder.setHomeViewController(homeViewController);
-            homeViewController.init(stage);
+            homeViewController.init();
             homeViewController.setTheme();
             stage.setScene(scene);
             stage.setResizable(true);

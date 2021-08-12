@@ -75,15 +75,15 @@ public class HomeViewController {
     private ImageView settingsIcon;
     private ImageView helpIcon;
 
-    public HomeViewController(Parent view, ModelBuilder modelBuilder) {
+    public HomeViewController(Parent view, ModelBuilder modelBuilder,Stage stage) {
         this.view = view;
         this.builder = modelBuilder;
         this.restClient = modelBuilder.getRestClient();
+        this.stage = stage;
     }
 
     @SuppressWarnings("unchecked")
-    public void init(Stage stage) throws IOException, URISyntaxException {
-        this.stage = stage;
+    public void init() throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references
@@ -91,19 +91,18 @@ public class HomeViewController {
         root = (HBox) view.lookup("#root");
         settingsIcon = (ImageView) view.lookup("#settingsIcon");
         helpIcon = (ImageView) view.lookup("#helpIcon");
-
-        titleBarInit(); // create titleBar
-
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
-
-        homeButtonInit();
-
         settingsButton = (Button) view.lookup("#settingsButton");
         helpButton = (Button) view.lookup("#helpButton");
         homeLabel = (Label) view.lookup("#homeLabel");
-
         logoutButton = (Button) view.lookup("#logoutButton");
+
+        titleBarInit(); // create titleBar
+
+
+        homeButtonInit();
+
         logoutButton.setOnAction(this::logoutButtonOnClicked);
 
         addServerInit();
@@ -179,7 +178,7 @@ public class HomeViewController {
     }
 
     private void addServerInit() {
-        addServer = (Circle) view.lookup("#addServerInit");
+        addServer = (Circle) view.lookup("#addServer");
         addServerBg = (Circle) view.lookup("#addServerBg");
         addServer.setOnMouseClicked(this::onShowCreateServer);
         addServer.setOnMouseEntered(event -> addServerBg.setFill(Paint.valueOf("#bababa")));
