@@ -7,16 +7,14 @@ import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Categories;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Alerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,6 +28,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerSettingsCategoryController extends SubSetting {
 
@@ -105,7 +105,8 @@ public class ServerSettingsCategoryController extends SubSetting {
      * changes the name of an existing category when button change is clicked
      */
     private void changeCategoryName(ActionEvent actionEvent) {
-        if (selectedCategory != null && !changeCategoryNameTextField.getText().isEmpty()) {
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(changeCategoryNameTextField.getText());
+        if (!whiteSpaceMatcher.find() && selectedCategory != null && !changeCategoryNameTextField.getText().isEmpty()) {
             String newCategoryName = changeCategoryNameTextField.getText();
             if (!selectedCategory.getName().equals(newCategoryName)) {
 
@@ -131,6 +132,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                     }
                 });
             }
+        } else {
+            Alerts.invalidNameAlert(builder);
         }
     }
 
@@ -210,7 +213,8 @@ public class ServerSettingsCategoryController extends SubSetting {
      * creates a new category when button create is clicked
      */
     private void createCategory(ActionEvent actionEvent) {
-        if (!createCategoryNameTextField.getText().isEmpty()) {
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(changeCategoryNameTextField.getText());
+        if (!whiteSpaceMatcher.find() && !createCategoryNameTextField.getText().isEmpty()) {
             String categoryName = createCategoryNameTextField.getText();
 
             restClient.createCategory(currentServer.getId(), categoryName, builder.getPersonalUser().getUserKey(), response -> {
@@ -226,6 +230,8 @@ public class ServerSettingsCategoryController extends SubSetting {
                     createCategoryNameTextField.setText("");
                 }
             });
+        } else {
+            Alerts.invalidNameAlert(builder);
         }
     }
 
