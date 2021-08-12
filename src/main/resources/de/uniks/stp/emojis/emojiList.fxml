@@ -1,36 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" id="emojiVbox" prefHeight="200.0" xmlns="http://javafx.com/javafx/11">
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox id="emojiVbox" spacing="10.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <HBox spacing="5.0"/>
-        <AnchorPane id="emojiAnchorpane" VBox.vgrow="ALWAYS">
+        <HBox alignment="CENTER_LEFT" maxHeight="25.0" spacing="10.0">
             <children>
-                <TabPane id="emojiTabpane" fx:id="tabPane" prefHeight="200.0" prefWidth="200.0"
-                         tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <tabs>
-                        <Tab id="frequentlyTab" text="Emojis">
-                            <content>
-                                <ScrollPane id="scroll">
-                                    <content>
-                                        <FlowPane id="flow"/>
-                                    </content>
-                                </ScrollPane>
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
-                <ScrollPane id="emojiScrollpane" fx:id="searchScrollPane" visible="false" AnchorPane.bottomAnchor="0.0"
-                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <content>
-                        <FlowPane id="emojiFlowpane" fx:id="searchFlowPane"/>
-                    </content>
-                </ScrollPane>
+                <TextField id="textField_search" prefWidth="299.0" />
+                <ComboBox id="ComboBox_skinColor" prefWidth="50.0">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin></ComboBox>
             </children>
-        </AnchorPane>
+         <VBox.margin>
+            <Insets left="15.0" />
+         </VBox.margin>
+        </HBox>
+        <HBox>
+            <children>
+            <AnchorPane>
+               <children>
+                      <TabPane id="emojiTabPane" maxHeight="400.0" minHeight="400.0" prefHeight="400.0" prefWidth="374.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                              <Tab id="frequently used">
+                                  <content>
+                                      <ScrollPane fitToHeight="true" fitToWidth="true">
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="people">
+                                  <content>
+                                      <ScrollPane fitToHeight="true" fitToWidth="true">
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="nature">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="food">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="activity">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="travel">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="objects">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="symbols">
+                                  <content>
+                                      <ScrollPane>
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                              <Tab id="flags">
+                                  <content>
+                                      <ScrollPane style="-fx-background-color: red;">
+                                          <content>
+                                    </content>
+                                 <content>
+                                    <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                                      </ScrollPane>
+                                  </content>
+                              </Tab>
+                          </tabs>
+                      </TabPane>
+                  <ScrollPane id="scrollPane_search" layoutX="49.0" maxWidth="350.0" prefHeight="401.0" prefWidth="325.0">
+                     <content>
+                        <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </AnchorPane>
+            </children>
+        </HBox>
     </children>
+   <padding>
+      <Insets right="5.0" top="10.0" />
+   </padding>
 </VBox>

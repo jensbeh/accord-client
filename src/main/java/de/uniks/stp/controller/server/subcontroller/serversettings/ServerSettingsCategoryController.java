@@ -74,7 +74,7 @@ public class ServerSettingsCategoryController extends SubSetting {
 
         deleteCategoryButton.setDisable(true);
 
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         this.categoriesSelector.setPromptText(lang.getString("comboBox.selectCategory"));
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);

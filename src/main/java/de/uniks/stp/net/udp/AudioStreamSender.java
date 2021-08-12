@@ -50,8 +50,7 @@ public class AudioStreamSender implements Runnable {
 
         // set 255 with jsonObject - sendData is automatically init with zeros
         byte[] jsonData = new byte[255];
-        byte[] objData = new byte[0];
-        objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] objData = obj1.toString().getBytes(StandardCharsets.UTF_8);
 
         // set every byte new which is from jsonObject and let the rest be still 0
         for (int i = 0; i < objData.length; i++) {

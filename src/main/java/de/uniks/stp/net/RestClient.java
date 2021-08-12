@@ -196,8 +196,8 @@ public class RestClient {
         sendRequest(request, callback);
     }
 
-    public void resolveVanityID(String vanitiyURL, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_RESOLVE_VANITY + STEAM_API_KEY + "&vanityurl=" + vanitiyURL);
+    public void resolveVanityID(String vanityURL, Callback<JsonNode> callback) {
+        HttpRequest<?> request = Unirest.get(STEAM_API_BASE_URL + STEAM_API_STEAM_USER + STEAM_API_RESOLVE_VANITY + STEAM_API_KEY + "&vanityurl=" + vanityURL);
         sendRequest(request, callback);
     }
 

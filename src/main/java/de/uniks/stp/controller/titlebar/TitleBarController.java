@@ -15,7 +15,7 @@ import java.util.Objects;
 public class TitleBarController {
     private final Stage stage;
     private final ModelBuilder builder;
-    private Parent titleBarView;
+    private final Parent titleBarView;
     private HBox titleBarSpaceBox;
     private HBox logoAndLabelBox;
     private Label accordTitleLabel;

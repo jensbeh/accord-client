@@ -1,6 +1,5 @@
 package de.uniks.stp.controller.server.subcontroller;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Server;
 import de.uniks.stp.net.RestClient;
@@ -69,7 +68,7 @@ public class InviteUsersUserLimitSubController {
             @Override
             public String toString(List<String> list) {
                 if (list == null) {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
                     return lang.getString("comboBox.selectLink");
                 }
                 return list.get(0) + " | " + list.get(1);
@@ -179,7 +178,7 @@ public class InviteUsersUserLimitSubController {
             selectedLink = selectedList.get(0);
             maxUsers = selectedList.get(1);
         } else {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
             selectedLink = lang.getString("comboBox.selectLink");
             maxUsers = "";
         }
@@ -199,7 +198,7 @@ public class InviteUsersUserLimitSubController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (createLink != null)
             createLink.setText(lang.getString("button.create"));
 

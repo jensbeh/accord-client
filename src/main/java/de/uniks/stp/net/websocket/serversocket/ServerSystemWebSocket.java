@@ -1,6 +1,5 @@
 package de.uniks.stp.net.websocket.serversocket;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.server.ServerViewController;
@@ -32,7 +31,6 @@ public class ServerSystemWebSocket extends Endpoint {
     private ModelBuilder builder;
     private ServerViewController serverViewController;
     private ChatViewController chatViewController;
-    private String name;
 
     public ServerSystemWebSocket(URI endpoint, String userKey) {
         this.noopTimer = new Timer();
@@ -163,7 +161,7 @@ public class ServerSystemWebSocket extends Endpoint {
         }
         if (userAction.equals("userLeft")) {
             if (userName.equals(builder.getPersonalUser().getName()) && builder.getCurrentServer() == serverViewController.getServer()) {
-                Platform.runLater(StageManager::showLoginScreen);
+                Platform.runLater(() -> builder.getStageManager().showLoginScreen());
             }
             buildServerUser(userName, userId, false, "");
             serverViewController.showOnlineOfflineUsers();
@@ -715,7 +713,8 @@ public class ServerSystemWebSocket extends Endpoint {
             ServerChannel serverChannel = new ServerChannel().setId(channelId).setType(channelType).setName(channelName)
                     .setPrivilege(channelPrivileged).withPrivilegedUsers(member);
             affectedCategory.withChannel(serverChannel);
-            serverViewController.loadChannelMessages(serverChannel, response1 -> {});
+            serverViewController.loadChannelMessages(serverChannel, response1 -> {
+            });
         }
     }
 
@@ -760,11 +759,6 @@ public class ServerSystemWebSocket extends Endpoint {
             }
         }
         return member;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setChatViewController(ChatViewController chatViewController) {

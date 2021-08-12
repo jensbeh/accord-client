@@ -75,7 +75,6 @@ public class ServerSettingsChannelController extends SubSetting {
     public void init() {
         // init view
         root = (VBox) view.lookup("#rootChannel");
-        Label categoryLabel = (Label) view.lookup("#categoryLabel");
         categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
         editChannelsSelector = (ComboBox<ServerChannel>) view.lookup("#editChannelsSelector");
@@ -111,7 +110,7 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(Categories object) {
                 if (object == null) {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
                     return lang.getString("comboBox.selectCategory");
                 }
                 return object.getName();
@@ -127,7 +126,7 @@ public class ServerSettingsChannelController extends SubSetting {
             @Override
             public String toString(ServerChannel object) {
                 if (object == null) {
-                    ResourceBundle lang = StageManager.getLangBundle();
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
                     return lang.getString("comboBox.selectChannel");
                 }
                 return object.getName();

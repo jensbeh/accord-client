@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-
 public class HomeViewController {
     private final RestClient restClient;
     private final Parent view;
@@ -69,8 +68,6 @@ public class HomeViewController {
     private Map<Server, Parent> serverViews;
     private Map<Server, ServerViewController> serverController;
     private CreateJoinServerController createJoinServerController;
-    private SpotifyConnection spotifyConnection;
-    private TitleBarController titleBarControllerHelp;
     private TitleBarController titleBarController;
     private ImageView settingsIcon;
     private ImageView helpIcon;
@@ -100,7 +97,7 @@ public class HomeViewController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,7 +126,6 @@ public class HomeViewController {
             builder.getGame();
         }
 
-        ResourceManager.extractEmojis();
         ResourceManager.copyDefaultSound(StageManager.class.getResourceAsStream("sounds/notification/default.wav"));
         try {
             builder.setBlockedUsers(ResourceManager.loadBlockedUsers(builder.getPersonalUser().getName()));
@@ -157,7 +153,7 @@ public class HomeViewController {
         showServers(() -> {
             for (Server server : builder.getPersonalUser().getServer()) {
                 try {
-                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), StageManager.getLangBundle());
+                    Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), builder.getStageManager().getLangBundle());
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
                     serverController.get(server).startController(status -> {
@@ -200,19 +196,23 @@ public class HomeViewController {
 
     private void helpButtonClicked(ActionEvent actionEvent) {
         try {
-            VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), StageManager.getLangBundle());
+            VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), builder.getStageManager().getLangBundle());
             helpView.getStylesheets().clear();
             helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
             final Stage dialog = new Stage();
 
             HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
-            Parent titleBarViewHelp;
-            titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            Parent titleBarViewHelp = null;
+            try {
+                titleBarViewHelp = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             titleBarBoxHelp.getChildren().add(titleBarViewHelp);
             titleBarControllerInit(dialog, titleBarViewHelp);
 
             String mdfxTxt;
-            if (StageManager.getLangBundle().getLocale().getLanguage().equals("en")) {
+            if (builder.getStageManager().getLangBundle().getLocale().getLanguage().equals("en")) {
                 mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_English.md")), StandardCharsets.UTF_8);
             } else {
                 mdfxTxt = IOUtils.toString(Objects.requireNonNull(StageManager.class.getResource("readme/README_German.md")), StandardCharsets.UTF_8);
@@ -319,7 +319,7 @@ public class HomeViewController {
         inServerChat = false;
         try {
             if (privateView == null) {
-                privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/PrivateView.fxml")), StageManager.getLangBundle());
+                privateView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/PrivateView.fxml")), builder.getStageManager().getLangBundle());
                 privateViewController = new PrivateViewController(privateView, builder);
                 privateViewController.init();
                 privateViewController.setTheme();
@@ -369,7 +369,7 @@ public class HomeViewController {
      */
     private void onShowCreateServer(MouseEvent mouseEvent) {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/CreateJoinView.fxml")), builder.getStageManager().getLangBundle());
             Scene scene = new Scene(root);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
@@ -583,7 +583,7 @@ public class HomeViewController {
      * @param actionEvent is called when clicked on the Settings Button
      */
     private void settingsButtonOnClicked(ActionEvent actionEvent) {
-        StageManager.showSettingsScreen();
+        Platform.runLater(() -> builder.getStageManager().showSettingsScreen());
     }
 
     /**
@@ -603,7 +603,7 @@ public class HomeViewController {
 
         // start EasterEgg - Snake
         if (mouseEvent.getClickCount() == 10) {
-            StageManager.showStartSnakeScreen();
+            Platform.runLater(() -> builder.getStageManager().showStartSnakeScreen());
         }
     }
 
@@ -627,7 +627,7 @@ public class HomeViewController {
                     builder.setCurrentPrivateChat(null);
                 }
                 builder.clear();
-                Platform.runLater(StageManager::showLoginScreen);
+                Platform.runLater(() -> builder.getStageManager().showLoginScreen());
             }
         });
     }
@@ -661,7 +661,7 @@ public class HomeViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (homeLabel != null)
             homeLabel.setText(lang.getString("label.home"));
         if (logoutButton != null)

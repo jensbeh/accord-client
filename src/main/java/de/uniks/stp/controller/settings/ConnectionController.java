@@ -27,7 +27,6 @@ public class ConnectionController extends SubSetting {
     StackPane steamToggleStackPane;
     private SteamLoginController steamLoginController;
     private VBox steamVBox;
-    private Button spotifyDisconnect;
     private VBox spotifyVbox;
 
     public ConnectionController(Parent view, ModelBuilder builder) {
@@ -49,7 +48,7 @@ public class ConnectionController extends SubSetting {
         spotifyToggleStackPane.setOnMouseClicked(this::spotifyToggle);
         steamToggleStackPane.setOnMouseClicked(this::steamToggle);
 
-        spotifyDisconnect = (Button) view.lookup("#disconnectSpotify");
+        Button spotifyDisconnect = (Button) view.lookup("#disconnectSpotify");
         spotifyDisconnect.setOnMouseClicked(this::disconnectSpotify);
 
         spotifyVbox = (VBox) view.lookup("#spotifyVbox");

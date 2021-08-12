@@ -52,7 +52,7 @@ public class LoginViewController {
         HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,7 +86,7 @@ public class LoginViewController {
     }
 
     private void settingsButtonOnClick(ActionEvent actionEvent) {
-        StageManager.showSettingsScreen();
+        Platform.runLater(() -> builder.getStageManager().showSettingsScreen());
     }
 
     /**
@@ -338,7 +338,7 @@ public class LoginViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         usernameTextField.setPromptText(lang.getString("textField.prompt_username"));
         passwordTextField.setPromptText(lang.getString("textField.prompt_password"));
         rememberCheckBox.setText(lang.getString("checkbox.remember_me"));
@@ -361,7 +361,7 @@ public class LoginViewController {
      * @param errorMsg the error text
      */
     private void setError(String errorMsg) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         error = errorMsg;
         errorLabel.setText(lang.getString(error));
     }
@@ -372,7 +372,7 @@ public class LoginViewController {
      * @param connectionErrorMsg the connection error text
      */
     private void setConnectionError(String connectionErrorMsg) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         connectionError = connectionErrorMsg;
         connectionLabel.setText(lang.getString(connectionError));
     }

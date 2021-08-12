@@ -150,7 +150,7 @@ public class ServerViewController {
      * get all mutedUsers
      */
     public ArrayList<String> getMutedAudioMember() {
-        //return empty array if audioStreamClient doesn´t exist
+        //return empty array if audioStreamClient doesn't exist
         if (builder.getAudioStreamClient() == null) {
             return new ArrayList<>();
         } else {
@@ -238,11 +238,9 @@ public class ServerViewController {
             serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             serverSystemWebSocket.setServerViewController(this);
             serverSystemWebSocket.setBuilder(builder);
-            serverSystemWebSocket.setName(server.getName());
         }
         serverSystemWebSocket.setServerViewController(this);
         serverSystemWebSocket.setBuilder(builder);
-        serverSystemWebSocket.setName(server.getName());
     }
 
     /**
@@ -255,11 +253,9 @@ public class ServerViewController {
                             getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             chatWebSocketClient.setServerViewController(this);
             chatWebSocketClient.setBuilder(builder);
-            chatWebSocketClient.setName(server.getName());
         }
         chatWebSocketClient.setServerViewController(this);
         chatWebSocketClient.setBuilder(builder);
-        chatWebSocketClient.setName(server.getName());
     }
 
     /**
@@ -274,7 +270,7 @@ public class ServerViewController {
      */
     public void showMessageView() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), builder.getStageManager().getLangBundle());
             // stop videos from recent channel
             if (chatViewController != null) {
                 chatViewController.stopMediaPlayers();
@@ -743,7 +739,7 @@ public class ServerViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (textChannelLabel != null)
             textChannelLabel.setText(lang.getString("label.textChannel"));
 
@@ -776,11 +772,11 @@ public class ServerViewController {
     }
 
     private void onServerSettingsClicked(ActionEvent actionEvent) {
-        StageManager.showServerSettingsScreen();
+        Platform.runLater(() -> builder.getStageManager().showServerSettingsScreen());
     }
 
     private void onInviteUsersClicked(ActionEvent actionEvent) {
-        StageManager.showInviteUsersScreen();
+        Platform.runLater(() -> builder.getStageManager().showInviteUsersScreen());
     }
 
     /**

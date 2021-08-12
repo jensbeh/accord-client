@@ -1,7 +1,5 @@
 package de.uniks.stp.controller;
 
-import com.pavlobu.emojitextflow.Emoji;
-import com.pavlobu.emojitextflow.EmojiParser;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
@@ -21,13 +19,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -40,17 +39,13 @@ import javafx.stage.StageStyle;
 import org.json.JSONObject;
 
 import javax.json.JsonException;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static de.uniks.stp.util.Constants.*;
 
 public class ChatViewController {
     private final ModelBuilder builder;
@@ -61,7 +56,6 @@ public class ChatViewController {
     private Button sendButton;
     private TextField messageTextField;
     private StackPane stack;
-    private ScrollPane scrollPane;
     private String text;
     private ResourceBundle lang;
     private HBox messageBox;
@@ -73,7 +67,6 @@ public class ChatViewController {
     private String textWrote;
     private RestClient restClient;
     private Message selectedMsg;
-    private ArrayList<String> pngNames;
     private VBox messagesBox;
     private ScrollPane messageScrollPane;
     private HashMap<StackPane, Message> messagesHashMap;
@@ -81,6 +74,7 @@ public class ChatViewController {
     private ArrayList<MediaPlayer> mediaPlayers;
     private ArrayList<WebEngine> webEngines;
     private ListChangeListener<User> blockedUserListener;
+    private boolean emojiViewOpened;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -102,6 +96,7 @@ public class ChatViewController {
         emojiTextFlowParameters.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         emojiTextFlowParameters.setTextColor(Color.WHITE);
 
+        emojiViewOpened = false;
 
         // Load all view references
         root = (VBox) view.lookup("#root");
@@ -112,8 +107,11 @@ public class ChatViewController {
         messageBox = (HBox) view.lookup("#messageBox");
         HBox.setHgrow(messageTextField, Priority.ALWAYS);
         stack = (StackPane) view.lookup("#stack");
-        scrollPane = (ScrollPane) view.lookup("#scroll");
         messageScrollPane = (ScrollPane) view.lookup("#messageScrollPane");
+        VBox emojiBox = (VBox) view.lookup("#emojiBox");
+
+        Platform.runLater(() -> emojiBox.getChildren().add(builder.getEmojiLoaderService().getView()));
+
         // set scroll speed
         final double SPEED = 0.001;
         messageScrollPane.getContent().setOnScroll(scrollEvent -> {
@@ -126,7 +124,7 @@ public class ChatViewController {
         messagesBox = (VBox) messageScrollPane.getContent().lookup("#messageVBox");
         messagesHashMap = new HashMap<>();
         stackPaneHashMap = new HashMap<>();
-        lang = StageManager.getLangBundle();
+        lang = builder.getStageManager().getLangBundle();
         messageTextField.setOnKeyReleased(key -> {
             if (key.getCode() == KeyCode.ENTER) {
                 sendButton.fire();
@@ -134,7 +132,6 @@ public class ChatViewController {
         });
         mediaPlayers = new ArrayList<>();
         webEngines = new ArrayList<>();
-        pngNames = new ArrayList<>();
         emojiButton = (Button) view.lookup("#emojiButton");
         emojiButton.setOnAction(this::emojiButtonClicked);
         builder.setCurrentChatViewController(this);
@@ -170,7 +167,7 @@ public class ChatViewController {
     }
 
     /**
-     * opens emojiList
+     * shows EmojiView
      */
     private void emojiButtonClicked(ActionEvent actionEvent) {
         // All Child components of StackPane
@@ -181,75 +178,8 @@ public class ChatViewController {
             Node topNode = children.get(children.size() - 1);
             topNode.toBack();
         }
-        if (pngNames.isEmpty()) {
-            setUpEmojis();
-        }
-        showEmojis();
-    }
 
-    private void setUpEmojis() {
-        File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                if (emoji.getHex().equals(name)) {
-                    pngNames.add(name);
-                }
-            }
-        }
-    }
-
-    /**
-     * sets emojis on FlowPane
-     */
-    private void showEmojis() {
-        FlowPane flow = new FlowPane();
-        scrollPane.setContent(flow);
-        final File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-            if (pngNames.contains(name)) {
-                flow.getChildren().add((getImageStack(fileEntry)));
-            }
-        }
-    }
-
-    /**
-     * creates StackPane for each image
-     */
-    private StackPane getImageStack(File fileEntry) {
-        StackPane stackPane = new StackPane();
-        stackPane.setMaxSize(32, 32);
-        stackPane.setPrefSize(32, 32);
-        stackPane.setMinSize(32, 32);
-        stackPane.setPadding(new Insets(3));
-        stackPane.getChildren().add(getEmojiImage(fileEntry));
-        return stackPane;
-    }
-
-    /**
-     * get correct image to the hexStr and sets the textField if emoji clicked
-     */
-    private ImageView getEmojiImage(File fileEntry) {
-        ImageView imageView = new ImageView();
-        imageView.setId(fileEntry.getName().substring(0, fileEntry.getName().length() - 4));
-        imageView.setFitWidth(32);
-        imageView.setFitHeight(32);
-
-        String path = APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH + "/" + fileEntry.getName();
-        File newFile = new File(path);
-        Image image = new Image(newFile.toURI().toString());
-        imageView.setImage(image);
-        AtomicReference<String> url = new AtomicReference<>("");
-        imageView.setOnMouseClicked(event -> {
-            url.set(imageView.getImage().getUrl());
-            for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                if (emoji.getHex().equals(imageView.getId())) {
-                    messageTextField.setText(messageTextField.getText() + emoji.getShortname());
-                }
-            }
-        });
-        return imageView;
+        emojiViewOpened = !emojiViewOpened;
     }
 
     /**
@@ -271,7 +201,7 @@ public class ChatViewController {
             contextMenu.getItems().addAll(item1, item2, item3);
         }
 
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         contextMenu.getItems().get(0).setText(lang.getString("menuItem.copy"));
         contextMenu.getItems().get(1).setText(lang.getString("menuItem.edit"));
         contextMenu.getItems().get(2).setText(lang.getString("menuItem.delete"));
@@ -330,7 +260,7 @@ public class ChatViewController {
      */
     private void delete(ActionEvent actionEvent) {
         try {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
 
             Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
@@ -399,7 +329,7 @@ public class ChatViewController {
         HBox titleBarBox = (HBox) subview.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -470,7 +400,7 @@ public class ChatViewController {
      */
     private void edit(ActionEvent actionEvent) {
         if (messageBox.getChildren().contains(sendButton)) {
-            ResourceBundle lang = StageManager.getLangBundle();
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
             editButton = new Button();
             editButton.setText(lang.getString("button.edit"));
             editButton.setId("editButton");
@@ -508,7 +438,7 @@ public class ChatViewController {
             try {
                 //create pop-up
                 Parent subview = FXMLLoader.load(Objects.requireNonNull(
-                        StageManager.class.getResource("alert/EditWarningMessage.fxml")), StageManager.getLangBundle());
+                        StageManager.class.getResource("alert/EditWarningMessage.fxml")), builder.getStageManager().getLangBundle());
                 Scene scene = new Scene(subview);
                 stage = new Stage();
                 stage.initStyle(StageStyle.TRANSPARENT);
@@ -516,7 +446,7 @@ public class ChatViewController {
                 // DropShadow of Scene
                 scene.setFill(Color.TRANSPARENT);
                 scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
-                lang = StageManager.getLangBundle();
+                lang = builder.getStageManager().getLangBundle();
 
                 // create titleBar
                 createTitleBar(subview, "title.edit_warning");
@@ -751,7 +681,7 @@ public class ChatViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (sendButton != null)
             sendButton.setText(lang.getString("button.send"));
         if (editButton != null)
@@ -763,7 +693,7 @@ public class ChatViewController {
         checkBlocked();
 
         // set theme to refresh chat view
-        StageManager.setTheme();
+        builder.getStageManager().setTheme();
     }
 
     public void stop() {
@@ -822,16 +752,19 @@ public class ChatViewController {
     }
 
     /**
-     * disables the view elements to disallow communicating with the user
+     * disables the view elements to disallow communicating with the user also close the emojiView if opened
      * additionally inform own user that he needs to unblock him to keep chatting with the user
      *
      * @param user the user who is blocked
      */
     public void disableView(User user) {
+        if (emojiViewOpened) {
+            emojiButton.fire();
+        }
         messageTextField.setDisable(true);
         emojiButton.setDisable(true);
         sendButton.setDisable(true);
-        messageTextField.setText(StageManager.getLangBundle().getString("textField.unblock_info") + " " + user.getName());
+        messageTextField.setText(builder.getStageManager().getLangBundle().getString("textField.unblock_info") + " " + user.getName());
     }
 
     public void setTheme() {
@@ -840,6 +773,8 @@ public class ChatViewController {
         } else {
             setDarkMode();
         }
+
+        builder.getEmojiLoaderService().setTheme();
     }
 
     private void setWhiteMode() {
@@ -854,5 +789,12 @@ public class ChatViewController {
 
     public ArrayList<WebEngine> getWebEngines() {
         return webEngines;
+    }
+
+    /**
+     * insert the emoji to the textField
+     */
+    public void onEmojiClicked(String emojiShortname) {
+        messageTextField.setText(messageTextField.getText() + emojiShortname);
     }
 }

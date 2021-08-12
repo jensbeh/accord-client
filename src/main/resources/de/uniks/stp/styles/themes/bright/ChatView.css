@@ -121,11 +121,11 @@
 }
 
 #messageBox {
-    -fx-background-color: WHITE;
+    -fx-background-color: #f2f3f5;
 }
 
 #emojiButton {
-    -fx-background-color: WHITE;
+    -fx-background-color: #f2f3f5;
 }
 
 #messageTextField {

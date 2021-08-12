@@ -47,7 +47,7 @@ public class SettingsController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +56,7 @@ public class SettingsController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
-        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
+        titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
 
         root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");
@@ -155,7 +155,7 @@ public class SettingsController {
         // clear old and load new subSetting view
         try {
             this.settingsContainer.getChildren().clear();
-            Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
+            Parent settingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/settings/Settings_" + fxmlName + ".fxml")), builder.getStageManager().getLangBundle());
             if (subController != null) {
                 subController.stop();
             }
@@ -209,10 +209,10 @@ public class SettingsController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         generalButton.setText(lang.getString("button.settings_general"));
         audioButton.setText(lang.getString("button.settings_audio"));
-        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_settings"));
+        titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
 
         if (connectionButton != null) {
             connectionButton.setText(lang.getString("button.settings_connection"));

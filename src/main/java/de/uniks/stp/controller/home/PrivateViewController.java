@@ -345,8 +345,8 @@ public class PrivateViewController {
      */
     public void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            //stop videos from recent chatviewcontroller
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), builder.getStageManager().getLangBundle());
+            //stop videos from recent chatViewController
             if (chatViewController != null) {
                 chatViewController.stopMediaPlayers();
             }
@@ -450,7 +450,7 @@ public class PrivateViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
         if (disconnectAudioButton != null)
