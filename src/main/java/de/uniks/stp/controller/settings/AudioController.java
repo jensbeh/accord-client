@@ -81,6 +81,9 @@ public class AudioController extends SubSetting {
         // set values
         volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
         Text valueTextInputSlider = volumeInit(volumeInput);
+        Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
+        valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
+        thumbInputSlider.getChildren().add(valueTextInputSlider);
 
         // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -93,6 +96,9 @@ public class AudioController extends SubSetting {
         volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
 
         Text valueTextOutputSlider = volumeInit(volumeOutput);
+        Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
+        valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
+        thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
         // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -109,16 +115,12 @@ public class AudioController extends SubSetting {
         // set thumb text & style
         volumeXXXput.applyCss();
         volumeXXXput.layout();
-        Pane thumbXXXputSlider = (Pane) volumeXXXput.lookup(".thumb");
         Text valueTextXXXputSlider = new Text();
         if (builder.getTheme().equals("Dark")) {
             valueTextXXXputSlider.setFill(Color.BLACK);
         } else {
             valueTextXXXputSlider.setFill(Color.WHITE);
         }
-        valueTextXXXputSlider.setText(String.valueOf((int) (volumeXXXput.getValue() * 100)));
-        thumbXXXputSlider.getChildren().add(valueTextXXXputSlider);
-
         return valueTextXXXputSlider;
     }
 
