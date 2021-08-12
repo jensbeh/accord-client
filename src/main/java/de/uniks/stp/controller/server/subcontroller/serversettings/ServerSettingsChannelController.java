@@ -37,7 +37,6 @@ public class ServerSettingsChannelController extends SubSetting {
     private final Server server;
     private final RestClient restClient;
 
-    private Label categoryLabel;
     private ComboBox<Categories> categorySelector;
     private Label editChannelsLabel;
     private ComboBox<ServerChannel> editChannelsSelector;
@@ -73,7 +72,7 @@ public class ServerSettingsChannelController extends SubSetting {
     public void init() {
         // init view
         root = (VBox) view.lookup("#rootChannel");
-        this.categoryLabel = (Label) view.lookup("#categoryLabel");
+        Label categoryLabel = (Label) view.lookup("#categoryLabel");
         categorySelector = (ComboBox<Categories>) view.lookup("#categorySelector");
         this.editChannelsLabel = (Label) view.lookup("#editChannelsLabel");
         editChannelsSelector = (ComboBox<ServerChannel>) view.lookup("#editChannelsSelector");
@@ -328,51 +327,7 @@ public class ServerSettingsChannelController extends SubSetting {
     private void onChannelDeleteButtonClicked(ActionEvent actionEvent) {
         if (selectedChannel != null) {
             if (selectedChannel == builder.getCurrentServer().getCategories().get(0).getChannel().get(0)) {
-                try {
-                    ResourceBundle lang = StageManager.getLangBundle();
-
-                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
-                    stage = new Stage();
-                    stage.initStyle(StageStyle.TRANSPARENT);
-                    Scene scene = new Scene(root);
-                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-
-                    // DropShadow of Scene
-                    scene.setFill(Color.TRANSPARENT);
-                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
-
-                    // create titleBar
-                    HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-                    Parent titleBarView = null;
-                    try {
-                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    titleBarBox.getChildren().add(titleBarView);
-                    TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-                    titleBarController.init();
-                    titleBarController.setTheme();
-                    titleBarController.setMaximizable(false);
-                    titleBarController.setTitle(lang.getString("label.error"));
-
-                    stage.setScene(scene);
-                    stage.show();
-
-                    okButton = (Button) root.lookup("#okButton");
-                    okButton.setText("OK");
-                    okButton.setOnAction(this::closeStage);
-                    if (builder.getTheme().equals("Bright")) {
-                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-                    } else {
-                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-                    }
-                    Label errorLabel = (Label) root.lookup("#errorLabel");
-                    errorLabel.setText(lang.getString("label.alertDefaultCha"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                createChannelDeleteView();
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
@@ -387,6 +342,53 @@ public class ServerSettingsChannelController extends SubSetting {
                 });
             }
 
+        }
+    }
+
+    private void createChannelDeleteView() {
+        try {
+            ResourceBundle lang = StageManager.getLangBundle();
+
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), StageManager.getLangBundle());
+            stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.error"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            okButton = (Button) root.lookup("#okButton");
+            okButton.setText("OK");
+            okButton.setOnAction(this::closeStage);
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+            Label errorLabel = (Label) root.lookup("#errorLabel");
+            errorLabel.setText(lang.getString("label.alertDefaultCha"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
