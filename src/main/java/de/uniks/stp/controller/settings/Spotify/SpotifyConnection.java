@@ -35,7 +35,6 @@ import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.hc.core5.http.ParseException;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SpotifyConnection {
     private final ModelBuilder builder;
-    private String clientID = "f2557b7362074d3b93537b2803ef48b1";
+    private final String clientID = "f2557b7362074d3b93537b2803ef48b1";
     private String codeVerifier = "";
     private String codeChallenge = "";
     private String code = "";
@@ -308,14 +307,10 @@ public class SpotifyConnection {
                 spotifyArtwork.setImage(image);
             }
             bandAndSong.setText(bandAndSongString);
-            timeTotal.setVisible(false);
-            timePlayed.setVisible(false);
-            progressBar.setVisible(false);
-        } else {
-            timeTotal.setVisible(false);
-            timePlayed.setVisible(false);
-            progressBar.setVisible(false);
         }
+        timeTotal.setVisible(false);
+        timePlayed.setVisible(false);
+        progressBar.setVisible(false);
     }
 
     public void showSpotifyPopupView(HBox cell, Boolean isPersonalUser, String userDescription) {
@@ -394,14 +389,14 @@ public class SpotifyConnection {
         }
     }
 
-    public void personalUserListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progessBar) {
+    public void personalUserListener(Label bandAndSong, ImageView spotifyArtwork, Label timePlayed, Label timeTotal, ProgressBar progressBar) {
         CurrentlyPlayingContext currentlyPlayingContext = getCurrentlyPlayingSong();
         if (currentlyPlayingContext != null) {
             this.bandAndSong = bandAndSong;
             this.spotifyArtwork = spotifyArtwork;
             this.timeTotal = timeTotal;
             this.timePlayed = timePlayed;
-            this.progressBar = progessBar;
+            this.progressBar = progressBar;
             int timeToPlayLeft = currentlyPlayingContext.getItem().getDurationMs() - currentlyPlayingContext.getProgress_ms();
             if (currentlyPlayingContext.getIs_playing() && isPersonalUser) {
                 scheduler = Executors.newScheduledThreadPool(1);
@@ -409,7 +404,7 @@ public class SpotifyConnection {
                 scheduler.schedule(() -> {
                     handle.cancel(true);
                     scheduler.shutdown();
-                    personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progessBar);
+                    personalUserListener(bandAndSong, spotifyArtwork, timePlayed, timeTotal, progressBar);
                 }, timeToPlayLeft, TimeUnit.MILLISECONDS);
             }
         }
