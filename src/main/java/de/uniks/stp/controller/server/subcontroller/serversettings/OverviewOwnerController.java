@@ -74,7 +74,7 @@ public class OverviewOwnerController {
         if (result.isPresent() && result.get() == button) {
             // disconnect from audioChannel
             if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
             }
             //delete server
             restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {

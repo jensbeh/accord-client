@@ -331,7 +331,7 @@ public class ServerSettingsChannelController extends SubSetting {
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
-                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
                 }
                 restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();

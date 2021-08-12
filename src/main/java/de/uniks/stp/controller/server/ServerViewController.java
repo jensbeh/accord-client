@@ -128,7 +128,6 @@ public class ServerViewController {
     }
 
 
-
     /**
      * set User to MuteList
      */
@@ -188,10 +187,8 @@ public class ServerViewController {
         categorySubControllerList = new HashMap<>();
         currentChannel = null;
         loadServerInfo(status -> {
-            if (status.equals("success")) {
-                if (getServer().getCategories().size() == 0) {
-                    loadCategories(serverReadyCallback::onSuccess);
-                }
+            if (status.equals("success") && getServer().getCategories().size() == 0) {
+                loadCategories(serverReadyCallback::onSuccess);
             }
         }); // members & (categories)
         buildSystemWebSocket();
@@ -310,11 +307,43 @@ public class ServerViewController {
         headphoneLabel = (Label) view.lookup("#unmute_headphone");
         microphoneLabel = (Label) view.lookup("#unmute_microphone");
         //load headset settings
-        microphoneLabel.setVisible(builder.getMuteMicrophone());
-        headphoneLabel.setVisible(builder.getMuteHeadphones());
         headphoneButton.setOnAction(this::muteHeadphone);
         microphoneButton.setOnAction(this::muteMicrophone);
-        //unMute microphone
+
+        microphoneLabelInit(microphoneButton);
+        headphoneLabelInit(headphoneButton);
+    }
+
+    private void headphoneLabelInit(Button headphoneButton) {
+        headphoneLabel.setVisible(builder.getMuteHeadphones());
+        headphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        headphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                headphoneButton.setStyle("");
+                setWhiteMode();
+            }
+        }); //unMute headphone
+        headphoneLabel.setOnMouseClicked(event -> {
+            headphoneLabel.setVisible(false);
+            builder.muteHeadphones(false);
+            if (!builder.getMicrophoneFirstMuted()) {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(false);
+            }
+        });
+    }
+
+    private void microphoneLabelInit(Button microphoneButton) {
+        microphoneLabel.setVisible(builder.getMuteMicrophone());
         microphoneLabel.setOnMouseClicked(event -> {
             microphoneLabel.setVisible(false);
             builder.muteMicrophone(false);
@@ -338,31 +367,6 @@ public class ServerViewController {
             } else {
                 microphoneButton.setStyle("");
                 setWhiteMode();
-            }
-        });
-        headphoneLabel.setOnMouseEntered(event -> {
-            if (builder.getTheme().equals("Dark")) {
-                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
-            } else {
-                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
-            }
-        });
-        headphoneLabel.setOnMouseExited(event -> {
-            if (builder.getTheme().equals("Dark")) {
-                headphoneButton.setStyle("");
-                setDarkMode();
-            } else {
-                headphoneButton.setStyle("");
-                setWhiteMode();
-            }
-        });
-        //unMute headphone
-        headphoneLabel.setOnMouseClicked(event -> {
-            headphoneLabel.setVisible(false);
-            builder.muteHeadphones(false);
-            if (!builder.getMicrophoneFirstMuted()) {
-                microphoneLabel.setVisible(false);
-                builder.muteMicrophone(false);
             }
         });
     }
@@ -407,7 +411,7 @@ public class ServerViewController {
                     this.audioConnectionBox.getChildren().clear();
                     this.audioConnectionBox.getChildren().add(root);
                     disconnectAudioButton = (Button) view.lookup("#button_disconnectAudio");
-                    disconnectAudioButton.setOnAction(this::onAudioDisconnectClicked);
+                    disconnectAudioButton.setOnAction(actionEvent -> onAudioDisconnectClicked());
                     onLanguageChanged();
                 });
 
@@ -422,7 +426,7 @@ public class ServerViewController {
     /**
      * when audio disconnect button is clicked
      */
-    public void onAudioDisconnectClicked(ActionEvent actionEvent) {
+    public void onAudioDisconnectClicked() {
         leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId());
     }
 
