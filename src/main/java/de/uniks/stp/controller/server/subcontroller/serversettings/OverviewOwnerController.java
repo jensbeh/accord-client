@@ -68,21 +68,7 @@ public class OverviewOwnerController {
         alert.setHeaderText(lang.getString("warning.deleteServer"));
         alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
 
-        if (builder.getTheme().equals("Bright")) {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: BLACK;"
-                    + "-fx-background-color: WHITE;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
-            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7da6df;" + "-fx-text-fill: white;");
-        } else {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: white;"
-                    + "-fx-background-color: #2f3136;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
-            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
-        }
+        setTheme(dialogPane, buttonBar);
         dialogPane.getStyleClass().add("AlertStyle");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == button) {
@@ -102,6 +88,24 @@ public class OverviewOwnerController {
                 stage.close();
             });
 
+        }
+    }
+
+    private void setTheme(DialogPane dialogPane, ButtonBar buttonBar) {
+        if (builder.getTheme().equals("Bright")) {
+            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            buttonBar.setStyle("-fx-font-size: 14px;" +
+                    "-fx-text-fill: BLACK;"
+                    + "-fx-background-color: WHITE;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7da6df;" + "-fx-text-fill: white;");
+        } else {
+            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            buttonBar.setStyle("-fx-font-size: 14px;" +
+                    "-fx-text-fill: white;"
+                    + "-fx-background-color: #2f3136;");
+            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
+            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
         }
     }
 }
