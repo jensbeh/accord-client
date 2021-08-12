@@ -75,15 +75,14 @@ public class HomeViewController {
     private ImageView settingsIcon;
     private ImageView helpIcon;
 
-    public HomeViewController(Parent view, ModelBuilder modelBuilder,Stage stage) {
+    public HomeViewController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
         this.builder = modelBuilder;
         this.restClient = modelBuilder.getRestClient();
-        this.stage = stage;
     }
 
     @SuppressWarnings("unchecked")
-    public void init() throws IOException, URISyntaxException {
+    public void init(Stage stage) throws IOException, URISyntaxException {
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references
@@ -98,8 +97,19 @@ public class HomeViewController {
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
 
-        titleBarInit(); // create titleBar
-
+        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
+        Parent titleBarView = null;
+        try {
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        titleBarBox.getChildren().add(titleBarView);
+        titleBarController = new TitleBarController(stage, titleBarView, builder);
+        titleBarController.init();
+        titleBarController.setTheme();
+        titleBarController.setMaximizable(true);
+        titleBarController.setTitle("Accord");
 
         homeButtonInit();
 
@@ -187,21 +197,6 @@ public class HomeViewController {
         addServer.setOnMouseReleased(event -> addServerBg.setFill(Paint.valueOf("#a4a4a4")));
     }
 
-    private void titleBarInit() {
-        HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
-        Parent titleBarView = null;
-        try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        titleBarBox.getChildren().add(titleBarView);
-        titleBarController = new TitleBarController(stage, titleBarView, builder);
-        titleBarController.init();
-        titleBarController.setTheme();
-        titleBarController.setMaximizable(true);
-        titleBarController.setTitle("Accord");
-    }
 
     private void helpButtonClicked(ActionEvent actionEvent) {
         try {
