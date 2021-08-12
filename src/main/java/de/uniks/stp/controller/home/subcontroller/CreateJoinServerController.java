@@ -208,25 +208,8 @@ public class CreateJoinServerController {
                 String[] splitLink = link.split("/");
                 String serverId = splitLink[splitLink.length - 3];
                 String inviteId = splitLink[splitLink.length - 1];
-                restClient.joinServer(serverId, inviteId, currentUser.getName(), currentUser.getPassword(), currentUser.getUserKey(), response -> {
-                    serverIdTrue = true;
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    String message = body.getObject().getString("message");
-                    Platform.runLater(() -> join_errorLabel.setText(message));
-                    if (status.equals("success")) {
-                        findNewServer(serverId);
-                    }
-                });
-                for (Server server : builder.getServers()) {
-                    if (server.getId().equals(serverId)) {
-                        serverIdTrue = true;
-                        break;
-                    }
-                }
-                if (!serverIdTrue) {
-                    error = "error.wrong_server_id";
-                }
+                joinServer(serverId,inviteId,currentUser);
+                checkIfCorrectServerId(serverId);
             } else {
                 error = "error.invalid_invite_link";
             }
@@ -237,6 +220,31 @@ public class CreateJoinServerController {
             String finalError = error;
             Platform.runLater(() -> setError(finalError, "join"));
         }
+    }
+
+    private void checkIfCorrectServerId(String serverId) {
+        for (Server server : builder.getServers()) {
+            if (server.getId().equals(serverId)) {
+                serverIdTrue = true;
+                break;
+            }
+        }
+        if (!serverIdTrue) {
+            error = "error.wrong_server_id";
+        }
+    }
+
+    private void joinServer(String serverId, String inviteId, CurrentUser currentUser) {
+        restClient.joinServer(serverId, inviteId, currentUser.getName(), currentUser.getPassword(), currentUser.getUserKey(), response -> {
+            serverIdTrue = true;
+            JsonNode body = response.getBody();
+            String status = body.getObject().getString("status");
+            String message = body.getObject().getString("message");
+            Platform.runLater(() -> join_errorLabel.setText(message));
+            if (status.equals("success")) {
+                findNewServer(serverId);
+            }
+        });
     }
 
     private void findNewServer(String Id) {
