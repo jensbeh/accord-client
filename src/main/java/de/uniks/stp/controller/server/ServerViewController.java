@@ -82,6 +82,8 @@ public class ServerViewController {
         this.homeViewController = homeViewController;
         this.serverSystemWebSocket = builder.getServerSystemWebSocket();
         this.chatWebSocketClient = builder.getServerChatWebSocketClient();
+        this.onlineUsers = new ArrayList<>();
+        this.offlineUsers = new ArrayList<>();
     }
 
 
@@ -486,6 +488,8 @@ public class ServerViewController {
      * Split Users into offline and online users then update the list
      */
     public void showOnlineOfflineUsers() {
+        onlineUsers.clear();
+        offlineUsers.clear();
         System.out.println("Server users: " + this.server.getUser());
         for (User user : this.server.getUser()) {
             if (user.isStatus()) {
