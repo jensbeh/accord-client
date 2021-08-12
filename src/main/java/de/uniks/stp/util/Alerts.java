@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 public class Alerts {
 
     public static void invalidNameAlert(ModelBuilder builder) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         ButtonType button = new ButtonType("Ok");
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button);
         alert.setTitle(lang.getString("window_title_serverSettings"));
