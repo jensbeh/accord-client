@@ -35,6 +35,8 @@ import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.hc.core5.http.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -82,15 +84,6 @@ public class SpotifyConnection {
     private ScheduledFuture<?> handle;
     private ScheduledExecutorService schedulerDescription;
     private GetTrackRequest getTrackRequest;
-    Runnable updatePersonalUserViewRunnable = new Runnable() {
-        public void run() {
-            currentSong = getCurrentlyPlayingSong();
-            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
-            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
-            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
-        }
-    };
     private Parent spotifyLoginView;
     private TitleBarController titleBarController;
 
@@ -305,9 +298,20 @@ public class SpotifyConnection {
     public void updateValuesUser(String userDescription) {
         //if contains spotify url
         if (userDescription.contains("i.scdn.co") && !isPersonalUser) {
-            String[] userDescriptionSplit = userDescription.split("#");
-            bandAndSong.setText(userDescriptionSplit[1]);
-            spotifyArtwork.setImage(new javafx.scene.image.Image(userDescriptionSplit[2]));
+            String cleanedDescription = builder.getPersonalUser().getDescription().split("#")[1];
+            JSONObject jsonObject = new JSONObject(cleanedDescription);
+            String bandAndSongString = (String) jsonObject.get("desc");
+            String artworkUrl = (String) jsonObject.get("data");
+            if (artworkUrl.charAt(0) == 'B') {
+                artworkUrl = artworkUrl.substring(2);
+                javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
+                spotifyArtwork.setImage(image);
+            }
+            bandAndSong.setText(bandAndSongString);
+            timeTotal.setVisible(false);
+            timePlayed.setVisible(false);
+            progressBar.setVisible(false);
+        } else {
             timeTotal.setVisible(false);
             timePlayed.setVisible(false);
             progressBar.setVisible(false);
@@ -368,14 +372,22 @@ public class SpotifyConnection {
         if (currentSong != null) {
             String albumID = getCurrentlyPlayingSongAlbumID();
             artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
-            builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+            JSONObject jsonString = new JSONObject()
+                    .put("desc", artist + " - " + currentSong.getItem().getName())
+                    .put("data", "B " + artwork.getUrl());
+            String description = "#" + jsonString.toString();
+            builder.getPersonalUser().setDescription(description);
             schedulerDescription = Executors.newScheduledThreadPool(1);
             schedulerDescription.scheduleAtFixedRate(() -> {
                 currentSong = getCurrentlyPlayingSong();
                 String albumID1 = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
                 artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID1);
                 if (builder.isSpotifyShow()) {
-                    builder.getPersonalUser().setDescription("#" + artist + " - " + currentSong.getItem().getName() + "#" + artwork.getUrl());
+                    JSONObject jsonString2 = new JSONObject()
+                            .put("desc", artist + " - " + currentSong.getItem().getName())
+                            .put("data", "B " + artwork.getUrl());
+                    String description2 = "#" + jsonString2.toString();
+                    builder.getPersonalUser().setDescription(description2);
                     System.out.println(builder.getPersonalUser().getDescription());
                 }
             }, 0, 15, TimeUnit.SECONDS);
@@ -403,10 +415,31 @@ public class SpotifyConnection {
         }
     }
 
+    Runnable updatePersonalUserViewRunnable = new Runnable() {
+        public void run() {
+            currentSong = getCurrentlyPlayingSong();
+            String albumID = builder.getSpotifyConnection().getCurrentlyPlayingSongAlbumID();
+            artwork = builder.getSpotifyConnection().getCurrentlyPlayingSongArtwork(albumID);
+            JSONObject jsonString = new JSONObject()
+                    .put("desc", artist + " - " + currentSong.getItem().getName())
+                    .put("data", "B " + artwork.getUrl());
+            String description = "#" + jsonString.toString();
+            builder.getPersonalUser().setDescription(description);
+            Platform.runLater(() -> updatePersonalUserView(currentSong.getProgress_ms(), currentSong.getItem().getDurationMs()));
+        }
+    };
+
     private void updatePersonalUserView(double elapsed, double duration) {
-        bandAndSong.setText(builder.getPersonalUser().getDescription().split("#")[1]);
-        javafx.scene.image.Image image = new javafx.scene.image.Image(artwork.getUrl());
-        spotifyArtwork.setImage(image);
+        String cleanedDescription = builder.getPersonalUser().getDescription().split("#")[1];
+        JSONObject jsonObject = new JSONObject(cleanedDescription);
+        String bandAndSongString = (String) jsonObject.get("desc");
+        String artworkUrl = (String) jsonObject.get("data");
+        if (artworkUrl.charAt(0) == 'B') {
+            artworkUrl = artworkUrl.substring(2);
+            javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
+            spotifyArtwork.setImage(image);
+        }
+        bandAndSong.setText(bandAndSongString);
         formatTime((int) elapsed, (int) duration);
         double progressbarValue = (elapsed / duration);
         progressBar.setProgress(progressbarValue + 0.03);
