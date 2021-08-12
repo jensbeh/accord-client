@@ -337,6 +337,7 @@ public class ChatViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle(lang.getString(title));
+        stage.setTitle(lang.getString(title));
     }
 
     /**

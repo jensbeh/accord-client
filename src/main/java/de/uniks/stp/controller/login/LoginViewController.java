@@ -62,6 +62,7 @@ public class LoginViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle("Accord");
+        stage.setTitle("Accord");
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");

@@ -35,6 +35,7 @@ public class SettingsController {
     private SubSetting subController;
     private TitleBarController titleBarController;
     private Button selectedButton;
+    private Stage stage;
 
     public SettingsController(ModelBuilder builder, Parent view) {
         this.builder = builder;
@@ -42,6 +43,7 @@ public class SettingsController {
     }
 
     public void init(Stage stage) {
+        this.stage = stage;
         //init view
         // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
@@ -57,6 +59,7 @@ public class SettingsController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
+        stage.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
 
         root = (Pane) view.lookup("#root");
         this.settingsItems = (VBox) view.lookup("#settingsItems");
@@ -213,6 +216,7 @@ public class SettingsController {
         generalButton.setText(lang.getString("button.settings_general"));
         audioButton.setText(lang.getString("button.settings_audio"));
         titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
+        stage.setTitle(builder.getStageManager().getLangBundle().getString("window_title_settings"));
 
         if (connectionButton != null) {
             connectionButton.setText(lang.getString("button.settings_connection"));

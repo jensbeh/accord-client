@@ -102,6 +102,7 @@ public class HomeViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
         titleBarController.setTitle("Accord");
+        stage.setTitle("Accord");
 
         scrollPaneServerBox = (ScrollPane) view.lookup("#scrollPaneServerBox");
         homeCircle = (Circle) view.lookup("#homeCircle");
@@ -184,6 +185,8 @@ public class HomeViewController {
             helpView.getStylesheets().clear();
             helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
             final Stage dialog = new Stage();
+            dialog.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+            dialog.setTitle(builder.getStageManager().getLangBundle().getString("label.help"));
 
             HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
             Parent titleBarViewHelp = null;
@@ -197,7 +200,7 @@ public class HomeViewController {
             titleBarControllerHelp.init();
             titleBarControllerHelp.setTheme();
             titleBarControllerHelp.setMaximizable(false);
-            titleBarControllerHelp.setTitle("Help");
+            titleBarControllerHelp.setTitle(builder.getStageManager().getLangBundle().getString("label.help"));
 
             String mdfxTxt;
             if (builder.getStageManager().getLangBundle().getLocale().getLanguage().equals("en")) {

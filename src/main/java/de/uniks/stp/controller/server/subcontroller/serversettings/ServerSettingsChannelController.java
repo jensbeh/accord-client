@@ -364,6 +364,7 @@ public class ServerSettingsChannelController extends SubSetting {
                     titleBarController.setTheme();
                     titleBarController.setMaximizable(false);
                     titleBarController.setTitle(lang.getString("label.error"));
+                    stage.setTitle(lang.getString("label.error"));
 
                     stage.setScene(scene);
                     stage.show();

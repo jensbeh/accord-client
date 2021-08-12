@@ -52,6 +52,7 @@ public class InviteUsersController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_inviteUsers"));
+        stage.setTitle(builder.getStageManager().getLangBundle().getString("window_title_inviteUsers"));
 
         root = (VBox) view.lookup("#rootInvite");
         tempSelected = (RadioButton) view.lookup("#tempSelected");

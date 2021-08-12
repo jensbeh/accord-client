@@ -175,6 +175,7 @@ public class CreateJoinServerController {
     public void onLanguageChanged() {
         ResourceBundle lang = builder.getStageManager().getLangBundle();
         titleBarController.setTitle(lang.getString("window_title_create"));
+        stage.setTitle(lang.getString("window_title_create"));
         createServer.setText(lang.getString("button.create_server"));
         joinServer.setText(lang.getString("button.join_server"));
         create_tab.setText(lang.getString("tabPane.create_server"));
