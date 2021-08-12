@@ -5,7 +5,10 @@ import de.uniks.stp.net.udp.Microphone;
 import de.uniks.stp.net.udp.Speaker;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -19,12 +22,6 @@ public class AudioController extends SubSetting {
     private boolean isMuted;
     private Runnable myRunnable;
     private Thread soundThread;
-
-    private Label inputLabel;
-    private Label outputLabel;
-    private Label volumeInputLabel;
-    private Label volumeOutputLabel;
-    private Label microphoneCheckLabel;
 
     private ComboBox<String> inputDeviceComboBox;
     private ComboBox<String> outputDeviceComboBox;
@@ -48,25 +45,18 @@ public class AudioController extends SubSetting {
 
     @SuppressWarnings("unchecked")
     public void init() {
-        inputLabel = (Label) view.lookup("#label_input");
-        outputLabel = (Label) view.lookup("#label_output");
-        volumeInputLabel = (Label) view.lookup("#label_volumeInput");
-        volumeOutputLabel = (Label) view.lookup("#label_volumeOutput");
-        microphoneCheckLabel = (Label) view.lookup("#label_microphoneCheck");
-
         inputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_input");
         outputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_output");
-
         volumeInput = (Slider) view.lookup("#slider_volumeInput");
         volumeOutput = (Slider) view.lookup("#slider_volumeOutput");
-
+        microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
         startButton = (Button) view.lookup("#button_audioStart");
+
         startButton.setOnAction(this::onMicrophoneTestStart);
         senderActive = false;
         stopped = true;
         myRunnable = this::runMicrophoneTest;
 
-        microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
         this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
@@ -89,22 +79,8 @@ public class AudioController extends SubSetting {
 
         // Slider Settings
         // set values
-        volumeInput.setMin(0.0);
         volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
-        volumeInput.setMax(1.0);
-
-        // set thumb text & style
-        volumeInput.applyCss();
-        volumeInput.layout();
-        Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
-        Text valueTextInputSlider = new Text();
-        if (builder.getTheme().equals("Dark")) {
-            valueTextInputSlider.setFill(Color.BLACK);
-        } else {
-            valueTextInputSlider.setFill(Color.WHITE);
-        }
-        valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
-        thumbInputSlider.getChildren().add(valueTextInputSlider);
+        Text valueTextInputSlider = volumeInit(volumeInput);
 
         // get new Value
         volumeInput.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -114,22 +90,9 @@ public class AudioController extends SubSetting {
         });
 
         // set values
-        volumeOutput.setMin(0.0);
         volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
-        volumeOutput.setMax(1.0);
 
-        // set thumb text & style
-        volumeOutput.applyCss();
-        volumeOutput.layout();
-        Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
-        Text valueTextOutputSlider = new Text();
-        if (builder.getTheme().equals("Dark")) {
-            valueTextOutputSlider.setFill(Color.BLACK);
-        } else {
-            valueTextOutputSlider.setFill(Color.WHITE);
-        }
-        valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
-        thumbOutputSlider.getChildren().add(valueTextOutputSlider);
+        Text valueTextOutputSlider = volumeInit(volumeOutput);
 
         // get new Value
         volumeOutput.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -137,6 +100,26 @@ public class AudioController extends SubSetting {
             valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
             builder.saveSettings();
         });
+    }
+
+    private Text volumeInit(Slider volumeXXXput) {
+        volumeXXXput.setMin(0.0);
+        volumeXXXput.setMax(1.0);
+
+        // set thumb text & style
+        volumeXXXput.applyCss();
+        volumeXXXput.layout();
+        Pane thumbXXXputSlider = (Pane) volumeXXXput.lookup(".thumb");
+        Text valueTextXXXputSlider = new Text();
+        if (builder.getTheme().equals("Dark")) {
+            valueTextXXXputSlider.setFill(Color.BLACK);
+        } else {
+            valueTextXXXputSlider.setFill(Color.WHITE);
+        }
+        valueTextXXXputSlider.setText(String.valueOf((int) (volumeXXXput.getValue() * 100)));
+        thumbXXXputSlider.getChildren().add(valueTextXXXputSlider);
+
+        return valueTextXXXputSlider;
     }
 
     /**
