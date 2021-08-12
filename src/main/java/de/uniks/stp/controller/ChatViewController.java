@@ -182,17 +182,21 @@ public class ChatViewController {
             topNode.toBack();
         }
         if (pngNames.isEmpty()) {
-            File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
-            for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-                String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-                for (Emoji emoji : EmojiParser.getInstance().search("")) {
-                    if (emoji.getHex().equals(name)) {
-                        pngNames.add(name);
-                    }
+            setUpEmojis();
+        }
+        showEmojis();
+    }
+
+    private void setUpEmojis() {
+        File folder = new File(APPDIR_ACCORD_PATH + TEMP_PATH + EMOJIS_PATH);
+        for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+            String name = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+            for (Emoji emoji : EmojiParser.getInstance().search("")) {
+                if (emoji.getHex().equals(name)) {
+                    pngNames.add(name);
                 }
             }
         }
-        showEmojis();
     }
 
     /**
@@ -286,36 +290,39 @@ public class ChatViewController {
         }
 
         if (selected != null) {
-            StackPane finalSelected = selected;
-            //needs to happen here, otherwise contextMenu won't get the css
-            if (builder.getTheme().equals("Bright")) {
-                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
-            } else {
-                finalSelected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
-            }
-            selected.setOnContextMenuRequested(event -> {
-                contextMenu.setY(event.getScreenY());
-                contextMenu.setX(event.getScreenX());
-                contextMenu.show(finalSelected.getScene().getWindow());
-            });
-            // if message is a text message
-            text = messagesHashMap.get(selected).getMessage();
-            if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerState()) {
-                contextMenu.getItems().get(1).setVisible(false);
-                contextMenu.getItems().get(2).setVisible(false);
-            } else {
-                contextMenu.getItems().get(1).setVisible(true);
-                contextMenu.getItems().get(2).setVisible(true);
-            }
-            // not editable if message is a link
-            if (messageIsLink) {
-                contextMenu.getItems().get(1).setVisible(false);
-            }
-            selectedMsg = messagesHashMap.get(selected);
+            updateSelectedMessage(selected, messageIsLink);
         }
         contextMenu.getItems().get(0).setOnAction(this::copy);
         contextMenu.getItems().get(1).setOnAction(this::edit);
         contextMenu.getItems().get(2).setOnAction(this::delete);
+    }
+
+    private void updateSelectedMessage(StackPane selected, boolean messageIsLink) {
+        //needs to happen here, otherwise contextMenu won't get the css
+        if (builder.getTheme().equals("Bright")) {
+            selected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/ChatView.css")).toExternalForm());
+        } else {
+            selected.getScene().getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/ChatView.css")).toExternalForm());
+        }
+        selected.setOnContextMenuRequested(event -> {
+            contextMenu.setY(event.getScreenY());
+            contextMenu.setX(event.getScreenX());
+            contextMenu.show(selected.getScene().getWindow());
+        });
+        // if message is a text message
+        text = messagesHashMap.get(selected).getMessage();
+        if (!messagesHashMap.get(selected).getFrom().equals(builder.getPersonalUser().getName()) || !builder.getInServerState()) {
+            contextMenu.getItems().get(1).setVisible(false);
+            contextMenu.getItems().get(2).setVisible(false);
+        } else {
+            contextMenu.getItems().get(1).setVisible(true);
+            contextMenu.getItems().get(2).setVisible(true);
+        }
+        // not editable if message is a link
+        if (messageIsLink) {
+            contextMenu.getItems().get(1).setVisible(false);
+        }
+        selectedMsg = messagesHashMap.get(selected);
     }
 
     /**
@@ -325,8 +332,7 @@ public class ChatViewController {
         try {
             ResourceBundle lang = StageManager.getLangBundle();
 
-            Parent subview = FXMLLoader.load(Objects.requireNonNull(
-                    StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
+            Parent subview = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteMessage.fxml")), StageManager.getLangBundle());
             Scene scene = new Scene(subview);
             stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
@@ -336,7 +342,7 @@ public class ChatViewController {
             scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
 
             // create titleBar
-            createTitleBar(subview,"window_title_delete_message");
+            createTitleBar(subview, "window_title_delete_message");
 
             Label msg = (Label) subview.lookup("#deleteWarning");
             msg.setText(lang.getString("label.message_delete_info"));
@@ -513,8 +519,7 @@ public class ChatViewController {
                 lang = StageManager.getLangBundle();
 
                 // create titleBar
-                createTitleBar(subview,"title.edit_warning");
-
+                createTitleBar(subview, "title.edit_warning");
 
                 Label msg = (Label) subview.lookup("#editWarningText");
                 Button yes = (Button) subview.lookup("#deleteEditMessage");
@@ -582,23 +587,21 @@ public class ChatViewController {
     private void sendButtonClicked(ActionEvent actionEvent) {
         //get Text from TextField and clear TextField after
         String textMessage = messageTextField.getText();
-        if (textMessage.length() <= 700) {
-            if (!textMessage.isEmpty() && !textMessage.endsWith("#arrival") && !textMessage.endsWith("#exit")) {
-                if (!builder.getInServerState()) {
-                    try {
-                        if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
-                            builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        if (textMessage.length() <= 700 && !textMessage.isEmpty() && !textMessage.endsWith("#arrival") && !textMessage.endsWith("#exit")) {
+            if (!builder.getInServerState()) {
+                try {
+                    if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
+                        builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
                     }
-                } else {
-                    try {
-                        if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
-                            builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
+                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -686,7 +689,6 @@ public class ChatViewController {
             messageBox = ((HBox) box.getChildren().get(1));
         }
 
-
         // an independent EmojiTextFlow is needed to calculate the width
         MessageView messageView = new MessageView();
         EmojiTextFlowExtended promptETF;
@@ -698,7 +700,6 @@ public class ChatViewController {
         }
         promptETF = messageView.handleEmojis(builder, type);
         promptETF.parseAndAppend(str);
-
 
         double lyw = getLayoutBoundsGetWidth(promptETF) + 10;
         if (lyw > 320) {
