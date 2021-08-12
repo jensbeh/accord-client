@@ -3,6 +3,7 @@ package de.uniks.stp.controller.server.subcontroller.serversettings;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Alerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -14,6 +15,8 @@ import kong.unirest.JsonNode;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OverviewOwnerController {
     private final Parent view;
@@ -43,10 +46,15 @@ public class OverviewOwnerController {
      * Changes name of current server
      */
     private void onChangeNameClicked(ActionEvent actionEvent) {
-        this.serverName.setText(nameText.getText());
-        builder.getCurrentServer().setName(nameText.getText());
-        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
-                response -> builder.getCurrentServer().setName(nameText.getText()));
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(nameText.getText());
+        if (!whiteSpaceMatcher.find()) {
+            this.serverName.setText(nameText.getText());
+            builder.getCurrentServer().setName(nameText.getText());
+            restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
+                    response -> builder.getCurrentServer().setName(nameText.getText()));
+        } else {
+            Alerts.invalidNameAlert(builder);
+        }
     }
 
     /**

@@ -584,7 +584,7 @@ public class ServerViewControllerTest extends ApplicationTest {
         builder.getCurrentServer().getCategories().get(0).withChannel(new ServerChannel().setName("PARTEY").setType("text"));
         String channelId = builder.getCurrentServer().getCategories().get(0).getChannel().get(0).getId();
         String categoryId = builder.getCurrentServer().getCategories().get(0).getId();
-
+        WaitForAsyncUtils.waitForFxEvents();
         doubleClickOn("#" + channelId);
 
         String message = new JSONObject().put("action", "channelDeleted").put("data", new JSONObject().put("id", channelId).put("category", categoryId).put("name", "testChannel")).toString();
