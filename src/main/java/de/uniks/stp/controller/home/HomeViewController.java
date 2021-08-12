@@ -82,7 +82,8 @@ public class HomeViewController {
     }
 
     @SuppressWarnings("unchecked")
-    public void init() throws IOException, URISyntaxException {
+    public void init(Stage stage) throws IOException, URISyntaxException {
+        this.stage = stage;
         builder.loadSettings();
         builder.setInServerState(false);
         // Load all view references

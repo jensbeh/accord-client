@@ -82,7 +82,7 @@ public class StageManager extends Application {
             scene.setRoot(root);
             homeViewController = new HomeViewController(root, builder);
             builder.setHomeViewController(homeViewController);
-            homeViewController.init();
+            homeViewController.init(stage);
             homeViewController.setTheme();
             stage.setScene(scene);
             stage.setResizable(true);
