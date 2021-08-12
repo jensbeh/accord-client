@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The class CreateServerController is about showing the createServerView. After a server is
@@ -142,7 +144,8 @@ public class CreateJoinServerController {
         try {
             CurrentUser personalUser = builder.getPersonalUser();
             String name = serverName.getText();
-            if (name != null && !name.isEmpty()) {
+            Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(name);
+            if (name != null && !name.isEmpty() && !whiteSpaceMatcher.find()) {
                 //JsonNode response = restClient.postServer(personalUser.getUserKey(), name);
                 restClient.postServer(personalUser.getUserKey(), name, response -> {
                     String status = response.getBody().getObject().getString("status");

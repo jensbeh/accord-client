@@ -9,6 +9,7 @@ import de.uniks.stp.model.Server;
 import de.uniks.stp.model.ServerChannel;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Alerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerSettingsChannelController extends SubSetting {
     private final Parent view;
@@ -268,7 +271,8 @@ public class ServerSettingsChannelController extends SubSetting {
      * @param actionEvent the mouse click event
      */
     private void onChannelChangeButtonClicked(ActionEvent actionEvent) {
-        if (selectedChannel != null && !editChannelsTextField.getText().isEmpty()) {
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(editChannelsTextField.getText());
+        if (!whiteSpaceMatcher.find() && selectedChannel != null && !editChannelsTextField.getText().isEmpty()) {
             String newChannelName = editChannelsTextField.getText();
             if (!selectedChannel.getName().equals(newChannelName)) {
                 restClient.updateChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), newChannelName, selectedChannel.isPrivilege(), userListToStringArray(selectedChannel.getPrivilegedUsers()), response -> {
@@ -278,6 +282,10 @@ public class ServerSettingsChannelController extends SubSetting {
                         Platform.runLater(() -> editChannelsTextField.setText(""));
                     }
                 });
+            }
+        } else {
+            if (selectedChannel != null) {
+                Alerts.invalidNameAlert(builder);
             }
         }
     }
@@ -306,7 +314,8 @@ public class ServerSettingsChannelController extends SubSetting {
      * @param actionEvent the mouse click event
      */
     private void onChannelCreateButtonClicked(ActionEvent actionEvent) {
-        if (!createChannelTextField.getText().isEmpty()) {
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(createChannelTextField.getText());
+        if (!whiteSpaceMatcher.find() && !createChannelTextField.getText().isEmpty()) {
             String channelName = createChannelTextField.getText();
             String[] members = new String[0];
             System.out.println("Channeltype: " + channelType);
@@ -317,6 +326,8 @@ public class ServerSettingsChannelController extends SubSetting {
                     Platform.runLater(() -> createChannelTextField.setText(""));
                 }
             });
+        } else {
+            Alerts.invalidNameAlert(builder);
         }
     }
 
