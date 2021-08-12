@@ -24,7 +24,16 @@
 }
 
 #okButton {
+    -fx-pref-width: 90px;
     -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-text-fill: BLACK;
+}
+#okButton:hover {
+    -fx-background-color: #ffbdbd;
+}
+#okButton:pressed {
+    -fx-background-color: #ff7d7d;
 }
 
 #errorLabel {
