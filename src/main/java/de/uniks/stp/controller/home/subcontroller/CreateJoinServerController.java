@@ -211,7 +211,7 @@ public class CreateJoinServerController {
                 String[] splitLink = link.split("/");
                 String serverId = splitLink[splitLink.length - 3];
                 String inviteId = splitLink[splitLink.length - 1];
-                joinServer(serverId,inviteId,currentUser);
+                joinServer(serverId, inviteId, currentUser);
                 checkIfCorrectServerId(serverId);
             } else {
                 error = "error.invalid_invite_link";

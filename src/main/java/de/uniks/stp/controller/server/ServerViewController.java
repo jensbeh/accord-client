@@ -570,7 +570,7 @@ public class ServerViewController {
                     categories.setId(categoryInfo.getString("id"));
                     categories.setName(categoryInfo.getString("name"));
                     this.server.withCategories(categories);
-                    loadChannelsCallback(categories,data,categoriesLoadedCallback);
+                    loadChannelsCallback(categories, data, categoriesLoadedCallback);
                 }
             }
         });
@@ -606,14 +606,14 @@ public class ServerViewController {
                 JSONArray data = body.getObject().getJSONArray("data");
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject channelInfo = data.getJSONObject(i);
-                    ServerChannel channel = createServerChannel(channelInfo,cat);
+                    ServerChannel channel = createServerChannel(channelInfo, cat);
 
                     JSONObject json = new JSONObject(channelInfo.toString());
 
-                    addAudioMemberToChannel(channel,json);
-                    channelAddPrivledUsers(channel,json);
+                    addAudioMemberToChannel(channel, json);
+                    channelAddPrivledUsers(channel, json);
 
-                    loadChannelData(channel,data,channelLoadedCallback);
+                    loadChannelData(channel, data, channelLoadedCallback);
                 }
             }
         });
@@ -664,7 +664,7 @@ public class ServerViewController {
     }
 
     private ServerChannel createServerChannel(JSONObject channelInfo, Categories cat) {
-        ServerChannel channel= new ServerChannel();
+        ServerChannel channel = new ServerChannel();
         channel.setCurrentUser(builder.getPersonalUser());
         channel.setId(channelInfo.getString("id"));
         channel.setName(channelInfo.getString("name"));

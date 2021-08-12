@@ -240,7 +240,7 @@ public class SettingsController {
         } else {
             setDarkMode();
         }
-        if(selectedButton!=null){
+        if (selectedButton != null) {
             selectedButton(selectedButton);
         }
     }

@@ -106,7 +106,7 @@ public class SteamLoginController {
         webView.getEngine().locationProperty().removeListener(this::getSteam64ID);
         webView = null;
         loginStage = null;
-        Platform.runLater(()-> refreshConnectionView.run());
+        Platform.runLater(() -> refreshConnectionView.run());
     }
 
     public void refresh(Runnable refresh) {

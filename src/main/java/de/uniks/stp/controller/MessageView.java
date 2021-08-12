@@ -114,11 +114,11 @@ public class MessageView {
         HBox messageBox = new HBox();
         messageBox.getChildren().add(message);
         HBox finalMessageBox = new HBox();
-        setSize(lyw,messageBox,finalMessageBox);
+        setSize(lyw, messageBox, finalMessageBox);
 
-        setupMessageBackground(finalMessageBox, messageIsInfo, messageBox,item);
+        setupMessageBackground(finalMessageBox, messageIsInfo, messageBox, item);
 
-        setUpCell(loadImage,vbox,userName,webView,cell,loadVideo,mediaView,url,finalMessageBox);
+        setUpCell(loadImage, vbox, userName, webView, cell, loadVideo, mediaView, url, finalMessageBox);
 
         if (!messageIsInfo) {
             boolean messageIsLink = loadImage || loadVideo;

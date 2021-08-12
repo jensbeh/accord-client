@@ -14,7 +14,10 @@ import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -146,7 +149,7 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
             if (builder.getCurrentServer().getCategories().get(0) == selectedCategory) {
-               createCategoryDeleteView();
+                createCategoryDeleteView();
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
