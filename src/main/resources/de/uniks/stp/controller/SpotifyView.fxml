@@ -1,67 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" id="spotifyRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-      minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0"
-      spacing="10.0" style="-fx-background-color: #1db954; -fx-background-radius: 10 0 10 10;"
-      xmlns="http://javafx.com/javafx/11">
+
+<VBox id="spotifyRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #1db954; -fx-background-radius: 10 10 10 10;" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label id="spotifyHeaderLabel" text="%label.spotifyHeaderLabel" textFill="WHITE">
             <font>
-                <Font name="System Bold" size="17.0"/>
+                <Font name="System Bold" size="17.0" />
             </font>
         </Label>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
             <children>
-                <ImageView id="spotifyArtwork" fitHeight="76.0" fitWidth="90.0" pickOnBounds="true"
-                           preserveRatio="true">
+                <ImageView id="spotifyArtwork" fitHeight="76.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../icons/Spotify_Icon_RGB_Green.png"/>
+                        <Image url="@../icons/Spotify_Icon_RGB_Green.png" />
                     </image>
                     <effect>
-                        <DropShadow/>
+                        <DropShadow />
                     </effect>
                 </ImageView>
-                <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0"
-                       prefWidth="90.0" text="%label.no_song_playing" textAlignment="CENTER" textFill="WHITE"
-                       textOverrun="CLIP" wrapText="true">
+                <Label id="bandAndSong" alignment="CENTER" maxHeight="80.0" maxWidth="90.0" prefHeight="80.0" prefWidth="90.0" text="%label.no_song_playing" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP" wrapText="true">
                     <font>
-                        <Font name="System Bold" size="13.0"/>
+                        <Font name="System Bold" size="13.0" />
                     </font>
                 </Label>
             </children>
         </HBox>
         <VBox spacing="8.0">
             <VBox.margin>
-                <Insets left="15.0"/>
+                <Insets left="15.0" />
             </VBox.margin>
             <children>
                 <HBox alignment="CENTER_LEFT">
                     <children>
-                        <ProgressBar id="progressBar" prefHeight="13.0" prefWidth="169.0" progress="1.0"
-                                     stylesheets="@../spotify/slider.css">
+                        <ProgressBar id="progressBar" prefHeight="13.0" prefWidth="169.0" progress="1.0" stylesheets="@../spotify/slider.css">
                             <effect>
-                                <DropShadow height="6.17" radius="2.585" width="6.17"/>
+                                <DropShadow height="6.17" radius="2.585" width="6.17" />
                             </effect>
                         </ProgressBar>
                     </children>
                 </HBox>
                 <HBox spacing="110.0">
                     <children>
-                        <Label id="timePlayed" text="00:00" textFill="WHITE"/>
-                        <Label id="timeTotal" text="00:00" textFill="WHITE"/>
+                        <Label id="timePlayed" text="00:00" textFill="WHITE" />
+                        <Label id="timeTotal" text="00:00" textFill="WHITE" />
                     </children>
                 </HBox>
             </children>
         </VBox>
     </children>
     <padding>
-        <Insets top="10.0"/>
+        <Insets top="10.0" />
     </padding>
 </VBox>

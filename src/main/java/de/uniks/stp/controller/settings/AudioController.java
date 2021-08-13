@@ -47,17 +47,16 @@ public class AudioController extends SubSetting {
     public void init() {
         inputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_input");
         outputDeviceComboBox = (ComboBox<String>) view.lookup("#comboBox_output");
-
         volumeInput = (Slider) view.lookup("#slider_volumeInput");
         volumeOutput = (Slider) view.lookup("#slider_volumeOutput");
-
+        microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
         startButton = (Button) view.lookup("#button_audioStart");
+
         startButton.setOnAction(this::onMicrophoneTestStart);
         senderActive = false;
         stopped = true;
         myRunnable = this::runMicrophoneTest;
 
-        microphoneProgressBar = (ProgressBar) view.lookup("#progressBar_microphone");
 
         // ComboBox Settings
         this.inputDeviceComboBox.setPromptText(builder.getLinePoolService().getSelectedMicrophoneName());
@@ -80,20 +79,9 @@ public class AudioController extends SubSetting {
 
         // Slider Settings
         // set values
-        volumeInput.setMin(0.0);
         volumeInput.setValue(builder.getLinePoolService().getMicrophoneVolume());
-        volumeInput.setMax(1.0);
-
-        // set thumb text & style
-        volumeInput.applyCss();
-        volumeInput.layout();
+        Text valueTextInputSlider = volumeInit(volumeInput);
         Pane thumbInputSlider = (Pane) volumeInput.lookup(".thumb");
-        Text valueTextInputSlider = new Text();
-        if (builder.getTheme().equals("Dark")) {
-            valueTextInputSlider.setFill(Color.BLACK);
-        } else {
-            valueTextInputSlider.setFill(Color.WHITE);
-        }
         valueTextInputSlider.setText(String.valueOf((int) (volumeInput.getValue() * 100) + 50));
         thumbInputSlider.getChildren().add(valueTextInputSlider);
 
@@ -105,20 +93,10 @@ public class AudioController extends SubSetting {
         });
 
         // set values
-        volumeOutput.setMin(0.0);
         volumeOutput.setValue(builder.getLinePoolService().getSpeakerVolume());
-        volumeOutput.setMax(1.0);
 
-        // set thumb text & style
-        volumeOutput.applyCss();
-        volumeOutput.layout();
+        Text valueTextOutputSlider = volumeInit(volumeOutput);
         Pane thumbOutputSlider = (Pane) volumeOutput.lookup(".thumb");
-        Text valueTextOutputSlider = new Text();
-        if (builder.getTheme().equals("Dark")) {
-            valueTextOutputSlider.setFill(Color.BLACK);
-        } else {
-            valueTextOutputSlider.setFill(Color.WHITE);
-        }
         valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
         thumbOutputSlider.getChildren().add(valueTextOutputSlider);
 
@@ -128,6 +106,22 @@ public class AudioController extends SubSetting {
             valueTextOutputSlider.setText(String.valueOf((int) (volumeOutput.getValue() * 100)));
             builder.saveSettings();
         });
+    }
+
+    private Text volumeInit(Slider volumeXXXput) {
+        volumeXXXput.setMin(0.0);
+        volumeXXXput.setMax(1.0);
+
+        // set thumb text & style
+        volumeXXXput.applyCss();
+        volumeXXXput.layout();
+        Text valueTextXXXputSlider = new Text();
+        if (builder.getTheme().equals("Dark")) {
+            valueTextXXXputSlider.setFill(Color.BLACK);
+        } else {
+            valueTextXXXputSlider.setFill(Color.WHITE);
+        }
+        return valueTextXXXputSlider;
     }
 
     /**

@@ -76,6 +76,30 @@ public class OverviewOwnerController {
         alert.setHeaderText(lang.getString("warning.deleteServer"));
         alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
 
+        setTheme(dialogPane, buttonBar);
+        dialogPane.getStyleClass().add("AlertStyle");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == button) {
+            // disconnect from audioChannel
+            if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
+                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
+            }
+            //delete server
+            restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                System.out.println("Overview controller: " + body.toString());
+                String status = body.getObject().getString("status");
+                System.out.println("status: " + status);
+            });
+            Platform.runLater(() -> {
+                Stage stage = (Stage) serverName.getScene().getWindow();
+                stage.close();
+            });
+
+        }
+    }
+
+    private void setTheme(DialogPane dialogPane, ButtonBar buttonBar) {
         if (builder.getTheme().equals("Bright")) {
             dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
             buttonBar.setStyle("-fx-font-size: 14px;" +
@@ -90,26 +114,6 @@ public class OverviewOwnerController {
                     + "-fx-background-color: #2f3136;");
             buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
             buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
-        }
-        dialogPane.getStyleClass().add("AlertStyle");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == button) {
-            // disconnect from audioChannel
-            if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
-            }
-            //delete server
-            restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                System.out.println("Overview controller: " + body.toString());
-                String status = body.getObject().getString("status");
-                System.out.println("status: " + status);
-            });
-            Platform.runLater(() -> {
-                Stage stage = (Stage) serverName.getScene().getWindow();
-                stage.close();
-            });
-
         }
     }
 }

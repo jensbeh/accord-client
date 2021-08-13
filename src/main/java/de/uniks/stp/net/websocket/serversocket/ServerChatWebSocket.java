@@ -145,7 +145,7 @@ public class ServerChatWebSocket extends Endpoint {
         if (serverViewController.getChatViewController() != null && serverViewController.getCurrentChannel().getId().equals(channelId)) {
             assert message != null;
             serverViewController.getCurrentChannel().withMessage(message);
-            Platform.runLater(() -> chatViewController.printMessage(message));
+            Platform.runLater(() -> chatViewController.printMessage(message, true));
         }
     }
 

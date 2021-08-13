@@ -30,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -109,7 +110,6 @@ public class SpotifyConnection {
 
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
-
         try {
             spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
@@ -150,6 +150,7 @@ public class SpotifyConnection {
         loginStage.setResizable(true);
         loginStage.setMinWidth(660);
         loginStage.setMinHeight(710);
+        loginStage.initModality(Modality.APPLICATION_MODAL);
         loginStage.show();
         ResizeHelper.addResizeListener(loginStage);
     }
@@ -298,16 +299,18 @@ public class SpotifyConnection {
 
     public void updateValuesUser(String userDescription) {
         //if contains spotify url
-        Matcher spotifyMatcher = Pattern.compile("#\\{\"desc\"(.*)").matcher(userDescription);
+        Matcher spotifyMatcher = Pattern.compile("#\\{\"(.*)").matcher(userDescription);
         if (spotifyMatcher.find() && !isPersonalUser) {
             String cleanedDescription = userDescription.split("#")[1];
             JSONObject jsonObject = new JSONObject(cleanedDescription);
             String bandAndSongString = (String) jsonObject.get("desc");
-            String artworkUrl = (String) jsonObject.get("data");
-            if (artworkUrl.charAt(0) == 'B') {
-                artworkUrl = artworkUrl.substring(2);
-                javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
-                spotifyArtwork.setImage(image);
+            if (jsonObject.has("data")) {
+                String artworkUrl = (String) jsonObject.get("data");
+                if (artworkUrl.charAt(0) == 'B') {
+                    artworkUrl = artworkUrl.substring(2);
+                    javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
+                    spotifyArtwork.setImage(image);
+                }
             }
             bandAndSong.setText(bandAndSongString);
         }
@@ -338,7 +341,6 @@ public class SpotifyConnection {
                 updateValuesUser(userDescription);
             }
 
-            cell.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 10 10 0; -fx-padding: 5 5 5 5;");
             Bounds bounds = (cell.localToScreen(cell.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
             double y = bounds.getMinY();

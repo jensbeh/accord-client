@@ -2,6 +2,7 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.util.EmojiTextFlowExtended;
@@ -65,18 +66,9 @@ public class MessageView {
         }
 
         VBox vbox = new VBox();
-        Label userName = new Label();
-        userName.setId("userNameLabel");
-        if (builder.getTheme().equals("Bright")) {
-            userName.setTextFill(Color.BLACK);
-        } else {
-            userName.setTextFill(Color.WHITE);
-        }
-        EmojiTextFlowExtended message;
+        Label userName = userNameLabel();
 
         //right alignment if User is currentUser else left
-        Date date = new Date(item.getTimestamp());
-        DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
         String textMessage = item.getMessage();
         String url = searchUrl(textMessage);
         loadImage = false;
@@ -98,6 +90,95 @@ public class MessageView {
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
         }
 
+        EmojiTextFlowExtended message = setupMessage(messageIsInfo, vbox, userName, item);
+
+        textMessage = parseTeamEncoding(textMessage);
+
+        double lyw = 0.0f;
+        if (!textMessage.equals("")) {
+            message.setId("messageLabel");
+            String str;
+            if (messageIsInfo) {
+                str = showSystemMessage(item);
+            } else {
+                str = textMessage;
+            }
+            if (urlType.equals("link")) {
+                message.addTextLinkNode(str, url);
+            } else {
+                message.parseAndAppend(str);
+            }
+            lyw = getLayoutBoundsGetWidth(message) + 10;
+        }
+
+        HBox messageBox = new HBox();
+        messageBox.getChildren().add(message);
+        HBox finalMessageBox = new HBox();
+        setSize(lyw, messageBox, finalMessageBox);
+
+        setupMessageBackground(finalMessageBox, messageIsInfo, messageBox, item);
+
+        setUpCell(loadImage, vbox, userName, webView, cell, loadVideo, mediaView, url, finalMessageBox);
+
+        if (!messageIsInfo) {
+            boolean messageIsLink = loadImage || loadVideo;
+            cell.setOnMouseClicked(event -> chatViewController.chatClicked(event, messageIsLink));
+        }
+        chatViewController.getContainer().getChildren().add(cell);
+        chatViewController.getMessagesHashMap().put(cell, item);
+        chatViewController.getStackPaneHashMap().put(item, cell);
+        if (scroll != null) {
+            scroll.run();
+        }
+    }
+
+    private void setUpCell(boolean loadImage, VBox vbox, Label userName, WebView webView, StackPane cell, boolean loadVideo, MediaView mediaView, String url, HBox finalMessageBox) {
+        if (loadImage) {
+            vbox.getChildren().addAll(userName, webView);
+            cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
+        } else if (loadVideo) {
+            MediaControl mediaControl = new MediaControl();
+            VBox mediaBox = mediaControl.setMediaControls(mediaView);
+            setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+            vbox.getChildren().addAll(userName, mediaBox);
+
+        } else {
+            vbox.getChildren().addAll(userName, finalMessageBox);
+            vbox.setMouseTransparent(true);
+        }
+
+        cell.setAlignment(Pos.CENTER_RIGHT);
+        cell.getChildren().addAll(vbox);
+    }
+
+    private void setSize(double lyw, HBox messageBox, HBox finalMessageBox) {
+        if (lyw > 320) {
+            messageBox.setMaxWidth(320);
+        } else {
+            messageBox.setMaxWidth(lyw);
+        }
+        if (lyw > 320) {
+            finalMessageBox.setMaxWidth(320 + 10);
+        } else {
+            finalMessageBox.setMaxWidth(lyw + 10);
+        }
+    }
+
+    private Label userNameLabel() {
+        Label userName = new Label();
+        userName.setId("userNameLabel");
+        if (builder.getTheme().equals("Bright")) {
+            userName.setTextFill(Color.BLACK);
+        } else {
+            userName.setTextFill(Color.WHITE);
+        }
+        return userName;
+    }
+
+    private EmojiTextFlowExtended setupMessage(boolean messageIsInfo, VBox vbox, Label userName, Message item) {
+        Date date = new Date(item.getTimestamp());
+        DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
+        EmojiTextFlowExtended message;
         if (messageIsInfo) {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText((formatterTime.format(date)));
@@ -114,48 +195,10 @@ public class MessageView {
 
             message = handleEmojis(this.builder, "other");
         }
+        return message;
+    }
 
-        textMessage = parseTeamEncoding(textMessage);
-
-        double lyw = 0.0f;
-        if (!textMessage.equals("")) {
-            message.setId("messageLabel");
-
-            String str = null;
-            if (messageIsInfo) {
-                ResourceBundle lang = builder.getStageManager().getLangBundle();
-                if (item.getMessage().endsWith("#arrival")) {
-                    str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
-                } else if (item.getMessage().endsWith("#exit")) {
-                    str = ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
-                }
-            } else {
-                str = textMessage;
-            }
-            if (urlType.equals("link")) {
-                message.addTextLinkNode(str, url);
-            } else {
-                message.parseAndAppend(str);
-            }
-
-            lyw = getLayoutBoundsGetWidth(message) + 10;
-        }
-
-        HBox messageBox = new HBox();
-        messageBox.getChildren().add(message);
-        if (lyw > 320) {
-            messageBox.setMaxWidth(320);
-        } else {
-            messageBox.setMaxWidth(lyw);
-        }
-        HBox finalMessageBox = new HBox();
-        if (lyw > 320) {
-            finalMessageBox.setMaxWidth(320 + 10);
-        } else {
-            finalMessageBox.setMaxWidth(lyw + 10);
-        }
-
-        //Message background
+    private void setupMessageBackground(HBox finalMessageBox, boolean messageIsInfo, HBox messageBox, Message item) {
         Polygon polygon = new Polygon();
         if (messageIsInfo) {
             polygon.getStyleClass().add("messagePolygonSystem");
@@ -179,34 +222,16 @@ public class MessageView {
                     10.0, 10.0);
             finalMessageBox.getChildren().addAll(polygon, messageBox);
         }
+    }
 
-
-        if (loadImage) {
-            vbox.getChildren().addAll(userName, webView);
-            cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
-        } else if (loadVideo) {
-            MediaControl mediaControl = new MediaControl();
-            VBox mediaBox = mediaControl.setMediaControls(mediaView);
-            setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-            vbox.getChildren().addAll(userName, mediaBox);
-
-        } else {
-            vbox.getChildren().addAll(userName, finalMessageBox);
-            vbox.setMouseTransparent(true);
+    private String showSystemMessage(Message item) {
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
+        if (item.getMessage().endsWith("#arrival")) {
+            return ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
+        } else if (item.getMessage().endsWith("#exit")) {
+            return ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
         }
-
-        cell.setAlignment(Pos.CENTER_RIGHT);
-        cell.getChildren().addAll(vbox);
-        if (!messageIsInfo) {
-            boolean messageIsLink = loadImage || loadVideo;
-            cell.setOnMouseClicked(event -> chatViewController.chatClicked(event, messageIsLink));
-        }
-        chatViewController.getContainer().getChildren().add(cell);
-        chatViewController.getMessagesHashMap().put(cell, item);
-        chatViewController.getStackPaneHashMap().put(item, cell);
-        if (scroll != null) {
-            scroll.run();
-        }
+        return null;
     }
 
     private String parseTeamEncoding(String textMessage) {

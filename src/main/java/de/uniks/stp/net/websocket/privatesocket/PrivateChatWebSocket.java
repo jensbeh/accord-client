@@ -189,7 +189,7 @@ public class PrivateChatWebSocket extends Endpoint {
         }
         saveMessage(message);
         if (privateViewController.getChatViewController() != null) {
-            Platform.runLater(() -> chatViewController.printMessage(message));
+            Platform.runLater(() -> chatViewController.printMessage(message, true));
         }
     }
 
