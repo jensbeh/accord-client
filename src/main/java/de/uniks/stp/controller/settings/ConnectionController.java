@@ -128,6 +128,7 @@ public class ConnectionController extends SubSetting {
             backgroundSpotifyButton.getStyleClass().clear();
             backgroundSpotifyButton.getStyleClass().add("backgroundOff");
             spotifyToggleStackPane.setAlignment(spotifyToggleButton, Pos.CENTER_LEFT);
+            builder.setSpotifyShow(false);
         } else {
             spotifyToggleButton.getStyleClass().clear();
             spotifyToggleButton.getStyleClass().add("buttonOn");
@@ -155,6 +156,7 @@ public class ConnectionController extends SubSetting {
             backgroundSteamButton.getStyleClass().clear();
             backgroundSteamButton.getStyleClass().add("backgroundOff");
             steamToggleStackPane.setAlignment(steamToggleButton, Pos.CENTER_LEFT);
+            builder.setSteamShow(false);
         } else {
             steamToggleButton.getStyleClass().clear();
             steamToggleButton.getStyleClass().add("buttonOn");

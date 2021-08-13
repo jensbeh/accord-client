@@ -21,6 +21,8 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginViewController {
     private final Parent root;
@@ -95,10 +97,12 @@ public class LoginViewController {
     private void signInButtonOnClick(ActionEvent actionEvent) {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(username);
+
         try {
             //check if username or password is missing
             if (!tempUserCheckBox.isSelected()) {
-                if (username.isEmpty() || password.isEmpty() || !username.equals(" ")) {
+                if (username.isEmpty() || password.isEmpty() || whiteSpaceMatcher.find()) {
                     setError("error.field_is_empty");
                 } else {
                     //if remember me selected then username and password is saved in a user.txt

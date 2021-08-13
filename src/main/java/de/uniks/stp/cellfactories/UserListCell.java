@@ -13,6 +13,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
@@ -52,6 +54,14 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 HBox cell = cell();
                 Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
+                circle.setId("circle");
+
+                circle.setOnMousePressed(event -> {
+                    if (event.getClickCount() == 1 && item.isStatus()) {
+                        spotifyClick(cell);
+                    }
+                });
+
                 Label name = name(item);
 
                 StackPane stackPane = new StackPane();
@@ -75,6 +85,13 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 this.setGraphic(stackPane);
             } else {
                 this.setGraphic(null);
+            }
+        }
+
+        private void spotifyClick(HBox cell) {
+            Matcher spotifyMatcher = Pattern.compile("#\\{\"(.*)").matcher(user.getDescription());
+            if (spotifyMatcher.find()) {
+                builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
             }
         }
 
@@ -135,7 +152,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             });
             this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
             this.setOnMouseReleased(event -> {
-                builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
                 if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
                     hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
                 } else if (builder.getTheme().equals("Dark")) {
