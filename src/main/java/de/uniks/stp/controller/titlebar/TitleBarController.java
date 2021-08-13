@@ -70,7 +70,9 @@ public class TitleBarController {
 
         closeButton.setOnAction(event -> {
                     stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-                    builder.getSpotifyConnection().stop();
+                    if(builder.getSpotifyConnection() != null) {
+                        builder.getSpotifyConnection().stop();
+                    }
                 }
         );
 
