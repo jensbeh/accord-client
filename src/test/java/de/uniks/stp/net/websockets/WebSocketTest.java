@@ -3,7 +3,6 @@ package de.uniks.stp.net.websockets;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.serverview.ServerMessageTest;
-import de.uniks.stp.model.Server;
 import de.uniks.stp.model.User;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.net.websocket.privatesocket.PrivateChatWebSocket;
@@ -44,7 +43,6 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class WebSocketTest extends ApplicationTest {
@@ -186,8 +184,8 @@ public class WebSocketTest extends ApplicationTest {
 
     @Test
     public void testServerSystemWebSocketTest() {
-        doCallRealMethod().when(serverSystemWebSocket).onOpen(any(),any());
-        doCallRealMethod().when(serverSystemWebSocket).onClose(any(),any());
+        doCallRealMethod().when(serverSystemWebSocket).onOpen(any(), any());
+        doCallRealMethod().when(serverSystemWebSocket).onClose(any(), any());
         doCallRealMethod().when(serverSystemWebSocket).startNoopTimer();
         serverSystemWebSocket.startNoopTimer();
         serverSystemWebSocket.onOpen(getSession(), getEndpoint());
@@ -197,7 +195,7 @@ public class WebSocketTest extends ApplicationTest {
 
     @Test
     public void testServerSystemWebSocketStopTest() throws IOException {
-        doCallRealMethod().when(serverSystemWebSocket).onOpen(any(),any());
+        doCallRealMethod().when(serverSystemWebSocket).onOpen(any(), any());
         doCallRealMethod().when(serverSystemWebSocket).stop();
         doCallRealMethod().when(serverSystemWebSocket).startNoopTimer();
 
@@ -212,8 +210,8 @@ public class WebSocketTest extends ApplicationTest {
         doCallRealMethod().when(serverChatWebSocket).getBuilder();
         doCallRealMethod().when(serverChatWebSocket).handleMessage(any());
         doCallRealMethod().when(serverChatWebSocket).sendMessage(any());
-        doCallRealMethod().when(serverChatWebSocket).onOpen(any(),any());
-        doCallRealMethod().when(serverChatWebSocket).onClose(any(),any());
+        doCallRealMethod().when(serverChatWebSocket).onOpen(any(), any());
+        doCallRealMethod().when(serverChatWebSocket).onClose(any(), any());
         doCallRealMethod().when(serverChatWebSocket).stop();
         doCallRealMethod().when(serverChatWebSocket).startNoopTimer();
 
@@ -239,7 +237,7 @@ public class WebSocketTest extends ApplicationTest {
 
     @Test
     public void testServerChatWebSocketStopTest() throws IOException {
-        doCallRealMethod().when(serverChatWebSocket).onOpen(any(),any());
+        doCallRealMethod().when(serverChatWebSocket).onOpen(any(), any());
         doCallRealMethod().when(serverChatWebSocket).stop();
         doCallRealMethod().when(serverChatWebSocket).startNoopTimer();
 
@@ -249,11 +247,11 @@ public class WebSocketTest extends ApplicationTest {
     }
 
     @Test
-    public void testPrivateSystemWebSocketTest() throws InterruptedException,IOException {
-        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(),any());
-        doCallRealMethod().when(privateSystemWebSocketClient).onClose(any(),any());
+    public void testPrivateSystemWebSocketTest() throws InterruptedException, IOException {
+        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(), any());
+        doCallRealMethod().when(privateSystemWebSocketClient).onClose(any(), any());
         doCallRealMethod().when(privateSystemWebSocketClient).sendMessage(any());
-        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(),any());
+        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(), any());
         doCallRealMethod().when(privateSystemWebSocketClient).handleMessage(any());
         doCallRealMethod().when(privateSystemWebSocketClient).startNoopTimer();
         doCallRealMethod().when(privateSystemWebSocketClient).setBuilder(any());
@@ -280,7 +278,7 @@ public class WebSocketTest extends ApplicationTest {
 
     @Test
     public void testPrivateSystemWebSocketStopTest() throws IOException {
-        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(),any());
+        doCallRealMethod().when(privateSystemWebSocketClient).onOpen(any(), any());
         doCallRealMethod().when(privateSystemWebSocketClient).stop();
         doCallRealMethod().when(privateSystemWebSocketClient).startNoopTimer();
 
@@ -429,7 +427,6 @@ public class WebSocketTest extends ApplicationTest {
     }
 
 
-
     public Session getSession() {
         Session session = new Session() {
             @Override
@@ -526,42 +523,42 @@ public class WebSocketTest extends ApplicationTest {
             public RemoteEndpoint.Basic getBasicRemote() {
                 return new RemoteEndpoint.Basic() {
                     @Override
-                    public void sendText(String text)  {
+                    public void sendText(String text) {
 
                     }
 
                     @Override
-                    public void sendBinary(ByteBuffer data)  {
+                    public void sendBinary(ByteBuffer data) {
 
                     }
 
                     @Override
-                    public void sendText(String partialMessage, boolean isLast)  {
+                    public void sendText(String partialMessage, boolean isLast) {
 
                     }
 
                     @Override
-                    public void sendBinary(ByteBuffer partialByte, boolean isLast)  {
+                    public void sendBinary(ByteBuffer partialByte, boolean isLast) {
 
                     }
 
                     @Override
-                    public OutputStream getSendStream()  {
+                    public OutputStream getSendStream() {
                         return null;
                     }
 
                     @Override
-                    public Writer getSendWriter()  {
+                    public Writer getSendWriter() {
                         return null;
                     }
 
                     @Override
-                    public void sendObject(Object data)  {
+                    public void sendObject(Object data) {
 
                     }
 
                     @Override
-                    public void setBatchingAllowed(boolean allowed)  {
+                    public void setBatchingAllowed(boolean allowed) {
 
                     }
 
@@ -571,17 +568,17 @@ public class WebSocketTest extends ApplicationTest {
                     }
 
                     @Override
-                    public void flushBatch()  {
+                    public void flushBatch() {
 
                     }
 
                     @Override
-                    public void sendPing(ByteBuffer applicationData) throws  IllegalArgumentException {
+                    public void sendPing(ByteBuffer applicationData) throws IllegalArgumentException {
 
                     }
 
                     @Override
-                    public void sendPong(ByteBuffer applicationData) throws  IllegalArgumentException {
+                    public void sendPong(ByteBuffer applicationData) throws IllegalArgumentException {
 
                     }
                 };
