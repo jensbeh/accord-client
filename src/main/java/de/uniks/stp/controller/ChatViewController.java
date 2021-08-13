@@ -544,7 +544,7 @@ public class ChatViewController {
      */
     public void printMessage(Message msg, boolean messageJustReceived) {
         if (!builder.getInServerState()) {
-            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+            if (builder.getCurrentPrivateChat() != null && builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
