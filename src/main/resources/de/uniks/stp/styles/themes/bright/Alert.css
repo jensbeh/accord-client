@@ -43,3 +43,41 @@
 #errorVbox {
     -fx-background-color: WHITE;
 }
+
+/* Delete Server */
+#warningBox {
+    -fx-background-color: WHITE;
+}
+
+#label_deleteServer {
+    -fx-text-fill: BLACK;
+}
+
+#button_delete {
+    -fx-pref-width: 150px;
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#button_delete:hover {
+    -fx-background-color: #ff4a4a;
+}
+#button_delete:pressed {
+    -fx-background-color: #ff1f1f;
+}
+
+#button_cancel {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_cancel:hover {
+    -fx-background-color: #a0bade;
+}
+#button_cancel:pressed {
+    -fx-background-color: #6899de;
+}

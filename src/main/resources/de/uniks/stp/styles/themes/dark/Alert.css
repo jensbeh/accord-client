@@ -23,16 +23,16 @@
     -fx-alignment: TOP_CENTER;
 }
 
-#okButton {
+#okButton, #button_cancel {
     -fx-pref-width: 90px;
     -fx-background-color: #ff9999;
     -fx-background-radius: 80;
     -fx-text-fill: BLACK;
 }
-#okButton:hover {
+#okButton:hover, button_cancel:hover {
     -fx-background-color: #ffbdbd;
 }
-#okButton:pressed {
+#okButton:pressed, #button_cancel:pressed {
     -fx-background-color: #ff7d7d;
 }
 
@@ -42,4 +42,42 @@
 
 #errorVbox {
     -fx-background-color: #2f3136;
+}
+
+/* Delete Server */
+#warningBox {
+    -fx-background-color: #2f3136;
+}
+
+#label_deleteServer {
+    -fx-text-fill: WHITE;
+}
+
+#button_delete {
+    -fx-pref-width: 150px;
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#button_delete:hover {
+    -fx-background-color: #ff4a4a;
+}
+#button_delete:pressed {
+    -fx-background-color: #ff1f1f;
+}
+
+#button_cancel {
+    -fx-pref-width: 100px;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: BLACK;
+}
+#button_cancel:hover {
+    -fx-background-color: #ffbdbd;
+}
+#button_cancel:pressed {
+    -fx-background-color: #ff7d7d;
 }
