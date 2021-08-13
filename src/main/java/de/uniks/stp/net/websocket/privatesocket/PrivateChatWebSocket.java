@@ -28,14 +28,14 @@ import java.util.TimerTask;
 public class PrivateChatWebSocket extends Endpoint {
 
     public final String COM_NOOP = "noop";
-    private final Timer noopTimer;
+    private Timer noopTimer;
     private Session session;
     private ModelBuilder builder;
     private PrivateViewController privateViewController;
     private ChatViewController chatViewController;
 
     public PrivateChatWebSocket(URI endpoint, String userKey) {
-        this.noopTimer = new Timer();
+        startNoopTimer();
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
                     .configurator(new CustomWebSocketConfigurator(userKey))
@@ -275,5 +275,11 @@ public class PrivateChatWebSocket extends Endpoint {
                 privateViewController.showUsers();
             }
         });
+    }
+
+    public void startNoopTimer() {
+        if (this.noopTimer == null) {
+            this.noopTimer = new Timer();
+        }
     }
 }
