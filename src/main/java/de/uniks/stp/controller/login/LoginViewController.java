@@ -401,4 +401,8 @@ public class LoginViewController {
     public void setNoConnectionTest(boolean noConnectionTestState) {
         this.noConnectionTest = noConnectionTestState;
     }
+
+    public Parent getLoginView() {
+        return this.root;
+    }
 }
