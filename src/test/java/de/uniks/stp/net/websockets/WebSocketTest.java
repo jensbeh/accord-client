@@ -49,7 +49,6 @@ public class WebSocketTest extends ApplicationTest {
     @InjectMocks
     StageManager mockApp = new StageManager();
     private Stage stage;
-    private StageManager app;
     @Mock
     private PrivateSystemWebSocketClient privateSystemWebSocketClient;
     @Mock
@@ -104,7 +103,7 @@ public class WebSocketTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
-        app = mockApp;
+        StageManager app = mockApp;
         app.setBuilder(builder);
         app.setRestClient(restClient);
 
