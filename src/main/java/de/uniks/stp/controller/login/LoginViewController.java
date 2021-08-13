@@ -98,7 +98,7 @@ public class LoginViewController {
         try {
             //check if username or password is missing
             if (!tempUserCheckBox.isSelected()) {
-                if (username.isEmpty() || password.isEmpty() || !username.equals(" ")) {
+                if (username.isEmpty() || password.isEmpty() || Character.toString(username.charAt(0)).equals(" ")) {
                     setError("error.field_is_empty");
                 } else {
                     signIn(username, password);
