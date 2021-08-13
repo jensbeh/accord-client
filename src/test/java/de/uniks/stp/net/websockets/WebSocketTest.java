@@ -93,8 +93,8 @@ public class WebSocketTest extends ApplicationTest {
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);

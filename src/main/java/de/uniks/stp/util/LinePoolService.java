@@ -137,7 +137,7 @@ public class LinePoolService {
 
     /**
      * returns the selected microphone
-     * IMPORTANT: Travis.ci has no real microphone with port mixer. In thís case the mic is always null and i return the default system mic. Happens only when Travis is running.
+     * IMPORTANT: Travis.ci has no real microphone with port mixer. In this case the mic is always null so the method return the default system mic. Happens only when Travis is running.
      */
     public TargetDataLine getSelectedMicrophone() {
         if (selectedMicrophone != null) {
@@ -192,8 +192,8 @@ public class LinePoolService {
     }
 
     /**
-     * returns the selected speaker - make every time a new one because of horrible audio when more then 1 user in a channel
-     * IMPORTANT: Travis.ci has no real speaker with port mixer. In thís case there is no mixer for the speaker and i return the default system speaker. Happens only when Travis is running.
+     * returns the selected speaker - make every time a new one because of horrible audio when more than 1 user in a channel
+     * IMPORTANT: Travis.ci has no real speaker with port mixer. In this case there is no mixer for the speaker so the method return the default system speaker. Happens only when Travis is running.
      */
     public SourceDataLine getSelectedSpeaker() {
         if (mixerMap.size() > 0) {

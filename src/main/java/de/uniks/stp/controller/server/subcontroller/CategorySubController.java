@@ -99,12 +99,17 @@ public class CategorySubController {
         }
     }
 
+    /**
+     * When the channel list of the category has changed, the channel list will be refreshed and PCL will be added for all channels
+     * @param propertyChangeEvent the Property Change Event
+     */
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
+        if (propertyChangeEvent.getOldValue() == null || propertyChangeEvent.getNewValue() == null) {
+            Platform.runLater(() -> channelList.setItems(FXCollections.observableList(category.getChannel())));
+        }
         if (category.getChannel().size() > 0) {
             channelList.setPrefHeight(category.getChannel().size() * CHANNEL_HEIGHT);
             for (ServerChannel channel : category.getChannel()) {
-                /*TODO if newValue not null -> add PCL, else if null -> removePCL*/
-                //ServerChannel theChannel = (ServerChannel) propertyChangeEvent.getNewValue();
                 channel.removePropertyChangeListener(this.channelListPCL);
                 channel.addPropertyChangeListener(ServerChannel.PROPERTY_NAME, this.channelListPCL);
             }

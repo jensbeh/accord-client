@@ -308,16 +308,14 @@ public class PrivateViewController {
             }
         });
 
-        Platform.runLater(() -> {
-            this.audioConnectionBox.getChildren().clear();
-        });
+        Platform.runLater(() -> this.audioConnectionBox.getChildren().clear());
     }
 
     /**
      * Event Mouseclick on an existing chat
      * Opens the existing chat and shows the messages
      *
-     * @param mouseEvent is called when double clicked on an existing chat
+     * @param mouseEvent is called when double-clicked on an existing chat
      */
     private void onPrivateChatListClicked(MouseEvent mouseEvent) {
         if (builder.getCurrentChatViewController() != null) {
@@ -341,8 +339,8 @@ public class PrivateViewController {
      */
     public void MessageViews() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), StageManager.getLangBundle());
-            //stop videos from recent chatviewcontroller
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/ChatView.fxml")), builder.getStageManager().getLangBundle());
+            //stop videos from recent chatViewController
             if (chatViewController != null) {
                 chatViewController.stopMediaPlayers();
             }
@@ -443,7 +441,7 @@ public class PrivateViewController {
      * when language changed reset labels and texts with correct language
      */
     public void onLanguageChanged() {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         if (welcomeToAccord != null)
             welcomeToAccord.setText(lang.getString("label.welcome_to_accord"));
         if (disconnectAudioButton != null)

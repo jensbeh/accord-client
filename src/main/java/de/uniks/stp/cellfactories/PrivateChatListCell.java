@@ -2,6 +2,7 @@ package de.uniks.stp.cellfactories;
 
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.MessageView;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.util.EmojiTextFlowExtended;
 import javafx.geometry.Pos;
@@ -10,7 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -42,6 +45,10 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
     }
 
     private class ChannelListCell extends ListCell<PrivateChat> {
+        @Override
+        public void updateIndex(int i) {
+            super.updateIndex(i);
+        }
 
         protected void updateItem(PrivateChat item, boolean empty) {
             // creates a HBox for each cell of the listView
@@ -136,7 +143,16 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
             message.setId("msg_" + item.getId());
             String textMessage = item.getMessage().get(item.getMessage().size() - 1).getMessage();
             message.setId("messageLabel");
-            message.parseAndAppend(textMessage);
+
+            MessageView messageView = new MessageView();
+            String url = messageView.searchUrl(textMessage);
+            String urlType = messageView.getUrlType();
+            if (!urlType.equals("None")) {
+                message.addTextLinkNode(textMessage, url);
+            } else {
+                message.parseAndAppend(textMessage);
+            }
+
             message = setMaxChar(message);
 
             textBox.getChildren().add(message);
@@ -157,8 +173,9 @@ public class PrivateChatListCell implements javafx.util.Callback<javafx.scene.co
 
         /**
          * This method cuts the EmojiTextFlow by a length
-         * @param message the message to be shorten
-         * @return the shorten message
+         *
+         * @param message the message to be shorted
+         * @return the shorted message
          */
         private EmojiTextFlowExtended setMaxChar(EmojiTextFlowExtended message) {
             int length = 13;

@@ -21,6 +21,7 @@ import kong.unirest.JsonNode;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -95,6 +96,11 @@ public class LoginViewControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(LoginViewController.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -105,8 +111,8 @@ public class LoginViewControllerTest extends ApplicationTest {
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
@@ -283,7 +289,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Label errorLabel = lookup("#errorLabel").query();
-        Assert.assertEquals("Name already taken", errorLabel.getText());
+        Assert.assertEquals("Field is empty!", errorLabel.getText());
     }
 
     @Test

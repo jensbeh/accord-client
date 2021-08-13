@@ -1,6 +1,5 @@
 package de.uniks.stp.cellfactories;
 
-import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.server.ServerViewController;
 import de.uniks.stp.model.AudioMember;
@@ -337,7 +336,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 HBox muteBox = new HBox();
                 muteLabel = new Label();
                 muteLabel.setId("labelMuteContextMenu");
-                muteLabel.setText(StageManager.getLangBundle().getString("label.labelMuteContextMenu"));
+                muteLabel.setText(builder.getStageManager().getLangBundle().getString("label.labelMuteContextMenu"));
                 muteLabel.setFont(new Font(14));
                 muteLabel.setPrefWidth(60);
                 checkBoxMute = new CheckBox();
@@ -360,7 +359,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                 volumeLabel = new Label();
                 volumeLabel.setId("labelUserVolumeContextMenu");
                 volumeLabel.setFont(new Font(14));
-                volumeLabel.setText(StageManager.getLangBundle().getString("label.labelUserVolumeContextMenu"));
+                volumeLabel.setText(builder.getStageManager().getLangBundle().getString("label.labelUserVolumeContextMenu"));
                 sliderBox.getChildren().addAll(volumeLabel, slider);
                 CustomMenuItem sliderItem = new CustomMenuItem(sliderBox);
                 sliderItem.setHideOnClick(false);
@@ -422,7 +421,7 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
              * when language changed reset labels and texts of the ContextMenu with correct language
              */
             public void onLanguageChanged() {
-                ResourceBundle lang = StageManager.getLangBundle();
+                ResourceBundle lang = builder.getStageManager().getLangBundle();
                 if (muteLabel != null)
                     muteLabel.setText(lang.getString("label.labelMuteContextMenu"));
                 if (volumeLabel != null)

@@ -16,6 +16,7 @@ import kong.unirest.JsonNode;
 import kong.unirest.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -99,6 +100,11 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(CreateJoinServerControllerTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -108,8 +114,8 @@ public class CreateJoinServerControllerTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         StageManager app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);

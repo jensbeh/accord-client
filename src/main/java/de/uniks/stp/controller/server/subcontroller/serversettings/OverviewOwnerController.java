@@ -3,6 +3,7 @@ package de.uniks.stp.controller.server.subcontroller.serversettings;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.net.RestClient;
+import de.uniks.stp.util.Alerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
@@ -14,6 +15,8 @@ import kong.unirest.JsonNode;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OverviewOwnerController {
     private final Parent view;
@@ -43,17 +46,22 @@ public class OverviewOwnerController {
      * Changes name of current server
      */
     private void onChangeNameClicked(ActionEvent actionEvent) {
-        this.serverName.setText(nameText.getText());
-        builder.getCurrentServer().setName(nameText.getText());
-        restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
-                response -> builder.getCurrentServer().setName(nameText.getText()));
+        Matcher whiteSpaceMatcher = Pattern.compile("^( )*$").matcher(nameText.getText());
+        if (!whiteSpaceMatcher.find()) {
+            this.serverName.setText(nameText.getText());
+            builder.getCurrentServer().setName(nameText.getText());
+            restClient.putServer(builder.getCurrentServer().getId(), builder.getCurrentServer().getName(), builder.getPersonalUser().getUserKey(),
+                    response -> builder.getCurrentServer().setName(nameText.getText()));
+        } else {
+            Alerts.invalidNameAlert(builder);
+        }
     }
 
     /**
      * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
-        ResourceBundle lang = StageManager.getLangBundle();
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
         ButtonType button = new ButtonType(lang.getString("button.deleteServer"));
         ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);

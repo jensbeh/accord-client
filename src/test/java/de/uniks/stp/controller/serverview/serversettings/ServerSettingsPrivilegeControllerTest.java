@@ -22,6 +22,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -90,6 +91,11 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         MockitoAnnotations.openMocks(ServerSettingsPrivilegeControllerTest.class);
     }
 
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
+    }
+
     @Override
     public void start(Stage stage) {
         //start application
@@ -99,8 +105,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         builder.setSERVER_USER(serverSystemWebSocket);
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         StageManager app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
@@ -186,7 +192,15 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
                 .put("privileged", false)
                 .put("category", "60b77ba0026b3534ca5a61ae")
                 .put("members", members)
-                .put("audioMembers", audioMembers));
+                .put("audioMembers", audioMembers))
+            .put(new JSONObject()
+                    .put("id", "60b77ba0026b3534ca5a61ag")
+                    .put("name", "testChannel2")
+                    .put("type", "text")
+                    .put("privileged", false)
+                    .put("category", "60b77ba0026b3534ca5a61ae")
+                    .put("members", members)
+                    .put("audioMembers", audioMembers));
         JSONObject jsonString = new JSONObject()
                 .put("status", "success")
                 .put("message", "")
@@ -268,8 +282,9 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         interact(() -> categoryChoice.getSelectionModel().select(0));
         Assert.assertEquals(channelChoice.getItems(), currentServer.getCategories().get(0).getChannel());
 
+        // choose for the second channel, because the first channel counts as default channel, which is not allowed to be edited
         clickOn(channelChoice);
-        interact(() -> channelChoice.getSelectionModel().select(0));
+        interact(() -> channelChoice.getSelectionModel().select(1));
 
         clickOn(privilegeOn);
         Assert.assertTrue(privilegeOn.isSelected());
@@ -286,9 +301,9 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         currentServer.withUser(test);
 
         clickOn("#Change_Privilege");
-        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(1).isPrivilege());
         Assert.assertFalse(privilegeOnView.getChildren().isEmpty());
-        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers());
 
         ComboBox<String> addMenu = lookup("#Add_User_to_Privilege").query();
         ComboBox<String> removeMenu = lookup("#Remove_User_from_Privilege").query();
@@ -304,8 +319,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         System.out.println(currentServer.getCategories().get(0).getChannel());
         Assert.assertEquals(currentServer.getUser().size() - 2, addMenu.getItems().size());
-        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
-        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers().size(), removeMenu.getItems().size());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers());
 
         clickOn(removeMenu);
         interact(() -> removeMenu.getSelectionModel().select(0));
@@ -316,8 +331,8 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         }
         clickOn("#User_from_Privilege");
         Assert.assertEquals(currentServer.getUser().size() - 1, addMenu.getItems().size());
-        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers().size(), removeMenu.getItems().size());
-        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertEquals(currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers().size(), removeMenu.getItems().size());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers());
 
 
         clickOn(removeMenu);
@@ -328,11 +343,11 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
             }
         }
         clickOn("#User_from_Privilege");
-        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers());
         Assert.assertTrue(privilegeOnView.getChildren().isEmpty());
         Assert.assertTrue(privilegeOff.isSelected());
         Assert.assertFalse(privilegeOn.isSelected());
-        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(1).isPrivilege());
 
 
         clickOn(privilegeOn);
@@ -342,10 +357,10 @@ public class ServerSettingsPrivilegeControllerTest extends ApplicationTest {
         Assert.assertTrue(privilegeOff.isSelected());
         Assert.assertFalse(privilegeOn.isSelected());
         Assert.assertTrue(privilegeOnView.getChildren().isEmpty());
-        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
+        Assert.assertTrue(currentServer.getCategories().get(0).getChannel().get(1).isPrivilege());
 
         clickOn("#Change_Privilege");
-        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(0).isPrivilege());
-        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(0).getPrivilegedUsers());
+        Assert.assertFalse(currentServer.getCategories().get(0).getChannel().get(1).isPrivilege());
+        Assert.assertEquals(privileged, currentServer.getCategories().get(0).getChannel().get(1).getPrivilegedUsers());
     }
 }

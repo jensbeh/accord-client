@@ -17,6 +17,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,13 +89,18 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
+        System.setProperty("testfx.headless", "false");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
     @BeforeAll
     static void setup() {
         MockitoAnnotations.openMocks(ServerSettingsCategoryControllerTest.class);
+    }
+
+    @After
+    public void cleanup() {
+        mockApp.cleanEmojis();
     }
 
     @Override
@@ -107,8 +113,8 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         builder.setServerChatWebSocketClient(serverChatWebSocket);
         this.stage = stage;
         app = mockApp;
-        StageManager.setBuilder(builder);
-        StageManager.setRestClient(restClient);
+        app.setBuilder(builder);
+        app.setRestClient(restClient);
 
         builder.setLoadUserData(false);
         mockApp.getBuilder().setSpotifyShow(false);
@@ -310,6 +316,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
             return null;
         }).when(restClient).createCategory(anyString(), anyString(), anyString(), callbackCaptor8.capture());
 
+        WaitForAsyncUtils.waitForFxEvents();
         clickOn(createCategoryButton);
 
         String message = "{\"action\":\"categoryCreated\",\"data\":{\"id\":\"5e2fbd8770dd077d03df601\",\"name\":\"NewCategory\",\"server\":\"5e2fbd8770dd077d03df505\"}}";
@@ -324,6 +331,7 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
                 newCategory = category;
             }
         }
+        WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("", createCategoryNameTextField.getText());
         Assert.assertEquals("NewCategory", newCategory.getName());
         for (Categories categories : app.getBuilder().getCurrentServer().getCategories()) {
@@ -396,6 +404,8 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         Assert.assertFalse(builder.getCurrentServer().getCategories().contains(newCategory));
 
         Assert.assertFalse(categoriesSelector.getItems().contains(newCategory));
+
+        clickOn(createCategoryButton);
 
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {

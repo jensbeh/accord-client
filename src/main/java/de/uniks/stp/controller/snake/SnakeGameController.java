@@ -42,7 +42,7 @@ public class SnakeGameController {
     private final Parent view;
     private final Scene scene;
     private final int snakeHead = 0;
-    private ModelBuilder builder;
+    private final ModelBuilder builder;
     private Label scoreLabel;
     private Label highScoreLabel;
     private GraphicsContext brush;
@@ -82,7 +82,7 @@ public class SnakeGameController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -286,7 +286,7 @@ public class SnakeGameController {
     }
 
     /**
-     * when a food was eaten then the new body is adding when tail is on the "eaten food"
+     * when food was eaten then the new body is adding when tail is on the "eaten food"
      */
     private void addNewBody() {
         if (addNewBodyQueue.size() > 0) {

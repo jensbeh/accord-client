@@ -11,7 +11,7 @@ import java.util.Queue;
 
 public class EmojiTextFlowExtended extends EmojiTextFlow {
     /**
-     *   This class extends the already existing EmojiTextFlow. Its purpose is to handle links so it is not shown as an emoji.
+     * This class extends the already existing EmojiTextFlow. Its purpose is to handle links, so it is not shown as an emoji.
      */
     private static final Logger logger = LoggerFactory.getLogger(EmojiTextFlow.class);
     private final EmojiTextFlowParameters parameters;

@@ -46,7 +46,7 @@ public class ServerSettingsController {
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
-            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), StageManager.getLangBundle());
+            titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class ServerSettingsController {
         titleBarController.init();
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
-        titleBarController.setTitle(StageManager.getLangBundle().getString("window_title_serverSettings"));
+        titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_serverSettings"));
 
         //init of sideButtons
         root = (Pane) view.lookup("#root");
@@ -100,11 +100,11 @@ public class ServerSettingsController {
             try {
                 Parent root;
                 if (builder.getCurrentServer().getOwner().equals(userId)) {
-                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/OverviewOwner.fxml")), StageManager.getLangBundle());
+                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/OverviewOwner.fxml")), builder.getStageManager().getLangBundle());
                     OverviewOwnerController overviewOwnerController = new OverviewOwnerController(root, builder);
                     overviewOwnerController.init();
                 } else {
-                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/Overview.fxml")), StageManager.getLangBundle());
+                    root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/Overview.fxml")), builder.getStageManager().getLangBundle());
                     OverviewController overviewController = new OverviewController(root, builder);
                     overviewController.init();
                 }
@@ -168,7 +168,7 @@ public class ServerSettingsController {
         // clear old and load new subSetting view
         try {
             this.serverSettingsContainer.getChildren().clear();
-            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_" + fxmlName + ".fxml")), StageManager.getLangBundle());
+            Parent serverSettingsField = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_" + fxmlName + ".fxml")), builder.getStageManager().getLangBundle());
 
             switch (fxmlName) {
                 case "Channel":
