@@ -54,6 +54,7 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 HBox cell = cell();
                 Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
+                circle.setId("circle");
 
                 circle.setOnMousePressed(event -> {
                     if (event.getClickCount() == 1 && item.isStatus()) {
