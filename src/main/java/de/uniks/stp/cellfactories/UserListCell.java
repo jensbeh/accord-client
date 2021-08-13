@@ -13,6 +13,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserListCell implements javafx.util.Callback<ListView<User>, ListCell<User>> {
 
@@ -86,7 +88,10 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
         }
 
         private void spotifyClick(HBox cell) {
-            builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
+            Matcher spotifyMatcher = Pattern.compile("#\\{\"(.*)").matcher(user.getDescription());
+            if (spotifyMatcher.find()) {
+                builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
+            }
         }
 
         private Label game(User item) {
