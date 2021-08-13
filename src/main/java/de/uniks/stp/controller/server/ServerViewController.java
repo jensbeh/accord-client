@@ -286,7 +286,7 @@ public class ServerViewController {
             if (this.server != null && currentChannel != null) {
                 for (Message msg : currentChannel.getMessage()) {
                     // Display each Message which are saved
-                    chatViewController.printMessage(msg);
+                    chatViewController.printMessage(msg, false);
                 }
             }
         } catch (IOException e) {

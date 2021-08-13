@@ -75,6 +75,7 @@ public class ChatViewController {
     private ArrayList<WebEngine> webEngines;
     private ListChangeListener<User> blockedUserListener;
     private boolean emojiViewOpened;
+    private boolean messageJustReceived = false;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -379,6 +380,9 @@ public class ChatViewController {
     }
 
     private void deleteMessage(ActionEvent actionEvent) {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
         String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
         String catId = selectedMsg.getServerChannel().getCategories().getId();
         String channelId = selectedMsg.getServerChannel().getId();
@@ -388,6 +392,7 @@ public class ChatViewController {
         });
         StackPane toRemoveStack = stackPaneHashMap.get(selectedMsg);
         Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
+
         stackPaneHashMap.remove(toRemoveMsg);
         messagesHashMap.remove(toRemoveStack);
         messagesBox.getChildren().remove(toRemoveStack);
@@ -428,6 +433,9 @@ public class ChatViewController {
      * edit message and refresh the ListView
      */
     private void editMessage(ActionEvent actionEvent) {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
         String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
         String catId = selectedMsg.getServerChannel().getCategories().getId();
         String channelId = selectedMsg.getServerChannel().getId();
@@ -540,12 +548,13 @@ public class ChatViewController {
     /**
      * insert new message in observableList
      */
-    public void printMessage(Message msg) {
+    public void printMessage(Message msg, boolean messageJustReceived) {
         if (!builder.getInServerState()) {
-            if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
+            if (builder.getCurrentPrivateChat() != null && builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
+                this.messageJustReceived = messageJustReceived;
                 messageView.setScroll(this::checkScrollToBottom);
                 messageView.updateItem(msg);
             }
@@ -554,6 +563,7 @@ public class ChatViewController {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
+                this.messageJustReceived = messageJustReceived;
                 messageView.setScroll(this::checkScrollToBottom);
                 messageView.updateItem(msg);
             }
@@ -668,6 +678,11 @@ public class ChatViewController {
         Platform.runLater(() -> {
             double vValue = messageScrollPane.getVvalue();
             if (vValue == 0 || vValue >= 0.92 - 10.0 / messagesBox.getChildren().size()) {
+                // if message is just received and not loaded, call applyCss() to recalculate sizes to make scroll to bottom not buggy
+                if (messageJustReceived) {
+                    messageScrollPane.applyCss();
+                    messageScrollPane.layout();
+                }
                 messageScrollPane.setVvalue(1.0);
             }
         });

@@ -171,6 +171,8 @@ Click on the crossed speaker Button in the upper right corner.
 
 ## Spotify
 
+###NOTE: Podcasts aren't supported
+
 ### Connect to Spotify
 
 1. Click on the Settings button.
@@ -189,7 +191,7 @@ Click on the crossed speaker Button in the upper right corner.
 
 ### Show the currently playing song from other users
 
-1. Click on the users name.
+1. Click on the green circle to the left of the username.
 2. It will show the currently playing song and artwork, if the user is listening to something.
 
 ### NOTE: The progressbar is only visible for yourself and not visible to others.

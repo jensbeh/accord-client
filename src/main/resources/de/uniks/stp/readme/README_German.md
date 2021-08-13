@@ -157,6 +157,8 @@ Klicken Sie auf die gekreuzte Lautsprechertaste in der oberen rechten Ecke.
 
 ## Spotify
 
+###HINWEIS: Podcasts werden nicht unterstützt.
+
 ### Mit Spotify verbinden
 
 1. Klicken Sie auf die Schaltfläche Einstellungen.
@@ -175,7 +177,7 @@ Klicken Sie auf die gekreuzte Lautsprechertaste in der oberen rechten Ecke.
 
 ### Das aktuell gespielte Lied von anderen Benutzern anzeigen
 
-1. Klicken Sie auf den Namen des Benutzers.
+1. Klicken Sie auf den grünen Kreis links neben dem Namen des Benutzers.
 2. Es wird das aktuell gespielte Lied und das Artwork angezeigt, wenn der Benutzer gerade etwas hört.
 
 ### HINWEIS: Die Fortschrittsanzeige ist nur für dich selbst und nicht für andere sichtbar.

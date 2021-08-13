@@ -16,6 +16,7 @@ import de.uniks.stp.net.websocket.privatesocket.PrivateSystemWebSocketClient;
 import de.uniks.stp.net.websocket.serversocket.ServerChatWebSocket;
 import de.uniks.stp.net.websocket.serversocket.ServerSystemWebSocket;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -204,7 +205,7 @@ public class ConnectionControllerTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
 
-        message = "{\"action\":\"userDescriptionChanged\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"description\":\"#Against The Current - lullaby#https://i.scdn.co/image/ab67616d00004851186660bbf3b0dd9a5195e182\"}}";
+        message = "{\"action\":\"userDescriptionChanged\",\"data\":{\"id\":\"60c8b3fb44453702009c07b3\",\"description\":\"#{\\\"data\\\":\\\"B https://i.scdn.co/image/ab67616d0000485120b467550945fd123e00f0a5\\\",\\\"desc\\\":\\\"Twenty One Pilots - Choker\\\"}\"}}";
         jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
         clickOn("#settingsButton");
@@ -238,7 +239,7 @@ public class ConnectionControllerTest extends ApplicationTest {
 
         ListView<User> userList = lookup("#onlineUsers").query();
         User testUserOne = userList.getItems().get(0);
-        clickOn(userList.lookup("#" + testUserOne.getId()));
+        clickOn(userList.lookup("#circle"));
         WaitForAsyncUtils.waitForFxEvents();
 
         Assert.assertEquals("taHZ2SdB-bPA3FsK3D7ZN5npZS47cMy-IEySVEGttOhXmqaVAIo0ESvTCLjLBifhHOHOIuhFUKPW1WMDP7w6dj3MAZdWT8CLI2MkZaXbYLTeoDvXesf2eeiLYPBGdx8tIwQJKgV8XdnzH_DONk", mockApp.getBuilder().getSpotifyToken());
