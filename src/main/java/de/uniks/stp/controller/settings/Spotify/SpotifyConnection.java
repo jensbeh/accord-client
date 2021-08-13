@@ -305,11 +305,13 @@ public class SpotifyConnection {
             String cleanedDescription = userDescription.split("#")[1];
             JSONObject jsonObject = new JSONObject(cleanedDescription);
             String bandAndSongString = (String) jsonObject.get("desc");
-            String artworkUrl = (String) jsonObject.get("data");
-            if (artworkUrl.charAt(0) == 'B') {
-                artworkUrl = artworkUrl.substring(2);
-                javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
-                spotifyArtwork.setImage(image);
+            if (jsonObject.has("data")) {
+                String artworkUrl = (String) jsonObject.get("data");
+                if (artworkUrl.charAt(0) == 'B') {
+                    artworkUrl = artworkUrl.substring(2);
+                    javafx.scene.image.Image image = new javafx.scene.image.Image(artworkUrl);
+                    spotifyArtwork.setImage(image);
+                }
             }
             bandAndSong.setText(bandAndSongString);
         }
