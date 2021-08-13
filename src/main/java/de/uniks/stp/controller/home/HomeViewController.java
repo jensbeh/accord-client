@@ -671,6 +671,10 @@ public class HomeViewController {
         }
     }
 
+    public Parent getHomeView() {
+        return view;
+    }
+
     public PrivateViewController getPrivateViewController() {
         return privateViewController;
     }

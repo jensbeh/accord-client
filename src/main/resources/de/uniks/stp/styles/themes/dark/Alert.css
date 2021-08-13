@@ -43,12 +43,12 @@
 #errorVbox {
     -fx-background-color: #2f3136;
 }
-
-/* Delete Server */
+/* "Everywhere" */
 #warningBox {
     -fx-background-color: #2f3136;
 }
 
+/* Delete Server */
 #label_deleteServer {
     -fx-text-fill: WHITE;
 }
@@ -79,5 +79,24 @@
     -fx-background-color: #ffbdbd;
 }
 #button_cancel:pressed {
+    -fx-background-color: #ff7d7d;
+}
+
+/* No Connection */
+#label_noConnection {
+    -fx-text-fill: WHITE;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #ff9999;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: BLACK;
+}
+#button_OK:hover {
+    -fx-background-color: #ffbdbd;
+}
+#button_OK:pressed {
     -fx-background-color: #ff7d7d;
 }

@@ -44,11 +44,12 @@
     -fx-background-color: WHITE;
 }
 
-/* Delete Server */
+/* "Everywhere" */
 #warningBox {
     -fx-background-color: WHITE;
 }
 
+/* Delete Server */
 #label_deleteServer {
     -fx-text-fill: BLACK;
 }
@@ -79,5 +80,24 @@
     -fx-background-color: #a0bade;
 }
 #button_cancel:pressed {
+    -fx-background-color: #6899de;
+}
+
+/* No Connection */
+#label_noConnection {
+    -fx-text-fill: BLACK;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_OK:hover {
+    -fx-background-color: #a0bade;
+}
+#button_OK:pressed {
     -fx-background-color: #6899de;
 }
