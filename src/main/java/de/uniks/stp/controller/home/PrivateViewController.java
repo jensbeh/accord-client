@@ -81,13 +81,12 @@ public class PrivateViewController {
     @SuppressWarnings("unchecked")
     public void init() {
         root = (HBox) view.lookup("#root");
-        //ScrollPane scrollPaneUserBox = (ScrollPane) view.lookup("#scrollPaneUserBox");
         currentUserBox = (VBox) view.lookup("#currentUserBox");
         audioConnectionBox = (VBox) view.lookup("#audioConnectionBox");
         chatBox = (VBox) view.lookup("#chatBox");
         privateChatList = (ListView<PrivateChat>) view.lookup("#privateChatList");
         privateChatList.setCellFactory(new PrivateChatListCell(builder));
-        this.privateChatList.setOnMouseReleased(this::onPrivateChatListClicked);
+        this.privateChatList.setOnMouseReleased(mouseEvent -> onPrivateChatListClicked());
         ObservableList<PrivateChat> privateChats = FXCollections.observableArrayList();
         this.privateChatList.setItems(privateChats);
         onlineUsersList = (ListView<User>) view.lookup("#onlineUsers");
@@ -185,11 +184,42 @@ public class PrivateViewController {
             microphoneLabel = (Label) view.lookup("#unmute_microphone");
         }
         //load headset settings
-        microphoneLabel.setVisible(builder.getMuteMicrophone());
-        headphoneLabel.setVisible(builder.getMuteHeadphones());
         headphoneButton.setOnAction(this::muteHeadphone);
         microphoneButton.setOnAction(this::muteMicrophone);
-        //unMute microphone
+        microphoneLabelInit();
+        headphoneLabelInit();
+    }
+
+    private void headphoneLabelInit() {
+        headphoneLabel.setVisible(builder.getMuteHeadphones());
+        headphoneLabel.setOnMouseEntered(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
+            } else {
+                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
+            }
+        });
+        headphoneLabel.setOnMouseExited(event -> {
+            if (builder.getTheme().equals("Dark")) {
+                headphoneButton.setStyle("");
+                setDarkMode();
+            } else {
+                headphoneButton.setStyle("");
+                setWhiteMode();
+            }
+        }); //unMute headphone
+        headphoneLabel.setOnMouseClicked(event -> {
+            headphoneLabel.setVisible(false);
+            builder.muteHeadphones(false);
+            if (!builder.getMicrophoneFirstMuted()) {
+                microphoneLabel.setVisible(false);
+                builder.muteMicrophone(false);
+            }
+        });
+    }
+
+    private void microphoneLabelInit() {
+        microphoneLabel.setVisible(builder.getMuteMicrophone());
         microphoneLabel.setOnMouseClicked(event -> {
             microphoneLabel.setVisible(false);
             builder.muteMicrophone(false);
@@ -213,31 +243,6 @@ public class PrivateViewController {
             } else {
                 microphoneButton.setStyle("");
                 setWhiteMode();
-            }
-        });
-        headphoneLabel.setOnMouseEntered(event -> {
-            if (builder.getTheme().equals("Dark")) {
-                headphoneButton.setStyle("-fx-background-color: #ffbdbd; -fx-background-radius: 80;");
-            } else {
-                headphoneButton.setStyle("-fx-background-color: #a0bade; -fx-background-radius: 80;");
-            }
-        });
-        headphoneLabel.setOnMouseExited(event -> {
-            if (builder.getTheme().equals("Dark")) {
-                headphoneButton.setStyle("");
-                setDarkMode();
-            } else {
-                headphoneButton.setStyle("");
-                setWhiteMode();
-            }
-        });
-        //unMute headphone
-        headphoneLabel.setOnMouseClicked(event -> {
-            headphoneLabel.setVisible(false);
-            builder.muteHeadphones(false);
-            if (!builder.getMicrophoneFirstMuted()) {
-                microphoneLabel.setVisible(false);
-                builder.muteMicrophone(false);
             }
         });
     }
@@ -312,12 +317,9 @@ public class PrivateViewController {
     }
 
     /**
-     * Event Mouseclick on an existing chat
      * Opens the existing chat and shows the messages
-     *
-     * @param mouseEvent is called when double-clicked on an existing chat
      */
-    private void onPrivateChatListClicked(MouseEvent mouseEvent) {
+    private void onPrivateChatListClicked() {
         if (builder.getCurrentChatViewController() != null) {
             builder.getCurrentChatViewController().stopMediaPlayers();
         }
@@ -325,12 +327,16 @@ public class PrivateViewController {
             if (builder.getCurrentPrivateChat() == null || !builder.getCurrentPrivateChat().equals(this.privateChatList.getSelectionModel().
                     getSelectedItem())) {
                 builder.setCurrentPrivateChat(this.privateChatList.getSelectionModel().getSelectedItem());
-                if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
-                    builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
-                }
+                updateUnreadMessageCounter();
                 this.privateChatList.refresh();
                 MessageViews();
             }
+        }
+    }
+
+    private void updateUnreadMessageCounter() {
+        if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
+            builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
         }
     }
 
@@ -374,36 +380,43 @@ public class PrivateViewController {
         }
         PrivateChat currentChannel = builder.getCurrentPrivateChat();
         if (mouseEvent.getClickCount() == 2 && this.onlineUsersList.getItems().size() != 0) {
-            boolean chatExisting = false;
+
             String selectedUserName = this.onlineUsersList.getSelectionModel().getSelectedItem().getName();
-            String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
-            for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
-                if (channel.getName().equals(selectedUserName)) {
-                    builder.setCurrentPrivateChat(channel);
-                    if (builder.getCurrentPrivateChat().getUnreadMessagesCounter() > 0) {
-                        builder.getCurrentPrivateChat().setUnreadMessagesCounter(0);
-                    }
-                    this.privateChatList.refresh();
-                    chatExisting = true;
-                    break;
-                }
-            }
+
+            boolean chatExisting = checkIfChatExists(selectedUserName);
             if (!chatExisting) {
-                PrivateChat newPrivateChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
-                builder.getPersonalUser().withPrivateChat(newPrivateChat);
-                try {
-                    // load messages for new channel
-                    newPrivateChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), newPrivateChat.getName(), newPrivateChat));
-                } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
-                    e.printStackTrace();
-                }
-                builder.setCurrentPrivateChat(newPrivateChat);
-                this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
+                updatePrivateChatlist(selectedUserName);
             }
             if (!builder.getCurrentPrivateChat().equals(currentChannel)) {
                 MessageViews();
             }
         }
+    }
+
+    private void updatePrivateChatlist(String selectedUserName) {
+        String selectUserId = this.onlineUsersList.getSelectionModel().getSelectedItem().getId();
+        PrivateChat newPrivateChat = new PrivateChat().setName(selectedUserName).setId(selectUserId);
+        builder.getPersonalUser().withPrivateChat(newPrivateChat);
+        try {
+            // load messages for new channel
+            newPrivateChat.withMessage(ResourceManager.loadPrivatChat(builder.getPersonalUser().getName(), newPrivateChat.getName(), newPrivateChat));
+        } catch (IOException | JsonException | com.github.cliftonlabs.json_simple.JsonException e) {
+            e.printStackTrace();
+        }
+        builder.setCurrentPrivateChat(newPrivateChat);
+        this.privateChatList.setItems(FXCollections.observableArrayList(builder.getPersonalUser().getPrivateChat()));
+    }
+
+    private boolean checkIfChatExists(String selectedUserName) {
+        for (PrivateChat channel : builder.getPersonalUser().getPrivateChat()) {
+            if (channel.getName().equals(selectedUserName)) {
+                builder.setCurrentPrivateChat(channel);
+                updateUnreadMessageCounter();
+                this.privateChatList.refresh();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -416,15 +429,11 @@ public class PrivateViewController {
             userProfileController.stop();
         }
         try {
-            if (privateSystemWebSocketClient != null) {
-                if (privateSystemWebSocketClient.getSession() != null) {
-                    privateSystemWebSocketClient.stop();
-                }
+            if (privateSystemWebSocketClient != null && privateSystemWebSocketClient.getSession() != null) {
+                privateSystemWebSocketClient.stop();
             }
-            if (privateChatWebSocket != null) {
-                if (privateChatWebSocket.getSession() != null) {
-                    privateChatWebSocket.stop();
-                }
+            if (privateChatWebSocket != null && privateChatWebSocket.getSession() != null) {
+                privateChatWebSocket.stop();
             }
         } catch (IOException e) {
             e.printStackTrace();

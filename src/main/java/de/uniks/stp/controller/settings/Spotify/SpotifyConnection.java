@@ -110,7 +110,6 @@ public class SpotifyConnection {
 
     public void init(ConnectionController connectionController) {
         this.connectionController = connectionController;
-
         try {
             spotifyLoginView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/LoginWebView.fxml")), builder.getStageManager().getLangBundle());
         } catch (IOException e) {
