@@ -183,7 +183,11 @@ public class HomeViewController {
         try {
             VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), builder.getStageManager().getLangBundle());
             helpView.getStylesheets().clear();
-            helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            if (builder.getTheme().equals("Dark")) {
+                helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            } else {
+                helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HomeView.css")).toExternalForm());
+            }
             final Stage dialog = new Stage();
             dialog.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
             dialog.setTitle(builder.getStageManager().getLangBundle().getString("label.help"));
@@ -233,6 +237,7 @@ public class HomeViewController {
 
             ScrollPane content = new ScrollPane(markdownView);
             content.setFitToWidth(true);
+            content.setId("markdownScrollView");
             helpView.getChildren().add(content);
             Scene scene = new Scene(helpView, 900, 800);
             scene.setFill(Color.TRANSPARENT);
