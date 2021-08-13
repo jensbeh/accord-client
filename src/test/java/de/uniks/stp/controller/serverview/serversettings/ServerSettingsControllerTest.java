@@ -231,7 +231,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
                 .put("message", "")
                 .put("data", new JSONObject().put("id", testServerId2).put("name", testServerName).put("owner", testServerOwner2).put("categories", categories).put("members", members));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
-        System.out.println("json: " + jsonNode);
         when(response4.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
             Callback<JsonNode> callback = callbackCaptor4.getValue();
@@ -462,7 +461,6 @@ public class ServerSettingsControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         ListView<Server> serverList = lookup("#scrollPaneServerBox").lookup("#serverList").query();
-        System.out.println("ServerList: " + serverList.getItems().toString());
 
         clickOn("#serverMenuButton");
         moveBy(0, 25);
@@ -527,6 +525,5 @@ public class ServerSettingsControllerTest extends ApplicationTest {
             }
         }
         //Assert.assertEquals("", serverId);
-        System.out.println("ServerList: " + serverList.getItems().toString());
     }
 }

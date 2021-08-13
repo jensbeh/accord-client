@@ -163,7 +163,6 @@ public class LinePoolService {
         if (microphones.containsKey(newMicrophoneName)) {
             this.selectedMicrophone = microphones.get(newMicrophoneName);
             this.selectedMicrophoneName = newMicrophoneName;
-            System.out.println("Microphone: " + newMicrophoneName);
         } else {
             System.err.println("No microphone found! Set microphone to the default one...");
             // set first microphone in list to selected
@@ -226,7 +225,6 @@ public class LinePoolService {
         if (speakers.containsKey(newSpeakerName)) {
             this.selectedSpeakerName = newSpeakerName;
             this.selectedSpeaker = speakers.get(newSpeakerName);
-            System.out.println("Speaker: " + newSpeakerName);
         } else {
             System.err.println("No speaker found! Set speaker to the default one...");
             // set first speaker in list to selected

@@ -242,7 +242,6 @@ public class LoginViewController {
             restClient.login(username, password, response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
-                System.out.println(status);
                 test(status, body, username, password);
             });
         }
@@ -273,7 +272,6 @@ public class LoginViewController {
             out.write(tempCheckBox.toString());
             out.close();
         } catch (Exception e) {
-            System.out.println("Error while saving userdata.");
             e.printStackTrace();
         }
     }

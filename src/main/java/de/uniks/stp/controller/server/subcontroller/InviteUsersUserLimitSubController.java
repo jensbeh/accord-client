@@ -111,10 +111,9 @@ public class InviteUsersUserLimitSubController {
         try {
             count = Integer.parseInt(userLimit.getText());
         } catch (NumberFormatException e) {
-            System.out.println("Not a number");
+            e.printStackTrace();
         }
         if (!userLimit.getText().equals("") && count > 0) {
-            System.out.println("onCreateLinkClicked");
             restClient.createTempLink("count", count, server.getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
@@ -125,8 +124,6 @@ public class InviteUsersUserLimitSubController {
                     Platform.runLater(() -> linkLabel.setText(link));
                     linkComboBox.getItems().add(List.of(link, maxUsers));
                     links.put(link, id);
-                } else if (status.equals("failure")) {
-                    System.out.println(body);
                 }
             });
         }

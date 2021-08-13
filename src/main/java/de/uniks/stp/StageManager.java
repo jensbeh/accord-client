@@ -118,7 +118,6 @@ public class StageManager extends Application {
             if (userKey != null && !userKey.isEmpty()) {
                 cleanup();
                 Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
-                System.out.println("Logged out");
             }
         }
         Unirest.shutDown();
@@ -313,7 +312,6 @@ public class StageManager extends Application {
                 }
             });
             subStage.show();
-            System.out.println(subStage.getWidth() + " " + subStage.getHeight());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -452,7 +450,6 @@ public class StageManager extends Application {
                     prop.store(op, null);
                 }
             } catch (Exception e) {
-                System.out.println(e + "");
                 e.printStackTrace();
             }
         }

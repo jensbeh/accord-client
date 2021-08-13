@@ -236,7 +236,6 @@ public class ModelBuilder {
             clip.stop();
         }
         try {
-            System.out.println("ComboBox: " + ResourceManager.getComboValue(personalUser.getName()));
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(getSoundFile().openStream()));
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
@@ -313,7 +312,6 @@ public class ModelBuilder {
             Jsoner.serialize(settings, writer);
             writer.close();
         } catch (Exception e) {
-            System.out.println("Error in saveSettings");
             e.printStackTrace();
         }
     }
@@ -359,7 +357,6 @@ public class ModelBuilder {
             reader.close();
 
         } catch (Exception e) {
-            System.out.println("Error in loadSettings");
             e.printStackTrace();
         }
     }
@@ -390,7 +387,6 @@ public class ModelBuilder {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error in saveUserVolume");
             e.printStackTrace();
         }
     }
@@ -415,7 +411,6 @@ public class ModelBuilder {
                 reader.close();
             }
         } catch (Exception e) {
-            System.out.println("Error in loadUserVolumes");
             e.printStackTrace();
         }
     }

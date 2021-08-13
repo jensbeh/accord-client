@@ -94,7 +94,6 @@ public class PrivateChatWebSocket extends Endpoint {
         }
         // set session null
         this.session = null;
-        System.out.println(closeReason.getCloseCode().toString());
         if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
             showNoConAlert();
         }
@@ -156,8 +155,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public void handleMessage(JsonStructure msg) {
         JsonObject jsonObject = JsonUtil.parse(msg.toString());
-        System.out.println("privateChatWebSocketClient");
-        System.out.println(msg);
         if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
             privateMessage(jsonObject);
         }

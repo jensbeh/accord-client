@@ -87,9 +87,7 @@ public class OverviewOwnerController {
             //delete server
             restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
                 JsonNode body = response.getBody();
-                System.out.println("Overview controller: " + body.toString());
                 String status = body.getObject().getString("status");
-                System.out.println("status: " + status);
             });
             Platform.runLater(() -> {
                 Stage stage = (Stage) serverName.getScene().getWindow();

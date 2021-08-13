@@ -363,10 +363,6 @@ public class ServerViewControllerTest extends ApplicationTest {
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
-            String name = (String) invocation.getArguments()[0];
-            String password = (String) invocation.getArguments()[1];
-            System.out.println(name);
-            System.out.println(password);
             Callback<JsonNode> callback = callbackCaptor.getValue();
             callback.completed(response);
             return null;
@@ -424,13 +420,8 @@ public class ServerViewControllerTest extends ApplicationTest {
                 .put("password", pw)
                 .put("data", new JSONObject().put("userKey", "c3a981d1-d0a2-47fd-ad60-46c7754d9271"));
         String jsonNode = new JsonNode(jsonString.toString()).toString();
-        System.out.println(jsonNode);
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
-            String name = (String) invocation.getArguments()[0];
-            String password = (String) invocation.getArguments()[1];
-            System.out.println(name);
-            System.out.println(password);
             Callback<JsonNode> callback = callbackCaptor.getValue();
             callback.completed(response);
             return null;

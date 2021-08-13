@@ -395,7 +395,6 @@ public class MessageView {
         MediaPlayer mp = new MediaPlayer(mediaUrl);
         chatViewController.getMediaPlayers().add(mp);
         mediaView.setMediaPlayer(mp);
-        mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
     }
 
     private void setMedia(String url, WebEngine engine) {

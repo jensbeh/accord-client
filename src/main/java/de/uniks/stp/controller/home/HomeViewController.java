@@ -156,10 +156,7 @@ public class HomeViewController {
                     Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), builder.getStageManager().getLangBundle());
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                    serverController.get(server).startController(status -> {
-                        // TODO start here homeView -> from loginView this!
-                        System.out.println("loaded Server " + server.getName());
-                    });
+                    serverController.get(server).startController(status -> {});
                     serverController.get(server).setTheme();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -622,7 +619,6 @@ public class HomeViewController {
         restClient.logout(builder.getPersonalUser().getUserKey(), response -> {
             JSONObject result = response.getBody().getObject();
             if (result.get("status").equals("success")) {
-                System.out.println(result.get("message"));
                 if (builder.getCurrentPrivateChat() != null) {
                     builder.setCurrentPrivateChat(null);
                 }

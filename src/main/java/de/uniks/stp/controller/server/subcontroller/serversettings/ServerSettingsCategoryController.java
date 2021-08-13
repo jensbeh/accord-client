@@ -99,7 +99,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void onCategoryClicked(Event event) {
         deleteCategoryButton.setDisable(false);
         selectedCategory = this.categoriesSelector.getValue();
-        System.out.println("Selected Category: " + selectedCategory);
     }
 
     /**

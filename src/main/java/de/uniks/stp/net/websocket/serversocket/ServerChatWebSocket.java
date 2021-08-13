@@ -95,8 +95,6 @@ public class ServerChatWebSocket extends Endpoint {
 
     public void handleMessage(JsonStructure msg) {
         JsonObject jsonObject = JsonUtil.parse(msg.toString());
-        System.out.println("serverChatWebSocketClient");
-        System.out.println(msg);
 
         if (jsonObject.containsKey("channel")) {
             serverMessage(jsonObject);

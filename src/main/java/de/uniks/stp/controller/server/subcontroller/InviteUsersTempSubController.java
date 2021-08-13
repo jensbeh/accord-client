@@ -86,7 +86,6 @@ public class InviteUsersTempSubController {
      * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
-        System.out.println("onCreateLinkClicked");
         restClient.createTempLink("temporal", 0, server.getId(), builder.getPersonalUser().getUserKey(), response -> {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
@@ -96,8 +95,6 @@ public class InviteUsersTempSubController {
                 Platform.runLater(() -> linkLabel.setText(link));
                 linkComboBox.getItems().add(link);
                 links.put(link, id);
-            } else if (status.equals("failure")) {
-                System.out.println(body);
             }
         });
     }
