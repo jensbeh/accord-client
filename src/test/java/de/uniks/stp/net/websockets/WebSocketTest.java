@@ -46,10 +46,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class WebSocketTest extends ApplicationTest {
-    private final String testServerName = "TestServer Team Bit Shift";
-    private final String testServerId = "5e2fbd8770dd077d03df505";
-    private final String testUserMainName = "Hendry Bracken";
-    private final String testUserMainPw = "stp2021pw";
     @InjectMocks
     StageManager mockApp = new StageManager();
     private Stage stage;
@@ -90,7 +86,7 @@ public class WebSocketTest extends ApplicationTest {
     @BeforeClass
     public static void setupHeadlessMode() {
         System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "false");
+        System.setProperty("testfx.headless", "true");
         System.setProperty("headless.geometry", "1920x1080-32");
     }
 
@@ -173,11 +169,6 @@ public class WebSocketTest extends ApplicationTest {
 
         String message = new JSONObject().put("channel", "private").put("from", testUser.getName()).put("message", "Test").toString();
         JsonObject jsonObject = (JsonObject) JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        message = new JSONObject().put("channel", "private").put("from", "testUser").put("message", "Test").toString();
-        jsonObject = (JsonObject) JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
         WaitForAsyncUtils.waitForFxEvents();
     }
@@ -328,10 +319,6 @@ public class WebSocketTest extends ApplicationTest {
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateSystemWebSocketClient.handleMessage(jsonObject);
 
-
-        message = "{\"channel\":\"private\",\"to\":\"Mr. Poopybutthole\",\"message\":\"Hallo\",\"from\":\"Allyria Dayne\",\"timestamp\":1623805070036}\"";
-        jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
-        privateChatWebSocket.handleMessage(jsonObject);
     }
 
     public void mockGetServers() {
@@ -428,7 +415,7 @@ public class WebSocketTest extends ApplicationTest {
 
 
     public Session getSession() {
-        Session session = new Session() {
+        return new Session() {
             @Override
             public WebSocketContainer getContainer() {
                 return null;
@@ -590,12 +577,12 @@ public class WebSocketTest extends ApplicationTest {
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
 
             }
 
             @Override
-            public void close(CloseReason closeReason) throws IOException {
+            public void close(CloseReason closeReason) {
 
             }
 
@@ -634,7 +621,6 @@ public class WebSocketTest extends ApplicationTest {
                 return null;
             }
         };
-        return session;
     }
 
     public EndpointConfig getEndpoint() {
