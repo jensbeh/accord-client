@@ -121,8 +121,8 @@
     -fx-background-color: #6899de;
 }
 
-/* Server Deleted/Left */
-#label_serverDeleted {
+/* Server Deleted/Left / Change Name */
+#label_info {
     -fx-text-fill: BLACK;
 }
 

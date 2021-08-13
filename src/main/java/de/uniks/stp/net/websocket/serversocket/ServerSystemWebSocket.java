@@ -424,7 +424,7 @@ public class ServerSystemWebSocket extends Endpoint {
         try {
             ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/ServerDeleted.fxml")), builder.getStageManager().getLangBundle());
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/InfoBox.fxml")), builder.getStageManager().getLangBundle());
             Stage stage = new Stage();
             stage.initStyle(StageStyle.TRANSPARENT);
 
@@ -460,7 +460,7 @@ public class ServerSystemWebSocket extends Endpoint {
             stage.setScene(scene);
             stage.show();
 
-            Label serverDeletedLabel = (Label) root.lookup("#label_serverDeleted");
+            Label serverDeletedLabel = (Label) root.lookup("#label_info");
             serverDeletedLabel.setText(builder.getStageManager().getLangBundle().getString("warning.server_was_deleted1") + " " + serverViewController.getServer().getName() + " " + builder.getStageManager().getLangBundle().getString("warning.server_was_deleted2"));
             Button okButton = (Button) root.lookup("#button_OK");
             okButton.setOnAction((a) -> {
@@ -735,7 +735,7 @@ public class ServerSystemWebSocket extends Endpoint {
             try {
                 ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/ServerDeleted.fxml")), builder.getStageManager().getLangBundle());
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/InfoBox.fxml")), builder.getStageManager().getLangBundle());
                 Stage stage = new Stage();
                 stage.initStyle(StageStyle.TRANSPARENT);
 
@@ -771,7 +771,7 @@ public class ServerSystemWebSocket extends Endpoint {
                 stage.setScene(scene);
                 stage.show();
 
-                Label serverDeletedLabel = (Label) root.lookup("#label_serverDeleted");
+                Label serverDeletedLabel = (Label) root.lookup("#label_info");
                 serverDeletedLabel.setText(builder.getStageManager().getLangBundle().getString("warning.server_left1") + " " + serverViewController.getServer().getName() + " " + builder.getStageManager().getLangBundle().getString("warning.server_left2"));
                 Button okButton = (Button) root.lookup("#button_OK");
                 okButton.setOnAction((a) -> {

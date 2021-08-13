@@ -120,8 +120,8 @@
     -fx-background-color: #ff7d7d;
 }
 
-/* Server Deleted/Left */
-#label_serverDeleted {
+/* Server Deleted/Left / Change Name */
+#label_info {
     -fx-text-fill: WHITE;
 }
 
