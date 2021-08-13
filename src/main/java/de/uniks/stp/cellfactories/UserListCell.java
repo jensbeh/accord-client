@@ -52,6 +52,12 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 HBox cell = cell();
                 Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
+                circle.setOnMousePressed(event -> {
+                    if (event.getClickCount() == 2 && item.isStatus()) {
+                        spotifyClick(cell);
+                    }
+                });
+
                 Label name = name(item);
 
                 StackPane stackPane = new StackPane();
@@ -76,6 +82,10 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             } else {
                 this.setGraphic(null);
             }
+        }
+
+        private void spotifyClick(HBox cell) {
+            builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
         }
 
         private Label game(User item) {
@@ -135,7 +145,6 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
             });
             this.setOnMousePressed(event -> hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10"));
             this.setOnMouseReleased(event -> {
-                builder.getSpotifyConnection().showSpotifyPopupView(cell, false, user.getDescription());
                 if (event.getX() < 0 || event.getX() > 175 || event.getY() < 0 || event.getY() > 30) {
                     hoverBg.setStyle("-fx-background-color: transparent; -fx-background-radius: 10 10 10 10");
                 } else if (builder.getTheme().equals("Dark")) {
