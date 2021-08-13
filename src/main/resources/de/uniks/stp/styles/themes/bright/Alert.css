@@ -120,3 +120,22 @@
 #button_OK:pressed {
     -fx-background-color: #6899de;
 }
+
+/* Server Deleted */
+#label_serverDeleted {
+    -fx-text-fill: BLACK;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_OK:hover {
+    -fx-background-color: #a0bade;
+}
+#button_OK:pressed {
+    -fx-background-color: #6899de;
+}

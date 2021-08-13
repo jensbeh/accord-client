@@ -307,7 +307,6 @@ public class PrivateChatWebSocket extends Endpoint {
     }
 
     private void showChatAlert(JsonObject jsonObject) {
-        String errorTitle;
         String serverMessage = jsonObject.getJsonObject("data").getString("message");
 
         try {
