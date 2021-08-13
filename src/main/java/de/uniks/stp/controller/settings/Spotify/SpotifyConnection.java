@@ -300,7 +300,7 @@ public class SpotifyConnection {
 
     public void updateValuesUser(String userDescription) {
         //if contains spotify url
-        Matcher spotifyMatcher = Pattern.compile("#\\{\"desc\"(.*)").matcher(userDescription);
+        Matcher spotifyMatcher = Pattern.compile("#\\{\"(.*)").matcher(userDescription);
         if (spotifyMatcher.find() && !isPersonalUser) {
             String cleanedDescription = userDescription.split("#")[1];
             JSONObject jsonObject = new JSONObject(cleanedDescription);
