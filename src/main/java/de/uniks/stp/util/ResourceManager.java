@@ -355,9 +355,7 @@ public class ResourceManager {
         if (fileName.equals(name)) {
             deleteFile = file;
             if (file.exists()) {
-                if (!deleteFile.delete()) {
-                    System.err.println("File can't be deleted");
-                }
+                deleteFile.delete();
             }
         }
     }

@@ -66,7 +66,6 @@ public class StageManager extends Application {
             stage.setMinHeight(scene.getHeight());
             stage.setMinWidth(scene.getWidth());
         } catch (Exception e) {
-            System.err.println("Error on showing LoginScreen");
             e.printStackTrace();
         }
     }
@@ -154,7 +153,6 @@ public class StageManager extends Application {
             });
             subStage.show();
         } catch (Exception e) {
-            System.err.println("Error on showing Setting Screen");
             e.printStackTrace();
         }
     }
@@ -192,7 +190,6 @@ public class StageManager extends Application {
             });
             subStage.show();
         } catch (Exception e) {
-            System.err.println("Error on showing ServerSetting Screen");
             e.printStackTrace();
         }
     }
@@ -229,7 +226,6 @@ public class StageManager extends Application {
             });
             subStage.show();
         } catch (Exception e) {
-            System.err.println("Error on showing Setting Screen");
             e.printStackTrace();
         }
     }
@@ -268,7 +264,6 @@ public class StageManager extends Application {
             });
             subStage.show();
         } catch (Exception e) {
-            System.err.println("Error on showing Start Snake Screen");
             e.printStackTrace();
         }
     }
@@ -464,7 +459,6 @@ public class StageManager extends Application {
             Locale.setDefault(currentLocale);
             resetLangBundle();
         } catch (Exception e) {
-            System.err.println(e + "");
             e.printStackTrace();
         }
     }
@@ -474,7 +468,6 @@ public class StageManager extends Application {
         try {
             super.stop();
         } catch (Exception e) {
-            System.err.println("Error while shutdown");
             e.printStackTrace();
         }
         cleanup();

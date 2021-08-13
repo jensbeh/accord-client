@@ -92,13 +92,7 @@ public class ModelBuilder {
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
         if (isSteamShow() || isSpotifyShow()) {
-            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                if (!body.getObject().getString("status").equals("success")) {
-                    System.err.println("Error in updateDescription");
-                    System.err.println(body);
-                }
-            });
+            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {});
         }
     }
 

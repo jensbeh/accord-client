@@ -80,7 +80,6 @@ public class InviteUsersController {
             inviteUsersTempSubController.init();
             inviteBox.getChildren().add(view);
         } catch (Exception e) {
-            System.err.println("Error in tempSelected");
             e.printStackTrace();
         }
     }
@@ -96,7 +95,6 @@ public class InviteUsersController {
             inviteUsersUserLimitSubController.init();
             inviteBox.getChildren().add(view);
         } catch (Exception e) {
-            System.err.println("Error in tempSelected");
             e.printStackTrace();
         }
     }

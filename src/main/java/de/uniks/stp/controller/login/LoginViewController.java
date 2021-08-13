@@ -314,7 +314,6 @@ public class LoginViewController {
                 i++;
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }

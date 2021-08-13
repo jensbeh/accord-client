@@ -796,7 +796,6 @@ public class ServerViewController {
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
-            System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
         }
     }

@@ -92,8 +92,6 @@ public class SteamLoginController {
             int status = body.getObject().getJSONObject("response").getInt("success");
             if (status == 1) {
                 setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-            } else {
-                System.err.println("Error in Converting VanityID to Steam64ID");
             }
         });
     }

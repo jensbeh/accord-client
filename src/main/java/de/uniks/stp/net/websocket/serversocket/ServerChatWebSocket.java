@@ -41,7 +41,7 @@ public class ServerChatWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing WebSocket connection:");
+            e.printStackTrace();
         }
     }
 

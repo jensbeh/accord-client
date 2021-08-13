@@ -164,7 +164,6 @@ public class LinePoolService {
             this.selectedMicrophone = microphones.get(newMicrophoneName);
             this.selectedMicrophoneName = newMicrophoneName;
         } else {
-            System.err.println("No microphone found! Set microphone to the default one...");
             // set first microphone in list to selected
             for (var microphone : microphones.entrySet()) {
                 this.selectedMicrophoneName = microphone.getKey();
@@ -226,7 +225,6 @@ public class LinePoolService {
             this.selectedSpeakerName = newSpeakerName;
             this.selectedSpeaker = speakers.get(newSpeakerName);
         } else {
-            System.err.println("No speaker found! Set speaker to the default one...");
             // set first speaker in list to selected
             for (var speaker : speakers.entrySet()) {
                 this.selectedSpeakerName = speaker.getKey();

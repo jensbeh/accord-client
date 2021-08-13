@@ -234,7 +234,6 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 serverSubSettingsPrivilegeController.init();
                 Platform.runLater(() -> this.privilegeOn.getChildren().add(view));
             } catch (Exception e) {
-                System.err.println("Error on showing ServerSettings_Privilege");
                 e.printStackTrace();
             }
         }
