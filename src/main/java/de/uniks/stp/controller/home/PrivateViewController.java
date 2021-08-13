@@ -354,7 +354,7 @@ public class PrivateViewController {
             if (builder.getCurrentPrivateChat() != null) {
                 for (Message msg : builder.getCurrentPrivateChat().getMessage()) {
                     // Display each Message which are saved
-                    chatViewController.printMessage(msg);
+                    chatViewController.printMessage(msg, false);
                 }
             }
         } catch (IOException | JsonException e) {

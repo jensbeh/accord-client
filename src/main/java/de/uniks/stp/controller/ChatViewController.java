@@ -75,6 +75,7 @@ public class ChatViewController {
     private ArrayList<WebEngine> webEngines;
     private ListChangeListener<User> blockedUserListener;
     private boolean emojiViewOpened;
+    private boolean messageJustReceived = false;
 
     public ChatViewController(Parent view, ModelBuilder builder) {
         this.view = view;
@@ -541,12 +542,13 @@ public class ChatViewController {
     /**
      * insert new message in observableList
      */
-    public void printMessage(Message msg) {
+    public void printMessage(Message msg, boolean messageJustReceived) {
         if (!builder.getInServerState()) {
             if (builder.getCurrentPrivateChat().getName().equals(msg.getPrivateChat().getName())) { // only print message when user is on correct chat channel
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
+                this.messageJustReceived = messageJustReceived;
                 messageView.setScroll(this::checkScrollToBottom);
                 messageView.updateItem(msg);
             }
@@ -555,6 +557,7 @@ public class ChatViewController {
                 MessageView messageView = new MessageView();
                 messageView.setBuilder(builder);
                 messageView.setChatViewController(this);
+                this.messageJustReceived = messageJustReceived;
                 messageView.setScroll(this::checkScrollToBottom);
                 messageView.updateItem(msg);
             }
@@ -671,6 +674,11 @@ public class ChatViewController {
         Platform.runLater(() -> {
             double vValue = messageScrollPane.getVvalue();
             if (vValue == 0 || vValue >= 0.92 - 10.0 / messagesBox.getChildren().size()) {
+                // if message is just received and not loaded, call applyCss() to recalculate sizes to make scroll to bottom not buggy
+                if (messageJustReceived) {
+                    messageScrollPane.applyCss();
+                    messageScrollPane.layout();
+                }
                 messageScrollPane.setVvalue(1.0);
             }
         });
