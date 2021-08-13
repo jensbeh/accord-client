@@ -52,8 +52,9 @@ public class UserListCell implements javafx.util.Callback<ListView<User>, ListCe
                 HBox cell = cell();
                 Region hoverBg = hoverBackground(cell);
                 Circle circle = new Circle(15);
+
                 circle.setOnMousePressed(event -> {
-                    if (event.getClickCount() == 2 && item.isStatus()) {
+                    if (event.getClickCount() == 1 && item.isStatus()) {
                         spotifyClick(cell);
                     }
                 });

@@ -340,7 +340,6 @@ public class SpotifyConnection {
                 updateValuesUser(userDescription);
             }
 
-            cell.setStyle("-fx-background-color: #1db954; -fx-background-radius: 0 10 10 0; -fx-padding: 5 5 5 5;");
             Bounds bounds = (cell.localToScreen(cell.getBoundsInLocal()));
             double x = bounds.getMinX() - 200;
             double y = bounds.getMinY();

@@ -377,6 +377,9 @@ public class ChatViewController {
     }
 
     private void deleteMessage(ActionEvent actionEvent) {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
         String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
         String catId = selectedMsg.getServerChannel().getCategories().getId();
         String channelId = selectedMsg.getServerChannel().getId();
@@ -386,6 +389,7 @@ public class ChatViewController {
         });
         StackPane toRemoveStack = stackPaneHashMap.get(selectedMsg);
         Message toRemoveMsg = messagesHashMap.get(toRemoveStack);
+
         stackPaneHashMap.remove(toRemoveMsg);
         messagesHashMap.remove(toRemoveStack);
         messagesBox.getChildren().remove(toRemoveStack);
@@ -426,6 +430,9 @@ public class ChatViewController {
      * edit message and refresh the ListView
      */
     private void editMessage(ActionEvent actionEvent) {
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            mediaPlayer.stop();
+        }
         String serverId = selectedMsg.getServerChannel().getCategories().getServer().getId();
         String catId = selectedMsg.getServerChannel().getCategories().getId();
         String channelId = selectedMsg.getServerChannel().getId();
