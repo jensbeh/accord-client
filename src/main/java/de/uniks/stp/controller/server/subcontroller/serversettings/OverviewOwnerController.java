@@ -19,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import kong.unirest.JsonNode;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -135,10 +134,6 @@ public class OverviewOwnerController {
         }
         //delete server
         restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            System.out.println("Overview controller: " + body.toString());
-            String status = body.getObject().getString("status");
-            System.out.println("status: " + status);
         });
         Platform.runLater(() -> {
             Stage stage = (Stage) serverName.getScene().getWindow();

@@ -428,7 +428,17 @@ public class ServerSettingsCategoryControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#deleteCategoryButton");
         WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#okButton");
 
+        clickOn("#overviewBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#deleteServer");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#button_delete");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        clickOn("#okButton");
+        WaitForAsyncUtils.waitForFxEvents();
     }
 }
