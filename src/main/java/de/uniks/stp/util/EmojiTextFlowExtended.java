@@ -24,6 +24,28 @@ public class EmojiTextFlowExtended extends EmojiTextFlow {
         }
     }
 
+    public void convertToUnicode(String message, String url) {
+        if (url != null) {
+            message = message.replace(url, "#&!link!&#");
+        }
+        Queue<Object> obs = EmojiParser.getInstance().toEmojiAndText(message);
+        while (!obs.isEmpty()) {
+            Object ob = obs.poll();
+            if (ob instanceof String) {
+                String str;
+                if (url != null) {
+                    str = replaceLinkHolder((String) ob, url);
+                } else {
+                    str = (String) ob;
+                }
+                this.addTextNode(str);
+            } else if (ob instanceof Emoji) {
+                Emoji emoji = (Emoji) ob;
+                this.addTextNode(emoji.getUnicode());
+            }
+        }
+    }
+
     public void addTextLinkNode(String message, String url) {
         message = message.replace(url, "#&!link!&#");
 

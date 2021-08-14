@@ -31,6 +31,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
@@ -529,7 +530,7 @@ public class ChatViewController {
             if (!builder.getInServerState()) {
                 try {
                     if (builder.getPrivateChatWebSocketClient() != null && builder.getCurrentPrivateChat() != null) {
-                        builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textMessage).toString());
+                        builder.getPrivateChatWebSocketClient().sendMessage(new JSONObject().put("channel", "private").put("to", builder.getCurrentPrivateChat().getName()).put("message", textWithUnicode(textMessage)).toString());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -537,12 +538,37 @@ public class ChatViewController {
             } else {
                 try {
                     if (builder.getServerChatWebSocketClient() != null && currentChannel != null)
-                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textMessage).toString());
+                        builder.getServerChatWebSocketClient().sendMessage(new JSONObject().put("channel", currentChannel.getId()).put("message", textWithUnicode(textMessage)).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    /**
+     * converts emojis from text message to Unicode
+     * @param message the text message as String
+     * @return the modified text message as String
+     */
+    private String textWithUnicode(String message) {
+        // Text might contain a link, get the Url if it has
+        MessageView messageView = new MessageView();
+        String url = messageView.searchUrl(message);
+        String urlType = messageView.getUrlType();
+        if (urlType.equals("None")) {
+            url = null;
+        }
+
+        StringBuilder convertedText = new StringBuilder();
+        EmojiTextFlowExtended emojiTextFlowExtended = new EmojiTextFlowExtended(new EmojiTextFlowParameters());
+        emojiTextFlowExtended.convertToUnicode(message, url);
+        if (emojiTextFlowExtended.getChildren().size() > 0) {
+            for (int i = 0; i < emojiTextFlowExtended.getChildren().size(); i++) {
+                convertedText.append(((Text) emojiTextFlowExtended.getChildren().get(i)).getText());
+            }
+        }
+        return convertedText.toString();
     }
 
     /**
