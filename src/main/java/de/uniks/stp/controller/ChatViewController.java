@@ -546,8 +546,12 @@ public class ChatViewController {
         }
     }
 
+    /**
+     * converts emojis from text message to Unicode
+     * @param message the text message as String
+     * @return the modified text message as String
+     */
     private String textWithUnicode(String message) {
-
         // Text might contain a link, get the Url if it has
         MessageView messageView = new MessageView();
         String url = messageView.searchUrl(message);
