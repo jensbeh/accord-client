@@ -118,6 +118,7 @@ public class SpotifyConnection {
 
         loginStage = new Stage();
         loginStage.initStyle(StageStyle.TRANSPARENT);
+        loginStage.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
         Scene scene = new Scene(Objects.requireNonNull(spotifyLoginView));
 
         webView = (WebView) spotifyLoginView.lookup("#loginWebView");
@@ -136,6 +137,7 @@ public class SpotifyConnection {
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
         titleBarController.setTitle("Spotify Login");
+        loginStage.setTitle("Spotify Login");
 
         createHttpServer();
         createCodeVerifier();
@@ -388,7 +390,6 @@ public class SpotifyConnection {
                             .put("data", "B " + artwork.getUrl());
                     String description2 = "#" + jsonString2.toString();
                     builder.getPersonalUser().setDescription(description2);
-                    System.out.println(builder.getPersonalUser().getDescription());
                 }
             }, 0, 15, TimeUnit.SECONDS);
         }

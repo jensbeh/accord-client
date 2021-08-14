@@ -88,13 +88,7 @@ public class CategorySubController {
 
 
     private void joinVoice(ServerChannel channel) {
-        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-            JsonNode body = response.getBody();
-            String status = body.getObject().getString("status");
-            if (status.equals("success")) {
-                System.out.println(body);
-            }
-        });
+        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {});
     }
 
     /**

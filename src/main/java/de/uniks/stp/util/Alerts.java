@@ -2,47 +2,78 @@ package de.uniks.stp.util;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
+import de.uniks.stp.controller.titlebar.TitleBarController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class Alerts {
 
     public static void invalidNameAlert(ModelBuilder builder) {
-        ResourceBundle lang = builder.getStageManager().getLangBundle();
-        ButtonType button = new ButtonType("Ok");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button);
-        alert.setTitle(lang.getString("window_title_serverSettings"));
+        try {
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
-        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/InfoBox.fxml")), builder.getStageManager().getLangBundle());
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
 
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().remove("alert");
-        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        alert.setHeaderText(lang.getString("warning.invalidName"));
-        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.initOwner(builder.getStageManager().getHomeViewController().getHomeView().getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
 
-        if (builder.getTheme().equals("Bright")) {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: BLACK;"
-                    + "-fx-background-color: WHITE;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #7da6df;" + "-fx-text-fill: white;");
-        } else {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: white;"
-                    + "-fx-background-color: #2f3136;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.warning"));
+            stage.setTitle(lang.getString("label.warning"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            Label serverDeletedLabel = (Label) root.lookup("#label_info");
+            serverDeletedLabel.setText(builder.getStageManager().getLangBundle().getString("warning.invalidName"));
+            Button okButton = (Button) root.lookup("#button_OK");
+            okButton.setOnAction((a) -> {
+                stage.close();
+            });
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        dialogPane.getStyleClass().add("AlertStyle");
-        alert.showAndWait();
     }
 }

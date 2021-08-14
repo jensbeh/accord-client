@@ -163,8 +163,6 @@ public class NotificationsController extends SubSetting {
             ob.add(file);
             ResourceManager.setComboValue(builder.getPersonalUser().getName(),
                     selectedFile.getName().substring(0, selectedFile.getName().length() - 4));
-        } else {
-            System.out.println("File is not valid!");
         }
     }
 

@@ -24,7 +24,16 @@
 }
 
 #okButton {
+    -fx-pref-width: 90px;
     -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+}
+#okButton:hover {
+    -fx-background-color: #a0bade;
+}
+#okButton:pressed {
+    -fx-background-color: #6899de;
 }
 
 #errorLabel {
@@ -33,4 +42,100 @@
 
 #errorVbox {
     -fx-background-color: WHITE;
+}
+
+/* "Everywhere" */
+#warningBox {
+    -fx-background-color: WHITE;
+}
+
+/* Delete Server */
+#label_deleteServer {
+    -fx-text-fill: BLACK;
+}
+
+#button_delete {
+    -fx-pref-width: 150px;
+    -fx-background-color: #ff3030;
+    -fx-background-radius: 80;
+    -fx-text-fill: WHITE;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#button_delete:hover {
+    -fx-background-color: #ff4a4a;
+}
+#button_delete:pressed {
+    -fx-background-color: #ff1f1f;
+}
+
+#button_cancel {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_cancel:hover {
+    -fx-background-color: #a0bade;
+}
+#button_cancel:pressed {
+    -fx-background-color: #6899de;
+}
+
+/* No Connection */
+#label_noConnection {
+    -fx-text-fill: BLACK;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_OK:hover {
+    -fx-background-color: #a0bade;
+}
+#button_OK:pressed {
+    -fx-background-color: #6899de;
+}
+
+/* Chat Alert */
+#label_chatAlert {
+    -fx-text-fill: BLACK;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_OK:hover {
+    -fx-background-color: #a0bade;
+}
+#button_OK:pressed {
+    -fx-background-color: #6899de;
+}
+
+/* Server Deleted/Left / Change Name */
+#label_info {
+    -fx-text-fill: BLACK;
+}
+
+#button_OK {
+    -fx-pref-width: 100px;
+    -fx-background-color: #7da6df;
+    -fx-background-radius: 80;
+    -fx-font-size: 14px;
+    -fx-text-fill: WHITE;
+}
+#button_OK:hover {
+    -fx-background-color: #a0bade;
+}
+#button_OK:pressed {
+    -fx-background-color: #6899de;
 }

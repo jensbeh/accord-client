@@ -40,6 +40,7 @@ public class SteamLoginController {
 
         loginStage = new Stage();
         loginStage.initStyle(StageStyle.TRANSPARENT);
+        loginStage.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
         Scene scene = new Scene(Objects.requireNonNull(steamLoginView));
 
         webView = (WebView) steamLoginView.lookup("#loginWebView");
@@ -58,6 +59,7 @@ public class SteamLoginController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
         titleBarController.setTitle("Steam Login");
+        loginStage.setTitle("Steam Login");
 
         webView.prefHeightProperty().bind(loginStage.heightProperty());
         webView.prefWidthProperty().bind(loginStage.widthProperty());
@@ -76,7 +78,6 @@ public class SteamLoginController {
 
     private void getSteam64ID(Observable observable) {
         String[] link = webView.getEngine().getLocation().split("/");
-        System.out.println(webView.getEngine().getLocation());
         if (link.length > 1 && !link[link.length - 1].equals("goto")) {
             String selector = link[link.length - 2];
             if (selector.equals("id")) {   // https://steamcommunity.com/id/VanityID/
@@ -93,8 +94,6 @@ public class SteamLoginController {
             int status = body.getObject().getJSONObject("response").getInt("success");
             if (status == 1) {
                 setSteam64ID(body.getObject().getJSONObject("response").getString("steamid"));
-            } else {
-                System.err.println("Error in Converting VanityID to Steam64ID");
             }
         });
     }

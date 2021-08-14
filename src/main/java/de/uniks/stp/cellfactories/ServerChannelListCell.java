@@ -120,6 +120,8 @@ public class ServerChannelListCell implements javafx.util.Callback<ListView<Serv
                     cell.getChildren().addAll(nameAndNotificationCell);
                     cell.setPrefHeight(28);
                 }
+            } else {
+                this.setId("");
             }
             this.setGraphic(cell);
         }

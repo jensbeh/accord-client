@@ -56,6 +56,7 @@ public class ServerSettingsController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_serverSettings"));
+        stage.setTitle(builder.getStageManager().getLangBundle().getString("window_title_serverSettings"));
 
         //init of sideButtons
         root = (Pane) view.lookup("#root");
@@ -192,7 +193,6 @@ public class ServerSettingsController {
 
             this.serverSettingsContainer.getChildren().add(serverSettingsField);
         } catch (Exception e) {
-            System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
         }
     }

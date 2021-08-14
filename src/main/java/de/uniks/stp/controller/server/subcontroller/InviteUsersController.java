@@ -52,6 +52,7 @@ public class InviteUsersController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle(builder.getStageManager().getLangBundle().getString("window_title_inviteUsers"));
+        stage.setTitle(builder.getStageManager().getLangBundle().getString("window_title_inviteUsers"));
 
         root = (VBox) view.lookup("#rootInvite");
         tempSelected = (RadioButton) view.lookup("#tempSelected");
@@ -80,7 +81,6 @@ public class InviteUsersController {
             inviteUsersTempSubController.init();
             inviteBox.getChildren().add(view);
         } catch (Exception e) {
-            System.err.println("Error in tempSelected");
             e.printStackTrace();
         }
     }
@@ -96,7 +96,6 @@ public class InviteUsersController {
             inviteUsersUserLimitSubController.init();
             inviteBox.getChildren().add(view);
         } catch (Exception e) {
-            System.err.println("Error in tempSelected");
             e.printStackTrace();
         }
     }

@@ -1,15 +1,6 @@
 /* generals */
-.root {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 24, 0, 0, 0);
-    -fx-background-insets: 24;
-    -fx-padding: 24;
-}
-
 #serverSettingsContainer {
-    -fx-background-color: WHITE;
-    -fx-border-width: 2 0 0 0;
-    -fx-border-color: #f2f3f5;
-    -fx-border-style: solid hidden hidden hidden;
+    -fx-background-color: #e3e5e8;
 }
 
 #select {
@@ -37,11 +28,11 @@
 }
 
 #rootCategory {
-    -fx-background-color: WHITE;
+    -fx-background-color: #e3e5e8;
 }
 
 #rootOverview {
-    -fx-background-color: WHITE;
+    -fx-background-color: #e3e5e8;
 }
 
 /* Settings items left */

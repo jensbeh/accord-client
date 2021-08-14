@@ -1,16 +1,27 @@
 package de.uniks.stp.net.websocket.serversocket;
 
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.server.ServerViewController;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.*;
 import de.uniks.stp.net.udp.AudioStreamClient;
 import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
 import de.uniks.stp.util.JsonUtil;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -18,10 +29,7 @@ import javax.json.JsonStructure;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class ServerSystemWebSocket extends Endpoint {
 
@@ -42,7 +50,7 @@ public class ServerSystemWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing WebSocket connection:");
+            e.printStackTrace();
         }
     }
 
@@ -411,10 +419,59 @@ public class ServerSystemWebSocket extends Endpoint {
             builder.setCurrentServer(null);
             serverViewController.getHomeViewController().refreshServerList();
         }
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-        alert.setTitle("Server deleted!");
-        alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was deleted!");
-        alert.showAndWait();
+        try {
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
+
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/InfoBox.fxml")), builder.getStageManager().getLangBundle());
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.initOwner(builder.getStageManager().getHomeViewController().getHomeView().getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
+
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.warning"));
+            stage.setTitle(lang.getString("label.warning"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            Label serverDeletedLabel = (Label) root.lookup("#label_info");
+            serverDeletedLabel.setText(builder.getStageManager().getLangBundle().getString("warning.server_was_deleted1") + " " + serverViewController.getServer().getName() + " " + builder.getStageManager().getLangBundle().getString("warning.server_was_deleted2"));
+            Button okButton = (Button) root.lookup("#button_OK");
+            okButton.setOnAction((a) -> {
+                stage.close();
+            });
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -672,10 +729,60 @@ public class ServerSystemWebSocket extends Endpoint {
             builder.setCurrentServer(null);
             serverViewController.getHomeViewController().serverDeleted();
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-            alert.setTitle("Server left!");
-            alert.setHeaderText("Server " + serverViewController.getServer().getName() + " was left!");
-            alert.showAndWait();
+
+            try {
+                ResourceBundle lang = builder.getStageManager().getLangBundle();
+
+                Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/InfoBox.fxml")), builder.getStageManager().getLangBundle());
+                Stage stage = new Stage();
+                stage.initStyle(StageStyle.TRANSPARENT);
+
+                stage.setResizable(false);
+                stage.sizeToScene();
+                stage.centerOnScreen();
+                stage.initOwner(builder.getStageManager().getHomeViewController().getHomeView().getScene().getWindow());
+                stage.initModality(Modality.WINDOW_MODAL);
+
+                Scene scene = new Scene(root);
+                stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+                // DropShadow of Scene
+                scene.setFill(Color.TRANSPARENT);
+                scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+                // create titleBar
+                HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+                Parent titleBarView = null;
+                try {
+                    titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                titleBarBox.getChildren().add(titleBarView);
+                TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                titleBarController.init();
+                titleBarController.setTheme();
+                titleBarController.setMaximizable(false);
+                titleBarController.setTitle(lang.getString("label.warning"));
+                stage.setTitle(lang.getString("label.warning"));
+
+                stage.setScene(scene);
+                stage.show();
+
+                Label serverDeletedLabel = (Label) root.lookup("#label_info");
+                serverDeletedLabel.setText(builder.getStageManager().getLangBundle().getString("warning.server_left1") + " " + serverViewController.getServer().getName() + " " + builder.getStageManager().getLangBundle().getString("warning.server_left2"));
+                Button okButton = (Button) root.lookup("#button_OK");
+                okButton.setOnAction((a) -> {
+                    stage.close();
+                });
+                if (builder.getTheme().equals("Bright")) {
+                    root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                } else {
+                    root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         serverViewController.getHomeViewController().stopServer(serverViewController.getServer());
     }

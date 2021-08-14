@@ -420,7 +420,6 @@ public class LoginViewControllerTest extends ApplicationTest {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }
@@ -462,7 +461,6 @@ public class LoginViewControllerTest extends ApplicationTest {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }

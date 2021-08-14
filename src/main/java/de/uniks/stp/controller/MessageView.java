@@ -6,6 +6,8 @@ import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.util.EmojiTextFlowExtended;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -51,6 +53,16 @@ public class MessageView {
 
     public void setChatViewController(ChatViewController chatViewController) {
         this.chatViewController = chatViewController;
+        chatViewController.getContainer().boundsInLocalProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds bounds, Bounds t1) {
+                if (bounds.getMaxY() != t1.getMaxX() || bounds.getMaxX() != t1.getMaxX()) {
+                    for(WebView view : chatViewController.getWebEngines()) {
+                        setSizeWebView(view, t1, 0, 0);
+                    }
+                }
+            }
+        });
     }
 
     public void updateItem(Message item) {
@@ -88,6 +100,7 @@ public class MessageView {
         if (loadImage) {
             webView.setContextMenuEnabled(false);
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
+            chatViewController.getWebEngines().add(webView);
         }
 
         EmojiTextFlowExtended message = setupMessage(messageIsInfo, vbox, userName, item);
@@ -382,7 +395,6 @@ public class MessageView {
         MediaPlayer mp = new MediaPlayer(mediaUrl);
         chatViewController.getMediaPlayers().add(mp);
         mediaView.setMediaPlayer(mp);
-        mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
     }
 
     private void setMedia(String url, WebEngine engine) {
@@ -408,7 +420,6 @@ public class MessageView {
                 engine.setJavaScriptEnabled(true);
                 break;
         }
-        chatViewController.getWebEngines().add(engine);
         if (builder.getTheme().equals("Bright")) {
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/webView.css")).toExternalForm());
         } else {
@@ -458,8 +469,6 @@ public class MessageView {
                 parent = parent.getParent();
             }
             Bounds bounds = parent.getBoundsInLocal();
-            double maxX = bounds.getMaxX();
-            double maxY = bounds.getMaxY();
             int height = 0;
             int width = 0;
             if (!urlType.equals("None")) {
@@ -470,15 +479,21 @@ public class MessageView {
                     width = image.getWidth();
                 }
             }
-            if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
-                webView.setMaxSize(width, height);
-            } else {
-                webView.setMaxSize(maxX - 50, maxY - 50);
-            }
-            webView.autosize();
+            setSizeWebView(webView, bounds, height, width);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setSizeWebView(WebView webView, Bounds bounds,int height, int width) {
+        double maxX = bounds.getMaxX();
+        double maxY = bounds.getMaxY();
+        if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+            webView.setMaxSize(width, height);
+        } else {
+            webView.setMaxSize(maxX - 50, maxY - 50);
+        }
+        webView.autosize();
     }
 
     public void setScroll(Runnable scroll) {

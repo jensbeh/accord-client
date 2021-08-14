@@ -99,11 +99,6 @@ test {
     useJUnit()
     maxHeapSize = "5120m"
     jvmArgs "-Dtestfx.robot=glass -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
-
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
-    }
 }
 
 jar {

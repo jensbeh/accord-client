@@ -64,6 +64,7 @@ public class LoginViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle("Accord");
+        stage.setTitle("Accord");
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");
@@ -242,7 +243,6 @@ public class LoginViewController {
             restClient.login(username, password, response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
-                System.out.println(status);
                 test(status, body, username, password);
             });
         }
@@ -273,7 +273,6 @@ public class LoginViewController {
             out.write(tempCheckBox.toString());
             out.close();
         } catch (Exception e) {
-            System.out.println("Error while saving userdata.");
             e.printStackTrace();
         }
     }
@@ -316,7 +315,6 @@ public class LoginViewController {
                 i++;
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }
@@ -408,5 +406,9 @@ public class LoginViewController {
 
     public void setNoConnectionTest(boolean noConnectionTestState) {
         this.noConnectionTest = noConnectionTestState;
+    }
+
+    public Parent getLoginView() {
+        return this.root;
     }
 }

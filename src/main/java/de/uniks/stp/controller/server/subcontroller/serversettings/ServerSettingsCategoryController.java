@@ -99,7 +99,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void onCategoryClicked(Event event) {
         deleteCategoryButton.setDisable(false);
         selectedCategory = this.categoriesSelector.getValue();
-        System.out.println("Selected Category: " + selectedCategory);
     }
 
     /**
@@ -149,7 +148,51 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void deleteCategory(ActionEvent actionEvent) {
         if (selectedCategory != null) {
             if (builder.getCurrentServer().getCategories().get(0) == selectedCategory) {
-                createCategoryDeleteView();
+                try {
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
+
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), builder.getStageManager().getLangBundle());
+                    stage = new Stage();
+                    stage.initStyle(StageStyle.TRANSPARENT);
+                    Scene scene = new Scene(root);
+                    stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+                    // DropShadow of Scene
+                    scene.setFill(Color.TRANSPARENT);
+                    scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+                    // create titleBar
+                    HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+                    Parent titleBarView = null;
+                    try {
+                        titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    titleBarBox.getChildren().add(titleBarView);
+                    TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+                    titleBarController.init();
+                    titleBarController.setTheme();
+                    titleBarController.setMaximizable(false);
+                    titleBarController.setTitle(lang.getString("label.error"));
+                    stage.setTitle(lang.getString("label.error"));
+
+                    stage.setScene(scene);
+                    stage.show();
+
+                    okButton = (Button) root.lookup("#okButton");
+                    okButton.setText("OK");
+                    okButton.setOnAction(this::closeStage);
+                    if (builder.getTheme().equals("Bright")) {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+                    } else {
+                        root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+                    }
+                    Label errorLabel = (Label) root.lookup("#errorLabel");
+                    errorLabel.setText(lang.getString("label.alertDefaultCat"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
@@ -165,53 +208,6 @@ public class ServerSettingsCategoryController extends SubSetting {
                     }
                 });
             }
-        }
-    }
-
-    private void createCategoryDeleteView() {
-        try {
-            ResourceBundle lang = builder.getStageManager().getLangBundle();
-
-            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteDefault.fxml")), lang);
-            stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT);
-            Scene scene = new Scene(root);
-            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
-
-            // DropShadow of Scene
-            scene.setFill(Color.TRANSPARENT);
-            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
-
-            // create titleBar
-            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
-            Parent titleBarView = null;
-            try {
-                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), lang);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            titleBarBox.getChildren().add(titleBarView);
-            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
-            titleBarController.init();
-            titleBarController.setTheme();
-            titleBarController.setMaximizable(false);
-            titleBarController.setTitle(lang.getString("label.error"));
-
-            stage.setScene(scene);
-            stage.show();
-
-            okButton = (Button) root.lookup("#okButton");
-            okButton.setText("OK");
-            okButton.setOnAction(this::closeStage);
-            if (builder.getTheme().equals("Bright")) {
-                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-            } else {
-                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-            }
-            Label errorLabel = (Label) root.lookup("#errorLabel");
-            errorLabel.setText(lang.getString("label.alertDefaultCat"));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

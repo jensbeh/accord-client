@@ -41,9 +41,42 @@
 
 #root {
     -fx-background-color: #ffffff;
-    -fx-border-color: #e3e5e8;
 }
 
 #homeViewVBox {
     -fx-background-color: #e3e5e8;
+}
+
+#markdownScrollView .scroll-bar:horizontal .track,
+#markdownScrollView .scroll-bar:vertical .track {
+    -fx-background-color: #f2f3f5;
+    -fx-border-color: #f2f3f5;
+    -fx-background-radius: 0em;
+    -fx-border-radius: 2em;
+}
+
+#markdownScrollView .scroll-bar:horizontal .increment-button,
+#markdownScrollView .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 0 10 0;
+}
+
+#markdownScrollView .scroll-bar:vertical .increment-button,
+#markdownScrollView .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 10 0 0;
+}
+
+#markdownScrollView .scroll-bar .increment-arrow,
+#markdownScrollView .scroll-bar .decrement-arrow {
+    -fx-padding: 0;
+}
+
+#markdownScrollView .scroll-bar:horizontal .thumb,
+#markdownScrollView .scroll-bar:vertical .thumb {
+    -fx-background-color: #626262;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
 }
