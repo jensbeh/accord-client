@@ -123,23 +123,11 @@ public class WebSocketTest extends ApplicationTest {
         doCallRealMethod().when(privateChatWebSocket).setBuilder(any());
         doCallRealMethod().when(privateChatWebSocket).startNoopTimer();
         doCallRealMethod().when(privateChatWebSocket).sendMessage(any());
-        doCallRealMethod().when(privateChatWebSocket).showNoConAlert();
         doCallRealMethod().when(privateChatWebSocket).onOpen(any(), any());
         doCallRealMethod().when(privateChatWebSocket).getPrivateViewController();
         Assert.assertNull(privateChatWebSocket.getPrivateViewController());
         WaitForAsyncUtils.waitForFxEvents();
         privateChatWebSocket.setBuilder(builder);
-        privateChatWebSocket.showNoConAlert();
-        WaitForAsyncUtils.waitForFxEvents();
-        String result;
-        for (Object s : this.listTargetWindows()) {
-            if (s != stage) {
-                result = ((Stage) s).getTitle();
-                Assert.assertEquals("No Connection Error", result);
-                Platform.runLater(((Stage) s)::close);
-                break;
-            }
-        }
         WaitForAsyncUtils.waitForFxEvents();
         privateChatWebSocket.startNoopTimer();
 
