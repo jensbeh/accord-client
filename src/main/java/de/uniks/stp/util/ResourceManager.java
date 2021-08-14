@@ -173,7 +173,6 @@ public class ResourceManager {
             obj.put("timestamp", message.getTimestamp());
             parser.add(obj);
 
-            System.out.println("savePrivatChat: " + message);
             Jsoner.serialize(parser, writer);
             writer.close();
         } catch (IOException | JsonException e) {
@@ -236,7 +235,6 @@ public class ResourceManager {
             } else {
                 parser.remove(obj);
             }
-            System.out.println("saveBlockedUser: " + user.getName());
             Jsoner.serialize(parser, writer);
             writer.close();
         } catch (IOException | JsonException e) {
@@ -333,7 +331,6 @@ public class ResourceManager {
         List<File> listOfFiles = new ArrayList<>();
         if (Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH))) {
             File folder = new File(APPDIR_ACCORD_PATH + SAVES_PATH + NOTIFICATION_PATH);
-            System.out.println(folder);
             listOfFiles = new ArrayList<>(Arrays.asList(Objects.requireNonNull(folder.listFiles())));
             return listOfFiles;
         }
@@ -358,11 +355,7 @@ public class ResourceManager {
         if (fileName.equals(name)) {
             deleteFile = file;
             if (file.exists()) {
-                if (!deleteFile.delete()) {
-                    System.err.println("File can't be deleted");
-                }
-            } else {
-                System.out.println("File does not exist!");
+                deleteFile.delete();
             }
         }
     }

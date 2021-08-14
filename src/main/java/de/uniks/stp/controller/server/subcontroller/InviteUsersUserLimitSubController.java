@@ -107,29 +107,25 @@ public class InviteUsersUserLimitSubController {
      * OnCreate clicked send restClient request to the server and handles the response accordingly.
      */
     private void onCreateLinkClicked(ActionEvent actionEvent) {
-        if (!userLimit.getText().equals("")) {
-            System.out.println("onCreateLinkClicked");
-            int count = 0;
-            try {
-                count = Integer.parseInt(userLimit.getText());
-            } catch (NumberFormatException e) {
-                System.out.println("Not a number");
-            }
-            if (count > 0)
-                restClient.createTempLink("count", count, server.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        String link = body.getObject().getJSONObject("data").getString("link");
-                        String maxUsers = String.valueOf(body.getObject().getJSONObject("data").getInt("max"));
-                        String id = body.getObject().getJSONObject("data").getString("id");
-                        Platform.runLater(() -> linkLabel.setText(link));
-                        linkComboBox.getItems().add(List.of(link, maxUsers));
-                        links.put(link, id);
-                    } else if (status.equals("failure")) {
-                        System.out.println(body);
-                    }
-                });
+        int count = 0;
+        try {
+            count = Integer.parseInt(userLimit.getText());
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        if (!userLimit.getText().equals("") && count > 0) {
+            restClient.createTempLink("count", count, server.getId(), builder.getPersonalUser().getUserKey(), response -> {
+                JsonNode body = response.getBody();
+                String status = body.getObject().getString("status");
+                if (status.equals("success")) {
+                    String link = body.getObject().getJSONObject("data").getString("link");
+                    String maxUsers = String.valueOf(body.getObject().getJSONObject("data").getInt("max"));
+                    String id = body.getObject().getJSONObject("data").getString("id");
+                    Platform.runLater(() -> linkLabel.setText(link));
+                    linkComboBox.getItems().add(List.of(link, maxUsers));
+                    links.put(link, id);
+                }
+            });
         }
     }
 

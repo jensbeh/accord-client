@@ -2,9 +2,12 @@ package de.uniks.stp.controller;
 
 import com.pavlobu.emojitextflow.EmojiTextFlow;
 import com.pavlobu.emojitextflow.EmojiTextFlowParameters;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.util.EmojiTextFlowExtended;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -50,6 +53,16 @@ public class MessageView {
 
     public void setChatViewController(ChatViewController chatViewController) {
         this.chatViewController = chatViewController;
+        chatViewController.getContainer().boundsInLocalProperty().addListener(new ChangeListener<Bounds>() {
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observableValue, Bounds bounds, Bounds t1) {
+                if (bounds.getMaxY() != t1.getMaxX() || bounds.getMaxX() != t1.getMaxX()) {
+                    for(WebView view : chatViewController.getWebEngines()) {
+                        setSizeWebView(view, t1, 0, 0);
+                    }
+                }
+            }
+        });
     }
 
     public void updateItem(Message item) {
@@ -65,18 +78,9 @@ public class MessageView {
         }
 
         VBox vbox = new VBox();
-        Label userName = new Label();
-        userName.setId("userNameLabel");
-        if (builder.getTheme().equals("Bright")) {
-            userName.setTextFill(Color.BLACK);
-        } else {
-            userName.setTextFill(Color.WHITE);
-        }
-        EmojiTextFlowExtended message;
+        Label userName = userNameLabel();
 
         //right alignment if User is currentUser else left
-        Date date = new Date(item.getTimestamp());
-        DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
         String textMessage = item.getMessage();
         String url = searchUrl(textMessage);
         loadImage = false;
@@ -96,8 +100,98 @@ public class MessageView {
         if (loadImage) {
             webView.setContextMenuEnabled(false);
             setImageSize(chatViewController.getMessageScrollPane(), url, webView);
+            chatViewController.getWebEngines().add(webView);
         }
 
+        EmojiTextFlowExtended message = setupMessage(messageIsInfo, vbox, userName, item);
+
+        textMessage = parseTeamEncoding(textMessage);
+
+        double lyw = 0.0f;
+        if (!textMessage.equals("")) {
+            message.setId("messageLabel");
+            String str;
+            if (messageIsInfo) {
+                str = showSystemMessage(item);
+            } else {
+                str = textMessage;
+            }
+            if (urlType.equals("link")) {
+                message.addTextLinkNode(str, url);
+            } else {
+                message.parseAndAppend(str);
+            }
+            lyw = getLayoutBoundsGetWidth(message) + 10;
+        }
+
+        HBox messageBox = new HBox();
+        messageBox.getChildren().add(message);
+        HBox finalMessageBox = new HBox();
+        setSize(lyw, messageBox, finalMessageBox);
+
+        setupMessageBackground(finalMessageBox, messageIsInfo, messageBox, item);
+
+        setUpCell(loadImage, vbox, userName, webView, cell, loadVideo, mediaView, url, finalMessageBox);
+
+        if (!messageIsInfo) {
+            boolean messageIsLink = loadImage || loadVideo;
+            cell.setOnMouseClicked(event -> chatViewController.chatClicked(event, messageIsLink));
+        }
+        chatViewController.getContainer().getChildren().add(cell);
+        chatViewController.getMessagesHashMap().put(cell, item);
+        chatViewController.getStackPaneHashMap().put(item, cell);
+        if (scroll != null) {
+            scroll.run();
+        }
+    }
+
+    private void setUpCell(boolean loadImage, VBox vbox, Label userName, WebView webView, StackPane cell, boolean loadVideo, MediaView mediaView, String url, HBox finalMessageBox) {
+        if (loadImage) {
+            vbox.getChildren().addAll(userName, webView);
+            cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
+        } else if (loadVideo) {
+            MediaControl mediaControl = new MediaControl();
+            VBox mediaBox = mediaControl.setMediaControls(mediaView);
+            setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
+            vbox.getChildren().addAll(userName, mediaBox);
+
+        } else {
+            vbox.getChildren().addAll(userName, finalMessageBox);
+            vbox.setMouseTransparent(true);
+        }
+
+        cell.setAlignment(Pos.CENTER_RIGHT);
+        cell.getChildren().addAll(vbox);
+    }
+
+    private void setSize(double lyw, HBox messageBox, HBox finalMessageBox) {
+        if (lyw > 320) {
+            messageBox.setMaxWidth(320);
+        } else {
+            messageBox.setMaxWidth(lyw);
+        }
+        if (lyw > 320) {
+            finalMessageBox.setMaxWidth(320 + 10);
+        } else {
+            finalMessageBox.setMaxWidth(lyw + 10);
+        }
+    }
+
+    private Label userNameLabel() {
+        Label userName = new Label();
+        userName.setId("userNameLabel");
+        if (builder.getTheme().equals("Bright")) {
+            userName.setTextFill(Color.BLACK);
+        } else {
+            userName.setTextFill(Color.WHITE);
+        }
+        return userName;
+    }
+
+    private EmojiTextFlowExtended setupMessage(boolean messageIsInfo, VBox vbox, Label userName, Message item) {
+        Date date = new Date(item.getTimestamp());
+        DateFormat formatterTime = new SimpleDateFormat("dd.MM - HH:mm");
+        EmojiTextFlowExtended message;
         if (messageIsInfo) {
             vbox.setAlignment(Pos.CENTER_LEFT);
             userName.setText((formatterTime.format(date)));
@@ -114,48 +208,10 @@ public class MessageView {
 
             message = handleEmojis(this.builder, "other");
         }
+        return message;
+    }
 
-        textMessage = parseTeamEncoding(textMessage);
-
-        double lyw = 0.0f;
-        if (!textMessage.equals("")) {
-            message.setId("messageLabel");
-
-            String str = null;
-            if (messageIsInfo) {
-                ResourceBundle lang = builder.getStageManager().getLangBundle();
-                if (item.getMessage().endsWith("#arrival")) {
-                    str = ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
-                } else if (item.getMessage().endsWith("#exit")) {
-                    str = ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
-                }
-            } else {
-                str = textMessage;
-            }
-            if (urlType.equals("link")) {
-                message.addTextLinkNode(str, url);
-            } else {
-                message.parseAndAppend(str);
-            }
-
-            lyw = getLayoutBoundsGetWidth(message) + 10;
-        }
-
-        HBox messageBox = new HBox();
-        messageBox.getChildren().add(message);
-        if (lyw > 320) {
-            messageBox.setMaxWidth(320);
-        } else {
-            messageBox.setMaxWidth(lyw);
-        }
-        HBox finalMessageBox = new HBox();
-        if (lyw > 320) {
-            finalMessageBox.setMaxWidth(320 + 10);
-        } else {
-            finalMessageBox.setMaxWidth(lyw + 10);
-        }
-
-        //Message background
+    private void setupMessageBackground(HBox finalMessageBox, boolean messageIsInfo, HBox messageBox, Message item) {
         Polygon polygon = new Polygon();
         if (messageIsInfo) {
             polygon.getStyleClass().add("messagePolygonSystem");
@@ -179,34 +235,16 @@ public class MessageView {
                     10.0, 10.0);
             finalMessageBox.getChildren().addAll(polygon, messageBox);
         }
+    }
 
-
-        if (loadImage) {
-            vbox.getChildren().addAll(userName, webView);
-            cell.setMinSize(webView.getMaxWidth(), webView.getPrefHeight());
-        } else if (loadVideo) {
-            MediaControl mediaControl = new MediaControl();
-            VBox mediaBox = mediaControl.setMediaControls(mediaView);
-            setVideoSize(chatViewController.getMessageScrollPane(), url, mediaView);
-            vbox.getChildren().addAll(userName, mediaBox);
-
-        } else {
-            vbox.getChildren().addAll(userName, finalMessageBox);
-            vbox.setMouseTransparent(true);
+    private String showSystemMessage(Message item) {
+        ResourceBundle lang = builder.getStageManager().getLangBundle();
+        if (item.getMessage().endsWith("#arrival")) {
+            return ":white_check_mark: " + item.getFrom() + " " + lang.getString("message.user_arrived");
+        } else if (item.getMessage().endsWith("#exit")) {
+            return ":no_entry: " + item.getFrom() + " " + lang.getString("message.user_exited");
         }
-
-        cell.setAlignment(Pos.CENTER_RIGHT);
-        cell.getChildren().addAll(vbox);
-        if (!messageIsInfo) {
-            boolean messageIsLink = loadImage || loadVideo;
-            cell.setOnMouseClicked(event -> chatViewController.chatClicked(event, messageIsLink));
-        }
-        chatViewController.getContainer().getChildren().add(cell);
-        chatViewController.getMessagesHashMap().put(cell, item);
-        chatViewController.getStackPaneHashMap().put(item, cell);
-        if (scroll != null) {
-            scroll.run();
-        }
+        return null;
     }
 
     private String parseTeamEncoding(String textMessage) {
@@ -357,7 +395,6 @@ public class MessageView {
         MediaPlayer mp = new MediaPlayer(mediaUrl);
         chatViewController.getMediaPlayers().add(mp);
         mediaView.setMediaPlayer(mp);
-        mp.setOnError(() -> System.out.println("Error : " + mp.getError().toString()));
     }
 
     private void setMedia(String url, WebEngine engine) {
@@ -383,7 +420,6 @@ public class MessageView {
                 engine.setJavaScriptEnabled(true);
                 break;
         }
-        chatViewController.getWebEngines().add(engine);
         if (builder.getTheme().equals("Bright")) {
             engine.setUserStyleSheetLocation(Objects.requireNonNull(getClass().getResource("/de/uniks/stp/styles/themes/bright/webView.css")).toExternalForm());
         } else {
@@ -433,8 +469,6 @@ public class MessageView {
                 parent = parent.getParent();
             }
             Bounds bounds = parent.getBoundsInLocal();
-            double maxX = bounds.getMaxX();
-            double maxY = bounds.getMaxY();
             int height = 0;
             int width = 0;
             if (!urlType.equals("None")) {
@@ -445,15 +479,21 @@ public class MessageView {
                     width = image.getWidth();
                 }
             }
-            if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
-                webView.setMaxSize(width, height);
-            } else {
-                webView.setMaxSize(maxX - 50, maxY - 50);
-            }
-            webView.autosize();
+            setSizeWebView(webView, bounds, height, width);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setSizeWebView(WebView webView, Bounds bounds,int height, int width) {
+        double maxX = bounds.getMaxX();
+        double maxY = bounds.getMaxY();
+        if (height != 0 && width != 0 && (height < maxY - 50 || width < maxX - 50)) {
+            webView.setMaxSize(width, height);
+        } else {
+            webView.setMaxSize(maxX - 50, maxY - 50);
+        }
+        webView.autosize();
     }
 
     public void setScroll(Runnable scroll) {

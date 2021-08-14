@@ -68,7 +68,13 @@ public class TitleBarController {
             }
         });
 
-        closeButton.setOnAction(event -> stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST)));
+        closeButton.setOnAction(event -> {
+                    stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+                    if(builder.getSpotifyConnection() != null) {
+                        builder.getSpotifyConnection().stop();
+                    }
+                }
+        );
 
         titleBarSpaceBox.setOnMouseDragged(this::setStagePos);
         titleBarSpaceBox.setOnMousePressed(this::getScenePos);

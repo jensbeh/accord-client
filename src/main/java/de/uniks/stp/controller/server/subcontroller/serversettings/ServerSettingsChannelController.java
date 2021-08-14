@@ -316,7 +316,6 @@ public class ServerSettingsChannelController extends SubSetting {
         if (!whiteSpaceMatcher.find() && !createChannelTextField.getText().isEmpty()) {
             String channelName = createChannelTextField.getText();
             String[] members = new String[0];
-            System.out.println("Channeltype: " + channelType);
             restClient.createChannel(server.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), channelName, channelType, false, members, response -> {
                 JsonNode body = response.getBody();
                 String status = body.getObject().getString("status");
@@ -386,7 +385,7 @@ public class ServerSettingsChannelController extends SubSetting {
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && builder.getCurrentAudioChannel().getId().equals(selectedChannel.getId())) {
-                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
                 }
                 restClient.deleteChannel(server.getId(), selectedCategory.getId(), selectedChannel.getId(), builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();

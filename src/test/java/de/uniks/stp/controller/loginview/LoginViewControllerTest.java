@@ -289,7 +289,7 @@ public class LoginViewControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         Label errorLabel = lookup("#errorLabel").query();
-        Assert.assertEquals("Field is empty!", errorLabel.getText());
+        Assert.assertEquals("Name already taken", errorLabel.getText());
     }
 
     @Test
@@ -420,7 +420,6 @@ public class LoginViewControllerTest extends ApplicationTest {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }
@@ -462,7 +461,6 @@ public class LoginViewControllerTest extends ApplicationTest {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error while reading!");
             e.printStackTrace();
         }
     }

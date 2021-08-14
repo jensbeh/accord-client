@@ -180,10 +180,6 @@ public class SteamGameTest extends ApplicationTest {
         String jsonNode = new JsonNode(jsonString.toString()).toString();
         when(response.getBody()).thenReturn(new JsonNode(jsonNode));
         doAnswer((Answer<Void>) invocation -> {
-            String name = (String) invocation.getArguments()[0];
-            String password = (String) invocation.getArguments()[1];
-            System.out.println(name);
-            System.out.println(password);
             Callback<JsonNode> callback = callbackCaptor.getValue();
             callback.completed(response);
             return null;

@@ -51,7 +51,7 @@ public class PrivateChatWebSocket extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, clientConfig, endpoint);
         } catch (Exception e) {
-            System.err.println("Error during establishing WebSocket connection:");
+            e.printStackTrace();
         }
     }
 
@@ -102,7 +102,6 @@ public class PrivateChatWebSocket extends Endpoint {
         }
         // set session null
         this.session = null;
-        System.out.println(closeReason.getCloseCode().toString());
         if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
             Platform.runLater(this::showNoConnectionAlert);
         }
@@ -209,8 +208,6 @@ public class PrivateChatWebSocket extends Endpoint {
 
     public void handleMessage(JsonStructure msg) {
         JsonObject jsonObject = JsonUtil.parse(msg.toString());
-        System.out.println("privateChatWebSocketClient");
-        System.out.println(msg);
         if (jsonObject.containsKey("channel") && jsonObject.getString("channel").equals("private")) {
             privateMessage(jsonObject);
         }
@@ -242,7 +239,7 @@ public class PrivateChatWebSocket extends Endpoint {
         }
         saveMessage(message);
         if (privateViewController.getChatViewController() != null) {
-            Platform.runLater(() -> chatViewController.printMessage(message));
+            Platform.runLater(() -> chatViewController.printMessage(message, true));
         }
     }
 

@@ -72,35 +72,28 @@ public class CategorySubController {
         // when no other is connected
         if (mouseEvent.getClickCount() == 2 && this.channelList.getItems().size() != 0 && builder.getCurrentAudioChannel() != channel && channel.getType().equals("audio")) {
             if (builder.getCurrentAudioChannel() == null) {
-                builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {
-                    JsonNode body = response.getBody();
-                    String status = body.getObject().getString("status");
-                    if (status.equals("success")) {
-                        System.out.println(body);
-                    }
-                });
-            }
-            // when audioChannel is connected - leave old one, join new one
+                joinVoice(channel);
+            } // when audioChannel is connected - leave old one, join new one
             else {
                 builder.getRestClient().leaveVoiceChannel(builder.getCurrentAudioChannel().getCategories().getServer().getId(), builder.getCurrentAudioChannel().getCategories().getId(), builder.getCurrentAudioChannel().getId(), builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-                        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response2 -> {
-                            JsonNode body2 = response2.getBody();
-                            String status2 = body2.getObject().getString("status");
-                            if (status2.equals("success")) {
-                                System.out.println(body2);
-                            }
-                        });
+                        joinVoice(channel);
                     }
                 });
             }
         }
     }
 
+
+    private void joinVoice(ServerChannel channel) {
+        builder.getRestClient().joinVoiceChannel(builder.getCurrentServer().getId(), category.getId(), channel.getId(), builder.getPersonalUser().getUserKey(), response -> {});
+    }
+
     /**
      * When the channel list of the category has changed, the channel list will be refreshed and PCL will be added for all channels
+     *
      * @param propertyChangeEvent the Property Change Event
      */
     private void onChannelChanged(PropertyChangeEvent propertyChangeEvent) {
@@ -148,18 +141,23 @@ public class CategorySubController {
      */
     public void refreshChannelList() {
         if (category.getChannel().size() > 0) {
-            int AUDIO_CHANNEL_HEIGHT = 0;
-            for (ServerChannel audioChannel : category.getChannel()) {
-                if (audioChannel.getAudioMember().size() > 0) {
-                    AUDIO_CHANNEL_HEIGHT = AUDIO_CHANNEL_HEIGHT + 25 * audioChannel.getAudioMember().size();
-                }
-            }
+            int AUDIO_CHANNEL_HEIGHT = calcAudioChannelHeight();
             this.channelList.setPrefHeight(10 + category.getChannel().size() * CHANNEL_HEIGHT + AUDIO_CHANNEL_HEIGHT);
         } else {
             this.channelList.setPrefHeight(CHANNEL_HEIGHT);
         }
 
         Platform.runLater(() -> this.channelList.setItems(FXCollections.observableList(category.getChannel())));
+    }
+
+    private int calcAudioChannelHeight() {
+        int AUDIO_CHANNEL_HEIGHT = 0;
+        for (ServerChannel audioChannel : category.getChannel()) {
+            if (audioChannel.getAudioMember().size() > 0) {
+                AUDIO_CHANNEL_HEIGHT += 25 * audioChannel.getAudioMember().size();
+            }
+        }
+        return AUDIO_CHANNEL_HEIGHT;
     }
 
     public void setTheme() {

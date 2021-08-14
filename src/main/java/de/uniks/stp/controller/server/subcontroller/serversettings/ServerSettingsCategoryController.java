@@ -78,21 +78,19 @@ public class ServerSettingsCategoryController extends SubSetting {
         this.categoriesSelector.setPromptText(lang.getString("comboBox.selectCategory"));
         this.categoriesSelector.getItems().clear();
         this.categoriesSelector.setOnAction(this::onCategoryClicked);
+        this.categoriesSelector.getItems().addAll(currentServer.getCategories());
+        this.categoriesSelector.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Categories categoryToString) {
+                return categoryToString.getName();
+            }
 
-        for (Categories category : currentServer.getCategories()) {
-            this.categoriesSelector.getItems().add(category);
-            this.categoriesSelector.setConverter(new StringConverter<>() {
-                @Override
-                public String toString(Categories categoryToString) {
-                    return categoryToString.getName();
-                }
+            @Override
+            public Categories fromString(String string) {
+                return null;
+            }
+        });
 
-                @Override
-                public Categories fromString(String string) {
-                    return null;
-                }
-            });
-        }
     }
 
     /**
@@ -101,7 +99,6 @@ public class ServerSettingsCategoryController extends SubSetting {
     private void onCategoryClicked(Event event) {
         deleteCategoryButton.setDisable(false);
         selectedCategory = this.categoriesSelector.getValue();
-        System.out.println("Selected Category: " + selectedCategory);
     }
 
     /**
@@ -112,26 +109,11 @@ public class ServerSettingsCategoryController extends SubSetting {
         if (!whiteSpaceMatcher.find() && selectedCategory != null && !changeCategoryNameTextField.getText().isEmpty()) {
             String newCategoryName = changeCategoryNameTextField.getText();
             if (!selectedCategory.getName().equals(newCategoryName)) {
-
                 restClient.updateCategory(currentServer.getId(), selectedCategory.getId(), newCategoryName, builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();
                     String status = body.getObject().getString("status");
                     if (status.equals("success")) {
-                        for (Categories category : currentServer.getCategories()) {
-                            if (category.getId().equals(selectedCategory.getId())) {
-                                selectedCategory = category;
-                            }
-                        }
-                        currentServer.withoutCategories(selectedCategory);
-                        selectedCategory.setName(newCategoryName);
-                        currentServer.withCategories(selectedCategory);
-
-                        Platform.runLater(() -> {
-                            categoriesSelector.getItems().clear();
-                            categoriesSelector.getItems().addAll(currentServer.getCategories());
-                        });
-
-                        Platform.runLater(() -> changeCategoryNameTextField.setText(""));
+                        updateCategoryName(newCategoryName);
                     }
                 });
             }
@@ -140,6 +122,24 @@ public class ServerSettingsCategoryController extends SubSetting {
                 Alerts.invalidNameAlert(builder);
             }
         }
+    }
+
+    private void updateCategoryName(String newCategoryName) {
+        for (Categories category : currentServer.getCategories()) {
+            if (category.getId().equals(selectedCategory.getId())) {
+                selectedCategory = category;
+            }
+        }
+        currentServer.withoutCategories(selectedCategory);
+        selectedCategory.setName(newCategoryName);
+        currentServer.withCategories(selectedCategory);
+
+        Platform.runLater(() -> {
+            categoriesSelector.getItems().clear();
+            categoriesSelector.getItems().addAll(currentServer.getCategories());
+        });
+
+        Platform.runLater(() -> changeCategoryNameTextField.setText(""));
     }
 
     /**
@@ -196,7 +196,7 @@ public class ServerSettingsCategoryController extends SubSetting {
             } else {
                 // disconnect from audioChannel
                 if (builder.getAudioStreamClient() != null && selectedCategory.getChannel().contains(builder.getCurrentAudioChannel())) {
-                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked(new ActionEvent());
+                    builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
                 }
                 restClient.deleteCategory(currentServer.getId(), selectedCategory.getId(), builder.getPersonalUser().getUserKey(), response -> {
                     JsonNode body = response.getBody();

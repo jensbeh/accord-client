@@ -71,77 +71,78 @@ public class ServerSettingsPrivilegeController extends SubSetting {
 
         disableEditing(true);
 
+        categoryChoice.getItems().addAll(server.getCategories());
         //load all categories
-        for (Categories category : server.getCategories()) {
-            categoryChoice.getItems().add(category);
-            categoryChoice.setConverter(new StringConverter<>() {
-                @Override
-                public String toString(Categories object) {
-                    if (object == null) {
-                        ResourceBundle lang = builder.getStageManager().getLangBundle();
-                        return lang.getString("comboBox.selectCategory");
-                    }
-                    return object.getName();
+        categoryChoice.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Categories object) {
+                if (object == null) {
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
+                    return lang.getString("comboBox.selectCategory");
                 }
-
-                @Override
-                public Categories fromString(String string) {
-                    return null;
-                }
-            });
-        }
-        // update channelList by category change
-        categoryChoice.setOnAction((event) -> {
-            selectedCategory = categoryChoice.getSelectionModel().getSelectedItem();
-
-            //clears channel comboBox and button selection by category change
-            if (selectedChannel != null) {
-                group.selectToggle(null);
-                Platform.runLater(() -> this.privilegeOn.getChildren().clear());
+                return object.getName();
             }
-            Platform.runLater(() -> channelChoice.getItems().clear());
-            // load channel for this category
-            for (ServerChannel channel : selectedCategory.getChannel()) {
-                Platform.runLater(() -> channelChoice.getItems().add(channel));
-                channelChoice.setConverter(new StringConverter<>() {
-                    @Override
-                    public String toString(ServerChannel object) {
-                        if (object == null) {
-                            ResourceBundle lang = builder.getStageManager().getLangBundle();
-                            return lang.getString("comboBox.selectChannel");
-                        }
-                        return object.getName();
-                    }
 
-                    @Override
-                    public ServerChannel fromString(String string) {
-                        return null;
-                    }
-                });
+            @Override
+            public Categories fromString(String string) {
+                return null;
             }
         });
+        // update channelList by category change
+        categoryChoice.setOnAction(this::categoryChoiceClicked);
 
         // update radiobutton and load correct subview for chosen channel
-        channelChoice.setOnAction((event) -> {
-            selectedChannel = channelChoice.getSelectionModel().getSelectedItem();
-            // default channel should not be editable
-            disableEditing(true);
-            if (selectedChannel != null && selectedCategory != null && selectedChannel != server.getCategories().get(0).getChannel().get(0)) {
-                disableEditing(false);
-                if (selectedChannel.isPrivilege()) {
-                    privilegeOnButton.setSelected(true);
-                } else {
-                    privilegeOffButton.setSelected(true);
-                }
-                privilegeOnButton(event);
-            }
-        });
+        channelChoice.setOnAction(this::channelChoiceClicked);
         // start property change listener
         for (Categories cat : server.getCategories()) {
             for (ServerChannel channel : cat.getChannel()) {
                 channel.addPropertyChangeListener(ServerChannel.PROPERTY_PRIVILEGE, this::onPrivilegeChanged);
             }
         }
+    }
+
+    private void channelChoiceClicked(ActionEvent actionEvent) {
+        selectedChannel = channelChoice.getSelectionModel().getSelectedItem();
+        // default channel should not be editable
+        disableEditing(true);
+        if (selectedChannel != null && selectedCategory != null && selectedChannel != server.getCategories().get(0).getChannel().get(0)) {
+            disableEditing(false);
+            if (selectedChannel.isPrivilege()) {
+                privilegeOnButton.setSelected(true);
+            } else {
+                privilegeOffButton.setSelected(true);
+            }
+            privilegeOnButton(actionEvent);
+        }
+    }
+
+
+    private void categoryChoiceClicked(ActionEvent actionEvent) {
+        selectedCategory = categoryChoice.getSelectionModel().getSelectedItem();
+
+        //clears channel comboBox and button selection by category change
+        if (selectedChannel != null) {
+            group.selectToggle(null);
+            Platform.runLater(() -> this.privilegeOn.getChildren().clear());
+        }
+        Platform.runLater(() -> channelChoice.getItems().clear());
+        // load channel for this category
+        Platform.runLater(() -> channelChoice.getItems().addAll(selectedCategory.getChannel()));
+        channelChoice.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ServerChannel object) {
+                if (object == null) {
+                    ResourceBundle lang = builder.getStageManager().getLangBundle();
+                    return lang.getString("comboBox.selectChannel");
+                }
+                return object.getName();
+            }
+
+            @Override
+            public ServerChannel fromString(String string) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -186,11 +187,7 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 ArrayList<String> members = new ArrayList<>();
                 members.add(server.getOwner());
                 // add owner to channel privilege
-                for (User user : server.getUser()) {
-                    if (server.getOwner().equals(user.getId())) {
-                        user.withPrivileged(selectedChannel);
-                    }
-                }
+                addOwnerToPrivilege();
                 String[] membersArray = members.toArray(new String[0]);
                 restClient.updateChannel(serverId, categoryId, channelId, userKey, channelName, privilege, membersArray, response -> {
                 });
@@ -201,6 +198,14 @@ public class ServerSettingsPrivilegeController extends SubSetting {
                 });
             }
             privilegeOnButton(actionEvent);
+        }
+    }
+
+    private void addOwnerToPrivilege() {
+        for (User user : server.getUser()) {
+            if (server.getOwner().equals(user.getId())) {
+                user.withPrivileged(selectedChannel);
+            }
         }
     }
 
@@ -220,19 +225,16 @@ public class ServerSettingsPrivilegeController extends SubSetting {
         }
         Platform.runLater(() -> this.privilegeOn.getChildren().clear());
         // only load when channel privileged
-        if (selectedChannel != null && selectedCategory != null) {
-            if (selectedChannel.isPrivilege()) {
-                try {
-                    //view
-                    Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_Privilege_UserChange.fxml")), builder.getStageManager().getLangBundle());
-                    //Controller
-                    serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
-                    serverSubSettingsPrivilegeController.init();
-                    Platform.runLater(() -> this.privilegeOn.getChildren().add(view));
-                } catch (Exception e) {
-                    System.err.println("Error on showing ServerSettings_Privilege");
-                    e.printStackTrace();
-                }
+        if (selectedChannel != null && selectedCategory != null && selectedChannel.isPrivilege()) {
+            try {
+                //view
+                Parent view = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/serversettings/ServerSettings_Privilege_UserChange.fxml")), builder.getStageManager().getLangBundle());
+                //Controller
+                serverSubSettingsPrivilegeController = new ServerSubSettingsPrivilegeController(view, builder, server, selectedChannel);
+                serverSubSettingsPrivilegeController.init();
+                Platform.runLater(() -> this.privilegeOn.getChildren().add(view));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -249,9 +251,13 @@ public class ServerSettingsPrivilegeController extends SubSetting {
             serverSubSettingsPrivilegeController = null;
         }
         for (Categories cat : server.getCategories()) {
-            for (ServerChannel channel : cat.getChannel()) {
-                channel.removePropertyChangeListener(this::onPrivilegeChanged);
-            }
+            removePCLOnChannels(cat);
+        }
+    }
+
+    private void removePCLOnChannels(Categories cat) {
+        for (ServerChannel channel : cat.getChannel()) {
+            channel.removePropertyChangeListener(this::onPrivilegeChanged);
         }
     }
 

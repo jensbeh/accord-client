@@ -120,6 +120,27 @@ public class SnakeGameController {
         gameOverExitGameButton.setOnAction(this::exitGame);
         muteButton.setOnAction(this::muteSound);
         isGameMute = ResourceManager.loadMuteGameState(builder.getPersonalUser().getName());
+
+        setGameAudio();
+
+        game = new Game(0, ResourceManager.loadHighScore(builder.getPersonalUser().getName()));
+        snake = new ArrayList<>();
+        addNewBodyQueue = new ArrayList<>();
+        gameOver = false;
+
+        scoreLabel.setText("Score: " + game.getScore());
+        highScoreLabel.setText("Highscore: " + game.getHighScore());
+
+        addControls();
+
+        drawMap();
+        spawnSnake();
+        spawnFood();
+
+        displayCountDown();
+    }
+
+    private void setGameAudio() {
         if (isGameMute) {
             backgroundMusic.setMute(true);
             gameOverSound.setMute(true);
@@ -137,14 +158,9 @@ public class SnakeGameController {
 
             muteButton.setText("\uD83D\uDD0A");
         }
-        game = new Game(0, ResourceManager.loadHighScore(builder.getPersonalUser().getName()));
-        snake = new ArrayList<>();
-        addNewBodyQueue = new ArrayList<>();
-        gameOver = false;
+    }
 
-        scoreLabel.setText("Score: " + game.getScore());
-        highScoreLabel.setText("Highscore: " + game.getHighScore());
-
+    private void addControls() {
         scene.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.D && game.getCurrentDirection() != Game.Direction.LEFT) {
                 game.setCurrentDirection(Game.Direction.RIGHT);
@@ -159,17 +175,14 @@ public class SnakeGameController {
                 game.setCurrentDirection(Game.Direction.DOWN);
             }
         });
+    }
 
-        drawMap();
-        spawnSnake();
-        spawnFood();
-
+    private void displayCountDown() {
         showCountDown(() -> {
             gameTimeline = new Timeline(new KeyFrame(Duration.millis(speed), run -> loop()));
             gameTimeline.setCycleCount(Animation.INDEFINITE);
             gameTimeline.play();
         });
-
     }
 
     /**
@@ -207,6 +220,10 @@ public class SnakeGameController {
         snake.add(2, new Snake().setPosX(snake.get(1).getPosX() - FIELD_SIZE).setPosY(snake.get(1).getPosY()));
 
         // draw snake
+        drawSnake();
+    }
+
+    private void drawSnake() {
         for (int i = 0; i < snake.size(); i++) {
             // head
             if (i == 0) {
@@ -266,21 +283,7 @@ public class SnakeGameController {
         }
 
         // draw snake
-        for (int i = 0; i < snake.size(); i++) {
-            // head
-            if (i == 0) {
-                brush.setFill(Color.web("FF0000"));
-            }
-            // tail
-            else if (i == snake.size() - 1) {
-                brush.setFill(Color.web("0000FF"));
-            }
-            // body
-            else {
-                brush.setFill(Color.web("000000"));
-            }
-            brush.fillRect(snake.get(i).getPosX(), snake.get(i).getPosY(), FIELD_SIZE, FIELD_SIZE);
-        }
+        drawSnake();
 
         eatFoot();
         addNewBody();
@@ -481,35 +484,22 @@ public class SnakeGameController {
         blurTimeline.getKeyFrames().add(keyFrame);
 
         FadeTransition fadeIn1 = new FadeTransition(Duration.millis(200), countdownText);
-        fadeIn1.setFromValue(0.0);
-        fadeIn1.setToValue(1.0);
-        fadeIn1.setOnFinished((ae) -> countDown321Sound());
+        setUpFadeInTransition(fadeIn1);
 
         FadeTransition fadeOut1 = new FadeTransition(Duration.millis(800), countdownText);
-        fadeOut1.setFromValue(1.0);
-        fadeOut1.setToValue(0.0);
-        fadeOut1.setOnFinished((ae) -> countdownText.setText("2"));
+        setUpFadeOutTransition(fadeOut1, "2");
 
         FadeTransition fadeIn2 = new FadeTransition(Duration.millis(200), countdownText);
-        fadeIn2.setFromValue(0.0);
-        fadeIn2.setToValue(1.0);
-        fadeIn2.setOnFinished((ae) -> countDown321Sound());
-
+        setUpFadeInTransition(fadeIn2);
 
         FadeTransition fadeOut2 = new FadeTransition(Duration.millis(800), countdownText);
-        fadeOut2.setFromValue(1.0);
-        fadeOut2.setToValue(0.0);
-        fadeOut2.setOnFinished((ae) -> countdownText.setText("1"));
+        setUpFadeOutTransition(fadeOut2, "1");
 
         FadeTransition fadeIn3 = new FadeTransition(Duration.millis(200), countdownText);
-        fadeIn3.setFromValue(0.0);
-        fadeIn3.setToValue(1.0);
-        fadeIn3.setOnFinished((ae) -> countDown321Sound());
+        setUpFadeInTransition(fadeIn3);
 
         FadeTransition fadeOut3 = new FadeTransition(Duration.millis(800), countdownText);
-        fadeOut3.setFromValue(1.0);
-        fadeOut3.setToValue(0.0);
-        fadeOut3.setOnFinished((ae) -> countdownText.setText("GO!"));
+        setUpFadeOutTransition(fadeOut3, "GO!");
 
         FadeTransition fadeInGO = new FadeTransition(Duration.millis(200), countdownText);
         fadeInGO.setFromValue(0.0);
@@ -526,6 +516,18 @@ public class SnakeGameController {
             countDownCallback.onFinished();
             countDownBox.setVisible(false);
         });
+    }
+
+    private void setUpFadeOutTransition(FadeTransition fadeOut, String number) {
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished((ae) -> countdownText.setText(number));
+    }
+
+    private void setUpFadeInTransition(FadeTransition fadeIn) {
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.setOnFinished((ae) -> countDown321Sound());
     }
 
     /**
