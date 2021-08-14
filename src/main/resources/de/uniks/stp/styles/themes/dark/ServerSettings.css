@@ -1,6 +1,6 @@
 /* generals */
 #serverSettingsContainer {
-    -fx-background-color: #202225;
+    -fx-background-color: #36393f;
 }
 
 #select {
@@ -28,11 +28,11 @@
 }
 
 #rootCategory {
-    -fx-background-color: #202225;
+    -fx-background-color: #36393f;
 }
 
 #rootOverview {
-    -fx-background-color: #202225;
+    -fx-background-color: #36393f;
 }
 
 /* Settings items left */

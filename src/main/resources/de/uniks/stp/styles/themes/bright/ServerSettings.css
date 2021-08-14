@@ -1,6 +1,6 @@
 /* generals */
 #serverSettingsContainer {
-    -fx-background-color: WHITE;
+    -fx-background-color: #e3e5e8;
 }
 
 #select {
@@ -28,11 +28,11 @@
 }
 
 #rootCategory {
-    -fx-background-color: WHITE;
+    -fx-background-color: #e3e5e8;
 }
 
 #rootOverview {
-    -fx-background-color: WHITE;
+    -fx-background-color: #e3e5e8;
 }
 
 /* Settings items left */
