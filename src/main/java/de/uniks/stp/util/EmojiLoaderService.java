@@ -282,10 +282,6 @@ public class EmojiLoaderService {
         stackPane.setCursor(Cursor.HAND);
         ScaleTransition st = new ScaleTransition(Duration.millis(90), emojiImage);
         stackPane.setOnMouseClicked(event -> {
-            System.out.println(emoji.getShortname());
-            System.out.println(emoji.getUnicode());
-            System.out.println(emoji.getHex());
-
             builder.getCurrentChatViewController().onEmojiClicked(emoji.getShortname());
         });
 

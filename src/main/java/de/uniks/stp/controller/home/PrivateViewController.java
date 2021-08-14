@@ -308,7 +308,6 @@ public class PrivateViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                System.out.println(body);
                 builder.playChannelSound("left");
             }
         });

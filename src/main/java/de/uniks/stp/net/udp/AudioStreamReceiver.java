@@ -37,7 +37,7 @@ public class AudioStreamReceiver implements Runnable {
         try {
             this.socket.setSoTimeout(1000);
         } catch (SocketException e) {
-            System.out.println("Socket Received Timeout");
+            e.printStackTrace();
         }
     }
 

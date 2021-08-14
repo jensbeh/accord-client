@@ -480,7 +480,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         clickOn("https://ac.uniks.de/api/servers/" + testServerId + "/invites/" + inviteLinkIds + "0 | 10");
         WaitForAsyncUtils.waitForFxEvents();
         clickOn("#deleteLink");
-        System.out.println(links.getSelectionModel().getSelectedItem());
         WaitForAsyncUtils.waitForFxEvents();
         String checkDel = "";
         for (List<String> s : links.getItems()) {
@@ -512,7 +511,6 @@ public class InviteUsersControllerTest extends ApplicationTest {
         moveBy(0, 25);
         clickOn("https://ac.uniks.de/api/servers/" + testServerId + "/invites/" + inviteLinkIds + "0 | 10");
         clickOn("#deleteLink");
-        System.out.println(links.getSelectionModel().getSelectedItem());
         WaitForAsyncUtils.waitForFxEvents();
         String checkDelete = "";
         for (List<String> s : links.getItems()) {

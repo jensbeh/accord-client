@@ -217,7 +217,6 @@ public class ConnectionControllerTest extends ApplicationTest {
             Stage s = (Stage) window;
             if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Spotify Login")) {
                 WebView webview = (WebView) s.getScene().lookup("#loginWebView");
-                System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("http://localhost:8888/callback/code=testCode");
                 });
@@ -269,7 +268,6 @@ public class ConnectionControllerTest extends ApplicationTest {
             Stage s = (Stage) window;
             if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
                 WebView webview = (WebView) s.getScene().lookup("#loginWebView");
-                System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/profiles/1234");
                 });
@@ -307,7 +305,6 @@ public class ConnectionControllerTest extends ApplicationTest {
             Stage s = (Stage) window;
             if (((Label) (s.getScene().lookup("#Label_AccordTitleBar"))).getText().equals("Steam Login")) {
                 WebView webview = (WebView) s.getScene().lookup("#loginWebView");
-                System.out.println(webview.getEngine());
                 Platform.runLater(() -> {
                     webview.getEngine().load("https://steamcommunity.com/id/Hungriger_Hugo");
                 });

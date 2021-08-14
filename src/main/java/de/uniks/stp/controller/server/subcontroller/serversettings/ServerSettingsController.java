@@ -192,7 +192,6 @@ public class ServerSettingsController {
 
             this.serverSettingsContainer.getChildren().add(serverSettingsField);
         } catch (Exception e) {
-            System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
         }
     }

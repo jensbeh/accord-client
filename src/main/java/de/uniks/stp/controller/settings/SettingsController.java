@@ -188,7 +188,6 @@ public class SettingsController {
             }
             selectedButton((Button) view.lookup("#button_" + fxmlName));
         } catch (Exception e) {
-            System.err.println("Error on showing Settings Field Screen");
             e.printStackTrace();
         }
     }

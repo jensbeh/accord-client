@@ -42,7 +42,6 @@ public class GeneralController extends SubSetting {
             Locale.setDefault(currentLocale);
             builder.getStageManager().resetLangBundle();
         } catch (Exception e) {
-            System.err.println(e + "");
             e.printStackTrace();
         }
     }
@@ -138,7 +137,6 @@ public class GeneralController extends SubSetting {
             prop.setProperty("LANGUAGE", language);
             prop.store(op, null);
         } catch (Exception e) {
-            System.err.println(e + "");
             e.printStackTrace();
         }
     }

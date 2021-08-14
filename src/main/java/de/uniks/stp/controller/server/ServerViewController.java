@@ -204,7 +204,6 @@ public class ServerViewController {
      * Initialise all view parameters
      */
     public void startShowServer() throws InterruptedException {
-        System.out.println("show: " + this.server.getName());
         serverMenuButton.setText(this.server.getName());
         serverSettings = serverMenuButton.getItems().get(0);
         serverSettings.setOnAction(this::onServerSettingsClicked);
@@ -438,7 +437,6 @@ public class ServerViewController {
             JsonNode body = response.getBody();
             String status = body.getObject().getString("status");
             if (status.equals("success")) {
-                System.out.println(body);
                 builder.playChannelSound("left");
             }
 
@@ -475,7 +473,6 @@ public class ServerViewController {
                 }
                 serverInfoCallback.onSuccess(status);
             } else if (status.equals("failure")) {
-                System.out.println(body.getObject().getString("message"));
             }
         });
     }
@@ -486,11 +483,8 @@ public class ServerViewController {
     public void showOnlineOfflineUsers() {
         onlineUsers.clear();
         offlineUsers.clear();
-        System.out.println("Server users: " + this.server.getUser());
         for (User user : this.server.getUser()) {
             if (user.isStatus()) {
-                System.out.println("User name: " + user.getName());
-                System.out.println("Currentuser name: " + builder.getPersonalUser().getName());
                 handleOnlineUser(user);
             } else {
                 handleOfflineUser(user);
@@ -802,7 +796,6 @@ public class ServerViewController {
             categorySubControllerList.put(categories, tempCategorySubController);
             Platform.runLater(() -> this.categoryBox.getChildren().add(view));
         } catch (Exception e) {
-            System.err.println("Error on showing Server Settings Field Screen");
             e.printStackTrace();
         }
     }

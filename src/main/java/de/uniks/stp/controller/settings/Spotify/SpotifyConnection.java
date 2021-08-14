@@ -388,7 +388,6 @@ public class SpotifyConnection {
                             .put("data", "B " + artwork.getUrl());
                     String description2 = "#" + jsonString2.toString();
                     builder.getPersonalUser().setDescription(description2);
-                    System.out.println(builder.getPersonalUser().getDescription());
                 }
             }, 0, 15, TimeUnit.SECONDS);
         }
