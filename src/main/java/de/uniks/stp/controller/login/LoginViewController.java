@@ -64,6 +64,7 @@ public class LoginViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(false);
         titleBarController.setTitle("Accord");
+        stage.setTitle("Accord");
 
         usernameTextField = (TextField) root.lookup("#usernameTextfield");
         passwordTextField = (PasswordField) root.lookup("#passwordTextField");
@@ -405,5 +406,9 @@ public class LoginViewController {
 
     public void setNoConnectionTest(boolean noConnectionTestState) {
         this.noConnectionTest = noConnectionTestState;
+    }
+
+    public Parent getLoginView() {
+        return this.root;
     }
 }

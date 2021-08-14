@@ -40,6 +40,7 @@ public class SteamLoginController {
 
         loginStage = new Stage();
         loginStage.initStyle(StageStyle.TRANSPARENT);
+        loginStage.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
         Scene scene = new Scene(Objects.requireNonNull(steamLoginView));
 
         webView = (WebView) steamLoginView.lookup("#loginWebView");
@@ -58,6 +59,7 @@ public class SteamLoginController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
         titleBarController.setTitle("Steam Login");
+        loginStage.setTitle("Steam Login");
 
         webView.prefHeightProperty().bind(loginStage.heightProperty());
         webView.prefWidthProperty().bind(loginStage.widthProperty());

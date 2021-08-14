@@ -1,12 +1,12 @@
 #titleBar {
-    -fx-background-color: #36393f;
+    -fx-background-color: #202225;
 }
 #Label_AccordTitleBar {
     -fx-text-fill: WHITE;
 }
 
 #Button_minTitleBar {
-    -fx-background-color: #4a4d54;
+    -fx-background-color: #202225;
     -fx-background-radius: 0 0 0 0;
     -fx-text-fill: WHITE;
 }
@@ -18,7 +18,7 @@
 }
 
 #Button_maxTitleBar {
-    -fx-background-color: #4a4d54;
+    -fx-background-color: #202225;
     -fx-background-radius: 0 0 0 0;
     -fx-text-fill: WHITE;
 }

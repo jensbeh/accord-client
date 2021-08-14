@@ -1,9 +1,11 @@
 package de.uniks.stp.net.websocket.privatesocket;
 
 import com.github.cliftonlabs.json_simple.JsonException;
+import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.ChatViewController;
 import de.uniks.stp.controller.home.PrivateViewController;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.model.Message;
 import de.uniks.stp.model.PrivateChat;
 import de.uniks.stp.model.User;
@@ -11,18 +13,24 @@ import de.uniks.stp.net.websocket.CustomWebSocketConfigurator;
 import de.uniks.stp.util.JsonUtil;
 import de.uniks.stp.util.ResourceManager;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class PrivateChatWebSocket extends Endpoint {
 
@@ -95,22 +103,67 @@ public class PrivateChatWebSocket extends Endpoint {
         // set session null
         this.session = null;
         if (!closeReason.getCloseCode().toString().equals("NORMAL_CLOSURE")) {
-            showNoConAlert();
+            Platform.runLater(this::showNoConnectionAlert);
         }
         super.onClose(session, closeReason);
     }
 
-    public void showNoConAlert() {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-            alert.setTitle(builder.getStageManager().getLangBundle().getString("error.no_connection"));
-            alert.setHeaderText(builder.getStageManager().getLangBundle().getString("error.no_connection_text"));
-            alert.setOnCloseRequest(e -> Platform.runLater(() -> builder.getStageManager().showLoginScreen()));
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                Platform.runLater(() -> builder.getStageManager().showLoginScreen());
+    public void showNoConnectionAlert() {
+        try {
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
+
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/ConnectionLost.fxml")), builder.getStageManager().getLangBundle());
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.initOwner(builder.getStageManager().getHomeViewController().getHomeView().getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
+
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.warning"));
+            stage.setTitle(lang.getString("label.warning"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            Label noConnectionLabel = (Label) root.lookup("#label_noConnection");
+            noConnectionLabel.setText(lang.getString("error.no_connection"));
+            Button okButton = (Button) root.lookup("#button_OK");
+            okButton.setOnAction((a) -> {
+                stage.close();
+                builder.getStageManager().showLoginScreen();
+            });
+            stage.setOnCloseRequest((a) -> builder.getStageManager().showLoginScreen());
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void onMessage(String message) {
@@ -159,7 +212,7 @@ public class PrivateChatWebSocket extends Endpoint {
             privateMessage(jsonObject);
         }
         if (jsonObject.containsKey("action") && jsonObject.getString("action").equals("info")) {
-            showChatAlert(jsonObject);
+            Platform.runLater(() -> showChatAlert(jsonObject));
         }
     }
 
@@ -251,25 +304,70 @@ public class PrivateChatWebSocket extends Endpoint {
     }
 
     private void showChatAlert(JsonObject jsonObject) {
-        String errorTitle;
         String serverMessage = jsonObject.getJsonObject("data").getString("message");
-        if (serverMessage.equals("This is not your username.")) {
-            errorTitle = builder.getStageManager().getLangBundle().getString("error.username");
-        } else {
-            errorTitle = builder.getStageManager().getLangBundle().getString("error.chat");
-        }
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
-            alert.setTitle(errorTitle);
-            if (serverMessage.equals("This is not your username.")) {
-                alert.setHeaderText(builder.getStageManager().getLangBundle().getString("error.this_is_not_your_username"));
+
+        try {
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
+
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/ChatAlert.fxml")), builder.getStageManager().getLangBundle());
+            Stage stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            if (builder.getStageManager().getHomeViewController() == null) {
+                stage.initOwner(builder.getStageManager().getLoginViewController().getLoginView().getScene().getWindow());
             } else {
-                alert.setHeaderText(serverMessage);
+                stage.initOwner(builder.getStageManager().getHomeViewController().getHomeView().getScene().getWindow());
             }
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                privateViewController.showUsers();
+            stage.initModality(Modality.WINDOW_MODAL);
+
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.warning"));
+            stage.setTitle(lang.getString("label.warning"));
+
+            stage.setScene(scene);
+            stage.show();
+
+            Label chatAlertLabel = (Label) root.lookup("#label_chatAlert");
+            if (serverMessage.equals("This is not your username.")) {
+                chatAlertLabel.setText(builder.getStageManager().getLangBundle().getString("error.this_is_not_your_username"));
+            } else {
+                chatAlertLabel.setText(serverMessage);
+            }
+            Button okButton = (Button) root.lookup("#button_OK");
+            okButton.setOnAction((a) -> {
+                stage.close();
+                builder.getStageManager().showLoginScreen();
+            });
+            stage.setOnCloseRequest((a) -> builder.getStageManager().showLoginScreen());
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

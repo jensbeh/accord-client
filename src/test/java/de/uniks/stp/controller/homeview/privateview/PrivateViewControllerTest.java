@@ -289,11 +289,13 @@ public class PrivateViewControllerTest extends ApplicationTest {
         String message = "{\"action\":\"info\",\"data\":{\"message\":\"User Seppel is not Online\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
         String result;
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
-                Assert.assertEquals("Chat Error", result);
+                Assert.assertEquals("Warning!", result);
                 Platform.runLater(((Stage) s)::close);
                 break;
             }
@@ -308,11 +310,13 @@ public class PrivateViewControllerTest extends ApplicationTest {
         String message = "{\"action\":\"info\",\"data\":{\"message\":\"This is not your username.\"}}";
         JsonObject jsonObject = (JsonObject) org.glassfish.json.JsonUtil.toJson(message);
         privateChatWebSocket.handleMessage(jsonObject);
+        WaitForAsyncUtils.waitForFxEvents();
+
         String result;
         for (Object s : this.listTargetWindows()) {
             if (s != stage) {
                 result = ((Stage) s).getTitle();
-                Assert.assertEquals("Chat Error", result);
+                Assert.assertEquals("Warning!", result);
                 Platform.runLater(((Stage) s)::close);
                 break;
             }

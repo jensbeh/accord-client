@@ -306,5 +306,4 @@ public class SteamGameTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         Assert.assertEquals("", mockApp.getBuilder().getSteamToken());
     }
-
 }

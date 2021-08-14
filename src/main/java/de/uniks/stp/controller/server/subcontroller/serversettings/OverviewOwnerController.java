@@ -2,18 +2,26 @@ package de.uniks.stp.controller.server.subcontroller.serversettings;
 
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
+import de.uniks.stp.controller.titlebar.TitleBarController;
 import de.uniks.stp.net.RestClient;
 import de.uniks.stp.util.Alerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import kong.unirest.JsonNode;
+import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +32,7 @@ public class OverviewOwnerController {
     private final RestClient restClient;
     private Label serverName;
     private TextField nameText;
+    private Stage stage;
 
     public OverviewOwnerController(Parent view, ModelBuilder modelBuilder) {
         this.view = view;
@@ -61,57 +70,74 @@ public class OverviewOwnerController {
      * Deletes current server and shows homeView with webSocket
      */
     private void onDeleteServerClicked(ActionEvent actionEvent) {
-        ResourceBundle lang = builder.getStageManager().getLangBundle();
-        ButtonType button = new ButtonType(lang.getString("button.deleteServer"));
-        ButtonType button2 = new ButtonType(lang.getString("button.cancel"));
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "", button, button2);
-        alert.setTitle(lang.getString("window_title_serverSettings"));
+        try {
+            ResourceBundle lang = builder.getStageManager().getLangBundle();
 
-        Stage stageIcon = (Stage) alert.getDialogPane().getScene().getWindow();
-        stageIcon.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("alert/DeleteServer.fxml")), builder.getStageManager().getLangBundle());
+            stage = new Stage();
+            stage.initStyle(StageStyle.TRANSPARENT);
 
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().remove("alert");
-        ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
-        alert.setHeaderText(lang.getString("warning.deleteServer"));
-        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(e -> alert.close());
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.initOwner(nameText.getScene().getWindow());
+            stage.initModality(Modality.WINDOW_MODAL);
 
-        setTheme(dialogPane, buttonBar);
-        dialogPane.getStyleClass().add("AlertStyle");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == button) {
-            // disconnect from audioChannel
-            if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
-                builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
+            Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+
+            // DropShadow of Scene
+            scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/DropShadow/DropShadow.css")).toExternalForm());
+
+            // create titleBar
+            HBox titleBarBox = (HBox) root.lookup("#titleBarBox");
+            Parent titleBarView = null;
+            try {
+                titleBarView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/titlebar/TitleBarView.fxml")), builder.getStageManager().getLangBundle());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            //delete server
-            restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
-                JsonNode body = response.getBody();
-                String status = body.getObject().getString("status");
-            });
-            Platform.runLater(() -> {
-                Stage stage = (Stage) serverName.getScene().getWindow();
-                stage.close();
-            });
+            titleBarBox.getChildren().add(titleBarView);
+            TitleBarController titleBarController = new TitleBarController(stage, titleBarView, builder);
+            titleBarController.init();
+            titleBarController.setTheme();
+            titleBarController.setMaximizable(false);
+            titleBarController.setTitle(lang.getString("label.warning"));
+            stage.setTitle(lang.getString("label.warning"));
 
+            stage.setScene(scene);
+            stage.show();
+
+            Label deleteLabel = (Label) root.lookup("#label_deleteServer");
+            deleteLabel.setText(lang.getString("warning.deleteServer"));
+            Button deleteButton = (Button) root.lookup("#button_delete");
+            Button cancelButton = (Button) root.lookup("#button_cancel");
+            deleteButton.setText(lang.getString("button.deleteServer"));
+            cancelButton.setText(lang.getString("button.cancelDeleteServer"));
+            deleteButton.setOnAction(this::deleteServer);
+            cancelButton.setOnAction((a) -> stage.close());
+            if (builder.getTheme().equals("Bright")) {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
+            } else {
+                root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void setTheme(DialogPane dialogPane, ButtonBar buttonBar) {
-        if (builder.getTheme().equals("Bright")) {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: BLACK;"
-                    + "-fx-background-color: WHITE;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
-            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #7da6df;" + "-fx-text-fill: white;");
-        } else {
-            dialogPane.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/Alert.css")).toExternalForm());
-            buttonBar.setStyle("-fx-font-size: 14px;" +
-                    "-fx-text-fill: white;"
-                    + "-fx-background-color: #2f3136;");
-            buttonBar.getButtons().get(0).setStyle("-fx-background-color: #ff3030;" + "-fx-text-fill: white;");
-            buttonBar.getButtons().get(1).setStyle("-fx-background-color: #727272;" + "-fx-text-fill: white;");
+    private void deleteServer(ActionEvent actionEvent) {
+        // disconnect from audioChannel
+        if (builder.getAudioStreamClient() != null && builder.getCurrentServer() == builder.getCurrentAudioChannel().getCategories().getServer()) {
+            builder.getServerSystemWebSocket().getServerViewController().onAudioDisconnectClicked();
         }
+        //delete server
+        restClient.deleteServer(builder.getCurrentServer().getId(), builder.getPersonalUser().getUserKey(), response -> {
+        });
+        Platform.runLater(() -> {
+            Stage stage = (Stage) serverName.getScene().getWindow();
+            stage.close();
+        });
     }
 }

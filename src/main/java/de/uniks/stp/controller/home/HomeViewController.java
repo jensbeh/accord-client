@@ -94,6 +94,7 @@ public class HomeViewController {
         homeLabel = (Label) view.lookup("#homeLabel");
         logoutButton = (Button) view.lookup("#logoutButton");
 
+        // create titleBar
         HBox titleBarBox = (HBox) view.lookup("#titleBarBox");
         Parent titleBarView = null;
         try {
@@ -107,6 +108,7 @@ public class HomeViewController {
         titleBarController.setTheme();
         titleBarController.setMaximizable(true);
         titleBarController.setTitle("Accord");
+        stage.setTitle("Accord");
 
         homeButtonInit();
 
@@ -156,7 +158,9 @@ public class HomeViewController {
                     Parent serverView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/serverview/ServerView.fxml")), builder.getStageManager().getLangBundle());
                     serverViews.put(server, serverView);
                     serverController.put(server, new ServerViewController(serverView, builder, server, getController()));
-                    serverController.get(server).startController(status -> {});
+                    serverController.get(server).startController(status -> {
+                        // TODO start here homeView -> from loginView this!
+                    });
                     serverController.get(server).setTheme();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -195,8 +199,14 @@ public class HomeViewController {
         try {
             VBox helpView = FXMLLoader.load(Objects.requireNonNull(StageManager.class.getResource("controller/homeview/HelpView.fxml")), builder.getStageManager().getLangBundle());
             helpView.getStylesheets().clear();
-            helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            if (builder.getTheme().equals("Dark")) {
+                helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HomeView.css")).toExternalForm());
+            } else {
+                helpView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HomeView.css")).toExternalForm());
+            }
             final Stage dialog = new Stage();
+            dialog.getIcons().add(new javafx.scene.image.Image(Objects.requireNonNull(StageManager.class.getResourceAsStream("icons/AccordIcon.png"))));
+            dialog.setTitle(builder.getStageManager().getLangBundle().getString("label.help"));
 
             HBox titleBarBoxHelp = (HBox) helpView.lookup("#titleBarBox");
             Parent titleBarViewHelp = null;
@@ -236,7 +246,7 @@ public class HomeViewController {
         titleBarControllerHelp.init();
         titleBarControllerHelp.setTheme();
         titleBarControllerHelp.setMaximizable(false);
-        titleBarControllerHelp.setTitle("Help");
+        titleBarControllerHelp.setTitle(builder.getStageManager().getLangBundle().getString("label.help"));
     }
 
     private MarkdownView markdownViewInit(String mdfxTxt) {
@@ -255,11 +265,13 @@ public class HomeViewController {
                 }
             }
         };
+
         if (builder.getTheme().equals("Dark")) {
             markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/dark/HelpView.css")).toExternalForm());
         } else {
             markdownView.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/HelpView.css")).toExternalForm());
         }
+
         return markdownView;
     }
 
@@ -442,7 +454,6 @@ public class HomeViewController {
             showServers(() -> addNewServer(false));
         });
     }
-
 
     /**
      * User sends a message to the server that he has arrived
@@ -672,6 +683,10 @@ public class HomeViewController {
         if (serverController.get(builder.getCurrentServer()) != null) {
             serverController.get(builder.getCurrentServer()).onLanguageChanged();
         }
+    }
+
+    public Parent getHomeView() {
+        return view;
     }
 
     public PrivateViewController getPrivateViewController() {
