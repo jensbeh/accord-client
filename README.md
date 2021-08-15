@@ -5,7 +5,9 @@
 
 # Please read the manual carefully
 
-## ====Before starting Accord====
+This program only supports Windows 10. The program could run on other OS, but you may experience some issues.
+
+## ==== On first start of Accord ====
 
 Remove the old Accord folder in appdata, if there is an old accord folder from an older version.
 
@@ -68,6 +70,7 @@ Supported file types for media are wav, jpeg, png, gif and mp4.
 2. Click on the dropdown button that has the servers name on the top of the window.
 
 ![image](https://user-images.githubusercontent.com/30271265/122611148-1ebd1980-d081-11eb-898f-c936db40afa8.png)
+
 3. Click on “Settings”
 
 ## Server settings
@@ -94,8 +97,8 @@ can see this channel. You can add or remove users after you turned the channel t
 1. Click on the same dropdown as described in “Edit server settings” and click on Settings.
 2. Click on leave server
 
+## User Settings
 
-##User Settings
 ### Change the language
 
 1. Click on the settings icon in the lower left corner.
@@ -125,9 +128,8 @@ can see this channel. You can add or remove users after you turned the channel t
 
 ### How to play
 
-You must “eat” the fruits to grow and increase your score.
-The higher the score the better.
-You cannot run into yourself otherwise the game is over.
+You must “eat” the fruits to grow and increase your score. The higher the score the better. You cannot run into yourself
+otherwise the game is over.
 
 ### Game Settings
 
@@ -171,7 +173,7 @@ Click on the crossed speaker Button in the upper right corner.
 
 ## Spotify
 
-###NOTE: Podcasts aren't supported
+### NOTE: Podcasts aren't supported
 
 ### Connect to Spotify
 
