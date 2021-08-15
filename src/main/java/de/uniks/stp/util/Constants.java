@@ -57,4 +57,7 @@ public class Constants {
     public static String STEAM_API_STEAM_USER = "/ISteamUser";
     public static String STEAM_API_RESOLVE_VANITY = "/ResolveVanityURL/v0001";
     public static String STEAM_API_KEY = "/?key=EF900FD8AD0781BF2B21710D5F173577";
+
+    // Accord Version
+    public static String ACCORD_VERSION_NR = "4.0.0";
 }

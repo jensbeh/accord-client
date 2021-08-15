@@ -363,6 +363,9 @@ public class StageManager extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        loadAppDir();
+        ResourceManager.checkVersion();
+
         if (builder == null) {
             builder = new ModelBuilder();
         }
@@ -372,7 +375,6 @@ public class StageManager extends Application {
         builder.setStageManager(this);
         langBundle = ResourceBundle.getBundle("de/uniks/stp/LangBundle");
 
-        loadAppDir();
         languageSetup();
 
         LinePoolService linePoolService = new LinePoolService();
