@@ -22,7 +22,6 @@ import de.uniks.stp.util.LinePoolService;
 import de.uniks.stp.util.ResourceManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import kong.unirest.JsonNode;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -92,7 +91,8 @@ public class ModelBuilder {
 
     private void updateDescription(PropertyChangeEvent propertyChangeEvent) {
         if (isSteamShow() || isSpotifyShow()) {
-            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {});
+            getRestClient().updateDescription(getPersonalUser().getId(), getPersonalUser().getDescription(), getPersonalUser().getUserKey(), response -> {
+            });
         }
     }
 
@@ -351,7 +351,15 @@ public class ModelBuilder {
             reader.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Wrong Settings.json -> will be reset to default!");
+            try {
+                Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
+                if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"))) {
+                    loadSettings();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
