@@ -350,17 +350,20 @@ public class PrivateChatWebSocket extends Endpoint {
             stage.show();
 
             Label chatAlertLabel = (Label) root.lookup("#label_chatAlert");
+            Button okButton = (Button) root.lookup("#button_OK");
             if (serverMessage.equals("This is not your username.")) {
                 chatAlertLabel.setText(builder.getStageManager().getLangBundle().getString("error.this_is_not_your_username"));
+                stage.setOnCloseRequest((e) -> builder.getStageManager().showLoginScreen());
+                okButton.setOnAction((a) -> {
+                    stage.close();
+                    builder.getStageManager().showLoginScreen();
+                });
             } else {
                 chatAlertLabel.setText(serverMessage);
+                okButton.setOnAction((a) -> {
+                    stage.close();
+                });
             }
-            Button okButton = (Button) root.lookup("#button_OK");
-            okButton.setOnAction((a) -> {
-                stage.close();
-                builder.getStageManager().showLoginScreen();
-            });
-            stage.setOnCloseRequest((a) -> builder.getStageManager().showLoginScreen());
             if (builder.getTheme().equals("Bright")) {
                 root.getStylesheets().add(Objects.requireNonNull(StageManager.class.getResource("styles/themes/bright/Alert.css")).toExternalForm());
             } else {
