@@ -476,6 +476,9 @@ public class ResourceManager {
         return volume;
     }
 
+    /**
+     * checks the current Accord-version and handles in cases
+     */
     public static void checkVersion() {
         try {
             // check if config file is available
@@ -498,15 +501,12 @@ public class ResourceManager {
             }
 
             // check for correct version in file
-            // if not correct, delete settings.json and more?
+            // if not correct, delete settings.json
             Reader versionReader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
             JsonObject parser = (JsonObject) Jsoner.deserialize(versionReader);
             String loadedVersion = (String) parser.get("version");
-            System.out.println(loadedVersion);
-
             if (!loadedVersion.equals(ACCORD_VERSION_NR)) {
                 Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
-                
                 BufferedWriter versionWriter = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
                 JsonObject obj = new JsonObject();
                 obj.put("version", ACCORD_VERSION_NR);
