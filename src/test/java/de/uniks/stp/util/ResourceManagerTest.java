@@ -1,6 +1,7 @@
 package de.uniks.stp.util;
 
 import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import de.uniks.stp.StageManager;
 import de.uniks.stp.builder.ModelBuilder;
 import de.uniks.stp.controller.settings.SettingsControllerTest;
@@ -32,6 +33,7 @@ import org.mockito.stubbing.Answer;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javax.json.JsonObject;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -271,5 +273,16 @@ public class ResourceManagerTest extends ApplicationTest {
         Files.delete(Path.of(APPDIR_ACCORD_PATH + SAVES_PATH + "/Volume/" + "GustavTest" + ".json"));
         ResourceManager.saveVolume("/GustavTest/", 50.00F);
         ResourceManager.getVolume("GustavTest");
+    }
+
+    @Test
+    public void checkVersionTest() throws InterruptedException, IOException {
+        loginInit();
+        BufferedWriter versionWriter = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
+        com.github.cliftonlabs.json_simple.JsonObject obj = new com.github.cliftonlabs.json_simple.JsonObject();
+        obj.put("version", "0.0.0");
+        Jsoner.serialize(obj, versionWriter);
+        versionWriter.close();
+        ResourceManager.checkVersion();
     }
 }
