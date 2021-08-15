@@ -475,4 +475,47 @@ public class ResourceManager {
         }
         return volume;
     }
+
+    /**
+     * checks the current Accord-version and handles in cases
+     */
+    public static void checkVersion() {
+        try {
+            // check if config file is available
+            if (!Files.isDirectory(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH))) {
+                // delete all
+                Files.createDirectories(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH));
+
+            }
+            // write version file if not existing
+            if (!Files.exists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"))) {
+                Files.createFile(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
+                BufferedWriter versionWriter = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
+                JsonObject obj = new JsonObject();
+                obj.put("version", ACCORD_VERSION_NR);
+                Jsoner.serialize(obj, versionWriter);
+                versionWriter.close();
+
+                // delete settings.json because version was not existing (old version)
+                Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
+            }
+
+            // check for correct version in file
+            // if not correct, delete settings.json
+            Reader versionReader = Files.newBufferedReader(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
+            JsonObject parser = (JsonObject) Jsoner.deserialize(versionReader);
+            String loadedVersion = (String) parser.get("version");
+            if (!loadedVersion.equals(ACCORD_VERSION_NR)) {
+                Files.deleteIfExists(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/settings.json"));
+                BufferedWriter versionWriter = Files.newBufferedWriter(Path.of(APPDIR_ACCORD_PATH + CONFIG_PATH + "/accord_version.txt"));
+                JsonObject obj = new JsonObject();
+                obj.put("version", ACCORD_VERSION_NR);
+                Jsoner.serialize(obj, versionWriter);
+                versionWriter.close();
+            }
+            versionReader.close();
+        } catch (IOException | JsonException e) {
+            e.printStackTrace();
+        }
+    }
 }
