@@ -1,9 +1,6 @@
 package de.uniks.stp.net;
 
-import kong.unirest.Callback;
-import kong.unirest.HttpRequest;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.json.JSONObject;
 
 import static de.uniks.stp.util.Constants.*;
@@ -13,14 +10,14 @@ public class RestClient {
     public void signIn(String username, String password, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("password", password).accumulate("name", username);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + USERS_PATH).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + USERS_PATH).header("Content-Type", "application/json").body(body);
         sendRequest(request, callback);
     }
 
     public void login(String username, String password, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + LOGIN_PATH).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + LOGIN_PATH).body(body);
         sendRequest(request, callback);
     }
 
@@ -30,7 +27,7 @@ public class RestClient {
     }
 
     public void logout(String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + API_PREFIX + LOGOUT_PATH).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + LOGOUT_PATH).header("userKey", userKey);
         sendRequest(request, callback);
     }
 
