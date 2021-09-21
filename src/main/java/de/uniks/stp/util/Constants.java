@@ -8,7 +8,6 @@ public class Constants {
     public static final String SYSTEM_WEBSOCKET_PATH = "/system";
     public static final String SERVER_SYSTEM_WEBSOCKET_PATH = "/system?serverId=";
     public static final String SERVER_WEBSOCKET_PATH = "&serverId=";
-    public static final String API_PREFIX = "/api";
     public static final String USERS_PATH = "/users";
     public static final String LOGIN_PATH = "/users/login";
     public static final String LOGOUT_PATH = "/users/logout";
@@ -25,8 +24,8 @@ public class Constants {
     public static final String SERVER_USER_DESCRIPTION = "/description";
 
     // Client
-    public static final String REST_SERVER_URL = "http://localhost:8080"; //https://ac.uniks.de
-    public static final String WS_SERVER_URL = "wss://ac.uniks.de";
+    public static final String REST_SERVER_URL = "http://localhost:8080"; // https://ac.uniks.de
+    public static final String WS_SERVER_URL = "ws://localhost:8080"; // wss://ac.uniks.de
     public static final String STEAM_API_PLAYER_SUMMARIES = "/GetPlayerSummaries/v0002";
     // Rescources
     public static final String ROOT_PATH = "/de/uniks/stp";
