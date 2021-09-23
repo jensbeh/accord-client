@@ -22,7 +22,7 @@ public class RestClient {
     }
 
     public void loginTemp(Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + TEMP_USER_PATH);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + TEMP_USER_PATH).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -61,7 +61,7 @@ public class RestClient {
 
     public void postServerLeave(String serverId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId + LEAVE_PATH;
-        HttpRequest<?> postRequest = Unirest.post(url).header("userKey", userKey);
+        HttpRequest<?> postRequest = Unirest.post(url).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
@@ -76,7 +76,7 @@ public class RestClient {
     public void updateChannel(String serverId, String categoryId, String channelId, String userKey, String channelName, boolean privilege, String[] Members, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", channelName).accumulate("privileged", privilege).accumulate("members", Members);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId).body(body).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId).body(body).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -84,13 +84,13 @@ public class RestClient {
         JSONObject jsonObj = new JSONObject().accumulate("name", serverName);
         String body = JSONObject.valueToString(jsonObj);
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId;
-        HttpRequest<?> postRequest = Unirest.put(url).header("userKey", userKey).body(body);
+        HttpRequest<?> postRequest = Unirest.put(url).header("userKey", userKey).body(body).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
     public void deleteServer(String serverId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId;
-        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
@@ -103,7 +103,7 @@ public class RestClient {
 
     public void deleteChannel(String serverId, String categoryId, String channelId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId + SERVER_CHANNELS_PATH + "/" + channelId;
-        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
@@ -117,26 +117,26 @@ public class RestClient {
             jsonObj.accumulate("max", max);
         }
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES).header("userKey", userKey).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES).header("userKey", userKey).body(body).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
     public void getInvLinks(String serverId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES;
-        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey);
+        HttpRequest<?> postRequest = Unirest.get(url).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
     public void deleteInvLink(String serverId, String invId, String userKey, Callback<JsonNode> callback) {
         String url = REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + invId;
-        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey);
+        HttpRequest<?> postRequest = Unirest.delete(url).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(postRequest, callback);
     }
 
     public void joinServer(String serverId, String inviteId, String username, String password, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", username).accumulate("password", password);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + inviteId).header("userKey", userKey).body(body);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_INVITES + "/" + inviteId).header("userKey", userKey).body(body).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -150,27 +150,27 @@ public class RestClient {
     public void updateCategory(String serverId, String categoryId, String categoryName, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("name", categoryName);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).body(body).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.put(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).body(body).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
     public void deleteCategory(String serverId, String categoryId, String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.delete(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.delete(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + categoryId).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
     public void getChannelMessages(long timestamp, String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.get(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGES_PATH + timestamp).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.get(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGES_PATH + timestamp).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
     public void joinVoiceChannel(String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_JOIN).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_JOIN).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
     public void leaveVoiceChannel(String serverId, String catId, String channelId, String userKey, Callback<JsonNode> callback) {
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_LEAVE).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + SERVER_PATH + "/" + serverId + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_AUDIO_LEAVE).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -179,7 +179,7 @@ public class RestClient {
         String body = JSONObject.valueToString(jsonObj);
         HttpRequest<?> request = Unirest.put(REST_SERVER_URL + SERVER_PATH + "/" + serverId
                 + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGE_PATH
-                + "/" + msgId).body(body).header("userKey", userKey);
+                + "/" + msgId).body(body).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -188,7 +188,7 @@ public class RestClient {
         String body = JSONObject.valueToString(jsonObj);
         HttpRequest<?> request = Unirest.delete(REST_SERVER_URL + SERVER_PATH + "/" + serverId
                 + SERVER_CATEGORIES_PATH + "/" + catId + SERVER_CHANNELS_PATH + "/" + channelId + SERVER_MESSAGE_PATH
-                + "/" + msgId).body(body).header("userKey", userKey);
+                + "/" + msgId).body(body).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 
@@ -200,7 +200,7 @@ public class RestClient {
     public void updateDescription(String userId, String description, String userKey, Callback<JsonNode> callback) {
         JSONObject jsonObj = new JSONObject().accumulate("text", description);
         String body = JSONObject.valueToString(jsonObj);
-        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + USERS_PATH + "/" + userId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey);
+        HttpRequest<?> request = Unirest.post(REST_SERVER_URL + USERS_PATH + "/" + userId + SERVER_USER_DESCRIPTION).body(body).header("userKey", userKey).header("Content-Type", "application/json");
         sendRequest(request, callback);
     }
 

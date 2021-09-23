@@ -33,6 +33,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import static de.uniks.stp.util.Constants.LOGOUT_PATH;
+import static de.uniks.stp.util.Constants.REST_SERVER_URL;
+
 public class StageManager extends Application {
     private RestClient restClient;
     private ModelBuilder builder;
@@ -116,7 +119,7 @@ public class StageManager extends Application {
             String userKey = builder.getPersonalUser().getUserKey();
             if (userKey != null && !userKey.isEmpty()) {
                 cleanup();
-                Unirest.post("https://ac.uniks.de/api/users/logout").header("userKey", userKey).asJson().getBody();
+                Unirest.post(REST_SERVER_URL + LOGOUT_PATH).header("userKey", userKey).asJson().getBody();
             }
         }
         Unirest.shutDown();
