@@ -234,7 +234,7 @@ public class ServerViewController {
      */
     public void buildSystemWebSocket() {
         if (serverSystemWebSocket == null) {
-            serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
+            serverSystemWebSocket = new ServerSystemWebSocket(URI.create(WS_SERVER_URL + SERVER_SYSTEM_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             serverSystemWebSocket.setServerViewController(this);
             serverSystemWebSocket.setBuilder(builder);
         }
@@ -248,7 +248,7 @@ public class ServerViewController {
     private void buildChatWebSocket() {
         if (chatWebSocketClient == null) {
             chatWebSocketClient = new ServerChatWebSocket(URI.
-                    create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+                    create(WS_SERVER_URL + CHAT_WEBSOCKET_PATH + builder.
                             getPersonalUser().getName().replace(" ", "+") + SERVER_WEBSOCKET_PATH + this.server.getId()), builder.getPersonalUser().getUserKey());
             chatWebSocketClient.setServerViewController(this);
             chatWebSocketClient.setBuilder(builder);
