@@ -99,7 +99,7 @@ public class PrivateViewController {
         showUsers();
         onLanguageChanged();
         if (privateChatWebSocket == null) {
-            privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + CHAT_WEBSOCKET_PATH + builder.
+            privateChatWebSocket = new PrivateChatWebSocket(URI.create(WS_SERVER_URL + CHAT_WEBSOCKET_PATH + builder.
                     getPersonalUser().getName().replace(" ", "+")), builder.getPersonalUser().getUserKey());
         }
         privateChatWebSocket.setBuilder(builder);
@@ -110,7 +110,7 @@ public class PrivateViewController {
 
     private void startWebSocketConnection() {
         if (privateSystemWebSocketClient == null) {
-            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + WEBSOCKET_PATH + SYSTEM_WEBSOCKET_PATH), builder.getPersonalUser().getUserKey());
+            privateSystemWebSocketClient = new PrivateSystemWebSocketClient(URI.create(WS_SERVER_URL + SYSTEM_WEBSOCKET_PATH), builder.getPersonalUser().getUserKey());
             privateSystemWebSocketClient.setBuilder(builder);
             privateSystemWebSocketClient.setPrivateViewController(this);
         }
