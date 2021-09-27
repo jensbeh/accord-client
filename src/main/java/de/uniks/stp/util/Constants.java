@@ -24,8 +24,8 @@ public class Constants {
     public static final String SERVER_USER_DESCRIPTION = "/description";
 
     // Client
-    public static final String REST_SERVER_URL = "http://localhost:8080"; // https://ac.uniks.de
-    public static final String WS_SERVER_URL = "ws://localhost:8080"; // wss://ac.uniks.de
+    public static final String REST_SERVER_URL = "http://192.168.188.42:8080"; // https://ac.uniks.de
+    public static final String WS_SERVER_URL = "ws://192.168.188.42:8080"; // wss://ac.uniks.de
     public static final String STEAM_API_PLAYER_SUMMARIES = "/GetPlayerSummaries/v0002";
     // Rescources
     public static final String ROOT_PATH = "/de/uniks/stp";
