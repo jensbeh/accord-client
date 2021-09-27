@@ -42,7 +42,7 @@ public class Constants {
     public static String USERDATA_FILE = "/userData.txt";
     public static String NOTIFICATION_PATH = "/soundNotifications";
     // AudioStream
-    public static String AUDIO_STREAM_ADDRESS = "cranberry.uniks.de";
+    public static String AUDIO_STREAM_ADDRESS = "localhost"; // cranberry.uniks.de
     public static int AUDIO_STREAM_PORT = 33100;
     public static float AUDIO_BITRATE = 48000.0f;
     public static int AUDIO_SAMPLE_SIZE = 16;
